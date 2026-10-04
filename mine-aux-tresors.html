@@ -1,9 +1,25 @@
 <title>Mine aux Trésors</title>
+<link rel="preload" as="image" href="Assets/Ground/Ground_Dirt_01.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Dirt_02.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Dirt_03.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_01.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_02.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_03.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_03-1.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_03-2.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_Iron.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_Cooper.png">
+<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_Gold.png">
+<link rel="preload" as="image" href="Assets/Tools/Shovel.png">
+<link rel="preload" as="image" href="Assets/Tools/Icn_Pickaxe.png">
+<link rel="preload" as="image" href="Assets/Tools/watering%20can.png">
+<link rel="preload" as="image" href="Assets/Tools/Bomb.png">
+<link rel="preload" as="image" href="Assets/Tools/Radar.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&display=swap">
 <style>
-/* Layout: one-screen portrait game — HUD on top, treasure strip, timber-framed mine grid, thumb-reach tool dock */
+/* Layout: one-screen game that fills the viewport — HUD, treasure strip, timber-framed mine grid sized by script to the space left, thumb-reach tool dock. Landscape phones put the board on the left. */
 :root{
   --cave:#2a1b3d; --cave-deep:#160e22; --cave-glow:#6b3a7a;
   --panel:#fff3d6; --panel-edge:#e2b77a; --ink:#3b2245; --ink-soft:#7a5a74;
@@ -11,10 +27,11 @@
   --wood:#a86a34; --wood-dark:#5b3214; --ground:#3b2416;
   --font-display:'Lilita One','Trebuchet MS',system-ui,sans-serif;
   --font-body:'Nunito',system-ui,sans-serif;
-  --tile:min(calc((100vw - 52px) / 7), calc((100vh - 352px) / 10), 58px);
+  --tile:min(calc((100vw - 52px) / 7), calc((100vh - 352px) / 10), 58px); /* fallback, refined by fitBoard() */
   color-scheme:dark;
 }
-html,body{height:100%}
+html{height:100%; height:100dvh; box-sizing:border-box}
+body{height:100%; overscroll-behavior:none}
 [hidden]{display:none!important}
 body{
   margin:0; overflow-x:hidden;
@@ -24,7 +41,8 @@ body{
 }
 button{font:inherit; color:inherit}
 button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
-.app{max-width:480px; margin:0 auto; padding-inline:16px; padding-block:10px 14px; box-sizing:border-box; min-height:100%; display:flex; flex-direction:column; gap:10px}
+.app{max-width:480px; height:100%; margin:0 auto; padding-inline:16px; padding-block:10px 12px; box-sizing:border-box; display:flex; flex-direction:column; gap:10px}
+.hud,.goals,.quick,.tools{flex:none}
 
 /* HUD */
 .hud{display:flex; align-items:stretch; gap:8px}
@@ -66,7 +84,7 @@ button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 .help img{width:32px; height:32px; object-fit:contain; flex:none}
 
 /* Mine */
-.stage{position:relative; display:flex; justify-content:center; flex:1; align-items:flex-start}
+.stage{position:relative; display:flex; justify-content:center; align-items:center; flex:1 1 0; min-height:0}
 .frame{position:relative; padding:9px; border-radius:22px;
   background:repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 3px, transparent 3px 22px), linear-gradient(180deg, #c58448, var(--wood) 50%, #8a5426);
   box-shadow:0 7px 0 var(--wood-dark), 0 16px 30px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.25)}
@@ -127,7 +145,7 @@ button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 .toast.warn{background:#d9432a}
 
 /* Quick bar: shop + consumables */
-.quick{display:flex; justify-content:center; gap:8px; flex-wrap:wrap}
+.quick{display:flex; justify-content:center; gap:8px}
 .pill{display:flex; align-items:center; gap:6px; border:0; border-radius:14px; padding:5px 12px 5px 6px; cursor:pointer;
   background:var(--panel); color:var(--ink); font-family:var(--font-display); font-size:14px; box-shadow:0 3px 0 var(--panel-edge), 0 6px 12px rgba(0,0,0,.25)}
 .pill img,.pill svg{width:26px; height:26px; object-fit:contain}
@@ -185,7 +203,7 @@ button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 
 /* Modals */
 .modal{position:fixed; inset:0; z-index:50; background:rgba(16,8,26,.66); display:grid; place-items:center; padding:16px}
-.card{position:relative; width:min(430px,100%); max-height:86vh; overflow:auto; box-sizing:border-box; padding:20px 18px 18px;
+.card{position:relative; width:min(430px,100%); max-height:86vh; max-height:86dvh; overflow:auto; box-sizing:border-box; padding:20px 18px 18px;
   background:var(--panel); color:var(--ink); border-radius:26px; box-shadow:0 8px 0 var(--panel-edge), 0 24px 50px rgba(0,0,0,.55);
   animation:popin .35s cubic-bezier(.3,1.5,.5,1)}
 @keyframes popin{from{transform:scale(.8); opacity:0}}
@@ -234,6 +252,47 @@ button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 .flyer svg{width:100%; height:100%}
 .board.enter{animation:dropin .5s cubic-bezier(.3,1.4,.5,1)}
 @keyframes dropin{from{transform:translateY(-30px); opacity:0}}
+
+/* Phones */
+@media (max-width:430px){
+  .app{padding-inline:12px; gap:8px}
+  .hud{gap:6px}
+  .depth{padding:6px 10px}
+  .depth b{font-size:18px}
+  .energy{padding:6px 8px; gap:5px}
+  .iconbtn{width:42px}
+  .goals{gap:8px}
+  .slot{width:34px; height:34px; padding:4px}
+  .quick{gap:6px}
+  .pill{font-size:13px; gap:4px; padding:4px 9px 4px 4px}
+  .pill img,.pill svg{width:22px; height:22px}
+  .tools{gap:6px}
+  .tool{font-size:14px; border-radius:16px; padding:6px 2px 7px}
+  .tool .ic{width:42px; height:42px}
+  .tool .ic img{width:32px; height:32px}
+  .tool small{font-size:10px}
+  .key{display:none}
+  .card{padding:18px 14px 14px; border-radius:22px}
+  .card h2{font-size:26px}
+}
+/* Short screens: tighten the vertical rhythm so the board keeps its size */
+@media (max-height:700px){
+  .app{gap:6px; padding-block:6px 8px}
+  .goals-label small{display:none}
+  .slot{width:30px; height:30px}
+  .tool{padding:4px 2px 5px; gap:0}
+  .tool .ic{width:36px; height:36px}
+  .tool .ic img{width:28px; height:28px}
+  .tool.on{transform:translateY(-3px)}
+}
+/* Landscape phones: board on the left, controls on the right */
+@media (orientation:landscape) and (max-height:520px){
+  .app{max-width:none; display:grid; grid-template-columns:auto minmax(0, 1fr); grid-template-rows:auto auto minmax(0, 1fr) auto auto;
+    grid-template-areas:"stage hud" "stage goals" "stage ." "stage quick" "stage tools"; column-gap:16px; row-gap:8px; padding-block:8px}
+  .hud{grid-area:hud} .goals{grid-area:goals} .quick{grid-area:quick; justify-content:flex-start} .tools{grid-area:tools}
+  .stage{grid-area:stage}
+  .goals-label small{display:inline; margin-left:6px}
+}
 
 @media (prefers-reduced-motion: reduce){
   .t-magma,.t-magma::before,.o-gold{animation:none}
@@ -1079,6 +1138,21 @@ $('nextBtn').addEventListener('click', () => {
   genLevel(S.level); buildBoard(true); updateEnergy(true); save();
   toast(`Profondeur ${S.level * 10} m : la roche se durcit…`, '');
 });
+
+/* ---------- Responsive board ---------- */
+const LAND = matchMedia('(orientation: landscape) and (max-height: 520px)');
+function fitBoard() {
+  const st = document.querySelector('.stage'), frame = 18, lip = 18 / 134;
+  const w = (LAND.matches ? innerWidth * .55 : st.clientWidth) - frame;
+  const h = st.clientHeight - frame - 8;
+  if (h <= 0 || w <= 0) return;
+  const t = Math.floor(Math.max(22, Math.min(w / COLS, h / (ROWS + lip), 64)));
+  document.documentElement.style.setProperty('--tile', t + 'px');
+}
+try { new ResizeObserver(fitBoard).observe(document.querySelector('.stage')); } catch (e) {}
+addEventListener('resize', fitBoard);
+addEventListener('orientationchange', () => setTimeout(fitBoard, 200));
+fitBoard();
 
 /* ---------- Persistence ---------- */
 let saveT;
