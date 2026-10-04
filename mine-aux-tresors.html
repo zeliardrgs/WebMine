@@ -88,9 +88,9 @@ button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 .frame{position:relative; padding:9px; border-radius:22px;
   background:repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 3px, transparent 3px 22px), linear-gradient(180deg, #c58448, var(--wood) 50%, #8a5426);
   box-shadow:0 7px 0 var(--wood-dark), 0 16px 30px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.25)}
-.frame::before,.frame::after{content:""; position:absolute; top:3px; width:8px; height:8px; border-radius:50%; background:#e7c27a; box-shadow:0 1px 0 var(--wood-dark), 0 calc(var(--tile)*10 + 2px) 0 #e7c27a}
+.frame::before,.frame::after{content:""; position:absolute; top:3px; width:8px; height:8px; border-radius:50%; background:#e7c27a; box-shadow:0 1px 0 var(--wood-dark), 0 calc(var(--tile)*var(--rows, 10) + 2px) 0 #e7c27a}
 .frame::before{left:3px} .frame::after{right:3px}
-.board{position:relative; width:calc(var(--tile)*7); height:calc(var(--tile)*10 + var(--tile)*18/134); border-radius:12px; overflow:hidden; touch-action:none; cursor:crosshair;
+.board{position:relative; width:calc(var(--tile)*var(--cols, 7)); height:calc(var(--tile)*var(--rows, 10) + var(--tile)*18/134); border-radius:12px; overflow:hidden; touch-action:none; cursor:crosshair;
   box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
 .under{position:absolute; inset:0;
   background-color:var(--ground);
@@ -106,7 +106,7 @@ button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 .rw.done{animation:shine .6s ease-out}
 @keyframes shine{0%{transform:scale(1)} 40%{transform:scale(1.18); filter:drop-shadow(0 0 14px #fff6a8)} 100%{transform:scale(1.05); filter:drop-shadow(0 0 10px #fff6a8)}}
 
-.tiles{position:absolute; z-index:1; left:0; top:0; width:100%; height:calc(var(--tile)*10); display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(10,var(--tile))}
+.tiles{position:absolute; z-index:1; left:0; top:0; width:100%; height:calc(var(--tile)*var(--rows, 10)); display:grid; grid-template-columns:repeat(var(--cols, 7),1fr); grid-template-rows:repeat(var(--rows, 10),var(--tile))}
 /* Tiles are 134x152: square top face + 18px front lip. Each row sits above the previous one, so a lip only shows once the tile below is dug out. */
 .tile{position:relative; height:calc(var(--tile) * 152 / 134); background:center top / 100% 100% no-repeat}
 .tile::after{content:""; position:absolute; left:0; right:0; top:0; height:88%; background:center / 74% 74% no-repeat; pointer-events:none}
@@ -402,7 +402,15 @@ button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 
 <script>
 (() => {
-const COLS = 7, ROWS = 10, N = COLS * ROWS, KEY = 'mine-tresors-v2';
+let COLS = 7, ROWS = 10, N = COLS * ROWS;
+const KEY = 'mine-tresors-v2';
+const MAX_COLS = 7, MAX_ROWS = 10;
+const levelDims = level => [Math.min(MAX_COLS, 2 + level), Math.min(MAX_ROWS, 2 + level)];
+function setDims(cols, rows) {
+  COLS = cols; ROWS = rows; N = cols * rows;
+  document.documentElement.style.setProperty('--cols', cols);
+  document.documentElement.style.setProperty('--rows', rows);
+}
 const MAX_E = 60, REGEN_MS = 4000, BUCKET_MS = 5000;
 const HP = { stone: 3, ore: 3, cool: 5 };
 const ORE_YIELD = { iron: [1, 3], copper: [1, 2], gold: [1, 1] };
@@ -523,30 +531,42 @@ function pick(weights) {
 }
 
 function genLevel(level) {
+  const [cols, rows] = levelDims(level);
+  setDims(cols, rows); S.cols = cols; S.rows = rows;
+  const area = N, scale = area / 70;
   const g = Array.from({ length: N }, () => ({ t: 'dirt', v: randInt(0, 2) }));
   const blob = (n, rmin, rmax, fn) => {
     for (let k = 0; k < n; k++) {
-      const cx = rand(-.5, COLS - .5), cy = rand(.5, ROWS - .5), rad = rand(rmin, rmax);
+      const cx = rand(-.5, COLS - .5), cy = rand(-.5, ROWS - .5), rad = rand(rmin, rmax);
       for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++)
         if (Math.hypot(c - cx, r - cy) < rad + Math.random() * .6) fn(r * COLS + c);
     }
   };
-  blob(3 + Math.min(level, 6), 1.1, 2.2 + Math.min(level, 5) * .08, i => g[i].t = 'stone');
-  blob(level < 2 ? 1 : Math.min(1 + Math.floor(level / 2), 4), .7, 1.5, i => g[i].t = 'magma');
+  // Rock and magma scale with the grid; the very first gallery is a gentle intro without magma
+  const small = Math.min(1, .55 + scale * .45);
+  blob(Math.max(1, Math.round((3 + Math.min(level, 6)) * scale)), 1.1 * small, (2.2 + Math.min(level, 5) * .08) * small, i => g[i].t = 'stone');
+  if (level >= 2) blob(Math.max(1, Math.round(Math.min(1 + Math.floor(level / 2), 4) * scale)), .7 * small, 1.5 * small, i => g[i].t = 'magma');
   for (const c of g) {
     if (c.t === 'stone' && Math.random() < .26) { c.t = 'ore'; c.ore = pick(Object.fromEntries(Object.entries(ORES).map(([k, o]) => [k, o.w]))); }
     if (HP[c.t]) c.hp = c.max = HP[c.t];
   }
-  const count = Math.min(6, 4 + Math.floor((level - 1) / 3));
-  const kinds = ['art', 'geode'];
-  if (level >= 2) kinds.push('art');
-  if (level >= 4) kinds.push('geode');
+  // Treasures: as many as the grid can hold, only shapes that fit, within an area budget
+  const count = Math.max(2, Math.min(6, Math.round(area / 11)));
+  const kinds = level === 1 ? ['geode', 'gem'] : ['art', 'geode'];
+  if (level >= 4) kinds.push('art');
+  if (level >= 6) kinds.push('geode');
   while (kinds.length < count) kinds.push('gem');
-  const picks = kinds.map(kind => {
-    if (kind === 'gem') { const key = pick(Object.fromEntries(Object.entries(GEMS).map(([k, o]) => [k, o.w]))); return { kind, key, w: GEMS[key].sz[0], h: GEMS[key].sz[1] }; }
-    if (kind === 'geode') { const key = pick(Object.fromEntries(Object.entries(GEODES).map(([k, o]) => [k, o.w]))); return { kind, key, w: GEODES[key].sz[0], h: GEODES[key].sz[1] }; }
-    const key = pick(Object.fromEntries(Object.entries(ARTS).map(([k, o]) => [k, o.wt]))); return { kind, key, w: ARTS[key].w, h: ARTS[key].h };
-  }).sort((a, b) => b.w * b.h - a.w * a.h);
+  let budget = area * (area < 30 ? .7 : .45);
+  const pool = (entries, size, weight) => Object.fromEntries(entries.filter(([, o]) => { const [w, h] = size(o); return w <= COLS && h <= ROWS && w * h <= budget; }).map(([k, o]) => [k, weight(o)]));
+  const picks = [];
+  for (const kind of kinds) {
+    const src = kind === 'gem' ? [GEMS, o => o.sz, o => o.w] : kind === 'geode' ? [GEODES, o => o.sz, o => o.w] : [ARTS, o => [o.w, o.h], o => o.wt];
+    const options = pool(Object.entries(src[0]), src[1], src[2]);
+    if (!Object.keys(options).length) continue;
+    const key = pick(options), [w, h] = src[1](src[0][key]);
+    budget -= w * h; picks.push({ kind, key, w, h });
+  }
+  picks.sort((a, b) => b.w * b.h - a.w * a.h);
   const occ = new Array(N).fill(false), rewards = [];
   for (const p of picks) {
     for (let tries = 0; tries < 300; tries++) {
@@ -581,6 +601,7 @@ function paintTile(i) {
   else delete el.dataset.crack;
 }
 function buildBoard(animate) {
+  fitBoard();
   tilesEl.textContent = ''; underEl.textContent = ''; slotsEl.textContent = '';
   tileEls = S.grid.map((c, i) => { const d = document.createElement('div'); d.style.zIndex = (i / COLS | 0) + 1; tilesEl.append(d); return d; });
   tileEls.forEach((_, i) => paintTile(i));
@@ -1136,7 +1157,7 @@ $('nextBtn').addEventListener('click', () => {
   $('winModal').hidden = true;
   S.level++; S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges(); S.bombs++; updateBombs();
   genLevel(S.level); buildBoard(true); updateEnergy(true); save();
-  toast(`Profondeur ${S.level * 10} m : la roche se durcit…`, '');
+  toast(S.level <= Math.max(MAX_COLS, MAX_ROWS) - 2 ? `Profondeur ${S.level * 10} m : la galerie s'agrandit (${COLS}×${ROWS}) !` : `Profondeur ${S.level * 10} m : la roche se durcit…`, '');
 });
 
 /* ---------- Responsive board ---------- */
@@ -1146,7 +1167,7 @@ function fitBoard() {
   const w = (LAND.matches ? innerWidth * .55 : st.clientWidth) - frame;
   const h = st.clientHeight - frame - 8;
   if (h <= 0 || w <= 0) return;
-  const t = Math.floor(Math.max(22, Math.min(w / COLS, h / (ROWS + lip), 64)));
+  const t = Math.floor(Math.max(22, Math.min(w / COLS, h / (ROWS + lip), 96)));
   document.documentElement.style.setProperty('--tile', t + 'px');
 }
 try { new ResizeObserver(fitBoard).observe(document.querySelector('.stage')); } catch (e) {}
@@ -1162,9 +1183,11 @@ try { window.claude?.hot?.snapshot?.(() => ({ S })); } catch (e) {}
 function start(data) {
   let saved = data && data.S;
   if (!saved) { try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) {} }
+  if (saved && Array.isArray(saved.grid)) setDims(saved.cols || MAX_COLS, saved.rows || MAX_ROWS);
   if (saved && Array.isArray(saved.grid) && saved.grid.length === N && Array.isArray(saved.rewards)) {
     const base = freshState();
     const sb = saved.bag || {};
+    saved.cols = COLS; saved.rows = ROWS;
     S = Object.assign(base, saved, { bag: Object.assign(base.bag, sb, {
       arts: Object.assign(base.bag.arts, Object.fromEntries(Object.entries(sb.arts || {}).filter(([k]) => ARTS[k]))),
     }) });
