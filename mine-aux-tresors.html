@@ -1,0 +1,1111 @@
+<title>Mine aux Trésors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&display=swap">
+<style>
+/* Layout: one-screen portrait game — HUD on top, treasure strip, timber-framed mine grid, thumb-reach tool dock */
+:root{
+  --cave:#2a1b3d; --cave-deep:#160e22; --cave-glow:#6b3a7a;
+  --panel:#fff3d6; --panel-edge:#e2b77a; --ink:#3b2245; --ink-soft:#7a5a74;
+  --sun:#ffc23d; --sun-edge:#c98a12; --mint:#35d49a; --lava:#ff5b2e; --water:#3db5ff;
+  --wood:#a86a34; --wood-dark:#5b3214; --ground:#3b2416;
+  --font-display:'Lilita One','Trebuchet MS',system-ui,sans-serif;
+  --font-body:'Nunito',system-ui,sans-serif;
+  --tile:min(calc((100vw - 52px) / 7), calc((100vh - 352px) / 10), 58px);
+  color-scheme:dark;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{
+  margin:0; overflow-x:hidden;
+  background:radial-gradient(120% 70% at 50% 0%, var(--cave-glow) 0%, var(--cave) 55%, var(--cave-deep) 100%) fixed, var(--cave);
+  color:var(--panel); font-family:var(--font-body); font-weight:800;
+  -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit; color:inherit}
+button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
+.app{max-width:480px; margin:0 auto; padding-inline:16px; padding-block:10px 14px; box-sizing:border-box; min-height:100%; display:flex; flex-direction:column; gap:10px}
+
+/* HUD */
+.hud{display:flex; align-items:stretch; gap:8px}
+.chip{background:var(--panel); color:var(--ink); border-radius:16px; box-shadow:0 4px 0 var(--panel-edge), 0 8px 14px rgba(0,0,0,.3)}
+.depth{display:flex; flex-direction:column; justify-content:center; padding:6px 12px; line-height:1}
+.depth span{font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft)}
+.depth b{font-family:var(--font-display); font-weight:400; font-size:21px; font-variant-numeric:tabular-nums}
+.energy{flex:1; min-width:0; display:flex; align-items:center; gap:6px; padding:6px 10px}
+.energy > svg,.energy > img{width:30px; height:30px; flex:none; object-fit:contain}
+.energy .col{flex:1; min-width:0; display:flex; flex-direction:column; gap:3px}
+.bar{position:relative; height:18px; border-radius:10px; background:var(--ink); overflow:hidden; box-shadow:inset 0 2px 0 rgba(0,0,0,.35)}
+.bar i{position:absolute; inset:0 auto 0 0; background:linear-gradient(#7ff5c6, var(--mint) 60%, #1fae7a); border-radius:10px; transition:width .25s}
+.bar span{position:absolute; inset:0; display:grid; place-items:center; font-family:var(--font-display); font-size:13px; color:#fff; text-shadow:0 1px 0 rgba(0,0,0,.5); font-variant-numeric:tabular-nums}
+.energy small{font-size:10px; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.iconbtn{position:relative; width:46px; flex:none; border:0; border-radius:16px; background:var(--panel); box-shadow:0 4px 0 var(--panel-edge), 0 8px 14px rgba(0,0,0,.3); display:grid; place-items:center; cursor:pointer; padding:0}
+.iconbtn svg{width:30px; height:30px}
+.iconbtn img{width:36px; height:36px; object-fit:contain}
+.iconbtn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--panel-edge)}
+.badge{position:absolute; top:-7px; right:-7px; min-width:22px; height:22px; padding:0 5px; box-sizing:border-box; border-radius:11px; background:var(--lava); color:#fff; font-family:var(--font-display); font-size:13px; display:grid; place-items:center; box-shadow:0 2px 0 #9b2a10}
+
+/* Treasure strip */
+.goals{display:flex; align-items:center; gap:10px}
+.goals-label{font-family:var(--font-display); font-size:15px; line-height:1.05; color:var(--sun); flex:none; text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.goals-label small{display:block; font-family:var(--font-body); font-size:11px; color:var(--panel); opacity:.75}
+.slots{display:flex; gap:6px; flex-wrap:wrap; min-width:0}
+.slot{width:38px; height:38px; box-sizing:border-box; padding:5px; border-radius:12px; background:rgba(0,0,0,.3); box-shadow:inset 0 2px 0 rgba(0,0,0,.35); display:grid; place-items:center}
+.slot svg{width:100%; height:100%; filter:brightness(0) invert(1) opacity(.22)}
+.slot.found{background:var(--panel); box-shadow:0 3px 0 var(--panel-edge)}
+.slot.found svg{filter:none}
+.slot img,.rw img,.flyer img,.ghost .g img{width:100%; height:100%; object-fit:contain; display:block; -webkit-user-drag:none}
+.slot img{filter:brightness(0) invert(1) opacity(.22)}
+.slot.found img{filter:none}
+.tool .ic img{position:relative; width:38px; height:38px; object-fit:contain}
+.tool.charging .ic img{opacity:.4; filter:grayscale(.6)}
+.item img{width:46px; height:46px; object-fit:contain}
+.geode-row img{width:56px; height:56px; object-fit:contain; flex:none}
+.geode-row img.empty{filter:grayscale(1) opacity(.35)}
+.reveal img{width:50px; height:50px; object-fit:contain; flex:none; animation:gemPop .6s cubic-bezier(.3,1.6,.5,1)}
+.help img{width:32px; height:32px; object-fit:contain; flex:none}
+
+/* Mine */
+.stage{position:relative; display:flex; justify-content:center; flex:1; align-items:flex-start}
+.frame{position:relative; padding:9px; border-radius:22px;
+  background:repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 3px, transparent 3px 22px), linear-gradient(180deg, #c58448, var(--wood) 50%, #8a5426);
+  box-shadow:0 7px 0 var(--wood-dark), 0 16px 30px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.25)}
+.frame::before,.frame::after{content:""; position:absolute; top:3px; width:8px; height:8px; border-radius:50%; background:#e7c27a; box-shadow:0 1px 0 var(--wood-dark), 0 calc(var(--tile)*10 + 2px) 0 #e7c27a}
+.frame::before{left:3px} .frame::after{right:3px}
+.board{position:relative; width:calc(var(--tile)*7); height:calc(var(--tile)*10 + var(--tile)*18/134); border-radius:12px; overflow:hidden; touch-action:none; cursor:crosshair;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
+.under{position:absolute; inset:0;
+  background-color:var(--ground);
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,.2) 1px, transparent 1px),
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,.05) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 80%, rgba(0,0,0,.25) 0 3px, transparent 4px);
+  background-size:var(--tile) var(--tile);
+  box-shadow:inset 0 6px 18px rgba(0,0,0,.6)}
+.rw{position:absolute; box-sizing:border-box; padding:4%; filter:drop-shadow(0 3px 0 rgba(0,0,0,.4))}
+.rw svg{width:100%; height:100%; display:block}
+.rw.done{animation:shine .6s ease-out}
+@keyframes shine{0%{transform:scale(1)} 40%{transform:scale(1.18); filter:drop-shadow(0 0 14px #fff6a8)} 100%{transform:scale(1.05); filter:drop-shadow(0 0 10px #fff6a8)}}
+
+.tiles{position:absolute; z-index:1; left:0; top:0; width:100%; height:calc(var(--tile)*10); display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(10,var(--tile))}
+/* Tiles are 134x152: square top face + 18px front lip. Each row sits above the previous one, so a lip only shows once the tile below is dug out. */
+.tile{position:relative; height:calc(var(--tile) * 152 / 134); background:center top / 100% 100% no-repeat}
+.tile::after{content:""; position:absolute; left:0; right:0; top:0; height:88%; background:center / 74% 74% no-repeat; pointer-events:none}
+.t-dirt{background-image:url(Assets/Ground/Ground_Dirt_01.png)}
+.t-dirt.v1{background-image:url(Assets/Ground/Ground_Dirt_02.png)}
+.t-dirt.v2{background-image:url(Assets/Ground/Ground_Dirt_03.png)}
+.t-stone{background-image:url(Assets/Ground/Ground_Stone_01.png)}
+.t-stone.s2{background-image:url(Assets/Ground/Ground_Stone_02.png)}
+.t-stone.s3{background-image:url(Assets/Ground/Ground_Stone_03.png)}
+.o-iron{background-image:url(Assets/Ground/Ground_Stone_Iron.png)}
+.o-copper{background-image:url(Assets/Ground/Ground_Stone_Cooper.png)}
+.o-gold{background-image:url(Assets/Ground/Ground_Stone_Gold.png); animation:twinkle 1.8s ease-in-out infinite}
+@keyframes twinkle{50%{filter:brightness(1.18)}}
+.t-magma{background-image:url(Assets/Ground/Ground_Stone_03-1.png); animation:heat 1.6s ease-in-out infinite}
+.t-magma::before{content:""; position:absolute; width:16%; height:14%; left:58%; top:30%; border-radius:50%; background:#fff1a6; animation:bubble 1.9s ease-in infinite}
+@keyframes heat{50%{filter:brightness(1.22) saturate(1.15)}}
+@keyframes bubble{0%{transform:scale(.2); opacity:0} 50%{opacity:.9} 100%{transform:scale(1.3) translateY(-20%); opacity:0}}
+.t-cool{background-image:url(Assets/Ground/Ground_Stone_03-2.png)}
+.t-empty{background:none; pointer-events:none}
+.tile[data-crack="1"]::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M52 8 L46 34 L58 48 L50 68' fill='none' stroke='%231e1628' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.tile[data-crack="2"]::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M52 8 L46 34 L58 48 L50 68 M58 48 L80 56 M46 34 L24 30 M50 68 L38 84' fill='none' stroke='%231e1628' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.tile[data-crack="3"]::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M52 8 L46 34 L58 48 L50 68 M58 48 L80 56 L90 76 M46 34 L24 30 L12 46 M50 68 L38 84 M50 68 L64 90 M80 56 L92 44 M24 30 L20 12' fill='none' stroke='%231e1628' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+
+.fx{position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:3}
+.pt{position:absolute; border-radius:30%}
+.puff{position:absolute; border-radius:50%; background:rgba(255,255,255,.75)}
+.float{position:absolute; font-family:var(--font-display); font-size:18px; white-space:nowrap;
+  text-shadow:0 2px 0 #2a1430, 2px 0 0 #2a1430, -2px 0 0 #2a1430, 0 -2px 0 #2a1430}
+
+.toast{position:absolute; top:6px; left:50%; z-index:5; transform:translate(-50%,-10px); opacity:0; pointer-events:none;
+  max-width:calc(100% - 24px); box-sizing:border-box; text-align:center;
+  padding:8px 14px; border-radius:14px; background:rgba(30,16,40,.92); color:#fff; font-size:13px; line-height:1.3;
+  box-shadow:0 4px 0 rgba(0,0,0,.35); transition:opacity .2s, transform .2s}
+.toast.show{opacity:1; transform:translate(-50%,0)}
+.toast.good{background:var(--sun); color:var(--ink)}
+.toast.warn{background:#d9432a}
+
+/* Quick bar: shop + consumables */
+.quick{display:flex; justify-content:center; gap:8px; flex-wrap:wrap}
+.pill{display:flex; align-items:center; gap:6px; border:0; border-radius:14px; padding:5px 12px 5px 6px; cursor:pointer;
+  background:var(--panel); color:var(--ink); font-family:var(--font-display); font-size:14px; box-shadow:0 3px 0 var(--panel-edge), 0 6px 12px rgba(0,0,0,.25)}
+.pill img,.pill svg{width:26px; height:26px; object-fit:contain}
+.pill b{font-weight:400; min-width:20px; padding:1px 6px; box-sizing:border-box; border-radius:8px; background:var(--ink); color:#fff; font-size:12px; text-align:center}
+.pill.shop{background:var(--sun); box-shadow:0 3px 0 var(--sun-edge), 0 6px 12px rgba(0,0,0,.25)}
+.pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel-edge)}
+.pill.empty{opacity:.55}
+.radar{position:absolute; box-sizing:border-box; border:4px dashed #3df5ff; border-radius:12px; background:rgba(61,245,255,.12); box-shadow:0 0 16px rgba(61,245,255,.9), inset 0 0 16px rgba(61,245,255,.5); animation:radarPulse 1.2s ease-in-out infinite}
+@keyframes radarPulse{50%{opacity:.45; transform:scale(.97)}}
+
+/* Shop */
+.wallet{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.coin{display:flex; align-items:center; gap:4px; padding:3px 10px 3px 3px; border-radius:12px; background:#fff; box-shadow:0 2px 0 #ecd3a8; font-family:var(--font-display); font-size:17px; font-variant-numeric:tabular-nums}
+.coin img{width:28px; height:28px; object-fit:contain}
+.shop-list{display:grid; gap:8px}
+.srow{display:flex; align-items:center; gap:10px; padding:10px; border-radius:16px; background:#fff; box-shadow:0 3px 0 #ecd3a8}
+.sic{position:relative; width:46px; height:46px; flex:none}
+.sic img,.sic svg{width:100%; height:100%; object-fit:contain}
+.sic i{position:absolute; right:-6px; bottom:-4px; padding:1px 5px; border-radius:8px; background:var(--lava); color:#fff; font-style:normal; font-family:var(--font-display); font-size:11px}
+.stxt{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px}
+.stxt b{font-family:var(--font-display); font-weight:400; font-size:16px; line-height:1.1}
+.stxt span{font-size:12px; line-height:1.3; color:var(--ink-soft)}
+.stxt .pips{font-size:13px; letter-spacing:2px; color:var(--sun-edge)}
+.sbuy{display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex:none}
+.price{display:flex; gap:6px; font-family:var(--font-display); font-size:14px; font-variant-numeric:tabular-nums}
+.price span{display:flex; align-items:center; gap:1px}
+.price img{width:20px; height:20px; object-fit:contain}
+.price .short{color:#d9432a}
+.btn.sm{font-size:14px; padding:7px 12px; box-shadow:0 4px 0 var(--sun-edge)}
+.maxed{font-family:var(--font-display); font-size:14px; color:#2e9c6a}
+
+/* Tools */
+.tools{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding-bottom:4px}
+.tool{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 4px 9px; border:0; border-radius:20px; cursor:pointer;
+  background:var(--panel); color:var(--ink); box-shadow:0 5px 0 var(--panel-edge), 0 10px 16px rgba(0,0,0,.3);
+  font-family:var(--font-display); font-size:15px; transition:transform .12s, background .12s}
+.tool .ic{position:relative; width:48px; height:48px; border-radius:50%; display:grid; place-items:center;
+  background:conic-gradient(var(--ring, transparent) calc(var(--p,1) * 1turn), rgba(59,34,69,.15) 0)}
+.tool .ic::before{content:""; position:absolute; inset:4px; border-radius:50%; background:rgba(255,255,255,.75)}
+.tool .ic svg{position:relative; width:34px; height:34px}
+.tool small{font-family:var(--font-body); font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:2px; white-space:nowrap}
+.tool small svg,.tool small img{width:13px; height:13px; object-fit:contain}
+.tool.on{background:var(--sun); box-shadow:0 5px 0 var(--sun-edge), 0 12px 20px rgba(255,194,61,.35); transform:translateY(-5px)}
+.tool.on small{color:var(--ink)}
+.tool[data-tool="bucket"]{--ring:var(--water)}
+.tool.charging .ic svg{opacity:.45}
+.tool:active{transform:translateY(0)}
+.key{position:absolute; top:6px; left:8px; font-family:var(--font-body); font-size:10px; color:var(--ink-soft); opacity:.6}
+@media (pointer:coarse){.key{display:none}}
+
+/* Ghost tool following the mouse */
+.ghost{position:fixed; left:0; top:0; z-index:40; pointer-events:none; width:0; height:0}
+.ghost .g{position:absolute; left:-6px; top:-40px; width:44px; height:44px; transform-origin:20% 90%; filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}
+.ghost .g svg{width:100%; height:100%}
+
+/* Modals */
+.modal{position:fixed; inset:0; z-index:50; background:rgba(16,8,26,.66); display:grid; place-items:center; padding:16px}
+.card{position:relative; width:min(430px,100%); max-height:86vh; overflow:auto; box-sizing:border-box; padding:20px 18px 18px;
+  background:var(--panel); color:var(--ink); border-radius:26px; box-shadow:0 8px 0 var(--panel-edge), 0 24px 50px rgba(0,0,0,.55);
+  animation:popin .35s cubic-bezier(.3,1.5,.5,1)}
+@keyframes popin{from{transform:scale(.8); opacity:0}}
+.card h2{margin:0; font-family:var(--font-display); font-weight:400; font-size:30px; line-height:1.05; color:#7d3c98; text-wrap:balance}
+.card h3{margin:18px 0 8px; font-family:var(--font-display); font-weight:400; font-size:18px; color:var(--ink); display:flex; justify-content:space-between; align-items:baseline}
+.card h3 small{font-family:var(--font-body); font-size:12px; color:var(--ink-soft)}
+.card p{margin:6px 0; font-size:14px; line-height:1.45; color:var(--ink-soft)}
+.close{position:absolute; top:12px; right:12px; width:38px; height:38px; border:0; border-radius:12px; background:#f3dcb0; color:var(--ink); font-family:var(--font-display); font-size:20px; cursor:pointer}
+.items{display:grid; grid-template-columns:repeat(auto-fill, minmax(78px,1fr)); gap:8px}
+.item{background:#fff; border-radius:14px; padding:8px 4px 6px; text-align:center; box-shadow:0 3px 0 #ecd3a8; display:flex; flex-direction:column; align-items:center; gap:2px}
+.item svg{width:40px; height:40px}
+.item .n{font-family:var(--font-display); font-size:18px; line-height:1; font-variant-numeric:tabular-nums}
+.item .nm{font-size:11px; color:var(--ink-soft); line-height:1.15}
+.item.locked svg,.item.locked img{filter:brightness(0) opacity(.14)}
+.item.locked .n{color:#c8b28d}
+.tag{display:inline-block; font-size:10px; padding:1px 6px; border-radius:6px; background:#f3dcb0; color:#8a5a2a; text-transform:uppercase; letter-spacing:.06em}
+.geode-row{display:flex; align-items:center; gap:12px; background:#fff; border-radius:16px; padding:10px; box-shadow:0 3px 0 #ecd3a8}
+.geode-row > svg{width:52px; height:52px; flex:none}
+.geode-row .txt{flex:1; min-width:0}
+.geode-row .txt b{font-family:var(--font-display); font-weight:400; font-size:20px}
+.reveal{display:flex; align-items:center; gap:10px; margin-top:8px; padding:10px; border-radius:14px; background:linear-gradient(135deg,#efe1ff,#fff3d6); font-size:14px}
+.reveal svg{width:46px; height:46px; flex:none; animation:gemPop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes gemPop{from{transform:scale(0) rotate(-40deg)}}
+.btn{border:0; border-radius:16px; padding:11px 18px; background:var(--sun); color:var(--ink); font-family:var(--font-display); font-size:17px; cursor:pointer; box-shadow:0 5px 0 var(--sun-edge)}
+.btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--sun-edge)}
+.btn:disabled{opacity:.45; cursor:default; transform:none}
+.btn.big{width:100%; font-size:21px; padding:14px; margin-top:16px}
+.btn.ghosty{background:#f3dcb0; box-shadow:0 4px 0 #d9b77f; font-size:14px}
+.btn.danger{background:#ff8a70; box-shadow:0 4px 0 #c24a2e}
+.set + .set{margin-top:14px}
+.set-head{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:6px}
+.set-head b{font-family:var(--font-display); font-weight:400; font-size:15px; color:#7d3c98}
+.set-head small{font-size:12px; color:var(--ink-soft)}
+.set.complete .item:not(.locked){background:#fffbe8; box-shadow:0 3px 0 #f5c542}
+.help{display:grid; gap:8px}
+.help div{display:flex; gap:10px; align-items:center; font-size:13px; line-height:1.35; color:var(--ink)}
+.help svg{width:30px; height:30px; flex:none}
+.sw{width:30px; height:30px; flex:none; border-radius:8px}
+.win-items{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px}
+.win-items .item{width:76px}
+.stars{display:flex; justify-content:center; gap:6px; margin-bottom:8px}
+.stars svg{width:38px; height:38px; animation:gemPop .5s cubic-bezier(.3,1.6,.5,1) both}
+.stars svg:nth-child(2){animation-delay:.12s; width:48px; height:48px}
+.stars svg:nth-child(3){animation-delay:.24s}
+.flyer{position:fixed; z-index:45; pointer-events:none; box-sizing:border-box; padding:5%}
+.flyer svg{width:100%; height:100%}
+.board.enter{animation:dropin .5s cubic-bezier(.3,1.4,.5,1)}
+@keyframes dropin{from{transform:translateY(-30px); opacity:0}}
+
+@media (prefers-reduced-motion: reduce){
+  .t-magma,.t-magma::before,.o-gold{animation:none}
+  .card,.board.enter,.rw.done{animation:none}
+}
+</style>
+
+<div class="app">
+  <header class="hud">
+    <div class="chip depth"><span>Profondeur</span><b id="depth">10 m</b></div>
+    <div class="chip energy" title="Énergie">
+      <img src="Assets/Energy_Yellow.png" alt="" draggable="false">
+      <div class="col">
+        <div class="bar"><i id="energyFill" style="width:100%"></i><span id="energyTxt">50 / 50</span></div>
+        <small id="regenTxt">Énergie pleine</small>
+      </div>
+    </div>
+    <button class="iconbtn" id="soundBtn" aria-label="Couper le son"></button>
+    <button class="iconbtn" id="bagBtn" aria-label="Ouvrir le sac">
+      <img src="Assets/Bag.png" alt="" draggable="false">
+      <span class="badge" id="bagBadge" hidden>0</span>
+    </button>
+  </header>
+
+  <section class="goals" aria-label="Trésors à trouver">
+    <div class="goals-label">Trésors<small id="goalCount">0 / 0 trouvés</small></div>
+    <div class="slots" id="slots"></div>
+  </section>
+
+  <main class="stage">
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="frame">
+      <div class="board" id="board">
+        <div class="under" id="under"></div>
+        <div class="tiles" id="tiles"></div>
+        <div class="fx" id="fx"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="quick">
+    <button class="pill shop" id="shopBtn"><span id="shopIcon"></span>Boutique</button>
+    <button class="pill" id="radarBtn" aria-label="Utiliser un radar"><span id="radarIcon"></span>Radar <b id="radarN">0</b></button>
+    <button class="pill" id="potionBtn" aria-label="Utiliser une recharge d'énergie"><span id="potionIcon"></span>Recharge <b id="potionN">0</b></button>
+  </div>
+
+  <nav class="tools" aria-label="Outils">
+    <button class="tool on" data-tool="shovel" id="tool-shovel"><span class="key">1</span><span class="ic"></span>Pelle<small>Gratuite</small></button>
+    <button class="tool" data-tool="pickaxe" id="tool-pickaxe"><span class="key">2</span><span class="ic"></span>Pioche<small id="pickSub"></small></button>
+    <button class="tool" data-tool="bucket" id="tool-bucket"><span class="key">3</span><span class="ic"></span>Arrosoir<small id="bucketSub">Prêt</small></button>
+    <button class="tool" data-tool="bomb" id="tool-bomb"><span class="key">4</span><span class="ic"></span>Bombe<small id="bombSub">3 restantes</small></button>
+  </nav>
+</div>
+
+<div class="ghost" id="ghost" hidden><div class="g" id="ghostG"></div></div>
+
+<div class="modal" id="bagModal" hidden>
+  <div class="card" role="dialog" aria-labelledby="bagTitle">
+    <button class="close" id="bagClose" aria-label="Fermer">×</button>
+    <h2 id="bagTitle">Mon sac</h2>
+    <p id="bagSummary"></p>
+    <h3>Géodes <small>Casse-les pour voir leur cristal</small></h3>
+    <div class="geode-row">
+      <span id="geodeIcon"></span>
+      <div class="txt"><b id="geodeCount">0</b> à casser</div>
+      <button class="btn" id="crackBtn">Casser</button>
+    </div>
+    <div id="reveal"></div>
+    <h3>Cristaux <small id="openProgress"></small></h3>
+    <div class="items" id="openItems"></div>
+    <h3>Minerais</h3>
+    <div class="items" id="oreItems"></div>
+    <h3>Gemmes</h3>
+    <div class="items" id="gemItems"></div>
+    <h3>Artefacts <small id="artProgress"></small></h3>
+    <div id="artSets"></div>
+    <h3>Comment jouer</h3>
+    <div class="help" id="help"></div>
+    <div style="margin-top:18px; display:flex; justify-content:flex-end">
+      <button class="btn ghosty" id="resetBtn">Recommencer la partie</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="shopModal" hidden>
+  <div class="card" role="dialog" aria-labelledby="shopTitle">
+    <button class="close" id="shopClose" aria-label="Fermer">×</button>
+    <h2 id="shopTitle">Boutique</h2>
+    <p>Tout se paie avec les minerais que tu extrais.</p>
+    <div class="wallet" id="wallet"></div>
+    <h3>Améliorations <small>Permanentes</small></h3>
+    <div class="shop-list" id="upList"></div>
+    <h3>Consommables</h3>
+    <div class="shop-list" id="conList"></div>
+  </div>
+</div>
+
+<div class="modal" id="winModal" hidden>
+  <div class="card" role="dialog" aria-labelledby="winTitle" style="text-align:center">
+    <div class="stars" id="stars"></div>
+    <h2 id="winTitle">Galerie nettoyée !</h2>
+    <p id="winText"></p>
+    <div class="win-items" id="winItems"></div>
+    <button class="btn big" id="nextBtn">Creuser plus profond</button>
+  </div>
+</div>
+
+<script>
+(() => {
+const COLS = 7, ROWS = 10, N = COLS * ROWS, KEY = 'mine-tresors-v2';
+const MAX_E = 60, REGEN_MS = 4000, BUCKET_MS = 5000;
+const HP = { stone: 3, ore: 3, cool: 5 };
+const ORE_YIELD = { iron: [1, 3], copper: [1, 2], gold: [1, 1] };
+const SPLASH = [0, .12, .22, .33];
+const BUCKET_CD = [5000, 4000, 3000, 2000];
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const ORES = {
+  iron:   { name: 'Fer',    o1: '#efe6da', o2: '#c06a3c', w: 55, txt: '#f4ebe0', rar: 'Commun' },
+  copper: { name: 'Cuivre', o1: '#ff9a52', o2: '#3fc2a8', w: 32, txt: '#ffad73', rar: 'Peu commun' },
+  gold:   { name: 'Or',     o1: '#ffd93d', o2: '#fff7b0', w: 13, txt: '#ffe14d', rar: 'Rare' },
+};
+const TR = 'Assets/Treasures/', TL = 'Assets/Tools/';
+const img = (src, alt = '') => `<img src="${src}" alt="${alt}" draggable="false">`;
+const GEMS = {
+  emerald:    { art: 'une', name: 'Émeraude',         file: 'Gem_Green_3',  sz: [2, 2], w: 24 },
+  peridot:    { art: 'un',  name: 'Péridot',          file: 'Gem_Green_4',  sz: [1, 2], w: 20 },
+  sapphire:   { art: 'un',  name: 'Saphir',           file: 'Gem_Blue_3',   sz: [2, 2], w: 18 },
+  aquamarine: { art: 'une', name: 'Aigue-marine',     file: 'Gem_Blue_4',   sz: [1, 2], w: 15 },
+  amethyst:   { art: 'une', name: 'Améthyste',        file: 'Gem_Purple_2', sz: [2, 2], w: 12 },
+  tourmaline: { art: 'une', name: 'Tourmaline rose',  file: 'Gem_Purple_4', sz: [2, 2], w: 8 },
+  topaz:      { art: 'une', name: 'Topaze impériale', file: 'Gem_Yellow_1', sz: [2, 2], w: 3 },
+};
+// Gems found inside geodes lean towards the rarer ones
+const GEODE_GEMS = { emerald: 14, peridot: 12, sapphire: 16, aquamarine: 16, amethyst: 18, tourmaline: 14, topaz: 10 };
+// Closed geodes found in the mine; each one opens into the crystal of its colour (the rainbow one is a surprise)
+const GEODES = {
+  g01: { name: 'Géode turquoise',   opens: 'o13', sz: [2, 2], w: 10 },
+  g06: { name: 'Géode azur',        opens: 'o13', sz: [2, 2], w: 10 },
+  g10: { name: 'Géode jade',        opens: 'o13', sz: [2, 2], w: 8 },
+  g02: { name: 'Géode violette',    opens: 'o15', sz: [2, 2], w: 10 },
+  g09: { name: 'Géode rose',        opens: 'o15', sz: [2, 2], w: 10 },
+  g03: { name: 'Géode blanche',     opens: 'o11', sz: [2, 2], w: 10 },
+  g07: { name: 'Géode bleue',       opens: 'o11', sz: [2, 2], w: 10 },
+  g04: { name: 'Géode orangée',     opens: 'o14', sz: [2, 2], w: 9 },
+  g08: { name: 'Géode sablée',      opens: 'o12', sz: [2, 2], w: 9 },
+  g05: { name: 'Géode arc-en-ciel', opens: null,  sz: [3, 3], w: 3 },
+};
+const OPEN = {
+  o11: { name: 'Agate bleue',       file: 'Geode_11' },
+  o12: { name: 'Citrine',           file: 'Geode_12' },
+  o13: { name: 'Cristal turquoise', file: 'Geode_13' },
+  o14: { name: 'Cristal de feu',    file: 'Geode_14' },
+  o15: { name: 'Quartz rose',       file: 'Geode_15' },
+};
+const gemArt = k => img(TR + GEMS[k].file + '.png', GEMS[k].name);
+const geodeArt = k => img(TR + 'Geode_' + k.slice(1) + '.png', GEODES[k].name);
+const openArt = k => img(TR + OPEN[k].file + '.png', OPEN[k].name);
+// Artefacts belong to collections; finishing a collection pays out bombs
+const SETS = {
+  astro:  { name: 'Cartes célestes' },
+  tablet: { name: 'Tablette ancienne' },
+  sea:    { name: 'Trésors des abysses' },
+  relic:  { name: 'Reliques ornées' },
+};
+const SET_BONUS = 2;
+const ARTS = {
+  astro1:  { set: 'astro',  name: 'Plaque du Lion',          file: 'Artefact_Astro_01',  w: 2, h: 2, wt: 9 },
+  astro2:  { set: 'astro',  name: 'Plaque de la Grande Ourse', file: 'Artefact_Astro_02', w: 3, h: 2, wt: 8 },
+  astro3:  { set: 'astro',  name: 'Plaque de Cassiopée',     file: 'Artefact_Astro_03',  w: 2, h: 2, wt: 9 },
+  astro4:  { set: 'astro',  name: 'Plaque du Cygne',         file: 'Artefact_Astro_04',  w: 2, h: 2, wt: 9 },
+  tablet1: { set: 'tablet', name: 'Fragment de tablette I',  file: 'Artefact_Tablet_01', w: 2, h: 3, wt: 7 },
+  tablet2: { set: 'tablet', name: 'Fragment de tablette II', file: 'Artefact_Tablet_02', w: 3, h: 3, wt: 6 },
+  tablet3: { set: 'tablet', name: 'Fragment de tablette III', file: 'Artefact_Tablet_03', w: 3, h: 3, wt: 6 },
+  sea1:    { set: 'sea',    name: 'Ancre engloutie',         file: 'Artefact_Sea-01',    w: 3, h: 3, wt: 5 },
+  sea2:    { set: 'sea',    name: 'Statue de sirène',        file: 'Artefact_Sea-02',    w: 3, h: 3, wt: 5 },
+  sea3:    { set: 'sea',    name: 'Sabre de corsaire',       file: 'Artefact_Sea-03',    w: 2, h: 3, wt: 5 },
+  relic1:  { set: 'relic',  name: 'Masque orné',             file: 'Artefact_01',        w: 3, h: 3, wt: 3 },
+  relic2:  { set: 'relic',  name: 'Cor de cristal',          file: 'Artefact_02',        w: 2, h: 2, wt: 3 },
+  relic3:  { set: 'relic',  name: 'Broche florale',          file: 'Artefact_03',        w: 2, h: 2, wt: 3 },
+};
+const artArt = k => img(TR + ARTS[k].file + '.png', ARTS[k].name);
+const BOLT = '<img src="Assets/Energy_Yellow.png" alt="énergie" draggable="false">';
+const RADAR = '<img src="Assets/Tools/Radar.png" alt="radar" draggable="false">';
+const TOOLS = {
+  shovel: img(TL + 'Shovel.png'),
+  pickaxe: img(TL + 'Icn_Pickaxe.png'),
+  bucket: img(TL + 'watering%20can.png'),
+  bomb: img(TL + 'Bomb.png'),
+};
+const SOUND_ON = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12 H10 L17 6 V26 L10 20 H5Z" fill="#7d3c98" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><path d="M21 11 C24 14 24 18 21 21 M24 8 C29 13 29 19 24 24" stroke="#3b2245" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>';
+const SOUND_OFF = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12 H10 L17 6 V26 L10 20 H5Z" fill="#b9a2b4" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><path d="M21 12 L28 20 M28 12 L21 20" stroke="#d9432a" stroke-width="2.6" stroke-linecap="round"/></svg>';
+
+const oreArt = k => img('Assets/Ground/Ground_Stone_' + { iron: 'Iron', copper: 'Cooper', gold: 'Gold' }[k] + '.png', ORES[k].name);
+const STAR = '<svg viewBox="0 0 100 100"><path d="M50 6 L62 36 L94 38 L69 58 L78 90 L50 72 L22 90 L31 58 L6 38 L38 36Z" fill="#ffc23d" stroke="#b5760a" stroke-width="5" stroke-linejoin="round"/><path d="M40 40 L46 26" stroke="#fff3c4" stroke-width="5" stroke-linecap="round"/></svg>';
+
+function rwSVG(rw) { return rw.kind === 'gem' ? gemArt(rw.key) : rw.kind === 'geode' ? geodeArt(rw.key) : artArt(rw.key); }
+function rwName(rw) { return rw.kind === 'gem' ? GEMS[rw.key].name : rw.kind === 'geode' ? GEODES[rw.key].name : ARTS[rw.key].name; }
+function rwLabel(rw) { return rw.kind === 'gem' ? 'Gemme' : rw.kind === 'geode' ? 'Géode' : 'Artefact'; }
+
+/* ---------- State ---------- */
+const maxE = () => MAX_E + 10 * S.up.energy;
+const pickPower = () => 1 + S.up.pick;
+const bucketCd = () => BUCKET_CD[S.up.fast];
+const maxCharges = () => 1 + S.up.charges;
+
+function freshState() {
+  return {
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: 3, radars: 1, potions: 1, bucketCharges: 1, up: { energy: 0, pick: 0, splash: 0, fast: 0, charges: 0 }, sound: true, newCount: 0, introDone: false,
+    bag: {
+      ores: { iron: 0, copper: 0, gold: 0 },
+      gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
+      geodes: [],
+      opened: Object.fromEntries(Object.keys(OPEN).map(k => [k, 0])),
+      arts: Object.fromEntries(Object.keys(ARTS).map(k => [k, 0])),
+    },
+    grid: null, rewards: null,
+  };
+}
+let S = freshState();
+
+const rand = (a, b) => a + Math.random() * (b - a);
+const randInt = (a, b) => Math.floor(rand(a, b + 1));
+function pick(weights) {
+  const e = Object.entries(weights); let t = e.reduce((s, [, w]) => s + w, 0) * Math.random();
+  for (const [k, w] of e) { if ((t -= w) <= 0) return k; }
+  return e[0][0];
+}
+
+function genLevel(level) {
+  const g = Array.from({ length: N }, () => ({ t: 'dirt', v: randInt(0, 2) }));
+  const blob = (n, rmin, rmax, fn) => {
+    for (let k = 0; k < n; k++) {
+      const cx = rand(-.5, COLS - .5), cy = rand(.5, ROWS - .5), rad = rand(rmin, rmax);
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++)
+        if (Math.hypot(c - cx, r - cy) < rad + Math.random() * .6) fn(r * COLS + c);
+    }
+  };
+  blob(3 + Math.min(level, 6), 1.1, 2.2 + Math.min(level, 5) * .08, i => g[i].t = 'stone');
+  blob(level < 2 ? 1 : Math.min(1 + Math.floor(level / 2), 4), .7, 1.5, i => g[i].t = 'magma');
+  for (const c of g) {
+    if (c.t === 'stone' && Math.random() < .26) { c.t = 'ore'; c.ore = pick(Object.fromEntries(Object.entries(ORES).map(([k, o]) => [k, o.w]))); }
+    if (HP[c.t]) c.hp = c.max = HP[c.t];
+  }
+  const count = Math.min(6, 4 + Math.floor((level - 1) / 3));
+  const kinds = ['art', 'geode'];
+  if (level >= 2) kinds.push('art');
+  if (level >= 4) kinds.push('geode');
+  while (kinds.length < count) kinds.push('gem');
+  const picks = kinds.map(kind => {
+    if (kind === 'gem') { const key = pick(Object.fromEntries(Object.entries(GEMS).map(([k, o]) => [k, o.w]))); return { kind, key, w: GEMS[key].sz[0], h: GEMS[key].sz[1] }; }
+    if (kind === 'geode') { const key = pick(Object.fromEntries(Object.entries(GEODES).map(([k, o]) => [k, o.w]))); return { kind, key, w: GEODES[key].sz[0], h: GEODES[key].sz[1] }; }
+    const key = pick(Object.fromEntries(Object.entries(ARTS).map(([k, o]) => [k, o.wt]))); return { kind, key, w: ARTS[key].w, h: ARTS[key].h };
+  }).sort((a, b) => b.w * b.h - a.w * a.h);
+  const occ = new Array(N).fill(false), rewards = [];
+  for (const p of picks) {
+    for (let tries = 0; tries < 300; tries++) {
+      const r = randInt(0, ROWS - p.h), c = randInt(0, COLS - p.w);
+      const cells = [];
+      for (let y = 0; y < p.h; y++) for (let x = 0; x < p.w; x++) cells.push((r + y) * COLS + c + x);
+      if (cells.some(i => occ[i])) continue;
+      cells.forEach(i => occ[i] = true);
+      rewards.push({ ...p, r, c, found: false });
+      break;
+    }
+  }
+  S.grid = g; S.rewards = rewards;
+}
+
+/* ---------- DOM ---------- */
+const $ = id => document.getElementById(id);
+const board = $('board'), tilesEl = $('tiles'), underEl = $('under'), fx = $('fx'), slotsEl = $('slots');
+let tileEls = [], rwEls = [], slotEls = [];
+
+function tileClass(c, i) {
+  let cls = 'tile t-' + c.t;
+  if (c.t === 'dirt') { const v = c.v ?? i % 3; if (v) cls += ' v' + v; }
+  if (c.t === 'stone') cls += ' s' + Math.min(3, c.max - c.hp + 1);
+  if (c.t === 'ore') cls += ' o-' + c.ore;
+  return cls;
+}
+function paintTile(i) {
+  const el = tileEls[i], c = S.grid[i];
+  el.className = tileClass(c, i);
+  if (c.max && c.hp < c.max && c.t !== 'stone') el.dataset.crack = Math.min(3, Math.ceil((c.max - c.hp) / c.max * 3));
+  else delete el.dataset.crack;
+}
+function buildBoard(animate) {
+  tilesEl.textContent = ''; underEl.textContent = ''; slotsEl.textContent = '';
+  tileEls = S.grid.map((c, i) => { const d = document.createElement('div'); d.style.zIndex = (i / COLS | 0) + 1; tilesEl.append(d); return d; });
+  tileEls.forEach((_, i) => paintTile(i));
+  rwEls = S.rewards.map(rw => {
+    const d = document.createElement('div'); d.className = 'rw';
+    Object.assign(d.style, { left: `calc(var(--tile) * ${rw.c})`, top: `calc(var(--tile) * ${rw.r})`, width: `calc(var(--tile) * ${rw.w})`, height: `calc(var(--tile) * ${rw.h})` });
+    d.innerHTML = rwSVG(rw);
+    if (rw.found) d.style.opacity = 0;
+    underEl.append(d); return d;
+  });
+  slotEls = S.rewards.map(rw => {
+    const d = document.createElement('div'); d.className = 'slot' + (rw.found ? ' found' : '');
+    d.title = rw.found ? rwName(rw) : rwLabel(rw) + ' cachée';
+    d.innerHTML = rwSVG(rw); slotsEl.append(d); return d;
+  });
+  $('depth').textContent = S.level * 10 + ' m';
+  paintRadar();
+  updateGoals();
+  if (animate && !reduced) { board.classList.remove('enter'); void board.offsetWidth; board.classList.add('enter'); }
+}
+function updateGoals() {
+  const f = S.rewards.filter(r => r.found).length;
+  $('goalCount').textContent = `${f} / ${S.rewards.length} trouvés`;
+}
+
+/* ---------- Tools UI ---------- */
+document.querySelectorAll('.tool').forEach(b => {
+  b.querySelector('.ic').innerHTML = TOOLS[b.dataset.tool];
+  b.addEventListener('click', () => setTool(b.dataset.tool, true));
+});
+$('pickSub').innerHTML = '-1 ' + BOLT + ' / coup';
+$('shopIcon').innerHTML = oreArt('gold'); $('radarIcon').innerHTML = RADAR; $('potionIcon').innerHTML = BOLT;
+function setTool(t, user) {
+  S.tool = t;
+  document.querySelectorAll('.tool').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
+  $('ghostG').innerHTML = TOOLS[t];
+  if (user) { unlockAudio(); sfx('pick'); }
+  save();
+}
+addEventListener('keydown', e => {
+  if (!$('bagModal').hidden || !$('winModal').hidden || !$('shopModal').hidden) { if (e.key === 'Escape') { closeBag(); $('shopModal').hidden = true; } return; }
+  const m = { '1': 'shovel', '2': 'pickaxe', '3': 'bucket', '4': 'bomb' }[e.key];
+  if (m) setTool(m, true);
+});
+
+/* ---------- Toast & FX ---------- */
+let toastT;
+function toast(msg, kind = '') {
+  const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + kind;
+  clearTimeout(toastT); toastT = setTimeout(() => t.className = 'toast', 2000);
+}
+function ts() { return board.clientWidth / COLS; }
+function center(i) { const s = ts(); return { x: (i % COLS + .5) * s, y: ((i / COLS | 0) + .5) * s }; }
+function burst(x, y, colors, n, { spread = 34, up = 0, size = [4, 9], dur = 600 } = {}) {
+  if (reduced) n = Math.ceil(n / 3);
+  if (fx.childElementCount > 160) return;
+  for (let k = 0; k < n; k++) {
+    const s = rand(size[0], size[1]), a = Math.random() * Math.PI * 2, v = spread * rand(.4, 1.2);
+    const dx = Math.cos(a) * v, dy = Math.sin(a) * v - up;
+    const d = document.createElement('i'); d.className = 'pt';
+    Object.assign(d.style, { left: x + 'px', top: y + 'px', width: s + 'px', height: s + 'px', background: colors[k % colors.length] });
+    fx.append(d);
+    d.animate([
+      { transform: 'translate(-50%,-50%)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${a * 90}deg)`, opacity: 1, offset: .45 },
+      { transform: `translate(calc(-50% + ${dx * 1.25}px), calc(-50% + ${dy + 34}px)) rotate(${a * 160}deg)`, opacity: 0 },
+    ], { duration: dur * rand(.7, 1.3), easing: 'cubic-bezier(.2,.8,.4,1)' }).onfinish = () => d.remove();
+  }
+}
+function steam(x, y) {
+  const n = reduced ? 3 : 9;
+  for (let k = 0; k < n; k++) {
+    const d = document.createElement('i'); d.className = 'puff';
+    const s = rand(10, 20);
+    Object.assign(d.style, { left: x + rand(-14, 14) + 'px', top: y + rand(-6, 10) + 'px', width: s + 'px', height: s + 'px' });
+    fx.append(d);
+    d.animate([
+      { transform: 'translate(-50%,-50%) scale(.4)', opacity: .9 },
+      { transform: `translate(calc(-50% + ${rand(-16, 16)}px), calc(-50% - ${rand(40, 70)}px)) scale(1.8)`, opacity: 0 },
+    ], { duration: rand(700, 1200), delay: k * 40, easing: 'ease-out', fill: 'backwards' }).onfinish = () => d.remove();
+  }
+}
+function floatText(i, txt, color) {
+  const { x, y } = center(i);
+  const d = document.createElement('div'); d.className = 'float'; d.textContent = txt; d.style.color = color;
+  Object.assign(d.style, { left: x + 'px', top: y + 'px' });
+  fx.append(d);
+  d.animate([
+    { transform: 'translate(-50%,-50%) scale(.5)', opacity: 0 },
+    { transform: 'translate(-50%,-95%) scale(1.15)', opacity: 1, offset: .25 },
+    { transform: 'translate(-50%,-190%) scale(1)', opacity: 0 },
+  ], { duration: 1100, easing: 'ease-out' }).onfinish = () => d.remove();
+}
+function shake(i) {
+  tileEls[i].animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(-2px)' }, { transform: 'translateX(0)' }], { duration: 260 });
+}
+function wobble(i) {
+  tileEls[i].animate([{ transform: 'scale(1)' }, { transform: 'scale(.88) rotate(-3deg)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }], { duration: 200 });
+}
+
+/* ---------- Sound (synthesized) ---------- */
+let ac = null, noiseBuf = null, lastDirt = 0;
+function unlockAudio() {
+  if (!S.sound || ac) return;
+  try {
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    noiseBuf = ac.createBuffer(1, ac.sampleRate * .8, ac.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  } catch (e) { ac = null; }
+}
+function tone(f, dur, type = 'sine', vol = .12, when = 0, slide) {
+  const t = ac.currentTime + when, o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t); if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur + .02);
+}
+function noise(dur, freq, q = 1, vol = .2, type = 'bandpass') {
+  const t = ac.currentTime, s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+  s.buffer = noiseBuf; f.type = type; f.frequency.value = freq; f.Q.value = q;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  s.connect(f); f.connect(g); g.connect(ac.destination); s.start(t, Math.random() * .3); s.stop(t + dur);
+}
+function sfx(k) {
+  if (!S.sound || !ac) return;
+  try {
+    if (ac.state === 'suspended') ac.resume();
+    switch (k) {
+      case 'dirt': { const n = performance.now(); if (n - lastDirt < 50) return; lastDirt = n; noise(.09, rand(450, 800), 1.2, .28); break; }
+      case 'hit': tone(240, .07, 'square', .05); noise(.07, 2400, 3, .22); break;
+      case 'break': noise(.25, 650, .7, .4); tone(150, .2, 'triangle', .16, 0, 60); break;
+      case 'ore': [988, 1319, 1568].forEach((f, i) => tone(f, .2, 'sine', .1, i * .06)); break;
+      case 'steam': noise(.7, 3500, .4, .2, 'highpass'); tone(420, .2, 'sine', .05, 0, 900); break;
+      case 'deny': tone(140, .14, 'sawtooth', .05, 0, 95); break;
+      case 'reward': [523, 659, 784, 1047].forEach((f, i) => tone(f, .26, 'triangle', .12, i * .08)); break;
+      case 'win': [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone(f, .3, 'triangle', .12, i * .1)); break;
+      case 'boom': noise(.6, 220, .5, .7, 'lowpass'); tone(110, .45, 'sine', .35, 0, 35); break;
+      case 'pick': tone(700, .05, 'sine', .07); break;
+    }
+  } catch (e) {}
+}
+function paintSound() { $('soundBtn').innerHTML = S.sound ? SOUND_ON : SOUND_OFF; $('soundBtn').setAttribute('aria-label', S.sound ? 'Couper le son' : 'Activer le son'); }
+$('soundBtn').addEventListener('click', () => { S.sound = !S.sound; paintSound(); unlockAudio(); sfx('pick'); save(); });
+
+/* ---------- Ghost tool cursor ---------- */
+const ghost = $('ghost'), ghostG = $('ghostG');
+let ghostHideT;
+function placeGhost(e) { ghost.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`; }
+function swing() {
+  if (reduced) return;
+  const anim = S.tool === 'bucket'
+    ? [{ transform: 'rotate(0)' }, { transform: 'rotate(-50deg)' }, { transform: 'rotate(0)' }]
+    : [{ transform: 'rotate(0)' }, { transform: 'rotate(30deg)' }, { transform: 'rotate(-30deg)' }, { transform: 'rotate(0)' }];
+  ghostG.animate(anim, { duration: 240, easing: 'ease-out' });
+}
+board.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { placeGhost(e); ghost.hidden = false; } });
+board.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') ghost.hidden = true; });
+
+/* ---------- Digging ---------- */
+let down = false, last = null;
+function local(e) { const r = board.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+function cellAt(p) {
+  const s = ts(), c = Math.floor(p.x / s), r = Math.floor(p.y / s);
+  return c < 0 || r < 0 || c >= COLS || r >= ROWS ? -1 : r * COLS + c;
+}
+board.addEventListener('pointerdown', e => {
+  if (e.button > 0) return;
+  e.preventDefault(); unlockAudio();
+  try { board.setPointerCapture(e.pointerId); } catch (_) {}
+  down = true; last = local(e);
+  placeGhost(e);
+  if (e.pointerType !== 'mouse') { ghost.hidden = false; clearTimeout(ghostHideT); ghostHideT = setTimeout(() => { if (!down) ghost.hidden = true; }, 500); }
+  act(last, true);
+});
+board.addEventListener('pointermove', e => {
+  if (e.pointerType === 'mouse' || down) placeGhost(e);
+  if (!down) return;
+  const p = local(e);
+  if (S.tool === 'shovel') {
+    const dx = p.x - last.x, dy = p.y - last.y, n = Math.max(1, Math.ceil(Math.hypot(dx, dy) / (ts() / 4)));
+    for (let k = 1; k <= n; k++) act({ x: last.x + dx * k / n, y: last.y + dy * k / n }, false);
+  }
+  last = p;
+});
+const stop = e => {
+  down = false;
+  if (e.pointerType !== 'mouse') { clearTimeout(ghostHideT); ghostHideT = setTimeout(() => ghost.hidden = true, 300); }
+};
+board.addEventListener('pointerup', stop);
+board.addEventListener('pointercancel', stop);
+
+function deny(i, msg, kind = 'warn') { shake(i); sfx('deny'); toast(msg, kind); }
+
+function act(p, isTap) {
+  const i = cellAt(p); if (i < 0) return;
+  const c = S.grid[i]; if (c.t === 'empty') return;
+  const { x, y } = center(i);
+  if (S.tool === 'shovel') {
+    if (c.t === 'dirt') {
+      clearCell(i); sfx('dirt');
+      burst(x, y, ['#c0713f', '#9a5228', '#6e3519', '#d98a52'], 7, { spread: 26 });
+    } else if (isTap) {
+      if (c.t === 'magma') deny(i, 'Attention, c\'est brûlant ! Refroidis le magma avec l\'arrosoir.');
+      else deny(i, 'La pelle ne passe pas la roche. Prends la pioche.', '');
+    }
+    return;
+  }
+  if (!isTap) return;
+  if (S.tool === 'pickaxe') {
+    swing();
+    if (c.t === 'dirt') return deny(i, 'La terre part à la pelle, et c\'est gratuit !', '');
+    if (c.t === 'magma') { burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, 'Trop chaud ! Arrose le magma pour le refroidir d\'abord.'); }
+    if (S.energy <= 0) return deny(i, `Plus d'énergie ! +1 dans ${Math.ceil((S.nextRegen - Date.now()) / 1000)} s, ou utilise une recharge.`);
+    if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS;
+    S.energy--; updateEnergy(true);
+    c.hp -= pickPower();
+    const chips = c.t === 'cool' ? ['#7a2a32', '#3a1a20', '#ff9a3d'] : c.t === 'ore' ? ['#8e9ac0', ORES[c.ore].o1, '#5a6488'] : ['#8e9ac0', '#6b7699', '#4d5577'];
+    if (c.hp <= 0) {
+      const ore = c.t === 'ore' ? c.ore : null;
+      clearCell(i); sfx('break');
+      burst(x, y, chips, 14, { spread: 42, size: [5, 11], dur: 700 });
+      if (ore) {
+        gainOre(i, ore);
+        setTimeout(() => sfx('ore'), 90);
+        burst(x, y, [ORES[ore].o1, ORES[ore].o2, '#fff'], 10, { spread: 30, up: 20, size: [3, 6] });
+      }
+    } else {
+      sfx('hit'); paintTile(i); wobble(i);
+      burst(x, y, chips, 6, { spread: 22, size: [3, 7] });
+    }
+    if (Math.random() < SPLASH[S.up.splash]) setTimeout(() => splashFrom(i), 140);
+    save();
+    return;
+  }
+  if (S.tool === 'bomb') {
+    if (S.bombs <= 0) return deny(i, 'Plus de bombes ! Achètes-en à la boutique ou nettoie une galerie.', '');
+    S.bombs--; updateBombs(); explode(i);
+    return;
+  }
+  if (S.tool === 'bucket') {
+    swing();
+    if (c.t === 'cool') return deny(i, 'Déjà refroidi : casse-le à la pioche.', '');
+    if (c.t !== 'magma') return deny(i, 'L\'arrosoir sert à refroidir le magma.', '');
+    if (S.bucketCharges <= 0) return deny(i, `L'arrosoir se remplit… encore ${Math.ceil((S.bucketReady - Date.now()) / 1000)} s`, '');
+    c.t = 'cool'; c.hp = c.max = HP.cool; paintTile(i);
+    S.bucketCharges--; S.bucketReady = Date.now() + bucketCd();
+    sfx('steam'); steam(x, y);
+    burst(x, y - 10, ['#3db5ff', '#a6e6ff', '#ffffff'], 10, { spread: 30, size: [3, 7] });
+    tileEls[i].animate([{ filter: 'brightness(2.2)' }, { filter: 'brightness(1)' }], { duration: 500 });
+    save();
+  }
+}
+
+function gainOre(i, ore) {
+  const n = randInt(...ORE_YIELD[ore]);
+  S.bag.ores[ore] += n; S.newCount++; updateBadge();
+  floatText(i, `+${n} ${ORES[ore].name}`, ORES[ore].txt);
+}
+// "Coup en éclats" upgrade: a random neighbouring rock shatters too
+function splashFrom(i) {
+  const r0 = i / COLS | 0, c0 = i % COLS;
+  const near = [[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dr, dc]) => [r0 + dr, c0 + dc])
+    .filter(([r, c]) => r >= 0 && c >= 0 && r < ROWS && c < COLS).map(([r, c]) => r * COLS + c)
+    .filter(j => ['stone', 'ore', 'cool'].includes(S.grid[j].t));
+  if (!near.length) return;
+  const j = near[randInt(0, near.length - 1)], ore = S.grid[j].t === 'ore' ? S.grid[j].ore : null, { x, y } = center(j);
+  clearCell(j); sfx('break');
+  burst(x, y, ['#8e9ac0', '#6b7699', '#fff36b'], 14, { spread: 40, size: [4, 10], dur: 650 });
+  if (ore) gainOre(j, ore); else floatText(j, 'Éclat !', '#fff36b');
+  save();
+}
+
+function explode(i) {
+  const r0 = i / COLS | 0, c0 = i % COLS, { x, y } = center(i);
+  sfx('boom');
+  burst(x, y, ['#ffe066', '#ff9a2a', '#ff4a2a', '#3a2a3a'], 28, { spread: ts() * 1.4, size: [6, 14], dur: 800 });
+  steam(x, y);
+  if (!reduced) board.animate([{ transform: 'translate(0,0)' }, { transform: 'translate(-6px,4px)' }, { transform: 'translate(5px,-4px)' }, { transform: 'translate(-3px,2px)' }, { transform: 'translate(0,0)' }], { duration: 380 });
+  let hotLeft = false;
+  for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+    const r = r0 + dr, c = c0 + dc;
+    if (r < 0 || c < 0 || r >= ROWS || c >= COLS) continue;
+    const j = r * COLS + c, cell = S.grid[j];
+    if (cell.t === 'empty') continue;
+    if (cell.t === 'magma') { hotLeft = true; continue; }
+    const ore = cell.t === 'ore' ? cell.ore : null;
+    clearCell(j);
+    if (ore) gainOre(j, ore);
+  }
+  updateBadge();
+  if (hotLeft) setTimeout(() => toast('La bombe ne vient pas à bout du magma chaud : arrose-le d\'abord.', ''), 300);
+  save();
+}
+function updateBombs() {
+  $('bombSub').textContent = !S.bombs ? 'Aucune' : S.bombs + (S.bombs > 1 ? ' restantes' : ' restante');
+  $('tool-bomb').classList.toggle('charging', !S.bombs);
+}
+
+function clearCell(i) {
+  S.grid[i] = { t: 'empty' }; paintTile(i);
+  checkRewards(); save();
+}
+
+/* ---------- Rewards ---------- */
+function rwCells(rw) { const a = []; for (let y = 0; y < rw.h; y++) for (let x = 0; x < rw.w; x++) a.push((rw.r + y) * COLS + rw.c + x); return a; }
+function checkRewards() {
+  S.rewards.forEach((rw, ri) => {
+    if (rw.found || rwCells(rw).some(i => S.grid[i].t !== 'empty')) return;
+    rw.found = true; collect(rw, ri); paintRadar();
+  });
+}
+function collect(rw, ri) {
+  if (rw.kind === 'gem') S.bag.gems[rw.key]++;
+  else if (rw.kind === 'geode') S.bag.geodes.push(rw.key);
+  else {
+    const k = rw.key, set = ARTS[k].set;
+    if (!S.bag.arts[k]++ && Object.keys(ARTS).every(a => ARTS[a].set !== set || S.bag.arts[a])) {
+      S.bombs += SET_BONUS; updateBombs();
+      setTimeout(() => { sfx('win'); toast(`Collection complète : ${SETS[set].name} ! +${SET_BONUS} bombes`, 'good'); }, 1500);
+    }
+  }
+  S.newCount++;
+  sfx('reward');
+  const el = rwEls[ri]; el.classList.add('done');
+  const { x, y } = { x: (rw.c + rw.w / 2) * ts(), y: (rw.r + rw.h / 2) * ts() };
+  burst(x, y, ['#fff6a8', '#ffc23d', '#ffffff'], 16, { spread: 46, up: 10, size: [3, 7], dur: 800 });
+  toast(`${rwLabel(rw)} ${rw.kind === 'art' ? 'trouvé' : 'trouvée'} : ${rwName(rw)} !`, 'good');
+  updateGoals(); save();
+  setTimeout(() => fly(el, slotEls[ri], () => {
+    const s = slotEls[ri]; s.classList.add('found'); s.title = rwName(rw);
+    s.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 300 });
+    updateBadge();
+    if (S.rewards.every(r => r.found)) setTimeout(showWin, 450);
+  }), 650);
+}
+function fly(el, target, done) {
+  const a = el.getBoundingClientRect(), b = target.getBoundingClientRect();
+  const f = document.createElement('div'); f.className = 'flyer'; f.innerHTML = el.innerHTML;
+  Object.assign(f.style, { left: a.left + 'px', top: a.top + 'px', width: a.width + 'px', height: a.height + 'px' });
+  document.body.append(f); el.style.opacity = 0;
+  const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+  const s = Math.min(b.width / a.width, b.height / a.height);
+  if (reduced) { f.remove(); done(); return; }
+  f.animate([
+    { transform: 'translate(0,0) scale(1)' },
+    { transform: `translate(${dx * .4}px, ${dy * .4 - 50}px) scale(${1.15})`, offset: .4 },
+    { transform: `translate(${dx}px, ${dy}px) scale(${s})` },
+  ], { duration: 720, easing: 'cubic-bezier(.5,0,.4,1)' }).onfinish = () => { f.remove(); done(); };
+}
+
+/* ---------- Energy & bucket ---------- */
+let lastE = '', lastR = '', lastB = '';
+function updateEnergy(force) {
+  const now = Date.now();
+  if (S.energy < maxE()) { while (now >= S.nextRegen && S.energy < maxE()) { S.energy++; S.nextRegen += REGEN_MS; } }
+  else S.nextRegen = now + REGEN_MS;
+  const e = `${S.energy} / ${maxE()}`;
+  if (e !== lastE || force) { lastE = e; $('energyTxt').textContent = e; $('energyFill').style.width = Math.min(100, S.energy / maxE() * 100) + '%'; }
+  const r = S.energy >= maxE() ? 'Énergie pleine' : `+1 dans ${Math.max(1, Math.ceil((S.nextRegen - now) / 1000))} s`;
+  if (r !== lastR) { lastR = r; $('regenTxt').textContent = r; }
+}
+function updateBucket() {
+  const now = Date.now(), btn = $('tool-bucket'), max = maxCharges();
+  // Refills completely once the cooldown since the last use has passed
+  if (S.bucketCharges < max && now >= S.bucketReady) S.bucketCharges = max;
+  const left = S.bucketReady - now, empty = S.bucketCharges <= 0;
+  btn.style.setProperty('--p', empty ? Math.min(1, Math.max(0, 1 - left / bucketCd())) : 1);
+  const t = empty ? `Remplissage ${Math.ceil(left / 1000)} s` : max > 1 ? `Prêt ×${S.bucketCharges}` : 'Prêt';
+  if (t !== lastB) { lastB = t; $('bucketSub').textContent = t; btn.classList.toggle('charging', empty); if (left <= 0 && lastB) {} }
+}
+function loop() { updateEnergy(); updateBucket(); requestAnimationFrame(loop); }
+
+/* ---------- Shop ---------- */
+const pct = v => Math.round(v * 100) + ' %';
+const UPGRADES = {
+  energy:  { name: 'Réserve d\'énergie', icon: () => BOLT, max: 5,
+             desc: l => l < 5 ? `Énergie max ${MAX_E + 10 * l} → ${MAX_E + 10 * (l + 1)}` : `Énergie max ${MAX_E + 50}`,
+             cost: [{ iron: 6 }, { iron: 10, copper: 2 }, { iron: 14, copper: 4 }, { iron: 18, copper: 6, gold: 1 }, { iron: 24, copper: 8, gold: 3 }] },
+  pick:    { name: 'Pioche renforcée', icon: () => TOOLS.pickaxe, max: 2,
+             desc: l => l < 2 ? `${l + 1} → ${l + 2} dégâts par coup` : '3 dégâts par coup : la pierre casse en un coup',
+             cost: [{ iron: 10, copper: 3 }, { iron: 20, copper: 8, gold: 3 }] },
+  splash:  { name: 'Coup en éclats', icon: () => img('Assets/Ground/Ground_Stone_03.png'), max: 3,
+             desc: l => l < 3 ? `Chance de casser aussi une roche voisine : ${pct(SPLASH[l])} → ${pct(SPLASH[l + 1])}` : `${pct(SPLASH[3])} de chance de casser une roche voisine`,
+             cost: [{ copper: 5 }, { copper: 9, gold: 1 }, { copper: 14, gold: 3 }] },
+  fast:    { name: 'Arrosoir rapide', icon: () => TOOLS.bucket, max: 3,
+             desc: l => l < 3 ? `Recharge ${BUCKET_CD[l] / 1000} s → ${BUCKET_CD[l + 1] / 1000} s` : `Recharge en ${BUCKET_CD[3] / 1000} s`,
+             cost: [{ iron: 5, copper: 2 }, { iron: 9, copper: 5 }, { iron: 14, copper: 8, gold: 2 }] },
+  charges: { name: 'Grand arrosoir', icon: () => TOOLS.bucket, badge: l => '×' + (l + 1), max: 3,
+             desc: l => l < 3 ? `${l + 1} → ${l + 2} arrosages avant de recharger` : '4 arrosages avant de recharger',
+             cost: [{ copper: 6 }, { copper: 10, gold: 2 }, { copper: 15, gold: 4 }] },
+};
+const CONSUMABLES = {
+  bomb:   { name: 'Bombe', icon: () => TOOLS.bomb, desc: 'Fait sauter les 9 cases autour de la cible.', cost: { copper: 3 },
+            have: () => S.bombs, give: () => { S.bombs++; updateBombs(); } },
+  radar:  { name: 'Radar', icon: () => RADAR, desc: 'Entoure l\'emplacement d\'un trésor caché.', cost: { iron: 3, copper: 2 },
+            have: () => S.radars, give: () => { S.radars++; } },
+  potion: { name: 'Recharge d\'énergie', icon: () => BOLT, desc: 'Remplit ton énergie au maximum.', cost: { iron: 6 },
+            have: () => S.potions, give: () => { S.potions++; } },
+};
+const canPay = cost => Object.entries(cost).every(([k, n]) => S.bag.ores[k] >= n);
+const pay = cost => Object.entries(cost).forEach(([k, n]) => S.bag.ores[k] -= n);
+const priceHTML = cost => '<div class="price">' + Object.entries(cost).map(([k, n]) =>
+  `<span class="${S.bag.ores[k] < n ? 'short' : ''}">${n}${oreArt(k)}</span>`).join('') + '</div>';
+function renderShop() {
+  $('wallet').innerHTML = Object.keys(ORES).map(k => `<span class="coin" title="${ORES[k].name}">${oreArt(k)}${S.bag.ores[k]}</span>`).join('');
+  $('upList').innerHTML = Object.entries(UPGRADES).map(([k, u]) => {
+    const l = S.up[k], done = l >= u.max, cost = u.cost[l];
+    return `<div class="srow"><div class="sic">${u.icon()}${u.badge ? '<i>' + u.badge(Math.min(l + 1, u.max)) + '</i>' : ''}</div>
+      <div class="stxt"><b>${u.name}</b><span>${u.desc(l)}</span><span class="pips">${'●'.repeat(l)}${'○'.repeat(u.max - l)}</span></div>
+      <div class="sbuy">${done ? '<span class="maxed">Max</span>' : priceHTML(cost) + `<button class="btn sm" data-up="${k}" ${canPay(cost) ? '' : 'disabled'}>Améliorer</button>`}</div></div>`;
+  }).join('');
+  $('conList').innerHTML = Object.entries(CONSUMABLES).map(([k, c]) =>
+    `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
+      <div class="stxt"><b>${c.name}</b><span>${c.desc}</span></div>
+      <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) ? '' : 'disabled'}>Acheter</button></div></div>`).join('');
+}
+function openShop() { renderShop(); $('shopModal').hidden = false; $('shopClose').focus(); }
+$('shopBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); openShop(); });
+$('shopClose').addEventListener('click', () => $('shopModal').hidden = true);
+$('shopModal').addEventListener('click', e => {
+  if (e.target.id === 'shopModal') { $('shopModal').hidden = true; return; }
+  const b = e.target.closest('button[data-up], button[data-con]'); if (!b || b.disabled) return;
+  if (b.dataset.up) {
+    const k = b.dataset.up, u = UPGRADES[k], cost = u.cost[S.up[k]];
+    if (!cost || !canPay(cost)) return;
+    pay(cost); S.up[k]++;
+    if (k === 'charges') S.bucketCharges = maxCharges();
+    toast(`${u.name} : niveau ${S.up[k]} !`, 'good');
+  } else {
+    const c = CONSUMABLES[b.dataset.con];
+    if (!canPay(c.cost)) return;
+    pay(c.cost); c.give();
+    toast(`+1 ${c.name}`, 'good');
+  }
+  sfx('reward'); updateEnergy(true); updateQuick(); renderShop(); save();
+});
+function updateQuick() {
+  $('radarN').textContent = S.radars; $('potionN').textContent = S.potions;
+  $('radarBtn').classList.toggle('empty', !S.radars); $('potionBtn').classList.toggle('empty', !S.potions);
+}
+function paintRadar() {
+  fx.querySelectorAll('.radar').forEach(e => e.remove());
+  S.rewards.forEach(rw => {
+    if (!rw.radar || rw.found) return;
+    const d = document.createElement('div'); d.className = 'radar';
+    Object.assign(d.style, { left: `calc(var(--tile) * ${rw.c})`, top: `calc(var(--tile) * ${rw.r})`, width: `calc(var(--tile) * ${rw.w})`, height: `calc(var(--tile) * ${rw.h})` });
+    fx.prepend(d);
+  });
+}
+$('radarBtn').addEventListener('click', () => {
+  unlockAudio();
+  if (!S.radars) return toast('Pas de radar. Tu peux en acheter à la boutique.', '');
+  const hidden = S.rewards.filter(r => !r.found && !r.radar);
+  if (!hidden.length) return toast('Tous les trésors restants sont déjà repérés.', '');
+  const rw = hidden[randInt(0, hidden.length - 1)]; rw.radar = true; S.radars--;
+  paintRadar(); updateQuick(); save();
+  [0, .15, .3].forEach(t => setTimeout(() => sfx('pick'), t * 1000));
+  toast(`Radar : ${rwLabel(rw).toLowerCase()} repéré${rw.kind === 'art' ? '' : 'e'} !`, 'good');
+});
+$('potionBtn').addEventListener('click', () => {
+  unlockAudio();
+  if (!S.potions) return toast('Pas de recharge. Tu peux en acheter à la boutique.', '');
+  if (S.energy >= maxE()) return toast('Ton énergie est déjà pleine.', '');
+  S.potions--; S.energy = maxE(); updateEnergy(true); updateQuick(); save();
+  sfx('reward'); toast('Énergie rechargée !', 'good');
+});
+
+/* ---------- Bag ---------- */
+function updateBadge() { const b = $('bagBadge'); b.hidden = !S.newCount; b.textContent = S.newCount > 99 ? '99+' : S.newCount; }
+function item(svg, name, n, locked, extra = '') {
+  return `<div class="item${locked ? ' locked' : ''}">${svg}<span class="n">${n}</span><span class="nm">${name}</span>${extra}</div>`;
+}
+function renderBag() {
+  const B = S.bag;
+  $('oreItems').innerHTML = Object.entries(ORES).map(([k, o]) => item(oreArt(k), o.name, B.ores[k], !B.ores[k], `<span class="tag">${o.rar}</span>`)).join('');
+  $('gemItems').innerHTML = Object.entries(GEMS).map(([k, o]) => item(gemArt(k), o.name, B.gems[k], !B.gems[k])).join('');
+  const openedN = Object.values(B.opened).filter(Boolean).length;
+  $('openProgress').textContent = `Collection ${openedN} / ${Object.keys(OPEN).length}`;
+  $('openItems').innerHTML = Object.entries(OPEN).map(([k, o]) => item(openArt(k), B.opened[k] ? o.name : '???', B.opened[k], !B.opened[k])).join('');
+  const owned = Object.values(B.arts).filter(Boolean).length;
+  $('artProgress').textContent = `${owned} / ${Object.keys(ARTS).length}`;
+  $('artSets').innerHTML = Object.entries(SETS).map(([sk, set]) => {
+    const keys = Object.keys(ARTS).filter(k => ARTS[k].set === sk), got = keys.filter(k => B.arts[k]).length;
+    return `<div class="set${got === keys.length ? ' complete' : ''}"><div class="set-head"><b>${set.name}</b><small>${got === keys.length ? 'Complète' : got + ' / ' + keys.length}</small></div><div class="items">${keys.map(k => item(artArt(k), B.arts[k] ? ARTS[k].name : '???', B.arts[k], !B.arts[k])).join('')}</div></div>`;
+  }).join('');
+  $('geodeIcon').innerHTML = B.geodes.length ? geodeArt(B.geodes[0]) : geodeArt('g01').replace('<img', '<img class="empty"');
+  $('geodeCount').textContent = B.geodes.length;
+  $('crackBtn').disabled = !B.geodes.length;
+  const gems = Object.values(B.gems).reduce((a, b) => a + b, 0), ores = Object.values(B.ores).reduce((a, b) => a + b, 0);
+  $('bagSummary').textContent = `Record : ${S.level * 10} m de profondeur · ${ores} minerai(s) · ${gems} gemme(s)`;
+}
+$('help').innerHTML = [
+  [TOOLS.shovel, '<b>Pelle</b> : maintiens et glisse sur la terre pour la retirer. Elle ne coûte rien.'],
+  [TOOLS.pickaxe, '<b>Pioche</b> : touche la pierre pour la casser. Chaque coup coûte 1 énergie : pierre 3 coups (elle se fissure à chaque coup), minerai 3, magma refroidi 5.'],
+  [TOOLS.bucket, '<b>Arrosoir</b> : refroidit le magma. Il lui faut 5 s pour se remplir entre deux usages.'],
+  [TOOLS.bomb, '<b>Bombe</b> : fait sauter les 9 cases autour de la cible, sauf le magma chaud. Tu en gagnes une par galerie nettoyée.'],
+  [artArt('astro1'), '<b>Artefacts</b> : ils forment des collections. Complète-en une pour gagner ' + SET_BONUS + ' bombes.'],
+  [oreArt('gold'), '<b>Boutique</b> : dépense tes minerais en améliorations (énergie, pioche, arrosoir) et en consommables (bombes, radars, recharges).'],
+  [RADAR, '<b>Radar</b> : entoure l\'emplacement d\'un trésor caché.'],
+  [geodeArt('g05'), '<b>Géodes</b> : casse-les dans le sac pour révéler le cristal de leur couleur et une gemme.'],
+  [oreArt('gold'), '<b>Minerais</b> : fer (commun), cuivre (peu commun), or (rare), cachés dans certaines pierres.'],
+  [STAR, '<b>Trésors</b> : dégage toutes les cases d\'un trésor pour le ramasser. Trouve-les tous pour descendre plus bas.'],
+].map(([s, t]) => `<div>${s}<span>${t}</span></div>`).join('');
+
+function openBag() { renderBag(); $('reveal').innerHTML = ''; $('bagModal').hidden = false; S.newCount = 0; updateBadge(); save(); $('bagClose').focus(); }
+function closeBag() { $('bagModal').hidden = true; resetArm(false); }
+$('bagBtn').addEventListener('click', () => { unlockAudio(); openBag(); });
+$('bagClose').addEventListener('click', closeBag);
+$('bagModal').addEventListener('click', e => { if (e.target.id === 'bagModal') closeBag(); });
+$('crackBtn').addEventListener('click', () => {
+  if (!S.bag.geodes.length) return;
+  const g = S.bag.geodes.shift();
+  const o = GEODES[g].opens || pick({ o11: 1, o12: 1, o13: 1, o14: 1, o15: 1 });
+  const k = pick(g === 'g05' ? { tourmaline: 1, topaz: 1 } : GEODE_GEMS);
+  S.bag.opened[o]++; S.bag.gems[k]++;
+  $('crackBtn').disabled = true;
+  $('reveal').innerHTML = `<div class="reveal">${geodeArt(g)}<span>Crac…</span></div>`;
+  sfx('hit');
+  const closed = $('reveal').querySelector('img');
+  if (closed && !reduced) closed.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-12deg)' }, { transform: 'rotate(12deg)' }, { transform: 'rotate(-8deg)' }, { transform: 'rotate(0)' }], { duration: 450 });
+  setTimeout(() => {
+    sfx('break'); setTimeout(() => sfx('reward'), 160);
+    renderBag();
+    $('reveal').innerHTML = `<div class="reveal">${openArt(o)}${gemArt(k)}<span>${GEODES[g].name} ouverte : <b>${OPEN[o].name}</b>, avec ${GEMS[k].art} <b>${GEMS[k].name}</b> à l'intérieur${g === 'g05' ? '. Les géodes arc-en-ciel cachent toujours une gemme rare !' : '.'}</span></div>`;
+  }, 500);
+  save();
+});
+let armT;
+function resetArm(on) {
+  const b = $('resetBtn'); clearTimeout(armT);
+  b.dataset.armed = on ? '1' : '';
+  b.textContent = on ? 'Confirmer : tout effacer ?' : 'Recommencer la partie';
+  b.classList.toggle('danger', on);
+  if (on) armT = setTimeout(() => resetArm(false), 3500);
+}
+$('resetBtn').addEventListener('click', () => {
+  if (!$('resetBtn').dataset.armed) return resetArm(true);
+  const sound = S.sound; S = freshState(); S.sound = sound; S.introDone = true;
+  genLevel(1); buildBoard(true); setTool('shovel'); updateBombs(); updateQuick(); updateBadge(); paintSound(); updateEnergy(true);
+  closeBag(); save(); toast('Nouvelle partie !', 'good');
+});
+
+/* ---------- Level complete ---------- */
+function showWin() {
+  if (!$('winModal').hidden) return;
+  sfx('win');
+  $('stars').innerHTML = STAR + STAR + STAR;
+  $('winText').textContent = `Tu as trouvé tous les trésors à ${S.level * 10} m. Ton énergie sera rechargée et tu gagnes une bombe.`;
+  $('winItems').innerHTML = S.rewards.map(rw => item(rwSVG(rw), rwName(rw), '', false)).join('');
+  $('nextBtn').textContent = `Descendre à ${(S.level + 1) * 10} m`;
+  $('winModal').hidden = false; $('nextBtn').focus();
+}
+$('nextBtn').addEventListener('click', () => {
+  $('winModal').hidden = true;
+  S.level++; S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges(); S.bombs++; updateBombs();
+  genLevel(S.level); buildBoard(true); updateEnergy(true); save();
+  toast(`Profondeur ${S.level * 10} m : la roche se durcit…`, '');
+});
+
+/* ---------- Persistence ---------- */
+let saveT;
+function save() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }, 250); }
+try { window.claude?.hot?.snapshot?.(() => ({ S })); } catch (e) {}
+
+function start(data) {
+  let saved = data && data.S;
+  if (!saved) { try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) {} }
+  if (saved && Array.isArray(saved.grid) && saved.grid.length === N && Array.isArray(saved.rewards)) {
+    const base = freshState();
+    const sb = saved.bag || {};
+    S = Object.assign(base, saved, { bag: Object.assign(base.bag, sb, {
+      arts: Object.assign(base.bag.arts, Object.fromEntries(Object.entries(sb.arts || {}).filter(([k]) => ARTS[k]))),
+    }) });
+    const sizeOf = r => r.kind === 'gem' ? GEMS[r.key]?.sz : r.kind === 'geode' ? GEODES[r.key]?.sz : ARTS[r.key] && [ARTS[r.key].w, ARTS[r.key].h];
+    if (S.rewards.some(r => { const z = sizeOf(r); return !z || z[0] !== r.w || z[1] !== r.h; })) genLevel(S.level);
+  } else {
+    S = freshState(); genLevel(1);
+  }
+  S.up = Object.assign(freshState().up, S.up || {});
+  if (!(S.bucketCharges >= 0)) S.bucketCharges = maxCharges();
+  buildBoard(true); setTool(S.tool || 'shovel'); updateBombs(); updateQuick(); paintSound(); updateBadge(); updateEnergy(true);
+  loop();
+  if (!S.introDone) { S.introDone = true; setTimeout(() => toast('Maintiens et glisse la pelle sur la terre pour creuser !', 'good'), 600); save(); }
+  else if (S.rewards.every(r => r.found)) setTimeout(showWin, 400);
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
