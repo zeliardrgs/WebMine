@@ -1734,12 +1734,15 @@ function renderMuseum() {
       ${tier && set.message ? `<p class="set-legend">${set.message}</p>` : ''}${tier && set.legend ? `<p class="set-legend">${set.legend}</p>` : ''}
       <p class="set-next">${next}</p></div>`;
   };
-  const sets = Object.entries(SETS);
+  // Only series with at least one treasure found are shown (no spoilers)
+  const all = Object.entries(SETS), sets = all.filter(([sk]) => setKeys(sk).some(k => setBook(sk)[k]));
+  const hidden = all.length - sets.length;
   $('museumBody').innerHTML = `<p>${museumOwned()} trésors sur ${museumTotal()} sont exposés. Chaque nouveau trésor rapporte une prime, les doublons sont vendus à leur valeur. Complète une série 1, 2, 3 fois : Bronze, Argent, Or.</p>
-    <h3>Gemmes</h3>
-    ${sets.filter(([, set]) => set.kind === 'gem').map(setHTML).join('')}
-    <h3>Artefacts</h3>
-    ${sets.filter(([, set]) => set.kind === 'art').map(setHTML).join('')}`;
+    ${['gem', 'art'].map(kind => {
+      const list = sets.filter(([, set]) => set.kind === kind);
+      return list.length ? `<h3>${kind === 'gem' ? 'Gemmes' : 'Artefacts'}</h3>${list.map(setHTML).join('')}` : '';
+    }).join('')}
+    ${hidden ? `<h3>${hidden} collection${hidden > 1 ? 's' : ''} restante${hidden > 1 ? 's' : ''} à découvrir</h3>` : ''}`;
 }
 
 /* ---------- Atelier: timing mini-game to open geodes ---------- */
