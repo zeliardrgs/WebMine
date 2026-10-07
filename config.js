@@ -132,7 +132,7 @@ window.CONFIG = {
       geodes: 11,      // géodes blanches et roses
       atelier: 11,     // l'Atelier apparaît au village (au retour suivant)
       magma: 16,       // magma et arrosoir
-      boutique: 26,    // la Boutique, avec seulement "Agrandir le sac"
+      boutique: 10,    // la Boutique, avec seulement "Agrandir le sac"
       bombes: 36,      // les bombes arrivent à la Boutique (tutoriel avec une bombe offerte)
       potions: 41,     // les potions d'énergie arrivent à la Boutique
       // Biomes suivants
