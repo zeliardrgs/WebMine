@@ -63,6 +63,7 @@ button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 .iconbtn img{width:36px; height:36px; object-fit:contain}
 .iconbtn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--panel-edge)}
 .badge{position:absolute; top:-7px; right:-7px; min-width:22px; height:22px; padding:0 5px; box-sizing:border-box; border-radius:11px; background:var(--lava); color:#fff; font-family:var(--font-display); font-size:13px; display:grid; place-items:center; box-shadow:0 2px 0 #9b2a10}
+.badge.new{right:-14px; padding:0 8px; font-size:11px; background:#1fae7a; box-shadow:0 2px 0 #0f6b47; white-space:nowrap}
 
 /* Treasure strip */
 .goals{display:flex; align-items:center; gap:10px}
@@ -113,6 +114,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .arm-bar img{width:28px; height:28px; object-fit:contain}
 .arm-bar span{flex:1}
 .arm-bar .btn{min-height:44px}
+.iconbtn.hint{animation:toolHint 1.1s ease-in-out infinite; outline:3px solid #fff36b; outline-offset:2px}
 .bag-pill.hint{animation:toolHint 1.1s ease-in-out infinite; outline:3px solid #fff36b; outline-offset:2px}
 /* Bag tabs */
 .bag-tabs{display:flex; gap:6px; margin:4px 0 10px; padding:4px; border-radius:16px; background:rgba(0,0,0,.06)}
@@ -225,7 +227,20 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .tile.t-king::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='42' width='84' height='46' rx='8' fill='%23c9851e' stroke='%233b2245' stroke-width='5'/%3E%3Cpath d='M8 46 C8 20 92 20 92 46Z' fill='%23ffcf3d' stroke='%233b2245' stroke-width='5'/%3E%3Crect x='8' y='43' width='84' height='10' fill='%23fff1a6' stroke='%233b2245' stroke-width='3'/%3E%3Crect x='41' y='48' width='18' height='22' rx='4' fill='%238d42cc' stroke='%233b2245' stroke-width='3'/%3E%3Cpath d='M30 22 L36 8 L44 18 L50 4 L56 18 L64 8 L70 22Z' fill='%23ffe066' stroke='%233b2245' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"); background-size:92% 92%; animation:twinkle 1.6s ease-in-out infinite}
 .t-king{filter:drop-shadow(0 0 10px #ffd23d)}
 /* Level chip: treasure, guardian and King's levels */
-.depth.k-treasure span{color:#c98a00} .depth.k-guardian span{color:#d93a3a} .depth.k-king span{color:#8d42cc}
+/* Special level: the chip still says "Niveau N", with a "Niveau spécial" ribbon under it */
+.depth{position:relative}
+.depth-band{position:absolute; left:50%; top:calc(100% - 8px); transform:translateX(-50%); z-index:3; white-space:nowrap; padding:2px 8px; border-radius:8px;
+  font-family:var(--font-display); font-size:10px; line-height:1.2; color:#fff; box-shadow:0 2px 0 rgba(0,0,0,.3); pointer-events:none}
+.depth-band.k-treasure{background:linear-gradient(#ffd23d, #e0a400); color:#5a3a00}
+.depth-band.k-guardian{background:linear-gradient(#ff6b5b, #d93a3a)}
+.depth-band.k-king{background:linear-gradient(#b277f0, #8d42cc)}
+/* Coins earned during the expedition, shown in the bag block; coins fly into it */
+#bagTxt{display:flex; align-items:center; gap:3px; white-space:nowrap}
+#bagTxt img{width:16px; height:16px; object-fit:contain}
+.coin-fly{position:fixed; z-index:45; width:22px; height:22px; pointer-events:none}
+.coin-fly img{width:100%; height:100%; object-fit:contain}
+.bag-pill.bump{animation:bagBump .35s ease-out}
+@keyframes bagBump{40%{transform:scale(1.15)}}
 .win-bonus{margin:10px 0 0; padding:10px 12px; border-radius:14px; background:linear-gradient(135deg, #ffe9a3, #fff8dc); box-shadow:0 3px 0 #e8b923; font-weight:800; color:var(--ink)}
 .win-bonus img{width:20px; height:20px; object-fit:contain; vertical-align:-4px; margin-left:2px}
 .win-bonus b{display:block; font-family:var(--font-display); font-weight:400; font-size:17px; color:#b5760a}
@@ -310,7 +325,8 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .v-hud{position:absolute; left:0; right:0; top:0; padding:12px 16px 0; display:flex; align-items:center; gap:8px; pointer-events:none; z-index:10}
 .v-hud > *{pointer-events:auto}
 .v-hud .wallet-bar{flex:1}
-.v-bottom{position:absolute; left:50%; bottom:0; width:min(480px, 100%); transform:translateX(-50%); box-sizing:border-box; padding:0 16px 16px; z-index:10}
+.v-bottom{position:absolute; left:50%; bottom:0; width:min(480px, 100%); transform:translateX(-50%); box-sizing:border-box; padding:0 16px 16px; z-index:10; pointer-events:none}
+.v-bottom .mine-door{pointer-events:auto}
 .v-hint{position:absolute; left:50%; top:62px; transform:translateX(-50%); z-index:10; pointer-events:none; padding:5px 12px; border-radius:12px;
   background:rgba(30,60,10,.55); color:#fff; font-size:12px; white-space:nowrap; transition:opacity .4s}
 /* Village goals: 3 simple objectives with a coin reward */
@@ -324,6 +340,18 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .vg-list{display:flex; flex-direction:column; gap:6px; padding:0 10px 10px}
 .vg-row{display:flex; align-items:center; gap:10px; padding:6px 8px; border-radius:12px; background:#fff; box-shadow:0 2px 0 #ecd3a8}
 .vg-row.done{background:#e3fbe9; box-shadow:0 2px 0 #9bdcb0}
+/* Goals button (scroll) in the village top bar, with a badge when a reward waits */
+/* Goals button: on the right, just above the mine entrance */
+.v-quest{display:flex; justify-content:flex-end; margin-bottom:10px; pointer-events:none}   /* the empty part of the row lets the map be dragged */
+.quest-btn{pointer-events:auto; position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; width:78px; padding:8px 6px 6px; border:0; border-radius:20px; cursor:pointer;
+  background:var(--panel); color:var(--ink); box-shadow:0 5px 0 var(--panel-edge), 0 10px 18px rgba(0,0,0,.35); font-family:var(--font-display); font-size:14px}
+.quest-btn img{width:50px; height:50px; object-fit:contain}
+.quest-btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--panel-edge)}
+.quest-btn .badge{top:-8px; right:-8px; min-width:26px; height:26px; font-size:15px}
+.quest-btn.ready{animation:toolHint 1.1s ease-in-out infinite}
+.vg-ic{flex:none; width:40px; height:40px; display:grid; place-items:center}
+.vg-ic img,.vg-ic svg{width:36px; height:36px; object-fit:contain}
+.goals-modal .vg-list{padding:0; margin-top:10px}
 .vg-txt{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; font-size:13px; font-weight:800}
 .vg-txt .bar.mini{height:14px}
 .vg-rw{flex:none; display:flex; align-items:center; gap:2px; font-size:13px; font-weight:900; color:#b5760a}
@@ -350,6 +378,27 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 
 /* Recap */
 .recap{text-align:center}
+/* Loot grid of the return screen */
+.loot-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(76px, 1fr)); gap:10px 8px; margin-top:14px}
+.lt{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 4px 6px; border-radius:14px; background:#fff; box-shadow:0 3px 0 #ecd3a8;
+  animation:ltIn .35s ease-out backwards}
+.lt img{width:46px; height:46px; object-fit:contain}
+.lt-nm{font-size:10px; font-weight:800; line-height:1.1; text-align:center}
+.lt-n{position:absolute; right:4px; top:34px; min-width:22px; padding:1px 5px; box-sizing:border-box; border-radius:9px; background:var(--ink); color:#fff;
+  font-style:normal; font-family:var(--font-display); font-size:13px}
+.lt-new{position:absolute; top:-8px; left:50%; transform:translateX(-50%); padding:1px 7px; border-radius:8px; background:#1fae7a; color:#fff;
+  font-size:10px; font-weight:900; white-space:nowrap; box-shadow:0 2px 0 #0f6b47}
+.lt.ore b{font-family:var(--font-display); font-weight:400; font-size:17px; line-height:1.1}
+.lt.ore{background:#fff8ea}
+@keyframes ltIn{from{transform:scale(.6); opacity:0}}
+.recap-total{font-size:28px}
+/* A new building appearing in the village */
+.bld.pending{visibility:hidden}
+.bld.appear .bimg{animation:bldAppear .8s cubic-bezier(.3,1.6,.5,1) both; transform-origin:50% 100%}
+.bld.appear .plate{animation:plateAppear .8s ease-out both}
+@keyframes bldAppear{from{transform:scale(0)}}
+@keyframes plateAppear{0%,40%{opacity:0}}
+.plate .badge.bnew{right:auto; left:50%; top:-14px; transform:translateX(-50%); background:#1fae7a; box-shadow:0 2px 0 #0f6b47; font-size:11px; padding:0 8px; white-space:nowrap}
 .recap-ores{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px}
 .loot{margin-top:12px; padding:10px; border-radius:16px; background:#fff; box-shadow:0 3px 0 #ecd3a8; text-align:center}
 .loot-title{margin:0 0 8px; font-family:var(--font-display); font-size:15px; color:var(--ink)}
@@ -447,6 +496,25 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .tuto button{flex:none; min-width:52px; min-height:44px; border:0; border-radius:12px; background:var(--sun); box-shadow:0 3px 0 var(--sun-edge); color:var(--ink);
   font-family:var(--font-display); font-size:16px; cursor:pointer}
 .tuto[hidden]{display:none}
+/* Coach: short tutorials with an animated hand; the rest of the screen is dimmed around the target */
+#coachDim{position:fixed; inset:0; z-index:56; pointer-events:none;
+  background:radial-gradient(circle at var(--cx, 50%) var(--cy, 50%), transparent var(--r, 60px), rgba(12,5,22,.55) calc(var(--r, 60px) + 46px))}
+#coachHand{position:fixed; left:0; top:0; z-index:62; width:60px; height:64px; pointer-events:none;
+  transform:translate(calc(var(--x1) - 6px), calc(var(--y1) - 6px)); filter:drop-shadow(0 4px 4px rgba(0,0,0,.45))}
+#coachHand img{width:100%; height:100%; object-fit:contain; display:block; -webkit-user-drag:none}
+#coachHand.tap img{animation:handTap 1s ease-in-out infinite; transform-origin:10% 10%}
+#coachHand.swipe{animation:handSwipe 1.6s ease-in-out infinite}
+@keyframes handTap{0%,100%{transform:translateY(8px) scale(1)} 45%{transform:translateY(0) scale(.88)}}
+@keyframes handSwipe{
+  0%{transform:translate(calc(var(--x1) - 6px), calc(var(--y1) - 6px)); opacity:0}
+  12%{transform:translate(calc(var(--x1) - 6px), calc(var(--y1) - 6px)); opacity:1}
+  72%{transform:translate(calc(var(--x2) - 6px), calc(var(--y2) - 6px)); opacity:1}
+  100%{transform:translate(calc(var(--x2) - 6px), calc(var(--y2) - 6px)); opacity:0}}
+#coachTxt{position:fixed; left:50%; z-index:62; transform:translateX(-50%); max-width:min(320px, calc(100vw - 32px)); box-sizing:border-box;
+  padding:8px 16px; border-radius:16px; background:#fff8e6; color:var(--ink); box-shadow:0 4px 0 #e6c48a, 0 10px 20px rgba(0,0,0,.35);
+  font-family:var(--font-display); font-size:19px; line-height:1.15; text-align:center; pointer-events:none; white-space:nowrap}
+@media (prefers-reduced-motion: reduce){#coachHand.tap img,#coachHand.swipe{animation:none}}
+.tuto{cursor:pointer}
 .tool.hint{animation:toolHint 1.1s ease-in-out infinite}
 .tool.hint::after{content:""; position:absolute; inset:-4px; border-radius:24px; border:3px solid #fff36b; pointer-events:none}
 @keyframes toolHint{0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)}}
@@ -484,7 +552,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .maxed small{display:block; font-family:var(--font-body); font-size:10px; font-weight:800; color:var(--ink-soft); text-align:center}
 
 /* Tools */
-.tools{display:grid; grid-template-columns:repeat(var(--ntools, 4),1fr); gap:8px; padding-bottom:4px}
+.tools{display:grid; grid-template-columns:repeat(var(--ntools, 3), calc((100% - 16px) / 3)); justify-content:center; gap:8px; padding-bottom:4px}
 .tool{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 4px 9px; border:0; border-radius:20px; cursor:pointer;
   background:var(--panel); color:var(--ink); box-shadow:0 5px 0 var(--panel-edge), 0 10px 16px rgba(0,0,0,.3);
   font-family:var(--font-display); font-size:15px; transition:transform .12s, background .12s}
@@ -544,13 +612,18 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .set-head b{font-family:var(--font-display); font-weight:400; font-size:15px; color:#7d3c98}
 .set-head small{font-size:12px; color:var(--ink-soft)}
 .set.complete .item:not(.locked){background:#fffbe8; box-shadow:0 3px 0 #f5c542}
-/* Series level frames (Bronze / Argent / Or) */
+/* Collection frames by number of stars */
 .set{padding:10px; border-radius:18px; border:3px solid transparent; background:rgba(255,255,255,.35)}
 .set.t1{border-color:#c47a3a; background:linear-gradient(135deg, #f7dcc2, #fff3e4)}
 .set.t2{border-color:#a9b4c2; background:linear-gradient(135deg, #e6ebf1, #fafcff)}
 .set.t3{border-color:#e8b923; background:linear-gradient(135deg, #ffe9a3, #fff8dc); box-shadow:0 0 14px rgba(232,185,35,.45)}
-.tier{display:inline-block; margin-left:6px; padding:1px 8px; border-radius:9px; font-family:var(--font-display); font-size:12px; color:#fff; vertical-align:2px}
-.tier.t1{background:#c47a3a} .tier.t2{background:#8f9bab} .tier.t3{background:#d9a514}
+.stars-set{display:inline-flex; gap:1px; margin-left:6px; font-size:16px; line-height:1; vertical-align:0; letter-spacing:0}
+.stars-set i{font-style:normal; color:#d8cbb4} .stars-set i.on{color:#ffbf1f; text-shadow:0 1px 0 #b5760a}
+.set-bonus{margin-left:4px; font-size:11px; font-family:var(--font-body); font-weight:800; color:#8a5a00}
+.set-claim{display:flex; align-items:center; gap:10px; margin:0 0 8px; padding:8px 10px; border-radius:14px; background:#e3fbe9; box-shadow:0 3px 0 #9bdcb0}
+.set-claim span{flex:1; font-size:13px; font-weight:800; text-align:left}
+.set-claim .btn{flex:none; min-height:44px; display:flex; align-items:center; gap:4px; animation:twinkle 1.6s ease-in-out infinite}
+.set-claim .btn img{width:18px; height:18px; object-fit:contain}
 .set-next{margin:6px 2px 0; font-size:12px; color:var(--ink-soft)}
 .set-where{margin:-2px 2px 6px; font-size:12px; color:var(--ink-soft)}
 .set-legend{margin:8px 2px 0; padding:8px 10px; border-radius:12px; background:rgba(255,255,255,.7); font-size:13px; font-style:italic; color:var(--ink)}
@@ -625,9 +698,9 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
       <div class="dirt-patch" style="left:500px; top:640px"></div>
       <button class="shaft" id="shaftBtn" style="left:500px; top:640px" aria-label="Descendre dans la mine"></button>
       <span class="shaft-sign" style="left:500px; top:688px">Mine</span>
-      <button class="bld" data-go="museum" style="left:690px; top:440px; width:400px; z-index:1" aria-label="Musée"><span class="plate" style="--roof:#8e5bd6"><b>Musée</b><small id="subMuseum"></small></span><span class="bimg" id="icMuseum"></span></button>
+      <button class="bld" data-go="museum" style="left:690px; top:440px; width:400px; z-index:1" aria-label="Musée"><span class="plate" style="--roof:#8e5bd6"><b>Musée</b><small id="subMuseum"></small><span class="badge" id="badgeMuseum" hidden>!</span></span><span class="bimg" id="icMuseum"></span></button>
       <button class="bld" data-go="forge" style="left:270px; top:560px; width:290px; z-index:2" aria-label="Forge"><span class="plate" style="--roof:#c8682c"><b>Forge</b><small>Améliorations</small><span class="badge" id="badgeForge" hidden>!</span></span><span class="bimg" id="icForge"></span></button>
-      <button class="bld" data-go="shop" style="left:720px; top:860px; width:290px; z-index:3" aria-label="Boutique"><span class="plate" style="--roof:#e0475b"><b>Boutique</b><small>Consommables</small></span><span class="bimg" id="icShop"></span></button>
+      <button class="bld" data-go="shop" style="left:720px; top:860px; width:290px; z-index:3" aria-label="Boutique"><span class="plate" style="--roof:#e0475b"><b>Boutique</b><small>Articles</small><span class="badge new" id="badgeShop" hidden>Nouveau</span></span><span class="bimg" id="icShop"></span></button>
       <button class="bld" data-go="atelier" style="left:300px; top:930px; width:240px; z-index:4" aria-label="Atelier"><span class="plate" style="--roof:#d9a441"><b>Atelier</b><small id="subAtelier"></small><span class="badge" id="badgeAtelier" hidden>0</span></span><span class="bimg" id="icAtelier"></span></button>
     </div>
   </div>
@@ -638,10 +711,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   </header>
   <div class="v-hint" id="vHint">Fais glisser pour te déplacer dans le village</div>
   <div class="v-bottom">
-    <section class="v-goals" id="vGoals" aria-label="Objectifs">
-      <button class="vg-head" id="vgHead" aria-expanded="true"><b>Objectifs</b><span id="vgReady"></span><i aria-hidden="true">▾</i></button>
-      <div class="vg-list" id="vgList"></div>
-    </section>
+    <div class="v-quest"><button class="quest-btn" id="questBtn" aria-label="Objectifs"><img src="Assets/Quest.png" alt="" draggable="false">Objectifs<span class="badge" id="questBadge" hidden>!</span></button></div>
     <section class="mine-door" aria-label="Entrée de la mine">
       <div class="md-info">
         <b>La mine</b>
@@ -686,7 +756,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 
 <div class="app" id="scr-mine" hidden>
   <header class="hud">
-    <div class="chip depth" id="depthChip"><span id="depthLbl">Niveau</span><b id="depth">1</b></div>
+    <div class="chip depth" id="depthChip"><span id="depthLbl">Niveau</span><b id="depth">1</b><span class="depth-band" id="depthBand" hidden>Niveau spécial</span></div>
     <div class="chip energy" id="energyChip" title="Énergie">
       <img src="Assets/Energy_Yellow.png" alt="" draggable="false">
       <div class="col">
@@ -715,7 +785,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
       </div>
     </div>
     <!-- Bubble (tutorials, special levels, guardian reward): floats over the bottom of the grid -->
-    <div class="tuto" id="tuto" hidden role="status"><span id="tutoTxt"></span><button id="tutoOk">OK</button></div>
+    <div class="tuto" id="tuto" hidden role="status"><span id="tutoTxt"></span></div>
   </main>
 
   <div class="quick">
@@ -731,6 +801,9 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="coachDim" hidden></div>
+<div id="coachHand" hidden aria-hidden="true"><img src="Assets/TutoHand.png" alt="" draggable="false"></div>
+<div id="coachTxt" hidden role="status" aria-live="polite"></div>
 <div class="ghost" id="ghost" hidden><div class="g" id="ghostG"></div></div>
 
 <div class="modal" id="bagViewModal" hidden>
@@ -767,8 +840,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   <div class="card recap" role="dialog" aria-labelledby="recapTitle">
     <h2 id="recapTitle">Retour à la surface</h2>
     <p id="recapText"></p>
-    <div class="loot" id="recapOres"></div>
-    <div class="recap-list" id="recapList"></div>
+    <div class="loot-grid" id="recapGrid"></div>
     <div class="recap-total" id="recapTotal"></div>
     <div class="recap-actions">
       <button class="btn big" id="recapAtelier">Ouvrir mes géodes à l'atelier</button>
@@ -804,6 +876,14 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
     <div style="margin-top:18px; display:flex; justify-content:flex-end">
       <button class="btn ghosty" id="resetBtn">Recommencer la partie</button>
     </div>
+  </div>
+</div>
+
+<div class="modal" id="goalsModal" hidden>
+  <div class="card goals-modal" role="dialog" aria-labelledby="goalsTitle" style="text-align:center">
+    <button class="close" id="goalsClose" aria-label="Fermer">×</button>
+    <h2 id="goalsTitle">Objectifs</h2>
+    <div class="vg-list" id="vgList"></div>
   </div>
 </div>
 
@@ -845,7 +925,10 @@ const gridRow = level => PROG.grilles.reduce((row, g) => level >= g.depuis ? g :
 /* Rhythm (config.js > rythme): in each block of 10 levels, 1-8 easy, 9 a little harder, 10 = treasure level;
    100, 200… 900 = guardian levels; 1000 = the Miner King's treasure room */
 const RY = CFG.rythme;
-const floorKind = level => level >= 1000 ? 'king' : level % 100 === 0 ? 'guardian' : level % 10 === 0 ? 'treasure' : level % 10 === 9 ? 'hard' : 'easy';
+const GUARD_EXTRA = RY.niveauGardien.niveauxEnPlus || [];
+const baseKind = level => level >= 1000 ? 'king' : level % 100 === 0 || GUARD_EXTRA.includes(level) ? 'guardian' : level % 10 === 0 ? 'treasure' : level % 10 === 9 ? 'hard' : 'easy';
+// A treasure level is only a treasure level the first time: replayed later (from its checkpoint), it is a normal level
+const floorKind = level => { const k = baseKind(level); return k === 'treasure' && (S.treasureDone || {})[level] ? 'easy' : k; };
 const levelDims = level => { const n = TUTO[level] ? 3 : gridRow(level).taille; return [n, n]; };
 function setDims(cols, rows) {
   COLS = cols; ROWS = rows; N = cols * rows;
@@ -890,7 +973,7 @@ const LOOK = {
   citrine: { file: 'Citrine', art: 'une' }, ambre: { file: 'Amber', art: 'un' }, topazeImperiale: { file: 'Gem_Yellow_1', art: 'une' }, heliodore: { ph: 'gem', art: 'un' },
   rubis: { file: 'Rubis', art: 'un' }, emeraude: { file: 'Emerald', art: 'une' }, saphirEtoile: { file: 'StarSaphire', art: 'un' }, diamantPur: { ph: 'gem', art: 'un' },
   // Artefacts
-  coquillage: { file: 'Shell', w: 1, h: 1 }, feuille: { ph: 'leaf', w: 1, h: 1 }, ammonite: { ph: 'spiral', w: 1, h: 1 },
+  coquillage: { file: 'Shell', w: 1, h: 1 }, feuille: { file: 'LeafFossil', w: 1, h: 1 }, ammonite: { file: 'Amonite', w: 1, h: 1 },
   lion: { file: 'Artefact_Astro_01', w: 2, h: 2 }, taureau: { file: 'Artefact_Astro_02', w: 2, h: 2 }, scorpion: { file: 'Artefact_Astro_03', w: 2, h: 2 }, dragon: { file: 'Artefact_Astro_04', w: 2, h: 2 },
   lampe: { file: 'Lantern', w: 1, h: 2 }, gourde: { file: 'Minepurse', w: 2, h: 2 }, casque: { file: 'Helmet', w: 2, h: 2 }, pioche: { file: 'pickaxe', w: 2, h: 2 },
   fragmentGauche: { file: 'Artefact_Tablet_01', w: 2, h: 3 }, fragmentCentral: { file: 'Artefact_Tablet_02', w: 3, h: 3 }, fragmentDroit: { file: 'Artefact_Tablet_03', w: 2, h: 3 },
@@ -974,7 +1057,6 @@ const SOUND_ON = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12 H10
 const SOUND_OFF = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12 H10 L17 6 V26 L10 20 H5Z" fill="#b9a2b4" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><path d="M21 12 L28 20 M28 12 L21 20" stroke="#d9432a" stroke-width="2.6" stroke-linecap="round"/></svg>';
 
 const oreArt = k => resArt(k);
-const STAR = '<svg viewBox="0 0 100 100"><path d="M50 6 L62 36 L94 38 L69 58 L78 90 L50 72 L22 90 L31 58 L6 38 L38 36Z" fill="#ffc23d" stroke="#b5760a" stroke-width="5" stroke-linejoin="round"/><path d="M40 40 L46 26" stroke="#fff3c4" stroke-width="5" stroke-linecap="round"/></svg>';
 
 function rwSVG(rw) { return rw.kind === 'gem' ? gemArt(rw.key) : rw.kind === 'geode' ? geodeArt(rw.key) : artArt(rw.key); }
 function rwName(rw) { return rw.kind === 'gem' ? GEMS[rw.key].name : rw.kind === 'geode' ? GEODES[rw.key].name : ARTS[rw.key].name; }
@@ -994,7 +1076,7 @@ const newTrip = () => ({ finds: [], dupes: [], coins: 0, ores: zeroOres() });
 
 function freshState() {
   return {
-    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, up: { energy: 0, pick: 0, splash: 0, fast: 0, charges: 0 }, sound: true, newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false,
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, up: { energy: 0, pick: 0, splash: 0, fast: 0, charges: 0 }, sound: true, newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false,
     bag: {
       ores: zeroOres(),
       gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
@@ -1068,12 +1150,27 @@ function addSpecials(g, level, mult = 1) {
   if (special(level, 'gaz')) many('gaz', c => c.t !== 'magma' && c.t !== 'stump' && c.t !== 'root', i => g[i] = tileOf('gas'));
   if (special(level, 'coffre')) many('coffre', c => c.t !== 'magma' && c.t !== 'stump' && c.t !== 'root', i => g[i] = tileOf('chest'));
 }
+// Treasures guaranteed the first time a level is played (level 1-3 fossils, level 11 white geode)
+const GEODE_FR = Object.fromEntries(Object.entries(FR_GEODE).map(([k, fr]) => [fr, k]));
+const GUAR = Object.fromEntries((PROG.tresorsGarantis || []).map(g => [g.niveau, g.geode ? { kind: 'geode', key: GEODE_FR[g.geode] } : { kind: 'art', key: g.tresor }]));
+const guaranteeFor = level => GUAR[level] && !(S.guarDone || {})[level] && (GUAR[level].kind === 'geode' ? GEODES : ARTS)[GUAR[level].key] ? GUAR[level] : null;
+const sizeOfFind = (kind, key) => kind === 'geode' ? GEODES[key].sz : [ARTS[key].w, ARTS[key].h];
+// Two levels in a row never get exactly the same grid
+const levelSig = () => JSON.stringify([S.grid.map(c => c.t + (c.ore || '')), S.rewards.map(r => [r.key, r.r, r.c])]);
 function genLevel(level) {
+  const prev = S.lastSig, kind = floorKind(level);
+  for (let k = 0; k < 12; k++) { genLevelOnce(level, kind); if (levelSig() !== prev) break; }
+  S.lastSig = levelSig();
+  // The kind of this visit (shown in the HUD and the bubble); a treasure level is used up once generated
+  S.floor = S.tuto ? 'easy' : kind;
+  if (kind === 'treasure') (S.treasureDone = S.treasureDone || {})[level] = true;
+}
+function genLevelOnce(level, kindArg) {
   const [cols, rows] = levelDims(level);
   setDims(cols, rows); S.cols = cols; S.rows = rows;
   S.tuto = TUTO[level] ? level : 0;
   if (S.tuto) return genTutorial(level, TUTO[level]);
-  const kind = floorKind(level);
+  const kind = kindArg || floorKind(level);
   // How much stone and magma: easier on most levels, a bit more on the 9th, much more on guardian levels
   const D = kind === 'easy' ? RY.difficulte.facile : kind === 'hard' ? RY.difficulte.niveau9 : kind === 'guardian' ? RY.niveauGardien.pierreEnPlus : 1;
   const area = N, scale = area / 70;
@@ -1124,6 +1221,9 @@ function genLevel(level) {
     const key = pick(options), table = use === 'geode' ? GEODES : ARTS, [w, h] = SRC[use][1](table[key]);
     budget -= w * h; picks.push({ kind: use, key, w, h });
   }
+  // The guaranteed treasure of this level takes the place of the first pick
+  const gt = guaranteeFor(level);
+  if (gt) { const [w, h] = sizeOfFind(gt.kind, gt.key); picks.splice(0, 1, { kind: gt.kind, key: gt.key, w, h, guaranteed: true }); }
   picks.sort((a, b) => b.w * b.h - a.w * a.h);
   // Place them all; if one has no room left, start the placement over (keeps the best attempt)
   let best = [];
@@ -1178,12 +1278,14 @@ function genTutorial(level, tuto) {
   let rw;
   if (tuto.nouveaute === 'geode') {
     const corner = randInt(0, 3);
-    rw = { kind: 'geode', key: 'white', w: 2, h: 2, r: corner >> 1, c: corner & 1 };
+    const gt = guaranteeFor(level);
+    rw = { kind: 'geode', key: gt && gt.kind === 'geode' ? gt.key : 'white', w: 2, h: 2, r: corner >> 1, c: corner & 1, ...(gt ? { guaranteed: true } : {}) };
   } else {
     // The smallest artefact of this level, in the middle of the grid
     const arts = artsAt(level).map(([k, o]) => [k, o]).sort((a, b) => a[1].w * a[1].h - b[1].w * b[1].h);
-    const [key, o] = arts.length ? arts[0] : ['coquillage', ARTS.coquillage];
-    rw = { kind: 'art', key, w: o.w, h: o.h, r: o.h === 1 ? 1 : 0, c: o.w === 1 ? 1 : 0 };
+    const gt = guaranteeFor(level);
+    const [key, o] = gt && gt.kind === 'art' ? [gt.key, ARTS[gt.key]] : arts.length ? arts[0] : ['coquillage', ARTS.coquillage];
+    rw = { kind: 'art', key, w: o.w, h: o.h, r: o.h === 1 ? 1 : 0, c: o.w === 1 ? 1 : 0, ...(gt ? { guaranteed: true } : {}) };
   }
   const cells = []; for (let y = 0; y < rw.h; y++) for (let x = 0; x < rw.w; x++) cells.push((rw.r + y) * 3 + rw.c + x);
   const stone = () => ({ t: 'stone', hp: HP.stone, max: HP.stone });
@@ -1255,8 +1357,10 @@ function paintTile(i) {
   if (c.max && c.hp < c.max && c.t !== 'stone') el.dataset.crack = Math.min(3, Math.ceil((c.max - c.hp) / c.max * 3));
   else delete el.dataset.crack;
 }
+let boardGen = 0;   // changes with every new board, so late animations of the previous level are ignored
 function buildBoard(animate) {
-  applyUnlocks(); showTuto();
+  boardGen++;
+  applyUnlocks(); showTuto(); setTimeout(levelCoach, 60);
   fitBoard();
   digLock = false;
   setTimeout(updateNextPill);
@@ -1277,9 +1381,10 @@ function buildBoard(animate) {
     d.innerHTML = rwSVG(rw); slotsEl.append(d); return d;
   });
   $('depth').textContent = S.level;
-  const fk = S.tuto ? 'easy' : floorKind(S.level);
-  $('depthLbl').textContent = { treasure: 'Trésor', guardian: 'Gardien', king: 'Roi Mineur' }[fk] || 'Niveau';
-  $('depthChip').className = 'chip depth k-' + fk;
+  const fk = S.tuto ? 'easy' : S.floor || floorKind(S.level);
+  $('depthLbl').textContent = 'Niveau';
+  const special = ['treasure', 'guardian', 'king'].includes(fk);
+  $('depthBand').hidden = !special; $('depthBand').className = 'depth-band k-' + fk;
   paintRadar();
   updateGoals();
   if (animate && !reduced) { board.classList.remove('enter'); void board.offsetWidth; board.classList.add('enter'); }
@@ -1297,29 +1402,120 @@ function applyUnlocks() {
   $('scr-mine').style.setProperty('--ntools', n);
   if ((TOOL_UNLOCK[S.tool] && !has(TOOL_UNLOCK[S.tool])) || (S.tool === 'bomb' && $('armBar').hidden)) setTool('shovel');
   $('energyChip').hidden = !has('pioche');
-  $('bagPill').hidden = !has('pioche');
+  $('bagPill').hidden = !S.bagSeen;
+  updateBadge();
   for (const k of ['museum', 'forge', 'atelier', 'shop']) { const b = document.querySelector(`.bld[data-go="${k}"]`); if (b) b.hidden = !S.buildings[k]; }
 }
-// Tutorial level: a short bubble and the useful tool pulsing, until the player taps OK or uses that tool
-// The bubble also announces treasure, guardian and King's levels (once per level)
+// Info bubble: announces treasure, guardian and King's levels, and the guardian's reward (once each).
+// No button: it closes by itself after a few seconds, or with a tap.
 function bubbleInfo() {
   if (S.rewardMsg && S.rewardMsg.level === S.level) return { key: 'r' + S.level, html: S.rewardMsg.html, reward: true };
-  if (S.tuto && TUTO[S.tuto]) return { key: S.tuto, text: TUTO[S.tuto].texte, tool: TUTO[S.tuto].outil };
-  const k = floorKind(S.level);
+  if (S.tuto) return null;
+  const k = S.floor || floorKind(S.level);
   const text = k === 'treasure' ? RY.niveauTresor.texte : k === 'guardian' ? RY.niveauGardien.texte : k === 'king' ? RY.niveau1000.texte : null;
   return text ? { key: 'f' + S.level, text } : null;
 }
 function showTuto() {
   const b = bubbleInfo(), open = b && !S.tutoSeen[b.key];
   $('tuto').hidden = !open;
-  if (open) { if (b.html) $('tutoTxt').innerHTML = b.html; else $('tutoTxt').textContent = b.text; }
   $('tuto').classList.toggle('reward', !!(open && b.reward));
-  // The bomb is now in the bag: point at the bag instead of a tool
-  $('bagPill').classList.toggle('hint', !!open && b.tool === 'bomb');
-  document.querySelectorAll('.tool').forEach(t => t.classList.toggle('hint', !!open && !!b.tool && t.dataset.tool === b.tool && S.tool !== b.tool));
+  if (!open) return;
+  if (b.html) $('tutoTxt').innerHTML = b.html; else $('tutoTxt').textContent = b.text;
+  clearTimeout(showTuto.t);
+  showTuto.t = setTimeout(() => { const now = bubbleInfo(); if (now && now.key === b.key) closeTuto(); }, 5000);
 }
-function closeTuto() { const b = bubbleInfo(); if (b) { S.tutoSeen[b.key] = true; if (b.reward) S.rewardMsg = null; } showTuto(); fitBoard(); save(); }
-$('tutoOk').addEventListener('click', () => { unlockAudio(); sfx('pick'); closeTuto(); });
+function closeTuto() { const b = bubbleInfo(); if (b) { S.tutoSeen[b.key] = true; if (b.reward) S.rewardMsg = null; } showTuto(); save(); }
+$('tuto').addEventListener('click', () => closeTuto());
+
+/* ---------- Coach: very short tutorials with an animated hand (config.js > progression > tutoriels, textesTuto) ----------
+   Each tutorial is a list of steps { text, target, to (for a swipe), done }. A step ends as soon as the player
+   does the action; the tutorial is then never shown again. */
+const TX = PROG.textesTuto;
+let coach = null;
+const coachQueue = [];
+function startCoach(key, steps, boardBound) {
+  if (S.tutoSeen[key] || (coach && coach.key === key) || coachQueue.some(c => c.key === key)) return;
+  const c = { key, steps, i: 0, gen: boardBound ? boardGen : 0 };
+  if (coach) coachQueue.push(c); else { coach = c; coachTick(); }
+}
+// done = the player did it (never shown again); otherwise it was cancelled (e.g. the level was left) and can come back
+function endCoach(done) {
+  if (!coach) return;
+  if (done) S.tutoSeen[coach.key] = true;
+  coach = null; renderCoach(null); save();
+  if (coachQueue.length) { coach = coachQueue.shift(); coachTick(); }
+}
+function coachTick() {
+  if (!coach) return;
+  if (coach.gen && coach.gen !== boardGen) return endCoach(false);
+  let st = coach.steps[coach.i];
+  while (st && st.done()) { coach.i++; st = coach.steps[coach.i]; }
+  if (!st) return endCoach(true);
+  renderCoach(st);
+}
+setInterval(coachTick, 150);
+const coachStep = () => coach && coach.steps[coach.i];
+function renderCoach(st) {
+  const dim = $('coachDim'), hand = $('coachHand'), txt = $('coachTxt');
+  const el = st && st.target(), el2 = st && st.to && st.to();
+  if (!st || !el) { dim.hidden = hand.hidden = txt.hidden = true; return; }
+  // Measured once per step (and again only if the screen size or the target element changes)
+  if (st._el === el && st._w === innerWidth && st._h === innerHeight) { dim.hidden = hand.hidden = txt.hidden = false; return; }
+  const r = el.getBoundingClientRect();
+  if (!r.width) { dim.hidden = hand.hidden = txt.hidden = true; return; }
+  Object.assign(st, { _el: el, _w: innerWidth, _h: innerHeight });
+  const cx = r.left + r.width / 2, cy = r.top + Math.min(r.height, r.width) / 2;
+  let x2 = cx, y2 = cy;
+  if (el2) { const q = el2.getBoundingClientRect(); x2 = q.left + q.width / 2; y2 = q.top + Math.min(q.height, q.width) / 2; }
+  const set = (e, k, v) => e.style.setProperty(k, v + 'px');
+  set(dim, '--cx', (cx + x2) / 2); set(dim, '--cy', (cy + y2) / 2);
+  const rad = Math.max(r.width, r.height) * .6 + Math.hypot(x2 - cx, y2 - cy) / 2, my = (cy + y2) / 2;
+  set(dim, '--r', rad);
+  hand.className = el2 ? 'swipe' : 'tap';
+  set(hand, '--x1', cx); set(hand, '--y1', cy); set(hand, '--x2', x2); set(hand, '--y2', y2);
+  txt.textContent = st.text;
+  // The sentence sits just outside the lit circle: below it when the target is high on the screen, above otherwise
+  const high = my < innerHeight * .55;
+  txt.style.top = high ? Math.max(my + rad + 28, r.bottom + 64) + 'px' : '';
+  txt.style.bottom = high ? '' : innerHeight - (my - rad - 10) + 'px';
+  dim.hidden = hand.hidden = txt.hidden = false;
+}
+const toolStep = tool => ({ text: TX.outils[tool] || '', target: () => $('tool-' + tool), done: () => S.tool === tool });
+const cellStep = (text, i) => { const snap = JSON.stringify(S.grid[i]); return { text, target: () => tileEls[i], done: () => JSON.stringify(S.grid[i]) !== snap }; };
+// Where each tutorial level points (the new tile)
+const COACH_FIND = {
+  pierre: c => c.t === 'stone', cuivre: c => c.t === 'ore' && c.ore === 'copper', fer: c => c.t === 'ore' && c.ore === 'iron',
+  magma: c => c.t === 'magma', pierreDure: c => c.t === 'hard', source: c => c.t === 'spring', magmaChaine: c => c.t === 'magma',
+  mystere: c => c.t === 'mystery', racines: c => c.t === 'stump', glace: (c, i) => c.t === 'ice' && isMelting(i), gaz: c => c.t === 'gas',
+  coffre: c => c.t === 'chest', bombe: c => c.t !== 'empty',
+};
+function levelCoach() {
+  const lv = S.level, t = TUTO[lv];
+  // Level 1: swipe to dig
+  if (lv === 1 && !S.tutoSeen.creuser) {
+    const dirt = () => S.grid.filter(c => c.t === 'dirt').length, n0 = dirt(), row = (ROWS >> 1) * COLS;
+    startCoach('creuser', [toolStep('shovel'), { text: TX.creuser, target: () => tileEls[row], to: () => tileEls[row + COLS - 1], done: () => dirt() < n0 }], true);
+  }
+  if (!S.tuto || !t || S.tutoSeen[lv]) return;
+  let steps;
+  if (t.nouveaute === 'geode') {
+    const cells = rwCells(S.rewards[0]);
+    steps = [toolStep('shovel'), { text: t.texte, target: () => tileEls[cells[0]], to: () => tileEls[cells[cells.length - 1]], done: () => cells.some(j => S.grid[j].t === 'empty') }];
+  } else if (t.outil === 'bomb') {
+    // The bomb is in the bag: open the bag, use the bomb, then tap a cell
+    const i = t.nouveaute === 'bombe' ? (ROWS >> 1) * COLS + (COLS >> 1) : S.grid.findIndex(COACH_FIND[t.nouveaute]), b0 = S.bombs;
+    steps = [
+      { text: TX.ouvrirSac, target: () => $('bagPill'), cons: true, done: () => !$('bagViewModal').hidden || S.tool === 'bomb' || S.bombs < b0 },
+      { text: TX.utiliserBombe, target: () => document.querySelector('[data-use="bombs"]'), done: () => S.tool === 'bomb' || S.bombs < b0 },
+      { text: t.texte, target: () => tileEls[i], done: () => S.bombs < b0 },
+    ];
+  } else {
+    const i = S.grid.findIndex(COACH_FIND[t.nouveaute] || (() => false));
+    if (i < 0) return;
+    steps = [toolStep(t.outil), cellStep(t.texte, i)];
+  }
+  startCoach(lv, steps, true);
+}
 
 /* ---------- Tools UI ---------- */
 document.querySelectorAll('.tool').forEach(b => {
@@ -1465,6 +1661,8 @@ let down = false, last = null;
 function local(e) { const r = board.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
 function cellAt(p) {
   const s = ts(), c = Math.floor(p.x / s), r = Math.floor(p.y / s);
+  // Board not laid out yet (size 0): no cell
+  if (!(s > 0) || !Number.isFinite(c) || !Number.isFinite(r)) return -1;
   return c < 0 || r < 0 || c >= COLS || r >= ROWS ? -1 : r * COLS + c;
 }
 board.addEventListener('pointerdown', e => {
@@ -1610,7 +1808,7 @@ function breakCell(i) {
   if (t === 'coins') {
     // Coin pile of a treasure level, worth more in deeper biomes
     const T = RY.niveauTresor, n = Math.round(randInt(...T.piecesParTas) * (1 + T.bonusParBiome * (biomeOf(S.level) - 1)));
-    S.coins += n; S.trip.coins = (S.trip.coins || 0) + n;
+    S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
     sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 14, { spread: 34, up: 16, size: [3, 7] });
     floatText(i, `+${n} pièces`, '#ffe14d');
   }
@@ -1630,7 +1828,7 @@ function openKingChest(i) {
   const need = setKeys('cles').length, got = keysOwned();
   if (got < need) return deny(i, `Il faut les ${need} Clés du Roi Mineur pour ouvrir ce coffre (tu en as ${got}). C'est un bonus : tu peux continuer sans !`, '');
   const K = RY.niveau1000.coffreDuRoi, { x, y } = center(i);
-  S.kingOpened = true; S.coins += K.pieces; S.trip.coins = (S.trip.coins || 0) + K.pieces;
+  S.kingOpened = true; S.coins += K.pieces; S.trip.coins = (S.trip.coins || 0) + K.pieces; flyCoins(i, K.pieces);
   clearCell(i); sfx('win');
   burst(x, y, ['#ffe066', '#ffc23d', '#cf9bff', '#fff'], 40, { spread: ts() * 2, up: 20, size: [4, 10], dur: 1100 });
   floatText(i, `+${K.pieces} pièces`, '#ffe14d');
@@ -1644,7 +1842,7 @@ function giveBonus(i, kind) {
   else gifts.push(pick(B.chances));
   const lines = [];
   for (let g of gifts) {
-    if (g === 'potion' && !has('boutique')) g = 'pieces';
+    if (g === 'potion' && !has('potions')) g = 'pieces';
     if (g === 'geode') {
       const geos = Object.fromEntries(geodesAt(S.level).map(([k, o]) => [k, o.w]));
       if (Object.keys(geos).length && S.trip.finds.length < bagCap()) {
@@ -1661,7 +1859,7 @@ function giveBonus(i, kind) {
       g = 'pieces';
     }
     if (g === 'potion') { S.potions++; updateQuick(); lines.push('+1 potion'); continue; }
-    const n = randInt(...B.pieces); S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; lines.push(`+${n} pièces`);
+    const n = randInt(...B.pieces); S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n); lines.push(`+${n} pièces`);
   }
   floatText(i, lines.join(' · '), '#ffe14d');
   save();
@@ -1725,7 +1923,20 @@ $('armCancel').addEventListener('click', () => { unlockAudio(); sfx('pick'); dis
 
 function clearCell(i) {
   S.grid[i] = { t: 'empty' }; paintTile(i);
-  checkRewards(); save();
+  checkRewards(); save(); checkAutoNext();
+}
+// Every cell cleared and every treasure picked up: go to the next level on its own
+// (a treasure left in the mine, or the bottom of the mine, keeps the "next level" button instead)
+function checkAutoNext() {
+  if (!S.rewards || !S.rewards.length || S.level >= 1000) return;
+  if (!S.rewards.every(r => r.taken === true) || !S.grid.every(c => c.t === 'empty')) return;
+  const gen = boardGen;
+  clearTimeout(checkAutoNext.t);
+  checkAutoNext.t = setTimeout(() => {
+    // Still the same level, nothing open on screen
+    if (gen !== boardGen || $('scr-mine').hidden || bagQueue.length || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
+    tryDescend();
+  }, 900);
 }
 
 /* ---------- Rewards ---------- */
@@ -1737,12 +1948,16 @@ function checkRewards() {
     rw.found = true; paintRadar();
     rwEls[ri].classList.add('ready'); findLabel(rw); sfx('ore');
     if (!$('tuto').hidden) closeTuto();
+    startCoach('tresor', [{ text: TX.tresor, target: () => rwEls[ri], done: () => !!rw.taken }], true);
     if (S.rewards.every(r => r.found)) levelDone();
   });
 }
 function takeReward(ri) {
   const rw = S.rewards[ri]; if (!rw || rw.taken === true || bagQueue.length) return;
   rw.taken = true; rwEls[ri].classList.remove('ready', 'left'); stat('tresors');
+  setTimeout(checkAutoNext);
+  // A guaranteed treasure is only guaranteed until it has been picked up once
+  if (rw.guaranteed) (S.guarDone = S.guarDone || {})[S.level] = true;
   collect(rw, ri);
 }
 // Treasures found while the bag is full wait here, one choice at a time
@@ -1790,13 +2005,14 @@ function resolveBagFull(dropIndex) {
     pickUp(rw, ri);
   }
   if (bagQueue.length) setTimeout(askBagFull, 300);
+  else checkAutoNext();
 }
 $('bagReplace').addEventListener('click', () => { unlockAudio(); resolveBagFull(+$('bagReplace').dataset.drop); });
 $('bagLeaveNew').addEventListener('click', () => resolveBagFull(null));
 const CONS_LIST = [
-  { k: 'bombs', name: 'Bombe', icon: () => TOOLS.bomb, desc: 'Fait sauter les 9 cases autour de la case touchée.', use: () => { $('bagViewModal').hidden = true; armBomb(); }, open: () => has('boutique') || S.bombs > 0 },
+  { k: 'bombs', name: 'Bombe', icon: () => TOOLS.bomb, desc: 'Fait sauter les 9 cases autour de la case touchée.', use: () => { $('bagViewModal').hidden = true; armBomb(); }, open: () => has('bombes') || S.bombs > 0 },
   { k: 'radars', name: 'Radar', icon: () => RADAR, desc: "Entoure l'emplacement d'un trésor caché.", use: () => { $('bagViewModal').hidden = true; useRadar(); }, open: () => has('radar') || S.radars > 0 },
-  { k: 'potions', name: "Potion d'énergie", icon: () => POTION, desc: 'Remplit ton énergie au maximum.', use: () => { $('bagViewModal').hidden = true; usePotion(); }, open: () => has('boutique') || S.potions > 0 },
+  { k: 'potions', name: "Potion d'énergie", icon: () => POTION, desc: 'Remplit ton énergie au maximum.', use: () => { $('bagViewModal').hidden = true; usePotion(); }, open: () => has('potions') || S.potions > 0 },
 ];
 function renderCons() {
   const list = CONS_LIST.filter(x => x.open());
@@ -1820,7 +2036,7 @@ document.addEventListener('click', e => {
 function openBagView() {
   renderCons();
   // During the bomb tutorial, open straight on the consumables
-  bagTab($('bagPill').classList.contains('hint') && !$('bagTabs').hidden ? 'cons' : 'items');
+  bagTab(coachStep() && coachStep().cons && !$('bagTabs').hidden ? 'cons' : 'items');
   const n = S.trip.finds.length, cap = bagCap(), free = cap - n;
   $('bagViewText').textContent = `${n} / ${cap} cases utilisées · ${free > 0 ? `${free} place${free > 1 ? 's' : ''} libre${free > 1 ? 's' : ''}` : 'sac plein'}`;
   $('bagViewList').innerHTML = n
@@ -1860,20 +2076,33 @@ function autoSell(rw, ri) {
 }
 function pickUp(rw, ri) {
   S.trip.finds.push({ kind: rw.kind, key: rw.key });
+  // The bag is introduced the first time it gets full: it appears, with a short bubble pointing at "go back up"
+  // The bag appears with the very first treasure picked up
+  if (!S.bagSeen) { S.bagSeen = true; applyUnlocks(); }
+  // The first time it gets full: a short tutorial pointing at "go back up" (shown once)
+  if (S.trip.finds.length >= bagCap())
+    startCoach('sacPlein', [{ text: TX.sacPlein, target: () => $('upBtn'), done: () => $('scr-mine').hidden || !$('recapModal').hidden }]);
   updateBadge();
   sfx('reward');
   const el = rwEls[ri]; el.classList.add('done');
   const { x, y } = { x: (rw.c + rw.w / 2) * ts(), y: (rw.r + rw.h / 2) * ts() };
   burst(x, y, ['#fff6a8', '#ffc23d', '#ffffff'], 16, { spread: 46, up: 10, size: [3, 7], dur: 800 });
   updateGoals(); save();
-  setTimeout(() => fly(el, slotEls[ri], () => {
+  const gen = boardGen;
+  setTimeout(() => {
+    // The player already went to the next level: nothing left to animate
+    if (gen !== boardGen || !slotEls[ri]) return updateBadge();
+    fly(el, slotEls[ri], () => {
+    if (gen !== boardGen || !slotEls[ri]) return updateBadge();
     const s = slotEls[ri]; s.classList.add('found'); s.title = rwName(rw);
     s.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 300 });
     updateBadge();
-  }), 150);
+  }); }, 150);
 }
 function fly(el, target, done) {
   const a = el.getBoundingClientRect(), b = target.getBoundingClientRect();
+  // Nothing to fly from (element gone or not laid out): skip the animation
+  if (!a.width || !a.height || !el.isConnected) { done(); return; }
   const f = document.createElement('div'); f.className = 'flyer'; f.innerHTML = el.innerHTML;
   Object.assign(f.style, { left: a.left + 'px', top: a.top + 'px', width: a.width + 'px', height: a.height + 'px' });
   document.body.append(f); el.style.opacity = 0;
@@ -1962,13 +2191,19 @@ function renderForge() {
       <div class="sbuy">${done ? '<span class="maxed">Max</span>' : later ? LATER : priceHTML(cost) + `<button class="btn sm" data-up="${k}" ${canPay(cost) ? '' : 'disabled'}>Forger</button>`}</div></div>`;
   }).join('');
 }
+// Each shop article appears at its own level (config.js > progression > deblocages)
+const CONS_UNLOCK = { bomb: 'bombes', potion: 'potions', radar: 'radar' };
+const SHOP_ITEMS = ['boutique', 'bombes', 'potions', 'radar'];   // 'boutique' = "Agrandir le sac"
+const shopNew = () => SHOP_ITEMS.some(k => has(k) && !(S.shopSeen || {})[k]);
 function renderShopScreen() {
+  // Visiting the shop marks its new articles as seen
+  S.shopSeen = S.shopSeen || {}; SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; });
   $('shopWallet').innerHTML = walletHTML(['coin']);
   const lvl = S.bagLvl, next = BAG_UP[lvl], later = next && (next.biome || 1) > curBiome();
   const bagRow = `<div class="srow"><div class="sic">${img('Assets/Bag.png')}<i>${bagCap()}</i></div>
       <div class="stxt"><b>Agrandir le sac</b><span>${next && !later ? `${bagCap()} → ${next.cases} cases` : `${bagCap()} cases`}</span><span class="pips">${pipsHTML(lvl, BAG_UP.map(b => ({ biome: b.biome || 1 })))}</span></div>
       <div class="sbuy">${later ? LATER : next ? priceHTML({ coin: next.pieces }) + `<button class="btn sm" data-bagup="1" ${canPay({ coin: next.pieces }) ? '' : 'disabled'}>Agrandir</button>` : '<span class="maxed">Max</span>'}</div></div>`;
-  $('conList').innerHTML = bagRow + Object.entries(CONSUMABLES).filter(([k]) => k !== 'radar' || has('radar')).map(([k, c]) =>
+  $('conList').innerHTML = bagRow + Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k])).map(([k, c]) =>
     `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
       <div class="stxt"><b>${c.name}</b><span>${c.desc}</span></div>
       <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) ? '' : 'disabled'}>Acheter</button></div></div>`).join('');
@@ -2031,6 +2266,7 @@ function go(name) {
   SCREENS.forEach(n => $('scr-' + n).hidden = n !== name);
   if (name === 'village' || name === 'mine') S.screen = name;
   if (name !== 'atelier') stopMini();
+  if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
   ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, forge: renderForge, atelier: renderAtelier, mine: enterMine })[name]();
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -2041,10 +2277,33 @@ document.addEventListener('click', e => {
 });
 /* Backpack: treasures and geodes found during an expedition take one slot each (ores don't) */
 const BAG_UP = CFG.sac.agrandissements;
-const bagCap = () => !has('pioche') ? Infinity : S.bagLvl > 0 ? BAG_UP[Math.min(S.bagLvl, BAG_UP.length) - 1].cases : CFG.sac.casesDepart;
+const bagCap = () => S.bagLvl > 0 ? BAG_UP[Math.min(S.bagLvl, BAG_UP.length) - 1].cases : CFG.sac.casesDepart;
+// Coins picked up in the mine fly from the cell to the bag block
+function flyCoins(i, n) {
+  const b = board.getBoundingClientRect(), t = ts(), dst = $('bagPill').getBoundingClientRect();
+  const x0 = b.left + (i % COLS + .5) * t, y0 = b.top + ((i / COLS | 0) + .5) * t;
+  const count = Math.min(6, Math.max(2, Math.round(n / 10)));
+  if (reduced || $('bagPill').hidden || !dst.width) { updateBadge(); return; }
+  setTimeout(updateBadge, 1300);   // in case the animation does not finish (hidden tab…)
+  for (let k = 0; k < count; k++) {
+    const c = document.createElement('div'); c.className = 'coin-fly'; c.innerHTML = COIN;
+    Object.assign(c.style, { left: x0 - 11 + 'px', top: y0 - 11 + 'px' });
+    document.body.append(c);
+    const dx = dst.left + 20 - x0, dy = dst.top + dst.height / 2 - y0, sx = rand(-30, 30), sy = rand(-50, -20);
+    c.animate([
+      { transform: 'translate(0,0) scale(.6)', opacity: 0 },
+      { transform: `translate(${sx}px, ${sy}px) scale(1.1)`, opacity: 1, offset: .3 },
+      { transform: `translate(${dx}px, ${dy}px) scale(.7)`, opacity: 1 },
+    ], { duration: 650 + k * 70, easing: 'cubic-bezier(.5,0,.5,1)' }).onfinish = () => {
+      c.remove();
+      if (k === count - 1) { updateBadge(); const p = $('bagPill'); p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); sfx('pick'); }
+    };
+  }
+}
 function updateBadge() {
   const n = S.trip.finds.length, cap = bagCap();
-  $('bagTxt').textContent = `Sac ${n}/${cap}`;
+  const coins = S.trip.coins || 0;
+  $('bagTxt').innerHTML = `Sac ${n}/${cap}` + (coins ? ` · ${coins} ${COIN}` : '');
   $('bagPill').classList.toggle('full', n >= cap);
 }
 function item(svg, name, n, locked, extra = '') {
@@ -2068,32 +2327,43 @@ const goalValue = type => type === 'niveau' ? S.reached : type === 'collection' 
 const goalOpen = o => !o.deblocage || (o.deblocage === 'musee' ? !!S.buildings.museum : has(o.deblocage));
 function newGoal(exclude) {
   const opts = OBJ.liste.filter(o => goalOpen(o) && !exclude.includes(o.type)
-    && !(o.type === 'niveau' && S.reached >= 1000) && !(o.type === 'collection' && tierSum() >= Object.keys(SETS).length * 3));
+    && !(o.type === 'niveau' && S.reached >= 1000) && !(o.type === 'collection' && tierSum() >= Object.keys(SETS).length * MAX_STARS));
   if (!opts.length) return null;
   const o = opts[randInt(0, opts.length - 1)], start = goalValue(o.type);
-  let n = randInt(...o.quantite), target = start + n;
+  // A round number picked among the choices of config.js (older settings: [min, max])
+  const ch = o.choix || o.quantite || [1];
+  let n = o.choix ? ch[randInt(0, ch.length - 1)] : randInt(...ch), target = start + n;
   // "Reach level N": N is a round number a little below the record's reach
   if (o.type === 'niveau') { target = Math.min(1000, Math.ceil((S.reached + n) / 5) * 5); n = target; }
   const reward = Math.round(o.pieces * (1 + OBJ.bonusParBiome * (curBiome() - 1)) / 5) * 5;
   return { type: o.type, n, start, target, reward };
 }
 function fillGoals() {
-  S.goals = (S.goals || []).filter(g => OBJ.liste.some(o => o.type === g.type));
+  // Goals from older versions with a non-round number are replaced
+  S.goals = (S.goals || []).filter(g => { const o = OBJ.liste.find(x => x.type === g.type); return o && (g.type === 'niveau' || !o.choix || o.choix.includes(g.n)); });
   while (S.goals.length < OBJ.nombre) { const g = newGoal(S.goals.map(x => x.type)); if (!g) break; S.goals.push(g); }
 }
 const goalDone = g => goalValue(g.type) >= g.target;
+// An icon for each kind of goal
+const LEVEL_ICON = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#7d3c98" stroke="#3b2245" stroke-width="3"/><path d="M20 9 V27 M12 20 L20 29 L28 20" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const GOAL_ICON = {
+  terre: () => img('Assets/Ground/Ground_Dirt_01.png'), pierres: () => img('Assets/Ground/Ground_Stone_01.png'),
+  minerais: () => resArt('copper'), tresors: () => artArt('coquillage'), niveaux: () => TOOLS.pickaxe, niveau: () => LEVEL_ICON,
+  forge: () => img('Assets/Overworld/Forge.png'), geodes: () => geodeArt('white'), magma: () => TOOLS.bucket,
+  bombes: () => TOOLS.bomb, collection: () => img('Assets/Overworld/Museum.png'),
+};
 function renderGoals() {
   fillGoals();
   const ready = S.goals.filter(goalDone).length;
-  $('vgReady').textContent = ready ? `${ready} réussi${ready > 1 ? 's' : ''} !` : '';
-  $('vGoals').classList.toggle('closed', !!S.goalsClosed);
-  $('vgHead').setAttribute('aria-expanded', !S.goalsClosed);
+  // Badge on the scroll button when a reward waits
+  $('questBadge').hidden = !ready; $('questBadge').textContent = ready;
+  $('questBtn').classList.toggle('ready', !!ready);
   $('vgList').innerHTML = S.goals.map((g, i) => {
     const v = goalValue(g.type), done = v >= g.target, o = OBJ.liste.find(x => x.type === g.type);
     const cur = g.type === 'niveau' ? Math.min(v, g.target) : Math.min(v - g.start, g.target - g.start);
     const tot = g.type === 'niveau' ? g.target : g.target - g.start;
     const pct = Math.max(0, Math.min(100, (v - g.start) / (g.target - g.start) * 100));
-    return `<div class="vg-row${done ? ' done' : ''}"><div class="vg-txt"><span>${o.texte.replace('{n}', g.n)}</span>
+    return `<div class="vg-row${done ? ' done' : ''}"><span class="vg-ic">${(GOAL_ICON[g.type] || (() => ''))()}</span><div class="vg-txt"><span>${o.texte.replace('{n}', g.n)}</span>
       <div class="bar mini"><i style="width:${pct}%"></i><span>${cur} / ${tot}</span></div></div>
       ${done ? `<button class="btn sm" data-claim="${i}" aria-label="Récupérer ${g.reward} pièces">+${g.reward}${COIN}</button>` : `<span class="vg-rw">+${g.reward}${COIN}</span>`}</div>`;
   }).join('');
@@ -2109,9 +2379,48 @@ document.addEventListener('click', e => {
   toast(`Objectif réussi : +${g.reward} pièces !`, 'good');
   renderVillage(); save();
 });
-$('vgHead').addEventListener('click', () => { unlockAudio(); sfx('pick'); S.goalsClosed = !S.goalsClosed; renderGoals(); save(); });
+$('questBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); renderGoals(); $('goalsModal').hidden = false; $('goalsClose').focus(); });
+$('goalsClose').addEventListener('click', () => { $('goalsModal').hidden = true; });
+$('goalsModal').addEventListener('click', e => { if (e.target.id === 'goalsModal') $('goalsModal').hidden = true; });
+// Camera slides to a building (keeps the map inside the screen)
+function panTo(el, done) {
+  const w = world.getBoundingClientRect(), r = el.getBoundingClientRect();
+  const tx = cam.x + (w.width / 2 - (r.left - w.left + r.width / 2)), ty = cam.y + (w.height / 2 - (r.top - w.top + r.height * .6));
+  const x0 = cam.x, y0 = cam.y, t0 = performance.now(), dur = reduced ? 1 : 700;
+  let finished = false;
+  const finish = () => { if (finished) return; finished = true; cam.x = tx; cam.y = ty; applyCam(); done && done(); };
+  const step = now => {
+    if (finished) return;
+    const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    cam.x = x0 + (tx - x0) * e; cam.y = y0 + (ty - y0) * e; applyCam();
+    if (k < 1) requestAnimationFrame(step); else finish();
+  };
+  requestAnimationFrame(step);
+  setTimeout(finish, dur + 150);   // always ends, even if the animation frames are delayed
+}
+let revealing = false;
+function revealBuildings() {
+  if (revealing || !(S.newBuildings || []).length || $('scr-village').hidden) return;
+  revealing = true;
+  const k = S.newBuildings[0], b = document.querySelector(`.bld[data-go="${k}"]`);
+  if (!b) { S.newBuildings.shift(); revealing = false; return revealBuildings(); }
+  panTo(b, () => {
+    b.classList.remove('pending'); b.classList.add('appear'); sfx('reward');
+    S.newBuildings.shift(); save();
+    setTimeout(() => { b.classList.remove('appear'); revealing = false; revealBuildings(); }, 1100);
+  });
+}
 function renderVillage() {
   applyUnlocks();
+  // Buildings waiting for their entrance stay hidden until the camera reaches them; "Nouveau !" until first visit
+  document.querySelectorAll('.bld').forEach(b => {
+    const k = b.dataset.go;
+    if (!revealing || !b.classList.contains('appear')) b.classList.toggle('pending', (S.newBuildings || []).includes(k));
+    let nb = b.querySelector('.bnew');
+    if ((S.bldNew || {})[k] && !nb) { nb = document.createElement('span'); nb.className = 'badge bnew'; nb.textContent = 'Nouveau !'; b.querySelector('.plate').append(nb); }
+    if (nb) nb.hidden = !(S.bldNew || {})[k];
+  });
+  setTimeout(revealBuildings, 350);
   renderGoals();
   $('villageWallet').innerHTML = walletHTML(['coin', ...Object.keys(ORES)]);
   $('subMuseum').textContent = `${museumOwned()} / ${museumTotal()} trésors`;
@@ -2119,6 +2428,8 @@ function renderVillage() {
   $('subAtelier').textContent = g ? `${g} géode${g > 1 ? 's' : ''}` : 'Aucune géode';
   $('badgeAtelier').hidden = !g; $('badgeAtelier').textContent = g;
   $('badgeForge').hidden = !anyUpgradeAffordable();
+  $('badgeMuseum').hidden = !museumPrimeWaiting() || !!(S.bldNew || {}).museum;
+  $('badgeShop').hidden = !S.buildings.shop || !shopNew() || !!(S.bldNew || {}).shop;
   const cps = CHECKPOINTS.filter(l => l <= S.reached).length;
   $('mineDepth').textContent = cps ? `Record : niveau ${S.reached} · ${cps} checkpoint${cps > 1 ? 's' : ''}` : `Record : niveau ${S.reached}`;
   applyCam();
@@ -2178,6 +2489,9 @@ addEventListener('resize', applyCam);
 const CP = CFG.checkpoints, BIOME_LEN = CFG.biomes.niveauxParBiome, BIOME_NAMES = CFG.biomes.noms;
 const CHECKPOINTS = [];
 for (let l = CP.tousLesNiveaux; l <= CP.dernier; l += CP.tousLesNiveaux) CHECKPOINTS.push(l);
+// Extra checkpoints (config.js > checkpoints > enPlus), e.g. level 5
+for (const l of CP.enPlus || []) if (!CHECKPOINTS.includes(l)) CHECKPOINTS.push(l);
+CHECKPOINTS.sort((a, b) => a - b);
 // Biome of a level (levels 1-100 = biome 1); a "camp" is the checkpoint closing a biome (100, 200…)
 const biomeOf = level => Math.ceil(level / BIOME_LEN);
 const isCamp = level => level % BIOME_LEN === 0;
@@ -2236,7 +2550,7 @@ $('liftModal').addEventListener('click', e => { if (e.target.id === 'liftModal')
 for (const b of [$('descendBtn'), $('shaftBtn')]) b.addEventListener('click', () => { unlockAudio(); sfx('pick'); openLift(); });
 function enterMine() {
   fitBoard();
-  if (!S.introDone) { S.introDone = true; setTimeout(() => toast('Maintiens et glisse la pelle sur la terre pour creuser !', 'good'), 500); }
+  S.introDone = true;
   updateNextPill();
 }
 $('upBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); openRecap(); });
@@ -2247,14 +2561,18 @@ const findArt = (kind, key) => kind === 'gem' ? gemArt(key) : kind === 'geode' ?
 /* Economy (config.js > economie): first-find primes by rarity, series levels that raise duplicate prices */
 const RARITY_GEM = Object.fromEntries(Object.entries(GEMS).map(([k, o]) => [k, o.rarity]));
 const PRIME = CFG.economie.primeDecouverte;
-const TIER_NAMES = ['', 'Bronze', 'Argent', 'Or'];
-const TIER_BONUS = [0, CFG.economie.bonusNiveauSerie.bronze, CFG.economie.bonusNiveauSerie.argent, CFG.economie.bonusNiveauSerie.or];
+// Collection stars: completed once = 1 star, twice = 2 stars… (config.js > economie > etoilesSeries)
+const STARS = CFG.economie.etoilesSeries, MAX_STARS = STARS.max;
+const TIER_BONUS = [0, ...STARS.bonusRevente];
+const starsHTML = n => '<span class="stars-set" aria-label="' + n + ' étoile' + (n > 1 ? 's' : '') + ' sur ' + MAX_STARS + '">' + Array.from({ length: MAX_STARS }, (_, i) => `<i class="${i < n ? 'on' : ''}">★</i>`).join('') + '</span>';
+// Prime of the n-th star of a collection, waiting at the Museum
+const starPrime = (set, n) => Math.round((SETS[set].prime || 0) * (STARS.primes[n - 1] ?? 0));
 const rarityOf = (kind, key) => kind === 'gem' ? GEMS[key].rarity : ARTS[key].rarity;
 const setTable = set => SETS[set].kind === 'gem' ? GEMS : ARTS;
 const setBook = set => SETS[set].kind === 'gem' ? S.bag.gems : S.bag.arts;
 const setKeys = set => Object.keys(setTable(set)).filter(a => setTable(set)[a].set === set);
 // A series' level = how many times it has been completed (fewest copies found of any of its items), capped at Or
-const setTier = set => Math.min(3, ...setKeys(set).map(a => setBook(set)[a] || 0));
+const setTier = set => Math.min(MAX_STARS, ...setKeys(set).map(a => setBook(set)[a] || 0));
 // Duplicates sell by rarity, plus the series level bonus
 const findValue = (kind, key) => {
   if (kind === 'crystal') return OPEN_VAL[key];
@@ -2276,7 +2594,9 @@ function applyFind(kind, key) {
     if (tierAfter > tierBefore) {
       r.setName = SETS[set].name; r.tierUp = tierAfter;
       // First completion: the series prime, plus its message or legend
-      if (tierAfter === 1) { r.setBonus = SETS[set].prime; r.coins += r.setBonus; r.setMsg = SETS[set].message; r.legend = SETS[set].legend; }
+      // The series prime is no longer paid here: it waits at the Museum, to be collected there
+      for (let n = tierBefore + 1; n <= tierAfter; n++) (S.pendingPrimes = S.pendingPrimes || []).push({ set, tier: n });
+      if (tierAfter === 1) { r.setMsg = SETS[set].message; r.legend = SETS[set].legend; }
     }
   }
   return r;
@@ -2285,7 +2605,7 @@ const tagHTML = r => r.tag === 'new' ? `<span class="rtag new">Nouveau${r.prime 
   : r.tag === 'geo' ? '<span class="rtag geo">Atelier</span>'
   : `<span class="rtag sold">Vendu +${r.coins}${COIN}</span>`;
 const findRow = r => `<div class="rrow">${r.art}<div><b>${rarName(r.name, rarityOfFind(r.kind, r.key))}</b><span>${r.tag === 'sold' ? 'Doublon' : r.kind === 'geode' ? 'À ouvrir à l\'atelier' : 'Ajouté à ta collection'}</span></div>${tagHTML(r)}</div>`
-  + (r.tierUp ? `<div class="rrow">${r.art}<div><b>${r.setName} : série ${TIER_NAMES[r.tierUp]} !</b><span>Doublons de la série vendus +${Math.round(TIER_BONUS[r.tierUp] * 100)} %</span></div>${r.setBonus ? `<span class="rtag set">+${r.setBonus}${COIN}</span>` : `<span class="rtag tier">${TIER_NAMES[r.tierUp]}</span>`}</div>` : '')
+  + (r.tierUp ? `<div class="rrow">${r.art}<div><b>${r.setName} : nouvelle étoile ! ${starsHTML(r.tierUp)}</b><span>Prime à récupérer au Musée</span></div></div>` : '')
   + (r.setMsg ? `<div class="rrow">${r.art}<div><b>${r.setMsg}</b><span>${r.setName} réunies !</span></div></div>` : '')
   + (r.legend ? `<div class="rlegend">${r.legend}</div>` : '');
 
@@ -2301,48 +2621,82 @@ const BUILDINGS = {
   museum:  { name: 'le Musée',    key: null,       text: 'Tes trésors y sont exposés.' },
   forge:   { name: 'la Forge',    key: 'forge',    text: 'Améliore tes outils avec tes minerais.' },
   atelier: { name: "l'Atelier",   key: 'atelier',  text: 'Ouvre tes géodes pour trouver des gemmes.' },
-  shop:    { name: 'la Boutique', key: 'boutique', text: 'Bombes, potions et sac plus grand.' },
+  shop:    { name: 'la Boutique', key: 'boutique', text: 'Agrandis ton sac pour rapporter plus de trésors.' },
 };
 const OW_IMG = { museum: 'Museum', forge: 'Forge', atelier: 'Workshop', shop: 'Shop' };
 function openRecap() {
   const T = S.trip; let coins = 0;
-  // New buildings in the village (the Museum opens at the very first return)
+  // New buildings appear in the village itself (not on this screen)
   const opened = Object.entries(BUILDINGS).filter(([k, b]) => !S.buildings[k] && (!b.key || has(b.key))).map(([k]) => k);
-  opened.forEach(k => S.buildings[k] = true);
+  opened.forEach(k => { S.buildings[k] = true; (S.bldNew = S.bldNew || {})[k] = true; });
+  S.newBuildings = [...(S.newBuildings || []), ...opened];
   const rows = [...T.finds, ...(T.dupes || [])].map(f => { const r = applyFind(f.kind, f.key); coins += r.coins; return r; });
+  const total = coins + (T.coins || 0);
   S.coins += coins; S.trip = newTrip(); updateBadge();
   if (CFG.energie.rechargeAuVillage) { S.energy = maxE(); updateEnergy(true); }
-  const oreList = Object.entries(T.ores).filter(([, n]) => n);
-  $('recapText').textContent = rows.length || oreList.length
-    ? `Voici ce que tu rapportes de la mine (niveau ${S.level}).`
-    : 'Tu remontes les mains vides cette fois. Ton niveau t\'attend !';
-  $('recapOres').innerHTML = oreLootHTML(T.ores, 'Minerais récoltés');
-  $('recapOres').hidden = !oreList.length;
-  const found = T.coins ? `<div class="rrow">${COIN}<div><b>Pièces trouvées</b><span>Cases mystère et coffres bonus</span></div><span class="rtag new">+${T.coins}${COIN}</span></div>` : '';
-  $('recapList').innerHTML = found + opened.map(k => `<div class="rrow">${img('Assets/Overworld/' + OW_IMG[k] + '.png')}<div><b>Nouveau : ${BUILDINGS[k].name} !</b><span>${BUILDINGS[k].text}</span></div></div>`).join('') + rows.map(findRow).join('');
-  $('recapTotal').innerHTML = coins + (T.coins || 0) ? `+${coins + (T.coins || 0)} ${COIN}` : '';
+  // Same treasure found several times: one icon with ×2, ×3…
+  const groups = [];
+  for (const r of rows) {
+    const g = groups.find(x => x.kind === r.kind && x.key === r.key);
+    if (g) { g.n++; g.isNew = g.isNew || r.tag === 'new'; } else groups.push({ kind: r.kind, key: r.key, art: r.art, name: r.name, n: 1, isNew: r.tag === 'new' });
+  }
+  const oreList = Object.keys(ORES).filter(k => T.ores[k]);
+  const cells = groups.map(g => `<div class="lt">${g.art}${g.isNew ? '<span class="lt-new">Nouveau</span>' : ''}${g.n > 1 ? `<i class="lt-n">×${g.n}</i>` : ''}<span class="lt-nm">${rarName(g.name, rarityOfFind(g.kind, g.key))}</span></div>`)
+    .concat(oreList.map(k => `<div class="lt ore">${resArt(k)}<b>+${T.ores[k]}</b><span class="lt-nm">${ORES[k].name}</span></div>`));
+  cells.forEach((h, i) => cells[i] = h.replace('<div class="lt', `<div style="animation-delay:${i * 60}ms" class="lt`));
+  $('recapText').textContent = cells.length || total ? `Ton butin du niveau ${S.level}` : 'Tu remontes les mains vides cette fois. Ton niveau t\'attend !';
+  $('recapGrid').innerHTML = cells.join('');
+  // The coin total counts up
+  const out = $('recapTotal');
+  out.innerHTML = total ? `+<span id="recapCount">0</span> ${COIN}` : '';
+  if (total) {
+    const t0 = performance.now(), dur = Math.min(1600, 500 + total * 4), delay = 300 + cells.length * 60;
+    const step = now => {
+      const k = Math.min(1, Math.max(0, (now - t0 - delay) / dur)), el = $('recapCount');
+      if (!el) return;
+      el.textContent = Math.round(total * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    setTimeout(() => { const el = $('recapCount'); if (el) el.textContent = total; }, delay + dur + 200);
+  }
   $('recapAtelier').hidden = !S.bag.geodes.length || !S.buildings.atelier;
   $('descendModal').hidden = true;
   $('recapModal').hidden = false;
-  if (rows.length) sfx('reward');
+  if (cells.length) sfx('reward');
   save();
 }
 $('recapAtelier').addEventListener('click', () => { $('recapModal').hidden = true; go('atelier'); });
 $('recapVillage').addEventListener('click', () => { $('recapModal').hidden = true; go('village'); });
 
 /* ---------- Museum ---------- */
+const museumPrimeWaiting = () => (S.pendingPrimes || []).length > 0;
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-claimset]'); if (!b) return;
+  const sk = b.dataset.claimset, list = (S.pendingPrimes || []).filter(p => p.set === sk);
+  if (!list.length) return;
+  const due = list.reduce((a, p) => a + starPrime(sk, p.tier), 0);
+  S.coins += due; S.pendingPrimes = S.pendingPrimes.filter(p => p.set !== sk);
+  unlockAudio(); sfx('reward');
+  toast(`${SETS[sk].name} : +${due} pièces !`, 'good');
+  renderMuseum(); save();
+});
 function renderMuseum() {
   const B = S.bag, cell = (art, name, owned, val, count, rar) =>
     `<div class="item${owned ? '' : ' locked'}">${art}<span class="nm">${rarName(owned ? name : '???', rar)}</span>${owned ? `<span class="mtag" title="Prix de vente d'un doublon">${val}${COIN}</span>` : ''}${count > 1 ? `<span class="cnt">trouvé ×${count}</span>` : ''}</div>`;
   const setHTML = ([sk, set]) => {
     const keys = setKeys(sk), tier = setTier(sk), book = setBook(sk), table = setTable(sk);
     // Progress towards the next level: items found at least (tier + 1) times
-    const got = keys.filter(k => (book[k] || 0) > tier).length;
-    const next = tier < 3 ? `Vers ${TIER_NAMES[tier + 1]} : ${got} / ${keys.length}${tier === 0 && set.prime ? ` · prime ${set.prime} pièces` : ''} · doublons +${Math.round(TIER_BONUS[tier + 1] * 100)} %` : 'Niveau maximum atteint';
+    const got = keys.filter(k => (book[k] || 0) > tier).length, missing = keys.length - got;
+    const next = tier < MAX_STARS ? `Prochaine étoile : encore ${missing} objet${missing > 1 ? 's' : ''}${set.prime && starPrime(sk, tier + 1) ? ` · prime ${starPrime(sk, tier + 1)} pièces` : ''}` : 'Toutes les étoiles obtenues !';
     // Where to look: depth zones and ground
     const where = set.kind === 'gem' ? 'Dans les géodes'
       : 'Où : ' + rangeText(Math.min(...keys.map(k => table[k].range[0])), Math.max(...keys.map(k => table[k].range[1]))) + (SOIL_FR[table[keys[0]].soil] ? ', ' + SOIL_FR[table[keys[0]].soil] : '');
-    return `<div class="set t${tier}"><div class="set-head"><b>${set.name}${tier ? `<span class="tier t${tier}">${TIER_NAMES[tier]} · +${Math.round(TIER_BONUS[tier] * 100)} %</span>` : ''}</b><small>${keys.filter(k => book[k]).length} / ${keys.length}</small></div>
+    // Primes waiting for this collection
+    const waiting = (S.pendingPrimes || []).filter(p => p.set === sk), due = waiting.reduce((a, p) => a + starPrime(sk, p.tier), 0);
+    const claim = waiting.length ? `<div class="set-claim"><span>${waiting.length > 1 ? 'Nouvelles étoiles' : 'Nouvelle étoile'} !${set.message && waiting.some(p => p.tier === 1) ? ' ' + set.message : ''}</span><button class="btn sm" data-claimset="${sk}">Récupérer +${due}${COIN}</button></div>` : '';
+    return `<div class="set t${Math.min(tier, 3)}"><div class="set-head"><b>${set.name}${starsHTML(tier)}${tier ? `<span class="set-bonus">doublons +${Math.round(TIER_BONUS[tier] * 100)} %</span>` : ''}</b><small>${keys.filter(k => book[k]).length} / ${keys.length}</small></div>
+      ${claim}
       <p class="set-where">${where}</p>
       <div class="items">${keys.map(k => cell(itemArt(table[k]), table[k].name, book[k], findValue(set.kind, k), book[k], table[k].rarity)).join('')}</div>
       ${tier && set.message ? `<p class="set-legend">${set.message}</p>` : ''}${tier && set.legend ? `<p class="set-legend">${set.legend}</p>` : ''}
@@ -2351,7 +2705,7 @@ function renderMuseum() {
   // Only series with at least one treasure found are shown (no spoilers)
   const all = Object.entries(SETS), sets = all.filter(([sk]) => setKeys(sk).some(k => setBook(sk)[k]));
   const hidden = all.length - sets.length;
-  $('museumBody').innerHTML = `<p>${museumOwned()} trésors sur ${museumTotal()} sont exposés. Chaque nouveau trésor rapporte une prime, les doublons sont vendus à leur valeur. Complète une série 1, 2, 3 fois : Bronze, Argent, Or.</p>
+  $('museumBody').innerHTML = `<p>${museumOwned()} trésors sur ${museumTotal()} sont exposés. Chaque nouveau trésor rapporte une prime, les doublons sont vendus à leur valeur. Complète une collection pour gagner une étoile : chaque étoile augmente le prix de revente de ses doublons.</p>
     ${['gem', 'art'].map(kind => {
       const list = sets.filter(([, set]) => set.kind === kind);
       return list.length ? `<h3>${kind === 'gem' ? 'Gemmes' : 'Artefacts'}</h3>${list.map(setHTML).join('')}` : '';
@@ -2398,7 +2752,7 @@ function startMini(g) {
   $('mgResult').hidden = true; $('wsEmpty').hidden = true;
   $('mini').hidden = false; $('mgHit').disabled = false;
   $('mgGeode').innerHTML = geodeArt(g); $('mgGeode').dataset.crack = 0;
-  $('mgResist').innerHTML = rarTag(GEODES[g].rarity) + ' ' + '★'.repeat(tier + 1) + '<span class="off">' + '★'.repeat(3 - tier) + '</span>';
+  $('mgResist').innerHTML = rarTag(GEODES[g].rarity) + ' ' + '●'.repeat(tier + 1) + '<span class="off">' + '●'.repeat(3 - tier) + '</span>';
   $('mgResist').setAttribute('aria-label', `Géode ${RARITY_FR[GEODES[g].rarity]}, résistance ${tier + 1} sur 4`);
   // Tell the rule for running out of hearts before the first strike
   const lives = CFG.atelier.vies;
@@ -2498,13 +2852,13 @@ const renderHelp = () => $('help').innerHTML = [
   [null, TOOLS.shovel, '<b>Pelle</b> : maintiens et glisse sur la terre pour la retirer. Elle ne coûte rien.'],
   ['pioche', TOOLS.pickaxe, '<b>Pioche</b> : touche la pierre pour la casser. Chaque coup coûte 1 énergie : pierre 3 coups, minerai 3, magma refroidi 5.'],
   ['magma', TOOLS.bucket, '<b>Arrosoir</b> : refroidit le magma. Il lui faut quelques secondes pour se remplir.'],
-  ['boutique', TOOLS.bomb, '<b>Bombe</b> : dans ton sac, onglet Consommables. Elle fait sauter les 9 cases autour de la cible, sauf le magma chaud.'],
+  ['bombes', TOOLS.bomb, '<b>Bombe</b> : dans ton sac, onglet Consommables. Elle fait sauter les 9 cases autour de la cible, sauf le magma chaud.'],
   ['radar', RADAR, '<b>Radar</b> : dans ton sac, onglet Consommables. Il entoure l\'emplacement d\'un trésor caché.'],
-  ['pioche', img('Assets/Bag.png'), '<b>Sac</b> : chaque trésor et chaque géode prend une case (les minerais ne comptent pas). Agrandis-le à la boutique.'],
+  [() => S.bagSeen, img('Assets/Bag.png'), '<b>Sac</b> : chaque trésor et chaque géode prend une case (les minerais ne comptent pas). Agrandis-le à la boutique.'],
   [() => S.reached >= CHECKPOINTS[0], UP_ICON, '<b>Ascenseur</b> : au village, « Descendre » te propose les checkpoints débloqués (niveau 10, 20, 30…), rangés par biome. C\'est gratuit.'],
   [null, UP_ICON, '<b>Remonter</b> : quitte la mine quand tu veux. Ton sac se vide : les nouveaux trésors vont au musée, les doublons sont vendus.'],
-  [() => S.buildings.museum, artArt('lion'), '<b>Musée</b> : chaque nouveau trésor rapporte une prime. Complète une série 1, 2, 3 fois pour la passer Bronze, Argent, Or : ses doublons se vendent plus cher.'],
-  [() => S.buildings.shop, img('Assets/Bag.png'), '<b>Boutique</b> : bombes, radars et potions d\'énergie, payés en pièces.'],
+  [() => S.buildings.museum, artArt('lion'), '<b>Musée</b> : chaque nouveau trésor rapporte une prime. Complète une collection pour gagner une étoile (jusqu\'à ' + MAX_STARS + ') : ses doublons se vendent plus cher, et la prime se récupère au Musée.'],
+  [() => S.buildings.shop, img('Assets/Bag.png'), '<b>Boutique</b> : agrandis ton sac. D\'autres articles arrivent plus profond.'],
   [() => S.buildings.forge, resArt('iron'), '<b>Forge</b> : améliore tes outils avec du fer, du cuivre, de l\'or et des pièces.'],
   ['pierreDure', TOOLS.pickaxe, '<b>Pierre dure</b> : il faut deux fois plus de coups de pioche.'],
   ['source', TOOLS.shovel, '<b>Source</b> : creuse-la à la pelle, son eau refroidit le magma collé à elle.'],
@@ -2540,11 +2894,11 @@ function levelDone() {
   stat('niveaux'); sfx('win');
   if (!reduced) board.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(1.25)' }, { filter: 'brightness(1)' }], { duration: 700 });
   // Guardian level: the big reward, given once per guardian level, shown in the bubble
-  if (floorKind(S.level) === 'guardian' && !S.tuto && !S.guardDone[S.level]) {
+  if ((S.floor || floorKind(S.level)) === 'guardian' && !S.tuto && !S.guardDone[S.level]) {
     const R = RY.niveauGardien.recompense, parts = [];
     const coins = R.pieces + R.piecesEnPlusParBiome * (biomeOf(S.level) - 1);
     S.coins += coins; parts.push(`+${coins} pièces`);
-    if (R.potions && has('boutique')) { S.potions += R.potions; updateQuick(); parts.push(`+${R.potions} potion${R.potions > 1 ? 's' : ''}`); }
+    if (R.potions && has('potions')) { S.potions += R.potions; updateQuick(); parts.push(`+${R.potions} potion${R.potions > 1 ? 's' : ''}`); }
     if (R.geode) {
       // The best geode colour unlocked so far goes straight to the Atelier
       const best = geodesAt(S.level).map(([k]) => k).sort((a, b) => RARITIES.indexOf(GEODES[b].rarity) - RARITIES.indexOf(GEODES[a].rarity))[0];
@@ -2565,7 +2919,7 @@ $('mine2Up').addEventListener('click', () => { $('mine2Modal').hidden = true; op
 // A full bag or little energy left: ask before going down
 function tryDescend() {
   if (S.level >= 1000) { S.mine2 = true; save(); $('mine2Modal').hidden = false; $('mine2Up').focus(); return; }
-  const full = has('pioche') && S.trip.finds.length >= bagCap(), low = has('pioche') && S.energy <= CFG.energie.alerteDescente;
+  const full = S.bagSeen && S.trip.finds.length >= bagCap(), low = has('pioche') && S.energy <= CFG.energie.alerteDescente;
   if (!full && !low) return descend();
   const why = [];
   if (full) why.push(`Ton sac est plein (${S.trip.finds.length}/${bagCap()}) : les prochains trésors devront remplacer ceux que tu portes.`);
@@ -2575,6 +2929,7 @@ function tryDescend() {
 }
 function descend() {
   $('descendModal').hidden = true;
+  bagQueue.length = 0; $('bagFullModal').hidden = true;
   S.level++; if (CFG.energie.rechargeEtageSuivant) S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges();
   S.rewardMsg = null; genLevel(S.level); buildBoard(true); updateEnergy(true); save();
   const newRecord = S.level > S.reached;
@@ -2629,6 +2984,10 @@ function start(data) {
   }
   S.up = Object.assign(freshState().up, S.up || {});
   if (!S.tutoSeen) S.tutoSeen = {};
+  // Saves from before: the bag and the shop articles already met are known
+  if (!saved || saved.bagSeen === undefined) S.bagSeen = S.reached > 3 || S.trip.finds.length >= bagCap();
+  if (!saved || !saved.shopSeen) { S.shopSeen = {}; if (S.buildings && S.buildings.shop) SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; }); }
+  if (!saved || !saved.guarDone) { S.guarDone = {}; for (const l of Object.keys(GUAR)) if (S.reached > +l) S.guarDone[l] = true; }
   if (!S.stats) S.stats = {};
   if (!Array.isArray(S.goals)) S.goals = [];
   S.bag.ores = Object.assign(zeroOres(), S.bag.ores); S.trip.ores = Object.assign(zeroOres(), S.trip.ores);

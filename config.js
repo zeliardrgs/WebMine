@@ -67,6 +67,9 @@ window.CONFIG = {
     // Nombre de cases au début du jeu
     casesDepart: 4,
 
+    // Le sac apparaît avec le premier trésor ramassé. La première fois qu'il est plein,
+    // un petit tutoriel montre le bouton Remonter (texte : progression > textesTuto > sacPlein)
+
     // Agrandissements achetables à la Boutique, dans l'ordre :
     // "cases" = taille du sac après l'achat, "pieces" = prix,
     // "biome" = à partir de quel biome atteint cet agrandissement est proposé
@@ -119,14 +122,16 @@ window.CONFIG = {
   progression: {
     // Niveau à partir duquel chaque nouveauté apparaît
     deblocages: {
-      pioche: 6,       // pioche, pierre, énergie et sac
-      cuivre: 16,      // minerai de cuivre
-      forge: 16,       // la Forge apparaît au village
+      pioche: 3,       // pioche, pierre et énergie (le sac est présenté la 1re fois qu'il est plein)
+      cuivre: 6,       // minerai de cuivre
+      forge: 6,        // la Forge apparaît au village (au retour suivant)
       fer: 21,         // minerai de fer
-      geodes: 31,      // géodes blanches et roses
-      atelier: 31,     // l'Atelier apparaît au village
-      magma: 51,       // magma et arrosoir
-      boutique: 76,    // la Boutique (bombes, potions, agrandir le sac)
+      geodes: 11,      // géodes blanches et roses
+      atelier: 11,     // l'Atelier apparaît au village (au retour suivant)
+      magma: 16,       // magma et arrosoir
+      boutique: 26,    // la Boutique, avec seulement "Agrandir le sac"
+      bombes: 36,      // les bombes arrivent à la Boutique (tutoriel avec une bombe offerte)
+      potions: 41,     // les potions d'énergie arrivent à la Boutique
       // Biomes suivants
       pierreDure: 101,   // biome 2 : pierre dure
       or: 101,           // minerai d'or
@@ -179,33 +184,54 @@ window.CONFIG = {
     // "depuis" = premier niveau concerné ; "tresors" = [minimum, maximum].
     grilles: [
       { depuis: 1,   taille: 3, tresors: [1, 1] },
-      { depuis: 16,  taille: 4, tresors: [2, 2] },
-      { depuis: 51,  taille: 5, tresors: [2, 2] },
+      { depuis: 6,   taille: 4, tresors: [2, 2] },
+      { depuis: 31,  taille: 5, tresors: [2, 2] },
       { depuis: 201, taille: 6, tresors: [3, 3] },
       { depuis: 501, taille: 7, tresors: [3, 4] },
     ],
 
-    // Niveaux tutoriels : grille 3×3, une seule nouveauté, l'outil utile mis en avant
-    // et une petite bulle d'explication.
+    // Niveaux tutoriels : grille 3×3, une seule nouveauté. Une main animée montre quoi faire,
+    // avec une phrase très courte (8 mots maximum) ; elle disparaît dès que le joueur le fait.
     // "nouveaute" : 'pierre', 'cuivre', 'fer', 'geode', 'magma', 'bombe', 'pierreDure', 'source',
     //               'magmaChaine', 'mystere', 'racines', 'glace', 'gaz' ou 'coffre'.
     // "outil" : l'outil mis en avant ('shovel' pelle, 'pickaxe' pioche, 'bucket' arrosoir, 'bomb' bombe).
-    tutoriels: [
-      { niveau: 6,  nouveaute: 'pierre', outil: 'pickaxe', texte: "Nouvel outil : la pioche ! Touche la pierre pour la casser. Chaque coup coûte 1 énergie." },
-      { niveau: 16, nouveaute: 'cuivre', outil: 'pickaxe', texte: "Du minerai de cuivre ! Casse-le à la pioche pour le récolter : il sert à la Forge." },
-      { niveau: 21, nouveaute: 'fer',    outil: 'pickaxe', texte: "Du minerai de fer ! Récolte-le à la pioche pour améliorer tes outils." },
-      { niveau: 31, nouveaute: 'geode',  outil: 'shovel',  texte: "Une géode ! Dégage-la, puis ouvre-la à l'Atelier du village pour trouver une gemme." },
-      { niveau: 51, nouveaute: 'magma',  outil: 'bucket',  texte: "Du magma ! Arrose-le pour le refroidir, puis casse-le à la pioche." },
-      { niveau: 76, nouveaute: 'bombe',  outil: 'bomb',    texte: "Voici une bombe offerte ! Ouvre ton sac, onglet Consommables, puis touche une case : elle fait sauter les 9 cases autour." },
-      { niveau: 101, nouveaute: 'pierreDure',  outil: 'pickaxe', texte: "De la pierre dure ! Il faut deux fois plus de coups de pioche pour la casser." },
-      { niveau: 201, nouveaute: 'source',      outil: 'shovel',  texte: "Une source ! Creuse-la à la pelle : son eau refroidit le magma collé à elle." },
-      { niveau: 301, nouveaute: 'magmaChaine', outil: 'bucket',  texte: "Du magma en chaîne ! Arrose une seule case : tout le magma collé refroidit d'un coup." },
-      { niveau: 401, nouveaute: 'mystere',     outil: 'shovel',  texte: "Une case mystère ! Creuse-la : c'est toujours un cadeau (pièces, minerai, potion ou géode)." },
-      { niveau: 501, nouveaute: 'racines',     outil: 'pickaxe', texte: "Des racines ! Casse la souche à la pioche : toutes ses racines disparaissent." },
-      { niveau: 601, nouveaute: 'glace',       outil: 'shovel',  texte: "De la glace ! La pioche y fait moitié moins de dégâts, mais collée au magma, elle fond : un coup de pelle suffit." },
-      { niveau: 701, nouveaute: 'gaz',         outil: 'bomb',    texte: "Du gaz ! Une bombe qui le touche fait une énorme explosion 5×5. Voici une bombe offerte : elle est dans ton sac, onglet Consommables." },
-      { niveau: 801, nouveaute: 'coffre',      outil: 'shovel',  texte: "Un coffre bonus ! Touche-le pour l'ouvrir : il contient toujours des pièces, et parfois plus." },
+    // Trésors garantis la PREMIÈRE fois qu'on joue ces niveaux (ensuite, tirage normal).
+    // "tresor" = un artefact (identifiant de la liste des collections) ; "geode" = 'blanche', 'rose', 'doree' ou 'cristal'.
+    tresorsGarantis: [
+      { niveau: 1,  tresor: 'feuille' },
+      { niveau: 2,  tresor: 'coquillage' },
+      { niveau: 3,  tresor: 'ammonite' },
+      { niveau: 11, geode: 'blanche' },
     ],
+
+    tutoriels: [
+      { niveau: 3,   nouveaute: 'pierre',      outil: 'pickaxe', texte: "Touche la pierre pour la casser" },
+      { niveau: 6,   nouveaute: 'cuivre',      outil: 'pickaxe', texte: "Casse le minerai de cuivre" },
+      { niveau: 11,  nouveaute: 'geode',       outil: 'shovel',  texte: "Glisse pour dégager la géode" },
+      { niveau: 16,  nouveaute: 'magma',       outil: 'bucket',  texte: "Arrose le magma" },
+      { niveau: 21,  nouveaute: 'fer',         outil: 'pickaxe', texte: "Casse le minerai de fer" },
+      { niveau: 36,  nouveaute: 'bombe',       outil: 'bomb',    texte: "Touche une case pour exploser" },
+      { niveau: 101, nouveaute: 'pierreDure',  outil: 'pickaxe', texte: "La pierre dure demande plus de coups" },
+      { niveau: 201, nouveaute: 'source',      outil: 'shovel',  texte: "Creuse la source" },
+      { niveau: 301, nouveaute: 'magmaChaine', outil: 'bucket',  texte: "Arrose une case : tout refroidit" },
+      { niveau: 401, nouveaute: 'mystere',     outil: 'shovel',  texte: "Creuse la case mystère" },
+      { niveau: 501, nouveaute: 'racines',     outil: 'pickaxe', texte: "Casse la souche" },
+      { niveau: 601, nouveaute: 'glace',       outil: 'shovel',  texte: "Creuse la glace près du magma" },
+      { niveau: 701, nouveaute: 'gaz',         outil: 'bomb',    texte: "Fais exploser le gaz" },
+      { niveau: 801, nouveaute: 'coffre',      outil: 'shovel',  texte: "Touche le coffre" },
+    ],
+
+    // Textes des autres tutoriels (une phrase très courte, 8 mots maximum).
+    // Chaque tutoriel montre une main animée et disparaît dès que le joueur fait l'action.
+    textesTuto: {
+      creuser: "Glisse pour creuser",                 // niveau 1
+      tresor: "Touche le trésor pour le ramasser",    // le 1er trésor dégagé
+      sacPlein: "Sac plein ! Remonte au village",     // la 1re fois que le sac est plein
+      ouvrirSac: "Ouvre ton sac",                     // tutoriels de la bombe
+      utiliserBombe: "Utilise la bombe",
+      // Quand il faut d'abord changer d'outil
+      outils: { shovel: "Prends la pelle", pickaxe: "Prends la pioche", bucket: "Prends l'arrosoir" },
+    },
   },
 
   /* ---------------------------------------------------------------
@@ -227,11 +253,13 @@ window.CONFIG = {
       tasDePieces: [3, 5],         // nombre de tas de pièces (un coup de pelle pour les ramasser)
       piecesParTas: [6, 12],       // pièces dans chaque tas
       bonusParBiome: 0.5,          // les tas valent +50 % à chaque biome plus profond
-      texte: "Niveau trésor ! Plein de minerai et de tas de pièces à ramasser à la pelle.",
+      texte: "Niveau trésor ! Des tas de pièces et du minerai à ramasser.",
     },
 
     // Niveau gardien (100, 200… 900) : un petit défi, une grosse récompense
     niveauGardien: {
+      // Niveaux gardiens en plus de 100, 200… 900 (le premier gardien arrive au niveau 30)
+      niveauxEnPlus: [30],
       pierreEnPlus: 1.6,           // quantité de pierre (1 = normal)
       partPierreDure: 0.6,         // part des pierres qui deviennent dures (dès que la pierre dure existe)
       casesDuBiomeEnPlus: 2,       // les cases spéciales du biome sont 2 fois plus nombreuses
@@ -262,6 +290,7 @@ window.CONFIG = {
      --------------------------------------------------------------- */
   checkpoints: {
     tousLesNiveaux: 10,   // un checkpoint tous les X niveaux (10, 20, 30…)
+    enPlus: [5],          // checkpoints en plus (le 5 évite de refaire le tout début après le premier retour)
     dernier: 990,         // dernier niveau qui a un checkpoint
   },
 
@@ -311,15 +340,24 @@ window.CONFIG = {
     // Prime pour une NOUVELLE découverte (la première fois qu'on trouve ce trésor), selon sa rareté (en pièces)
     primeDecouverte: { common: 10, rare: 25, epic: 50, legendary: 100 },
 
-    // Niveaux de série au Musée : une série complétée 1, 2 puis 3 fois passe Bronze, Argent puis Or.
-    // Le prix de revente des doublons de la série augmente alors de ce pourcentage (0.10 = +10 %).
-    bonusNiveauSerie: { bronze: 0.10, argent: 0.25, or: 0.50 },
+    // ÉTOILES DES COLLECTIONS (au Musée) : une collection complétée 1 fois = 1 étoile, 2 fois = 2 étoiles, etc.
+    etoilesSeries: {
+      // Nombre maximum d'étoiles. Pour en ajouter, augmente ce nombre ET ajoute une valeur
+      // dans "bonusRevente" et dans "primes" ci-dessous.
+      max: 3,
+      // Bonus de revente des doublons de la collection, selon son nombre d'étoiles (0.10 = +10 %)
+      bonusRevente: [0.10, 0.25, 0.50],          // 1 étoile, 2 étoiles, 3 étoiles
+      // Prime de chaque nouvelle étoile, en fraction de la prime de la collection
+      // (1 = la prime entière ; 0.5 = la moitié). À récupérer au Musée avec le bouton "Récupérer".
+      primes: [1, 0.5, 1],                       // 1re étoile, 2e étoile, 3e étoile
+    },
   },
 
   /* ---------------------------------------------------------------
      COLLECTIONS DU MUSÉE
      Rareté : 'common', 'rare', 'epic' ou 'legendary'.
-     "prime" = pièces gagnées la PREMIÈRE fois que la série est complétée.
+     "prime" = pièces de la collection, à récupérer au Musée à chaque nouvelle étoile
+     (en fraction de cette prime : voir economie > etoilesSeries > primes).
      Tu peux changer les noms, les raretés, les primes et les niveaux.
      Ne change pas les mots avant les deux-points (quartz:, fossiles:…) :
      ce sont les identifiants utilisés par le jeu et par les images.
@@ -474,7 +512,7 @@ window.CONFIG = {
     ],
     // Pioche renforcée : +1 dégât par coup à chaque niveau
     piocheRenforcee: [
-      { biome: 1, pieces: 250, fer: 15, cuivre: 10 },
+      { biome: 1, pieces: 80, cuivre: 5 },       // achetable dès que la Forge apparaît
       { biome: 2, pieces: 900, fer: 30, or: 10 },
       { biome: 6, pieces: 3000, or: 30, mithril: 10 },
     ],
@@ -516,23 +554,23 @@ window.CONFIG = {
 
     // Liste des objectifs possibles.
     // "texte" : {n} est remplacé par la quantité.
-    // "quantite" : [minimum, maximum] tirée au hasard.
+    // "choix" : la quantité est tirée au hasard parmi ces nombres ronds.
     // "pieces" : récompense (au biome 1).
     // "deblocage" : l'objectif n'est proposé qu'une fois cette nouveauté débloquée
     //   (mêmes noms que progression > deblocages, ou 'musee').
-    // Pour "Atteins le niveau {n}", la quantité est l'écart avec ton record (arrondi à 5).
+    // Pour "Atteins le niveau {n}", c'est l'écart avec ton record (le niveau visé est arrondi à 5).
     liste: [
-      { type: 'terre',      texte: 'Creuse {n} cases de terre',          quantite: [20, 40], pieces: 25 },
-      { type: 'tresors',    texte: 'Trouve {n} trésors',                 quantite: [3, 6],   pieces: 40 },
-      { type: 'niveaux',    texte: 'Termine {n} niveaux',                quantite: [3, 6],   pieces: 40 },
-      { type: 'niveau',     texte: 'Atteins le niveau {n}',              quantite: [5, 15],  pieces: 60 },
-      { type: 'pierres',    texte: 'Casse {n} pierres',                  quantite: [10, 25], pieces: 40, deblocage: 'pioche' },
-      { type: 'minerais',   texte: 'Récolte {n} minerais',               quantite: [8, 20],  pieces: 50, deblocage: 'cuivre' },
-      { type: 'forge',      texte: 'Achète une amélioration à la Forge', quantite: [1, 1],   pieces: 50, deblocage: 'forge' },
-      { type: 'geodes',     texte: 'Ouvre {n} géodes',                   quantite: [2, 4],   pieces: 60, deblocage: 'atelier' },
-      { type: 'magma',      texte: 'Refroidis {n} cases de magma',       quantite: [5, 12],  pieces: 40, deblocage: 'magma' },
-      { type: 'bombes',     texte: 'Utilise {n} bombes',                 quantite: [3, 5],   pieces: 50, deblocage: 'boutique' },
-      { type: 'collection', texte: 'Complète une collection',            quantite: [1, 1],   pieces: 100, deblocage: 'musee' },
+      { type: 'terre',      texte: 'Creuse {n} cases de terre',          choix: [20, 25, 30, 50], pieces: 25 },
+      { type: 'tresors',    texte: 'Trouve {n} trésors',                 choix: [5, 10],          pieces: 40 },
+      { type: 'niveaux',    texte: 'Termine {n} niveaux',                choix: [5, 10],          pieces: 40 },
+      { type: 'niveau',     texte: 'Atteins le niveau {n}',              choix: [5, 10],          pieces: 60 },
+      { type: 'pierres',    texte: 'Casse {n} pierres',                  choix: [10, 20, 25],     pieces: 40, deblocage: 'pioche' },
+      { type: 'minerais',   texte: 'Récolte {n} minerais',               choix: [10, 20, 25],     pieces: 50, deblocage: 'cuivre' },
+      { type: 'forge',      texte: 'Achète une amélioration à la Forge', choix: [1],              pieces: 50, deblocage: 'forge' },
+      { type: 'geodes',     texte: 'Ouvre {n} géodes',                   choix: [3, 5],           pieces: 60, deblocage: 'atelier' },
+      { type: 'magma',      texte: 'Refroidis {n} cases de magma',       choix: [5, 10],          pieces: 40, deblocage: 'magma' },
+      { type: 'bombes',     texte: 'Utilise {n} bombes',                 choix: [3, 5],           pieces: 50, deblocage: 'bombes' },
+      { type: 'collection', texte: 'Complète une collection',            choix: [1],              pieces: 100, deblocage: 'musee' },
     ],
   },
 
