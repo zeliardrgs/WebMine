@@ -14,6 +14,16 @@
 window.CONFIG = {
 
   /* ---------------------------------------------------------------
+     SON ET MUSIQUE
+     --------------------------------------------------------------- */
+  audio: {
+    // Volume des bruitages (coups, pièces, explosions…) : 1 = volume d'origine, 0.5 = moitié moins fort
+    volumeSons: 0.45,
+    // Volume de la musique de fond : 1 = normal, 2 = deux fois plus fort
+    volumeMusique: 1.2,
+  },
+
+  /* ---------------------------------------------------------------
      ÉNERGIE
      --------------------------------------------------------------- */
   energie: {

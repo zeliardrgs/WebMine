@@ -279,7 +279,16 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .screen{max-width:480px; height:100%; margin:0 auto; padding-inline:16px; padding-block:12px 18px; box-sizing:border-box; display:flex; flex-direction:column; gap:14px; overflow-y:auto}
 .topbar{display:flex; align-items:center; gap:8px}
 .topbar .wallet-bar{flex:1}
-.help-btn{font-family:var(--font-display); font-size:24px; color:var(--ink)}
+/* Settings window */
+.set-list{display:grid; gap:10px; margin-top:14px}
+.set-row{display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:52px; padding:6px 12px; border-radius:16px; background:#f8ead0; color:var(--ink); font-family:var(--font-display); font-size:19px}
+.switch{position:relative; width:74px; height:42px; flex:none; border:0; border-radius:21px; background:#c9b49a; box-shadow:inset 0 3px 0 rgba(0,0,0,.18); cursor:pointer; transition:background .2s}
+.switch i{position:absolute; top:4px; left:4px; width:34px; height:34px; border-radius:50%; background:#fff; box-shadow:0 3px 0 rgba(0,0,0,.22); transition:transform .2s}
+.switch[aria-checked="true"]{background:#4fb85f}
+.switch[aria-checked="true"] i{transform:translateX(32px)}
+.seg{display:flex; gap:4px; padding:4px; border-radius:16px; background:#e6d2b0}
+.seg button{min-height:42px; padding:0 12px; border:0; border-radius:12px; background:transparent; color:var(--ink); font-family:var(--font-display); font-size:16px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sun); box-shadow:0 3px 0 #c98a12}
 .wallet-bar{display:flex; gap:6px; flex-wrap:wrap; min-width:0}
 .res{display:flex; align-items:center; gap:3px; padding:3px 10px 3px 3px; border-radius:12px; background:var(--panel); color:var(--ink);
   font-family:var(--font-display); font-size:15px; font-variant-numeric:tabular-nums; box-shadow:0 3px 0 var(--panel-edge)}
@@ -327,6 +336,8 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .v-hud{position:absolute; left:0; right:0; top:0; padding:12px 16px 0; display:flex; align-items:center; gap:8px; pointer-events:none; z-index:10}
 .v-hud > *{pointer-events:auto}
 .v-hud .wallet-bar{flex:1}
+.v-hud .iconbtn{width:46px; height:46px; align-self:flex-start}
+#settingsBtn svg,#settingsBtnMine svg{width:26px; height:26px}
 .v-bottom{position:absolute; left:50%; bottom:0; width:min(480px, 100%); transform:translateX(-50%); box-sizing:border-box; padding:0 16px 16px; z-index:10; pointer-events:none}
 .v-bottom .mine-door{pointer-events:auto}
 .v-hint{position:absolute; left:50%; top:62px; transform:translateX(-50%); z-index:10; pointer-events:none; padding:5px 12px; border-radius:12px;
@@ -708,8 +719,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   </div>
   <header class="v-hud">
     <div class="wallet-bar" id="villageWallet"></div>
-    <button class="iconbtn" id="soundBtn2" aria-label="Couper le son"></button>
-    <button class="iconbtn help-btn" id="helpBtn" aria-label="Comment jouer">?</button>
+    <button class="iconbtn" id="settingsBtn" aria-label="Paramètres"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M26.0 12.9 L30.3 13.5 L30.3 18.5 L26.0 19.1 L25.3 20.9 L27.9 24.3 L24.3 27.9 L20.9 25.3 L19.1 26.0 L18.5 30.3 L13.5 30.3 L12.9 26.0 L11.1 25.3 L7.7 27.9 L4.1 24.3 L6.7 20.9 L6.0 19.1 L1.7 18.5 L1.7 13.5 L6.0 12.9 L6.7 11.1 L4.1 7.7 L7.7 4.1 L11.1 6.7 L12.9 6.0 L13.5 1.7 L18.5 1.7 L19.1 6.0 L20.9 6.7 L24.3 4.1 L27.9 7.7 L25.3 11.1Z" fill="#7d3c98" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="4.6" fill="#fff4dc" stroke="#3b2245" stroke-width="2"/></svg></button>
   </header>
   <div class="v-hint" id="vHint">Fais glisser pour te déplacer dans le village</div>
   <div class="v-bottom">
@@ -766,7 +776,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
         <small id="regenTxt">Énergie pleine</small>
       </div>
     </div>
-    <button class="iconbtn" id="soundBtn" aria-label="Couper le son"></button>
+    <button class="iconbtn" id="settingsBtnMine" aria-label="Paramètres"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M26.0 12.9 L30.3 13.5 L30.3 18.5 L26.0 19.1 L25.3 20.9 L27.9 24.3 L24.3 27.9 L20.9 25.3 L19.1 26.0 L18.5 30.3 L13.5 30.3 L12.9 26.0 L11.1 25.3 L7.7 27.9 L4.1 24.3 L6.7 20.9 L6.0 19.1 L1.7 18.5 L1.7 13.5 L6.0 12.9 L6.7 11.1 L4.1 7.7 L7.7 4.1 L11.1 6.7 L12.9 6.0 L13.5 1.7 L18.5 1.7 L19.1 6.0 L20.9 6.7 L24.3 4.1 L27.9 7.7 L25.3 11.1Z" fill="#7d3c98" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="4.6" fill="#fff4dc" stroke="#3b2245" stroke-width="2"/></svg></button>
     <button class="iconbtn" id="upBtn" aria-label="Remonter au village" title="Remonter au village">
       <span id="upIcon"></span>
     </button>
@@ -875,7 +885,22 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
     <button class="close" id="helpClose" aria-label="Fermer">×</button>
     <h2 id="helpTitle">Comment jouer</h2>
     <div class="help" id="help" style="margin-top:12px"></div>
-    <div style="margin-top:18px; display:flex; justify-content:flex-end">
+  </div>
+</div>
+
+<div class="modal" id="settingsModal" hidden>
+  <div class="card" role="dialog" aria-labelledby="settingsTitle">
+    <button class="close" id="settingsClose" aria-label="Fermer">×</button>
+    <h2 id="settingsTitle">Paramètres</h2>
+    <div class="set-list">
+      <div class="set-row"><span>Son</span><button class="switch" id="optSound" role="switch" aria-checked="true" aria-label="Son"><i></i></button></div>
+      <div class="set-row"><span>Musique</span><button class="switch" id="optMusic" role="switch" aria-checked="true" aria-label="Musique"><i></i></button></div>
+      <div class="set-row"><span>Langue</span><div class="seg" role="group" aria-label="Langue">
+        <button data-lang="fr" aria-pressed="true">Français</button><button data-lang="en" aria-pressed="false">English</button>
+      </div></div>
+    </div>
+    <button class="btn big" id="howBtn">Comment jouer</button>
+    <div style="margin-top:14px; display:flex; justify-content:center">
       <button class="btn ghosty" id="resetBtn">Recommencer la partie</button>
     </div>
   </div>
@@ -902,6 +927,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 </div>
 
 <script src="config.js"></script>
+<script src="textes-en.js"></script>
 <script>
 (() => {
 /* ---------- Settings (config.js) ----------
@@ -915,6 +941,20 @@ const costFromFr = c => Object.fromEntries(Object.entries(c).map(([k, n]) => [RE
 const stepOf = o => { const { biome = 1, energie, cases, ...price } = o; return { biome, energie, cost: costFromFr(price) }; };
 let COLS = 7, ROWS = 10, N = COLS * ROWS;
 const KEY = 'mine-tresors-v2';
+/* Language (Paramètres > Langue). Texts are written in French in the code and in config.js;
+   tr('texte français') gives the English version from textes-en.js when the game is in English.
+   {n}, {a}… in a text are replaced by the values given: tr('Niveau {n}', { n: 5 }). */
+const LANG = (() => { try { return (JSON.parse(localStorage.getItem(KEY)) || {}).lang === 'en' ? 'en' : 'fr'; } catch (e) { return 'fr'; } })();
+const EN = window.TEXTES_EN || {};
+const MISSING_EN = new Set();
+function tr(fr, vars) {
+  let out = fr == null ? '' : String(fr);
+  if (LANG === 'en' && out) { if (EN[out] != null) out = EN[out]; else MISSING_EN.add(out); }
+  return vars ? out.replace(/\{(\w+)\}/g, (m, k) => k in vars ? vars[k] : m) : out;
+}
+// Plural: plural(n, 'géode', 'géodes')
+const plural = (n, one, many) => n > 1 ? many : one;
+document.documentElement.lang = LANG;
 const MAX_COLS = 7, MAX_ROWS = 7;
 /* Progression (config.js > progression): what exists from which level, grid sizes, tutorial levels */
 const PROG = CFG.progression, UNLOCK = PROG.deblocages;
@@ -947,11 +987,11 @@ const BUCKET_CD = CFG.forge.rechargeArrosoirMs;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const ORES = {
-  iron:   { name: 'Fer',    o1: '#efe6da', o2: '#c06a3c', w: CFG.mine.frequenceMinerais.fer, txt: '#f4ebe0', rar: 'Commun' },
-  copper: { name: 'Cuivre', o1: '#ff9a52', o2: '#3fc2a8', w: CFG.mine.frequenceMinerais.cuivre, txt: '#ffad73', rar: 'Peu commun' },
-  gold:   { name: 'Or',     o1: '#ffd93d', o2: '#fff7b0', w: CFG.mine.frequenceMinerais.or, txt: '#ffe14d', rar: 'Rare' },
-  mithril: { name: 'Mithril', o1: '#7ff0e0', o2: '#2aa8a0', w: CFG.mine.frequenceMinerais.mithril, txt: '#8ff5e8' },
-  crystal: { name: 'Cristal brut', o1: '#f0b8ff', o2: '#9b4fd6', w: CFG.mine.frequenceMinerais.cristalBrut, txt: '#f3c4ff' },
+  iron:   { name: tr('Fer'),    o1: '#efe6da', o2: '#c06a3c', w: CFG.mine.frequenceMinerais.fer, txt: '#f4ebe0', rar: 'Commun' },
+  copper: { name: tr('Cuivre'), o1: '#ff9a52', o2: '#3fc2a8', w: CFG.mine.frequenceMinerais.cuivre, txt: '#ffad73', rar: 'Peu commun' },
+  gold:   { name: tr('Or'),     o1: '#ffd93d', o2: '#fff7b0', w: CFG.mine.frequenceMinerais.or, txt: '#ffe14d', rar: 'Rare' },
+  mithril: { name: tr('Mithril'), o1: '#7ff0e0', o2: '#2aa8a0', w: CFG.mine.frequenceMinerais.mithril, txt: '#8ff5e8' },
+  crystal: { name: tr('Cristal brut'), o1: '#f0b8ff', o2: '#9b4fd6', w: CFG.mine.frequenceMinerais.cristalBrut, txt: '#f3c4ff' },
 };
 const TR = 'Assets/Treasures/', TL = 'Assets/Tools/';
 const img = (src, alt = '') => `<img src="${src}" alt="${alt}" draggable="false">`;
@@ -990,18 +1030,21 @@ const COL = CFG.collections;
 const SETS = {}, GEMS = {}, ARTS = {};
 for (const [kind, group, table] of [['gem', COL.gemmes, GEMS], ['art', COL.artefacts, ARTS]])
   for (const [sk, set] of Object.entries(group)) {
-    SETS[sk] = { kind, name: set.nom, prime: set.prime || 0, legend: set.legende, message: set.message };
+    SETS[sk] = { kind, name: tr(set.nom), prime: set.prime || 0, legend: set.legende && tr(set.legende), message: set.message && tr(set.message) };
     for (const [k, o] of Object.entries(set.objets)) {
       const look = LOOK[k] || { ph: kind === 'gem' ? 'gem' : 'spiral', w: 1, h: 1 };
-      table[k] = { key: k, set: sk, name: o.nom, rarity: o.rarete, look, art: look.art || 'un', sz: [look.w || 2, look.h || 2],
+      const name = tr(o.nom);
+      // Article used in sentences: "une Citrine" / "a Citrine", "an Emerald"
+      const article = LANG === 'en' ? (/^[aeiou]/i.test(name) ? 'an' : 'a') : look.art || 'un';
+      table[k] = { key: k, set: sk, name, rarity: o.rarete, look, art: article, sz: [look.w || 2, look.h || 2],
         w: look.w || 1, h: look.h || 1, soil: set.sol || 'tout',
         // Levels where it can appear: its own biome, or the series' levels
         range: o.biome ? [(o.biome - 1) * CFG.biomes.niveauxParBiome + 1, o.biome * CFG.biomes.niveauxParBiome] : set.niveaux || [1, 1000] };
     }
   }
 const itemArt = o => o.look.file ? img(TR + o.look.file + '.png', o.name) : phImg(o.look.ph, o.rarity, o.name);
-const rangeText = (a, b) => b >= 1000 ? `dès le niveau ${a}` : b > a ? `niveaux ${a} à ${b}` : `niveau ${a}`;
-const SOIL_FR = { terre: 'dans la terre', pierre: 'sous la pierre', pierreDure: 'sous la pierre dure', magma: 'sous le magma', coffre: 'dans les coffres bonus' };
+const rangeText = (a, b) => b >= 1000 ? tr('dès le niveau {a}', { a }) : b > a ? tr('niveaux {a} à {b}', { a, b }) : tr('niveau {a}', { a });
+const SOIL_FR = { terre: tr('dans la terre'), pierre: tr('sous la pierre'), pierreDure: tr('sous la pierre dure'), magma: tr('sous le magma'), coffre: tr('dans les coffres bonus') };
 const ART_FREQ = COL.frequenceArtefacts;
 // Rarities, from most common to rarest
 const RARITIES = ['common', 'rare', 'epic', 'legendary'];
@@ -1013,10 +1056,10 @@ const rarName = (text, r) => r ? `<span class="rar rar-${r}">${text}</span>` : t
 const rarityOfFind = (kind, key) => kind === 'gem' ? RARITY_GEM[key] : kind === 'geode' ? GEODES[key].rarity : kind === 'art' ? rarityOf('art', key) : null;
 // One geode per rarity (config.js > geodes); the gem inside is drawn among all gems of that rarity
 const GEODES = {
-  white:   { name: 'Géode blanche', rarity: 'common',    file: 'Geode_03', sz: [2, 2] },
-  pink:    { name: 'Géode rose',    rarity: 'rare',      file: 'Geode_09', sz: [2, 2] },
-  gold:    { name: 'Géode dorée',   rarity: 'epic',      file: 'Geode_08', sz: [2, 2] },
-  crystal: { name: 'Géode cristal', rarity: 'legendary', file: 'Geode_06', sz: [2, 2] },
+  white:   { name: tr('Géode blanche'), rarity: 'common',    file: 'Geode_03', sz: [2, 2] },
+  pink:    { name: tr('Géode rose'),    rarity: 'rare',      file: 'Geode_09', sz: [2, 2] },
+  gold:    { name: tr('Géode dorée'),   rarity: 'epic',      file: 'Geode_08', sz: [2, 2] },
+  crystal: { name: tr('Géode cristal'), rarity: 'legendary', file: 'Geode_06', sz: [2, 2] },
 };
 const FR_GEODE = { white: 'blanche', pink: 'rose', gold: 'doree', crystal: 'cristal' };
 for (const [k, w] of Object.entries(fromFr(FR_GEODE, CFG.geodes.frequence))) GEODES[k].w = w;
@@ -1026,11 +1069,11 @@ const OLD_GEM = { emerald: 'emeraude', aquamarine: 'aigueMarine', topaz: 'topaze
 const OLD_ART = { astro1: 'lion', astro2: 'taureau', astro3: 'scorpion', astro4: 'dragon', tablet1: 'fragmentGauche', tablet2: 'fragmentCentral', tablet3: 'fragmentDroit', relic1: 'masque' };
 const OLD_GEODE = { g01: 'white', g03: 'white', g06: 'white', g07: 'white', g10: 'white', g02: 'pink', g09: 'pink', g04: 'gold', g08: 'gold', g05: 'crystal' };
 const OPEN = {
-  o11: { name: 'Agate bleue',       file: 'Geode_11' },
-  o12: { name: 'Citrine',           file: 'Geode_12' },
-  o13: { name: 'Cristal turquoise', file: 'Geode_13' },
-  o14: { name: 'Cristal de feu',    file: 'Geode_14' },
-  o15: { name: 'Quartz rose',       file: 'Geode_15' },
+  o11: { name: tr('Agate bleue'),       file: 'Geode_11' },
+  o12: { name: tr('Citrine'),           file: 'Geode_12' },
+  o13: { name: tr('Cristal turquoise'), file: 'Geode_13' },
+  o14: { name: tr('Cristal de feu'),    file: 'Geode_14' },
+  o15: { name: tr('Quartz rose'),       file: 'Geode_15' },
 };
 const gemArt = k => itemArt(GEMS[k]);
 const geodeArt = k => img(TR + GEODES[k].file + '.png', GEODES[k].name);
@@ -1039,15 +1082,15 @@ const artArt = k => itemArt(ARTS[k]);
 // Resale value of duplicates, by rarity (in coins)
 const SALE = CFG.economie.venteDoublons;
 const OPEN_VAL = { o11: 30, o12: 30, o13: 30, o14: 40, o15: 40 };
-const COIN = img('Assets/Icon_Coin.png', 'pièces');
+const COIN = img('Assets/Icon_Coin.png', tr('pièces'));
 const RES_ICON = { coin: 'Assets/Icon_Coin.png', iron: 'Assets/Icon_Iron.png', copper: 'Assets/Icon_Cooper.png', gold: 'Assets/Icon_Gold.png', mithril: 'Assets/Icon_Iron.png', crystal: 'Assets/Icon_Cooper.png' };
 // Mithril and raw crystal: recoloured iron/copper icons until their own art exists
 const RES_FILTER = { mithril: 'hue-rotate(140deg) saturate(1.6)', crystal: 'hue-rotate(250deg) saturate(1.4)' };
-const resArt = k => RES_FILTER[k] ? `<img src="${RES_ICON[k]}" alt="${ORES[k].name}" draggable="false" style="filter:${RES_FILTER[k]}">` : img(RES_ICON[k], k === 'coin' ? 'pièces' : ORES[k].name);
+const resArt = k => RES_FILTER[k] ? `<img src="${RES_ICON[k]}" alt="${ORES[k].name}" draggable="false" style="filter:${RES_FILTER[k]}">` : img(RES_ICON[k], k === 'coin' ? tr('pièces') : ORES[k].name);
 const POTION = img(TL + 'Energy%20Potion.png', 'potion');
 const UP_ICON = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 L28 17 H20.5 V28 H11.5 V17 H4Z" fill="#35d49a" stroke="#1b6e4f" stroke-width="2.4" stroke-linejoin="round"/></svg>';
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 C5 15 2 12 2 8 A5 5 0 0 1 12 6 A5 5 0 0 1 22 8 C22 12 19 15 12 21Z" fill="#ff5b6e" stroke="#9b1d33" stroke-width="2" stroke-linejoin="round"/></svg>';
-const BOLT = '<img src="Assets/Energy_Yellow.png" alt="énergie" draggable="false">';
+const BOLT = `<img src="Assets/Energy_Yellow.png" alt="${tr('énergie')}" draggable="false">`;
 const RADAR = '<img src="Assets/Tools/Radar.png" alt="radar" draggable="false">';
 const TOOLS = {
   shovel: img(TL + 'Shovel.png'),
@@ -1055,14 +1098,12 @@ const TOOLS = {
   bucket: img(TL + 'watering%20can.png'),
   bomb: img(TL + 'Bomb.png'),
 };
-const SOUND_ON = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12 H10 L17 6 V26 L10 20 H5Z" fill="#7d3c98" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><path d="M21 11 C24 14 24 18 21 21 M24 8 C29 13 29 19 24 24" stroke="#3b2245" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>';
-const SOUND_OFF = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12 H10 L17 6 V26 L10 20 H5Z" fill="#b9a2b4" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><path d="M21 12 L28 20 M28 12 L21 20" stroke="#d9432a" stroke-width="2.6" stroke-linecap="round"/></svg>';
 
 const oreArt = k => resArt(k);
 
 function rwSVG(rw) { return rw.kind === 'gem' ? gemArt(rw.key) : rw.kind === 'geode' ? geodeArt(rw.key) : artArt(rw.key); }
 function rwName(rw) { return rw.kind === 'gem' ? GEMS[rw.key].name : rw.kind === 'geode' ? GEODES[rw.key].name : ARTS[rw.key].name; }
-function rwLabel(rw) { return rw.kind === 'gem' ? 'Gemme' : rw.kind === 'geode' ? 'Géode' : 'Artefact'; }
+function rwLabel(rw) { return rw.kind === 'gem' ? tr('Gemme') : rw.kind === 'geode' ? tr('Géode') : tr('Artefact'); }
 
 /* ---------- State ---------- */
 // Max energy = the value of the last "Réserve d'énergie" level bought (config.js > forge > reserveEnergie)
@@ -1078,7 +1119,7 @@ const newTrip = () => ({ finds: [], dupes: [], coins: 0, ores: zeroOres() });
 
 function freshState() {
   return {
-    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, up: { energy: 0, pick: 0, splash: 0, fast: 0, charges: 0 }, sound: true, newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false,
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, up: { energy: 0, pick: 0, splash: 0, fast: 0, charges: 0 }, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false,
     bag: {
       ores: zeroOres(),
       gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
@@ -1380,12 +1421,12 @@ function buildBoard(animate) {
   });
   slotEls = S.rewards.map(rw => {
     const d = document.createElement('div'); d.className = 'slot' + (rw.taken === true ? ' found' : rw.taken === 'left' ? ' left' : '');
-    d.title = rw.found ? rwName(rw) : rwLabel(rw) + ' cachée';
+    d.title = rw.found ? rwName(rw) : tr('{x} cachée', { x: rwLabel(rw) });
     d.innerHTML = rwSVG(rw); slotsEl.append(d); return d;
   });
   $('depth').textContent = S.level;
   const fk = S.tuto ? 'easy' : S.floor || floorKind(S.level);
-  $('depthLbl').textContent = 'Niveau';
+  $('depthLbl').textContent = tr('Niveau');
   const special = ['treasure', 'guardian', 'king'].includes(fk);
   $('depthBand').hidden = !special; $('depthBand').className = 'depth-band k-' + fk;
   paintRadar();
@@ -1394,7 +1435,7 @@ function buildBoard(animate) {
 }
 function updateGoals() {
   const f = S.rewards.filter(r => r.found).length;
-  $('goalCount').textContent = `${f} / ${S.rewards.length} dégagés`;
+  $('goalCount').textContent = tr('{f} / {n} dégagés', { f, n: S.rewards.length });
 }
 
 /* ---------- Unlocks: a tool, a building or a counter only appears once unlocked ---------- */
@@ -1416,7 +1457,7 @@ function bubbleInfo() {
   if (S.tuto) return null;
   const k = S.floor || floorKind(S.level);
   const text = k === 'treasure' ? RY.niveauTresor.texte : k === 'guardian' ? RY.niveauGardien.texte : k === 'king' ? RY.niveau1000.texte : null;
-  return text ? { key: 'f' + S.level, text } : null;
+  return text ? { key: 'f' + S.level, text: tr(text) } : null;
 }
 function showTuto() {
   const b = bubbleInfo(), open = b && !S.tutoSeen[b.key];
@@ -1476,7 +1517,7 @@ function renderCoach(st) {
   set(dim, '--r', rad);
   hand.className = el2 ? 'swipe' : 'tap';
   set(hand, '--x1', cx); set(hand, '--y1', cy); set(hand, '--x2', x2); set(hand, '--y2', y2);
-  txt.textContent = st.text;
+  txt.textContent = tr(st.text);
   // The sentence sits just outside the lit circle: below it when the target is high on the screen, above otherwise
   const high = my < innerHeight * .55;
   txt.style.top = high ? Math.max(my + rad + 28, r.bottom + 64) + 'px' : '';
@@ -1525,7 +1566,7 @@ document.querySelectorAll('.tool').forEach(b => {
   b.querySelector('.ic').innerHTML = TOOLS[b.dataset.tool];
   b.addEventListener('click', () => { if (S.tool === 'bomb') disarm(); setTool(b.dataset.tool, true); });
 });
-$('pickSub').innerHTML = '-1 ' + BOLT + ' / coup';
+$('pickSub').innerHTML = '-1 ' + BOLT + ' ' + tr('/ coup');
 $('upIcon').innerHTML = UP_ICON;
 function setTool(t, user) {
   S.tool = t;
@@ -1536,7 +1577,7 @@ function setTool(t, user) {
   save();
 }
 addEventListener('keydown', e => {
-  if (!$('descendModal').hidden || !$('recapModal').hidden || !$('helpModal').hidden || !$('bagFullModal').hidden || !$('bagViewModal').hidden || !$('liftModal').hidden) { if (e.key === 'Escape') { $('helpModal').hidden = true; $('bagViewModal').hidden = true; $('liftModal').hidden = true; } return; }
+  if (!$('descendModal').hidden || !$('recapModal').hidden || !$('helpModal').hidden || !$('settingsModal').hidden || !$('bagFullModal').hidden || !$('bagViewModal').hidden || !$('liftModal').hidden) { if (e.key === 'Escape') { $('helpModal').hidden = true; closeSettings(); $('bagViewModal').hidden = true; $('liftModal').hidden = true; } return; }
   if (!$('scr-atelier').hidden && MG && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); mgHit(); return; }
   if (e.key === 'Escape' && $('scr-village').hidden && $('scr-mine').hidden) { go('village'); return; }
   if ($('scr-mine').hidden) return;
@@ -1603,24 +1644,30 @@ function wobble(i) {
 /* ---------- Sound (synthesized) ---------- */
 let ac = null, noiseBuf = null, lastDirt = 0;
 function unlockAudio() {
-  if (!S.sound || ac) return;
+  if (ac) { if (ac.state === 'suspended' && (S.sound || S.music)) ac.resume(); return; }
+  if (!S.sound && !S.music) return;
   try {
     ac = new (window.AudioContext || window.webkitAudioContext)();
     noiseBuf = ac.createBuffer(1, ac.sampleRate * .8, ac.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   } catch (e) { ac = null; }
 }
+let sfxGain = null;
+function sfxOut() {
+  if (!sfxGain) { sfxGain = ac.createGain(); sfxGain.gain.value = CFG.audio.volumeSons; sfxGain.connect(ac.destination); }
+  return sfxGain;
+}
 function tone(f, dur, type = 'sine', vol = .12, when = 0, slide) {
   const t = ac.currentTime + when, o = ac.createOscillator(), g = ac.createGain();
   o.type = type; o.frequency.setValueAtTime(f, t); if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
   g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
-  o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur + .02);
+  o.connect(g); g.connect(sfxOut()); o.start(t); o.stop(t + dur + .02);
 }
 function noise(dur, freq, q = 1, vol = .2, type = 'bandpass') {
   const t = ac.currentTime, s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
   s.buffer = noiseBuf; f.type = type; f.frequency.value = freq; f.Q.value = q;
   g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
-  s.connect(f); f.connect(g); g.connect(ac.destination); s.start(t, Math.random() * .3); s.stop(t + dur);
+  s.connect(f); f.connect(g); g.connect(sfxOut()); s.start(t, Math.random() * .3); s.stop(t + dur);
 }
 function sfx(k) {
   if (!S.sound || !ac) return;
@@ -1641,9 +1688,81 @@ function sfx(k) {
   } catch (e) {}
 }
 function paintSound() {
-  for (const b of [$('soundBtn'), $('soundBtn2')]) { b.innerHTML = S.sound ? SOUND_ON : SOUND_OFF; b.setAttribute('aria-label', S.sound ? 'Couper le son' : 'Activer le son'); }
+  $('optSound').setAttribute('aria-checked', S.sound ? 'true' : 'false');
+  $('optMusic').setAttribute('aria-checked', S.music ? 'true' : 'false');
 }
-for (const b of [$('soundBtn'), $('soundBtn2')]) b.addEventListener('click', () => { S.sound = !S.sound; paintSound(); unlockAudio(); sfx('pick'); save(); });
+
+/* ---------- Music (synthesized: a calm, cheerful loop C - Am - F - G) ---------- */
+const MUSIC_VOL = CFG.audio.volumeMusique, M_STEP = 60 / 92 / 2;              // eighth notes at 92 BPM
+const M_CHORDS = [[261.63, 329.63, 392], [220, 261.63, 329.63], [174.61, 220, 261.63], [196, 246.94, 293.66]];
+const M_SCALE = [523.25, 587.33, 659.25, 783.99, 880, 1046.5]; // C major pentatonic
+// Two melody lines of 32 eighths (index in M_SCALE, -1 = silence), played one after the other
+const M_MEL = [
+  [2, -1, 3, -1, 4, 3, 2, -1,  0, -1, 2, -1, 1, -1, -1, -1,  0, -1, 1, 2, 3, -1, 2, -1,  1, -1, 3, -1, 2, -1, -1, -1],
+  [4, -1, 5, 4, 3, -1, 2, -1,  2, -1, 1, -1, 0, -1, -1, -1,  3, -1, 2, -1, 0, -1, 1, -1,  4, -1, 3, -1, 1, -1, -1, -1],
+];
+let musicGain = null, musicTimer = 0, musicStep = 0, musicAt = 0;
+function mNote(f, t, dur, type, vol, attack = .01) {
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + attack); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g); g.connect(musicGain); o.start(t); o.stop(t + dur + .05);
+}
+function musicTick() {
+  if (!ac || !musicGain) return;
+  if (musicAt < ac.currentTime) musicAt = ac.currentTime + .05;   // after a pause, do not play the missed notes
+  while (musicAt < ac.currentTime + .4) {
+    const st = musicStep % 64, chord = M_CHORDS[Math.floor(st / 8) % 4], t = musicAt;
+    if (st % 8 === 0) {
+      chord.forEach(f => mNote(f, t, M_STEP * 8, 'sine', .05, .25));      // soft pad
+      mNote(chord[0] / 2, t, M_STEP * 3, 'triangle', .14);                 // bass
+    }
+    if (st % 8 === 4) mNote(chord[0] / 2, t, M_STEP * 3, 'triangle', .1);
+    if (st % 2 === 1) mNote(chord[(st >> 1) % 3] * 2, t, M_STEP * .9, 'sine', .025);  // light arpeggio
+    const n = M_MEL[Math.floor(st / 32)][st % 32];
+    if (n >= 0) mNote(M_SCALE[n], t, M_STEP * 1.8, 'triangle', .07);
+    musicStep++; musicAt += M_STEP;
+  }
+}
+function startMusic() {
+  if (!S.music) return;
+  unlockAudio(); if (!ac || musicTimer) return;
+  try {
+    if (!musicGain) { musicGain = ac.createGain(); musicGain.connect(ac.destination); }
+    musicGain.gain.cancelScheduledValues(ac.currentTime);
+    musicGain.gain.setValueAtTime(0, ac.currentTime); musicGain.gain.linearRampToValueAtTime(MUSIC_VOL, ac.currentTime + 1.5);
+    musicAt = ac.currentTime + .1; musicTick(); musicTimer = setInterval(musicTick, 120);
+  } catch (e) {}
+}
+function stopMusic() {
+  clearInterval(musicTimer); musicTimer = 0;
+  if (ac && musicGain) { musicGain.gain.cancelScheduledValues(ac.currentTime); musicGain.gain.setValueAtTime(musicGain.gain.value, ac.currentTime); musicGain.gain.linearRampToValueAtTime(0, ac.currentTime + .3); }
+}
+// Browsers only allow sound after a first touch: the music starts then
+addEventListener('pointerdown', () => { if (S.music && !musicTimer) startMusic(); }, true);
+// No sound when the game is in the background
+document.addEventListener('visibilitychange', () => {
+  if (!ac) return;
+  if (document.hidden) ac.suspend(); else if (S.sound || S.music) ac.resume();
+});
+
+/* ---------- Settings window ---------- */
+function paintLang() { document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === S.lang ? 'true' : 'false')); }
+function openSettings() { unlockAudio(); sfx('pick'); paintSound(); paintLang(); $('settingsModal').hidden = false; $('settingsClose').focus(); }
+function closeSettings() { $('settingsModal').hidden = true; resetArm(false); }
+$('settingsBtn').addEventListener('click', openSettings);
+$('settingsBtnMine').addEventListener('click', openSettings);
+$('settingsClose').addEventListener('click', closeSettings);
+$('settingsModal').addEventListener('click', e => { if (e.target.id === 'settingsModal') closeSettings(); });
+$('optSound').addEventListener('click', () => { S.sound = !S.sound; paintSound(); unlockAudio(); sfx('pick'); save(); });
+$('optMusic').addEventListener('click', () => { S.music = !S.music; paintSound(); if (S.music) startMusic(); else stopMusic(); sfx('pick'); save(); });
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.lang === S.lang) return;
+  S.lang = b.dataset.lang; paintLang(); sfx('pick');
+  clearTimeout(saveT); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  location.reload();
+}));
+$('howBtn').addEventListener('click', () => { closeSettings(); renderHelp(); $('helpModal').hidden = false; $('helpClose').focus(); });
 
 /* ---------- Ghost tool cursor ---------- */
 const ghost = $('ghost'), ghostG = $('ghostG');
@@ -1726,20 +1845,20 @@ function act(p, isTap) {
       burst(x, y, ['#c0713f', '#9a5228', '#6e3519', '#d98a52'], 7, { spread: 26 });
     } else if (freeTap(i)) breakCell(i);
     else if (isTap) {
-      if (c.t === 'magma') deny(i, 'Attention, c\'est brûlant ! Refroidis le magma avec l\'arrosoir.');
-      else if (c.t === 'root') deny(i, 'Racine trop dure pour la pelle : casse sa souche à la pioche !', '');
-      else if (c.t === 'ice') deny(i, 'La glace ne fond à la pelle que si elle touche du magma.', '');
-      else deny(i, 'La pelle ne passe pas la roche. Prends la pioche.', '');
+      if (c.t === 'magma') deny(i, tr('Attention, c\'est brûlant ! Refroidis le magma avec l\'arrosoir.'));
+      else if (c.t === 'root') deny(i, tr('Racine trop dure pour la pelle : casse sa souche à la pioche !'), '');
+      else if (c.t === 'ice') deny(i, tr('La glace ne fond à la pelle que si elle touche du magma.'), '');
+      else deny(i, tr('La pelle ne passe pas la roche. Prends la pioche.'), '');
     }
     return;
   }
   if (!isTap) return;
   if (S.tool === 'pickaxe') {
     swing();
-    if (c.t === 'dirt') return deny(i, 'La terre part à la pelle, et c\'est gratuit !', '');
+    if (c.t === 'dirt') return deny(i, tr('La terre part à la pelle, et c\'est gratuit !'), '');
     if (freeTap(i)) return breakCell(i);
-    if (c.t === 'magma') { burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, 'Trop chaud ! Arrose le magma pour le refroidir d\'abord.'); }
-    if (S.energy <= 0) return deny(i, REGEN_MS > 0 ? `Plus d'énergie ! +1 dans ${Math.ceil((S.nextRegen - Date.now()) / 1000)} s, ou bois une potion.` : 'Plus d\'énergie ! Bois une potion ou remonte au village pour recharger.');
+    if (c.t === 'magma') { burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, tr('Trop chaud ! Arrose le magma pour le refroidir d\'abord.')); }
+    if (S.energy <= 0) return deny(i, REGEN_MS > 0 ? tr('Plus d\'énergie ! +1 dans {s} s, ou bois une potion.', { s: Math.ceil((S.nextRegen - Date.now()) / 1000) }) : tr('Plus d\'énergie ! Bois une potion ou remonte au village pour recharger.'));
     if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS;
     S.energy--; updateEnergy(true);
     // The pickaxe does half damage on ice
@@ -1763,19 +1882,19 @@ function act(p, isTap) {
     return;
   }
   if (S.tool === 'bomb') {
-    if (S.bombs <= 0) return deny(i, 'Plus de bombes ! Achètes-en à la boutique du village.', '');
+    if (S.bombs <= 0) return deny(i, tr('Plus de bombes ! Achètes-en à la boutique du village.'), '');
     S.bombs--; updateBombs(); stat('bombes'); explode(i); disarm();
     return;
   }
   if (S.tool === 'bucket') {
     swing();
-    if (c.t === 'cool') return deny(i, 'Déjà refroidi : casse-le à la pioche.', '');
-    if (c.t !== 'magma') return deny(i, 'L\'arrosoir sert à refroidir le magma.', '');
-    if (S.bucketCharges <= 0) return deny(i, `L'arrosoir se remplit… encore ${Math.ceil((S.bucketReady - Date.now()) / 1000)} s`, '');
+    if (c.t === 'cool') return deny(i, tr('Déjà refroidi : casse-le à la pioche.'), '');
+    if (c.t !== 'magma') return deny(i, tr('L\'arrosoir sert à refroidir le magma.'), '');
+    if (S.bucketCharges <= 0) return deny(i, tr('L\'arrosoir se remplit… encore {s} s', { s: Math.ceil((S.bucketReady - Date.now()) / 1000) }), '');
     S.bucketCharges--; S.bucketReady = Date.now() + bucketCd();
     burst(x, y - 10, ['#3db5ff', '#a6e6ff', '#ffffff'], 10, { spread: 30, size: [3, 7] });
     const n = coolMagma(i);
-    if (n > 1) floatText(i, `Chaîne ×${n} !`, '#a6e6ff');
+    if (n > 1) floatText(i, tr('Chaîne ×{n} !', { n }), '#a6e6ff');
     save();
   }
 }
@@ -1813,7 +1932,7 @@ function breakCell(i) {
     const T = RY.niveauTresor, n = Math.round(randInt(...T.piecesParTas) * (1 + T.bonusParBiome * (biomeOf(S.level) - 1)));
     S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
     sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 14, { spread: 34, up: 16, size: [3, 7] });
-    floatText(i, `+${n} pièces`, '#ffe14d');
+    floatText(i, tr('+{n} pièces', { n }), '#ffe14d');
   }
   if (t === 'gas') burst(x, y, ['#9be37a', '#c9f7a6', '#ffffff'], 10, { spread: 30, up: 18, size: [6, 12], dur: 900 });
   if (t === 'stump') {
@@ -1829,13 +1948,13 @@ function breakCell(i) {
 const keysOwned = () => setKeys('cles').filter(k => S.bag.arts[k] || S.trip.finds.some(f => f.kind === 'art' && f.key === k)).length;
 function openKingChest(i) {
   const need = setKeys('cles').length, got = keysOwned();
-  if (got < need) return deny(i, `Il faut les ${need} Clés du Roi Mineur pour ouvrir ce coffre (tu en as ${got}). C'est un bonus : tu peux continuer sans !`, '');
+  if (got < need) return deny(i, tr('Il faut les {need} Clés du Roi Mineur pour ouvrir ce coffre (tu en as {got}). C\'est un bonus : tu peux continuer sans !', { need, got }), '');
   const K = RY.niveau1000.coffreDuRoi, { x, y } = center(i);
   S.kingOpened = true; S.coins += K.pieces; S.trip.coins = (S.trip.coins || 0) + K.pieces; flyCoins(i, K.pieces);
   clearCell(i); sfx('win');
   burst(x, y, ['#ffe066', '#ffc23d', '#cf9bff', '#fff'], 40, { spread: ts() * 2, up: 20, size: [4, 10], dur: 1100 });
-  floatText(i, `+${K.pieces} pièces`, '#ffe14d');
-  toast(K.message, 'good');
+  floatText(i, tr('+{n} pièces', { n: K.pieces }), '#ffe14d');
+  toast(tr(K.message), 'good');
   save();
 }
 // Mystery tile and bonus chest: always a gift (config.js > progression > bonus)
@@ -1861,8 +1980,8 @@ function giveBonus(i, kind) {
       }
       g = 'pieces';
     }
-    if (g === 'potion') { S.potions++; updateQuick(); lines.push('+1 potion'); continue; }
-    const n = randInt(...B.pieces); S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n); lines.push(`+${n} pièces`);
+    if (g === 'potion') { S.potions++; updateQuick(); lines.push(tr('+1 potion')); continue; }
+    const n = randInt(...B.pieces); S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n); lines.push(tr('+{n} pièces', { n }));
   }
   floatText(i, lines.join(' · '), '#ffe14d');
   save();
@@ -1881,7 +2000,7 @@ function splashFrom(i) {
   sfx('break');
   burst(x, y, ['#8e9ac0', '#6b7699', '#fff36b'], 14, { spread: 40, size: [4, 10], dur: 650 });
   breakCell(j);
-  if (!ore) floatText(j, 'Éclat !', '#fff36b');
+  if (!ore) floatText(j, tr('Éclat !'), '#fff36b');
   save();
 }
 
@@ -1897,7 +2016,7 @@ function explode(i) {
   burst(x, y, rad > 1 ? ['#9be37a', '#ffe066', '#ff9a2a', '#3a2a3a'] : ['#ffe066', '#ff9a2a', '#ff4a2a', '#3a2a3a'], rad > 1 ? 44 : 28, { spread: ts() * (rad > 1 ? 2.4 : 1.4), size: [6, 14], dur: 800 });
   steam(x, y);
   if (!reduced) board.animate([{ transform: 'translate(0,0)' }, { transform: `translate(-${6 * rad}px,${4 * rad}px)` }, { transform: `translate(${5 * rad}px,-${4 * rad}px)` }, { transform: 'translate(-3px,2px)' }, { transform: 'translate(0,0)' }], { duration: 380 + rad * 120 });
-  if (rad > 1) floatText(i, 'Explosion de gaz !', '#c9f7a6');
+  if (rad > 1) floatText(i, tr('Explosion de gaz !'), '#c9f7a6');
   let hotLeft = false;
   for (let dr = -rad; dr <= rad; dr++) for (let dc = -rad; dc <= rad; dc++) {
     const r = r0 + dr, c = c0 + dc;
@@ -1909,7 +2028,7 @@ function explode(i) {
     breakCell(j);
   }
   updateBadge();
-  if (hotLeft) setTimeout(() => toast('La bombe ne vient pas à bout du magma chaud : arrose-le d\'abord.', ''), 300);
+  if (hotLeft) setTimeout(() => toast(tr('La bombe ne vient pas à bout du magma chaud : arrose-le d\'abord.'), ''), 300);
   save();
 }
 function updateBombs() { if (!$('bagViewModal').hidden) renderCons(); }
@@ -1981,8 +2100,8 @@ function isDuplicate(kind, key) {
 const bagItemIsDupe = i => { const f = S.trip.finds[i]; return f.kind !== 'geode' && (inMuseum(f.kind, f.key) || S.trip.finds.findIndex(x => x.kind === f.kind && x.key === f.key) < i); };
 function leaveDuplicate(rw, ri) {
   rw.taken = 'left';
-  rwEls[ri].classList.add('ready', 'left'); slotEls[ri].classList.add('left'); slotEls[ri].title = rwName(rw) + ' (laissé)';
-  floatText(rw.r * COLS + rw.c, CFG.sac.texteDoublonLaisse, '#ffd0c8');
+  rwEls[ri].classList.add('ready', 'left'); slotEls[ri].classList.add('left'); slotEls[ri].title = tr('{x} (laissé)', { x: rwName(rw) });
+  floatText(rw.r * COLS + rw.c, tr(CFG.sac.texteDoublonLaisse), '#ffd0c8');
   sfx('deny'); updateGoals(); save();
 }
 function inMuseum(kind, key) { return kind === 'gem' ? !!S.bag.gems[key] : kind === 'art' ? !!S.bag.arts[key] : false; }
@@ -2001,11 +2120,13 @@ function askBagFull() {
   const [rw] = bagQueue[0];
   sfx('deny');
   const isNew = rw.kind !== 'geode' && !inMuseum(rw.kind, rw.key);
-  $('bagFullText').textContent = `Ton sac est plein (${bagCap()} cases). Laisse ${bagItemIsDupe(cheapestInBag()) ? 'un doublon' : 'un objet'} de ton sac pour prendre cette nouvelle découverte ?`;
-  $('bagFullNew').innerHTML = `${rwSVG(rw)}<div><b>${rarName(rwName(rw), rarityOfFind(rw.kind, rw.key))}${isNew ? '<span class="tagnew">Nouveau</span>' : ''}</b><span>Trésor trouvé</span></div>`;
+  $('bagFullText').textContent = bagItemIsDupe(cheapestInBag())
+    ? tr('Ton sac est plein ({n} cases). Laisse un doublon de ton sac pour prendre cette nouvelle découverte ?', { n: bagCap() })
+    : tr('Ton sac est plein ({n} cases). Laisse un objet de ton sac pour prendre cette nouvelle découverte ?', { n: bagCap() });
+  $('bagFullNew').innerHTML = `${rwSVG(rw)}<div><b>${rarName(rwName(rw), rarityOfFind(rw.kind, rw.key))}${isNew ? `<span class="tagnew">${tr('Nouveau')}</span>` : ''}</b><span>${tr('Trésor trouvé')}</span></div>`;
   const i = cheapestInBag(), old = S.trip.finds[i];
   $('bagReplace').dataset.drop = i;
-  $('bagReplace').innerHTML = `${findArt(old.kind, old.key)}<span>Laisser ${findName(old.kind, old.key)}<small>${bagItemIsDupe(i) ? 'doublon' : 'objet le moins précieux'} · et prendre le nouveau</small></span>`;
+  $('bagReplace').innerHTML = `${findArt(old.kind, old.key)}<span>${tr('Laisser {x}', { x: findName(old.kind, old.key) })}<small>${bagItemIsDupe(i) ? tr('doublon · et prendre le nouveau') : tr('objet le moins précieux · et prendre le nouveau')}</small></span>`;
   $('bagFullModal').hidden = false; $('bagReplace').focus();
 }
 function resolveBagFull(dropIndex) {
@@ -2013,11 +2134,11 @@ function resolveBagFull(dropIndex) {
   $('bagFullModal').hidden = true;
   if (dropIndex == null) {
     // The new treasure stays where it is: it can still be tapped later
-    rw.taken = 'left'; rwEls[ri].classList.add('ready', 'left'); slotEls[ri].classList.add('left'); slotEls[ri].title = rwName(rw) + ' (laissé)';
+    rw.taken = 'left'; rwEls[ri].classList.add('ready', 'left'); slotEls[ri].classList.add('left'); slotEls[ri].title = tr('{x} (laissé)', { x: rwName(rw) });
     updateGoals(); save();
   } else {
     const old = S.trip.finds.splice(dropIndex, 1)[0];
-    toast(`${findName(old.kind, old.key)} laissé dans la mine`, '');
+    toast(tr('{x} laissé dans la mine', { x: findName(old.kind, old.key) }), '');
     pickUp(rw, ri);
   }
   if (bagQueue.length) setTimeout(askBagFull, 300);
@@ -2026,18 +2147,18 @@ function resolveBagFull(dropIndex) {
 $('bagReplace').addEventListener('click', () => { unlockAudio(); resolveBagFull(+$('bagReplace').dataset.drop); });
 $('bagLeaveNew').addEventListener('click', () => resolveBagFull(null));
 const CONS_LIST = [
-  { k: 'bombs', name: 'Bombe', icon: () => TOOLS.bomb, desc: 'Fait sauter les 9 cases autour de la case touchée.', use: () => { $('bagViewModal').hidden = true; armBomb(); }, open: () => has('bombes') || S.bombs > 0 },
-  { k: 'radars', name: 'Radar', icon: () => RADAR, desc: "Entoure l'emplacement d'un trésor caché.", use: () => { $('bagViewModal').hidden = true; useRadar(); }, open: () => has('radar') || S.radars > 0 },
-  { k: 'potions', name: "Potion d'énergie", icon: () => POTION, desc: 'Remplit ton énergie au maximum.', use: () => { $('bagViewModal').hidden = true; usePotion(); }, open: () => has('potions') || S.potions > 0 },
+  { k: 'bombs', name: tr('Bombe'), icon: () => TOOLS.bomb, desc: tr('Fait sauter les 9 cases autour de la case touchée.'), use: () => { $('bagViewModal').hidden = true; armBomb(); }, open: () => has('bombes') || S.bombs > 0 },
+  { k: 'radars', name: tr('Radar'), icon: () => RADAR, desc: tr('Entoure l\'emplacement d\'un trésor caché.'), use: () => { $('bagViewModal').hidden = true; useRadar(); }, open: () => has('radar') || S.radars > 0 },
+  { k: 'potions', name: tr('Potion d\'énergie'), icon: () => POTION, desc: tr('Remplit ton énergie au maximum.'), use: () => { $('bagViewModal').hidden = true; usePotion(); }, open: () => has('potions') || S.potions > 0 },
 ];
 function renderCons() {
   const list = CONS_LIST.filter(x => x.open());
   $('bagPaneCons').innerHTML = list.length ? list.map(x => `<div class="cons-row"><span class="ci">${x.icon()}<i>${S[x.k]}</i></span>
     <div><b>${x.name}</b><span>${x.desc}</span></div>
-    <button class="btn sm" data-use="${x.k}" ${S[x.k] ? '' : 'disabled'}>Utiliser</button></div>`).join('')
-    : '<p class="cons-empty">Aucun consommable pour l\'instant.</p>';
+    <button class="btn sm" data-use="${x.k}" ${S[x.k] ? '' : 'disabled'}>${tr('Utiliser')}</button></div>`).join('')
+    : `<p class="cons-empty">${tr('Aucun consommable pour l\'instant.')}</p>`;
   const n = list.reduce((a, x) => a + S[x.k], 0);
-  $('bagTabCons').innerHTML = 'Consommables' + (n ? `<i>${n}</i>` : '');
+  $('bagTabCons').innerHTML = tr('Consommables') + (n ? `<i>${n}</i>` : '');
   $('bagTabs').hidden = !list.length;
 }
 function bagTab(t) {
@@ -2054,12 +2175,12 @@ function openBagView() {
   // During the bomb tutorial, open straight on the consumables
   bagTab(coachStep() && coachStep().cons && !$('bagTabs').hidden ? 'cons' : 'items');
   const n = S.trip.finds.length, cap = bagCap(), free = cap - n;
-  $('bagViewText').textContent = `${n} / ${cap} cases utilisées · ${free > 0 ? `${free} place${free > 1 ? 's' : ''} libre${free > 1 ? 's' : ''}` : 'sac plein'}`;
+  $('bagViewText').textContent = tr('{n} / {cap} cases utilisées', { n, cap }) + ' · ' + (free > 0 ? tr(plural(free, '{n} place libre', '{n} places libres'), { n: free }) : tr('sac plein'));
   $('bagViewList').innerHTML = n
-    ? S.trip.finds.map(f => `<div class="bf-item static">${findArt(f.kind, f.key)}<b>${rarName(findName(f.kind, f.key), rarityOfFind(f.kind, f.key))}</b>${f.kind !== 'geode' && !inMuseum(f.kind, f.key) ? '<span class="tagnew">Nouveau</span>' : ''}</div>`).join('')
-    : '<p class="bv-empty" style="grid-column:1 / -1">Ton sac est vide pour l\'instant.</p>';
+    ? S.trip.finds.map(f => `<div class="bf-item static">${findArt(f.kind, f.key)}<b>${rarName(findName(f.kind, f.key), rarityOfFind(f.kind, f.key))}</b>${f.kind !== 'geode' && !inMuseum(f.kind, f.key) ? `<span class="tagnew">${tr('Nouveau')}</span>` : ''}</div>`).join('')
+    : `<p class="bv-empty" style="grid-column:1 / -1">${tr('Ton sac est vide pour l\'instant.')}</p>`;
   const ores = Object.entries(S.trip.ores).filter(([, v]) => v);
-  $('bagViewOres').innerHTML = ores.length ? '<span style="width:100%;font-size:12px;color:var(--ink-soft)">Minerais récoltés (hors sac) :</span>' + ores.map(([k, v]) => `<span class="res">${resArt(k)}+${v}</span>`).join('') : '';
+  $('bagViewOres').innerHTML = ores.length ? `<span style="width:100%;font-size:12px;color:var(--ink-soft)">${tr('Minerais récoltés (hors sac) :')}</span>` + ores.map(([k, v]) => `<span class="res">${resArt(k)}+${v}</span>`).join('') : '';
   $('bagViewModal').hidden = false; $('bagViewOk').focus();
 }
 $('bagPill').addEventListener('click', () => { unlockAudio(); sfx('pick'); openBagView(); });
@@ -2134,7 +2255,7 @@ function updateEnergy(force) {
   }
   const e = `${S.energy} / ${maxE()}`;
   if (e !== lastE || force) { lastE = e; $('energyTxt').textContent = e; $('energyFill').style.width = Math.min(100, S.energy / maxE() * 100) + '%'; }
-  const r = S.energy >= maxE() ? 'Énergie pleine' : REGEN_MS > 0 ? `+1 dans ${Math.max(1, Math.ceil((S.nextRegen - now) / 1000))} s` : 'Recharge au village';
+  const r = S.energy >= maxE() ? tr('Énergie pleine') : REGEN_MS > 0 ? tr('+1 dans {s} s', { s: Math.max(1, Math.ceil((S.nextRegen - now) / 1000)) }) : tr('Recharge au village');
   if (r !== lastR) { lastR = r; $('regenTxt').textContent = r; }
   if (!$('scr-village').hidden && (e !== lastVE || force)) { lastVE = e; $('vEnergyTxt').textContent = e; $('vEnergyFill').style.width = Math.min(100, S.energy / maxE() * 100) + '%'; }
 }
@@ -2144,24 +2265,24 @@ function updateBucket() {
   if (S.bucketCharges < max && now >= S.bucketReady) S.bucketCharges = max;
   const left = S.bucketReady - now, empty = S.bucketCharges <= 0;
   btn.style.setProperty('--p', empty ? Math.min(1, Math.max(0, 1 - left / bucketCd())) : 1);
-  const t = empty ? `Remplissage ${Math.ceil(left / 1000)} s` : max > 1 ? `Prêt ×${S.bucketCharges}` : 'Prêt';
+  const t = empty ? tr('Remplissage {s} s', { s: Math.ceil(left / 1000) }) : max > 1 ? tr('Prêt ×{n}', { n: S.bucketCharges }) : tr('Prêt');
   if (t !== lastB) { lastB = t; $('bucketSub').textContent = t; btn.classList.toggle('charging', empty); if (left <= 0 && lastB) {} }
 }
 function loop() { updateEnergy(); updateBucket(); requestAnimationFrame(loop); }
 
 /* ---------- Forge & shop ---------- */
-const pct = v => Math.round(v * 100) + ' %';
+const pct = v => Math.round(v * 100) + (LANG === 'en' ? '%' : ' %');
 const UPGRADES = {
-  energy:  { name: 'Réserve d\'énergie', icon: () => BOLT, steps: E_STEPS,
-             desc: l => l < UPGRADES.energy.max ? `Énergie max ${energyAt(l)} → ${energyAt(l + 1)}` : `Énergie max ${energyAt(l)}` },
-  pick:    { name: 'Pioche renforcée', icon: () => TOOLS.pickaxe, steps: CFG.forge.piocheRenforcee.map(stepOf),
-             desc: l => l < UPGRADES.pick.max ? `${l + 1} → ${l + 2} dégâts par coup` : `${l + 1} dégâts par coup` },
-  splash:  { name: 'Coup en éclats', icon: () => img('Assets/Ground/Ground_Stone_03.png'), steps: CFG.forge.coupEnEclats.map(stepOf),
-             desc: l => l < UPGRADES.splash.max ? `Chance de casser aussi une roche voisine : ${pct(SPLASH[l])} → ${pct(SPLASH[l + 1])}` : `${pct(SPLASH[l])} de chance de casser une roche voisine` },
-  fast:    { name: 'Arrosoir rapide', icon: () => TOOLS.bucket, steps: CFG.forge.arrosoirRapide.map(stepOf),
-             desc: l => l < UPGRADES.fast.max ? `Recharge ${BUCKET_CD[l] / 1000} s → ${BUCKET_CD[l + 1] / 1000} s` : `Recharge en ${BUCKET_CD[l] / 1000} s` },
-  charges: { name: 'Grand arrosoir', icon: () => TOOLS.bucket, badge: l => '×' + (l + 1), steps: CFG.forge.grandArrosoir.map(stepOf),
-             desc: l => l < UPGRADES.charges.max ? `${l + 1} → ${l + 2} arrosages avant de recharger` : `${l + 1} arrosages avant de recharger` },
+  energy:  { name: tr('Réserve d\'énergie'), icon: () => BOLT, steps: E_STEPS,
+             desc: l => l < UPGRADES.energy.max ? tr('Énergie max {a} → {b}', { a: energyAt(l), b: energyAt(l + 1) }) : tr('Énergie max {a}', { a: energyAt(l) }) },
+  pick:    { name: tr('Pioche renforcée'), icon: () => TOOLS.pickaxe, steps: CFG.forge.piocheRenforcee.map(stepOf),
+             desc: l => l < UPGRADES.pick.max ? tr('{a} → {b} dégâts par coup', { a: l + 1, b: l + 2 }) : tr('{a} dégâts par coup', { a: l + 1 }) },
+  splash:  { name: tr('Coup en éclats'), icon: () => img('Assets/Ground/Ground_Stone_03.png'), steps: CFG.forge.coupEnEclats.map(stepOf),
+             desc: l => l < UPGRADES.splash.max ? tr('Chance de casser aussi une roche voisine : {a} → {b}', { a: pct(SPLASH[l]), b: pct(SPLASH[l + 1]) }) : tr('{a} de chance de casser une roche voisine', { a: pct(SPLASH[l]) }) },
+  fast:    { name: tr('Arrosoir rapide'), icon: () => TOOLS.bucket, steps: CFG.forge.arrosoirRapide.map(stepOf),
+             desc: l => l < UPGRADES.fast.max ? tr('Recharge {a} s → {b} s', { a: BUCKET_CD[l] / 1000, b: BUCKET_CD[l + 1] / 1000 }) : tr('Recharge en {a} s', { a: BUCKET_CD[l] / 1000 }) },
+  charges: { name: tr('Grand arrosoir'), icon: () => TOOLS.bucket, badge: l => '×' + (l + 1), steps: CFG.forge.grandArrosoir.map(stepOf),
+             desc: l => l < UPGRADES.charges.max ? tr('{a} → {b} arrosages avant de recharger', { a: l + 1, b: l + 2 }) : tr('{a} arrosages avant de recharger', { a: l + 1 }) },
 };
 // The number of levels of each upgrade is the number of prices listed in config.js
 for (const u of Object.values(UPGRADES)) { u.max = u.steps.length; u.cost = u.steps.map(st => st.cost); }
@@ -2170,13 +2291,13 @@ const curBiome = () => biomeOf(Math.max(S.reached || 1, S.level || 1));
 const upOpen = k => { const u = UPGRADES[k], l = S.up[k]; return l < u.max && u.steps[l].biome <= curBiome(); };
 const pipsHTML = (done, steps) => { const shown = steps.filter((st, i) => i < done || st.biome <= curBiome()).length; return '●'.repeat(done) + '○'.repeat(Math.max(0, shown - done)); };
 // "Max for now": the next level waits for a deeper biome (without telling what it is)
-const LATER = '<span class="maxed" title="Un nouveau niveau se débloque plus profond">Max<small>pour l\'instant</small></span>';
+const LATER = `<span class="maxed" title="${tr('Un nouveau niveau se débloque plus profond')}">Max<small>${tr('pour l\'instant')}</small></span>`;
 const CONSUMABLES = {
-  bomb:   { name: 'Bombe', icon: () => TOOLS.bomb, desc: 'Fait sauter les 9 cases autour de la cible.', cost: { coin: CFG.boutique.bombe },
+  bomb:   { name: tr('Bombe'), icon: () => TOOLS.bomb, desc: tr('Fait sauter les 9 cases autour de la cible.'), cost: { coin: CFG.boutique.bombe },
             have: () => S.bombs, give: () => { S.bombs++; updateBombs(); } },
-  radar:  { name: 'Radar', icon: () => RADAR, desc: 'Entoure l\'emplacement d\'un trésor caché.', cost: { coin: CFG.boutique.radar },
+  radar:  { name: tr('Radar'), icon: () => RADAR, desc: tr('Entoure l\'emplacement d\'un trésor caché.'), cost: { coin: CFG.boutique.radar },
             have: () => S.radars, give: () => { S.radars++; } },
-  potion: { name: 'Potion d\'énergie', icon: () => POTION, desc: 'Remplit ton énergie au maximum.', cost: { coin: CFG.boutique.potion },
+  potion: { name: tr('Potion d\'énergie'), icon: () => POTION, desc: tr('Remplit ton énergie au maximum.'), cost: { coin: CFG.boutique.potion },
             have: () => S.potions, give: () => { S.potions++; } },
 };
 const haveRes = k => k === 'coin' ? S.coins : S.bag.ores[k];
@@ -2184,7 +2305,7 @@ const canPay = cost => Object.entries(cost).every(([k, n]) => haveRes(k) >= n);
 const pay = cost => Object.entries(cost).forEach(([k, n]) => { if (k === 'coin') S.coins -= n; else S.bag.ores[k] -= n; });
 const priceHTML = cost => '<div class="price">' + Object.entries(cost).map(([k, n]) =>
   `<span class="${haveRes(k) < n ? 'short' : ''}">${n}${resArt(k)}</span>`).join('') + '</div>';
-const walletHTML = keys => keys.filter(k => k === 'coin' || has(ORE_UNLOCK[k]) || haveRes(k) > 0).map(k => `<span class="res" title="${k === 'coin' ? 'Pièces' : ORES[k].name}">${resArt(k)}${haveRes(k)}</span>`).join('');
+const walletHTML = keys => keys.filter(k => k === 'coin' || has(ORE_UNLOCK[k]) || haveRes(k) > 0).map(k => `<span class="res" title="${k === 'coin' ? tr('Pièces') : ORES[k].name}">${resArt(k)}${haveRes(k)}</span>`).join('');
 // The watering-can upgrades only show once magma exists
 const UP_UNLOCK = { fast: 'magma', charges: 'magma' };
 const upgradesShown = () => Object.entries(UPGRADES).filter(([k]) => !UP_UNLOCK[k] || has(UP_UNLOCK[k]));
@@ -2194,8 +2315,8 @@ function renderForge() {
   $('upList').innerHTML = upgradesShown().map(([k, u]) => {
     const l = S.up[k], done = l >= u.max, later = !done && !upOpen(k), cost = u.cost[l];
     return `<div class="srow"><div class="sic">${u.icon()}${u.badge ? '<i>' + u.badge(Math.min(l + 1, u.max)) + '</i>' : ''}</div>
-      <div class="stxt"><b>${u.name}</b><span>${later ? u.desc(l).replace(/ → [\d.,]+( %| s)?/, '') : u.desc(l)}</span><span class="pips">${pipsHTML(l, u.steps)}</span></div>
-      <div class="sbuy">${done ? '<span class="maxed">Max</span>' : later ? LATER : priceHTML(cost) + `<button class="btn sm" data-up="${k}" ${canPay(cost) ? '' : 'disabled'}>Forger</button>`}</div></div>`;
+      <div class="stxt"><b>${u.name}</b><span>${later ? u.desc(l).replace(/ → [\d.,]+( ?%| s)?/, '') : u.desc(l)}</span><span class="pips">${pipsHTML(l, u.steps)}</span></div>
+      <div class="sbuy">${done ? '<span class="maxed">Max</span>' : later ? LATER : priceHTML(cost) + `<button class="btn sm" data-up="${k}" ${canPay(cost) ? '' : 'disabled'}>${tr('Forger')}</button>`}</div></div>`;
   }).join('');
 }
 // Each shop article appears at its own level (config.js > progression > deblocages)
@@ -2208,18 +2329,18 @@ function renderShopScreen() {
   $('shopWallet').innerHTML = walletHTML(['coin']);
   const lvl = S.bagLvl, next = BAG_UP[lvl], later = next && (next.biome || 1) > curBiome();
   const bagRow = `<div class="srow"><div class="sic">${img('Assets/Bag.png')}<i>${bagCap()}</i></div>
-      <div class="stxt"><b>Agrandir le sac</b><span>${next && !later ? `${bagCap()} → ${next.cases} cases` : `${bagCap()} cases`}</span><span class="pips">${pipsHTML(lvl, BAG_UP.map(b => ({ biome: b.biome || 1 })))}</span></div>
-      <div class="sbuy">${later ? LATER : next ? priceHTML({ coin: next.pieces }) + `<button class="btn sm" data-bagup="1" ${canPay({ coin: next.pieces }) ? '' : 'disabled'}>Agrandir</button>` : '<span class="maxed">Max</span>'}</div></div>`;
+      <div class="stxt"><b>${tr('Agrandir le sac')}</b><span>${next && !later ? tr('{a} → {b} cases', { a: bagCap(), b: next.cases }) : tr('{a} cases', { a: bagCap() })}</span><span class="pips">${pipsHTML(lvl, BAG_UP.map(b => ({ biome: b.biome || 1 })))}</span></div>
+      <div class="sbuy">${later ? LATER : next ? priceHTML({ coin: next.pieces }) + `<button class="btn sm" data-bagup="1" ${canPay({ coin: next.pieces }) ? '' : 'disabled'}>${tr('Agrandir')}</button>` : '<span class="maxed">Max</span>'}</div></div>`;
   $('conList').innerHTML = bagRow + Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k])).map(([k, c]) =>
     `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
       <div class="stxt"><b>${c.name}</b><span>${c.desc}</span></div>
-      <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) ? '' : 'disabled'}>Acheter</button></div></div>`).join('');
+      <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) ? '' : 'disabled'}>${tr('Acheter')}</button></div></div>`).join('');
 }
 document.addEventListener('click', e => {
   const u = e.target.closest('button[data-bagup]'); if (!u || u.disabled) return;
   const next = BAG_UP[S.bagLvl]; if (!next || (next.biome || 1) > curBiome() || !canPay({ coin: next.pieces })) return;
   pay({ coin: next.pieces }); S.bagLvl++;
-  toast(`Sac agrandi : ${bagCap()} cases !`, 'good'); sfx('reward');
+  toast(tr('Sac agrandi : {n} cases !', { n: bagCap() }), 'good'); sfx('reward');
   renderShopScreen(); updateBadge(); save();
 });
 document.addEventListener('click', e => {
@@ -2230,7 +2351,7 @@ document.addEventListener('click', e => {
     pay(cost); S.up[k]++; stat('forge');
     if (k === 'charges') S.bucketCharges = maxCharges();
     if (k === 'energy') { S.energy = Math.min(maxE(), S.energy + (energyAt(S.up[k]) - energyAt(S.up[k] - 1))); updateEnergy(true); }
-    toast(`${u.name} : niveau ${S.up[k]} !`, 'good');
+    toast(tr('{x} : niveau {n} !', { x: u.name, n: S.up[k] }), 'good');
     renderForge();
   } else {
     const c = CONSUMABLES[b.dataset.con];
@@ -2252,19 +2373,19 @@ function paintRadar() {
   });
 }
 function useRadar() {
-  if (!S.radars) return toast('Pas de radar. Achètes-en à la boutique du village.', '');
+  if (!S.radars) return toast(tr('Pas de radar. Achètes-en à la boutique du village.'), '');
   const hidden = S.rewards.filter(r => !r.found && !r.radar);
-  if (!hidden.length) return toast('Tous les trésors restants sont déjà repérés.', '');
+  if (!hidden.length) return toast(tr('Tous les trésors restants sont déjà repérés.'), '');
   const rw = hidden[randInt(0, hidden.length - 1)]; rw.radar = true; S.radars--;
   paintRadar(); updateQuick(); save();
   [0, .15, .3].forEach(t => setTimeout(() => sfx('pick'), t * 1000));
-  toast(`Radar : ${rwLabel(rw).toLowerCase()} repéré${rw.kind === 'art' ? '' : 'e'} !`, 'good');
+  toast(rw.kind === 'art' ? tr('Radar : artefact repéré !') : tr('Radar : géode repérée !'), 'good');
 }
 function usePotion() {
-  if (!S.potions) return toast('Pas de potion. Achètes-en à la boutique du village.', '');
-  if (S.energy >= maxE()) return toast('Ton énergie est déjà pleine.', '');
+  if (!S.potions) return toast(tr('Pas de potion. Achètes-en à la boutique du village.'), '');
+  if (S.energy >= maxE()) return toast(tr('Ton énergie est déjà pleine.'), '');
   S.potions--; S.energy = maxE(); updateEnergy(true); updateQuick(); save();
-  sfx('reward'); toast('Énergie rechargée !', 'good');
+  sfx('reward'); toast(tr('Énergie rechargée !'), 'good');
 }
 
 /* ---------- Screens ---------- */
@@ -2310,7 +2431,7 @@ function flyCoins(i, n) {
 function updateBadge() {
   const n = S.trip.finds.length, cap = bagCap();
   const coins = S.trip.coins || 0;
-  $('bagTxt').innerHTML = `Sac ${n}/${cap}` + (coins ? ` · ${coins} ${COIN}` : '');
+  $('bagTxt').innerHTML = tr('Sac {n}/{cap}', { n, cap }) + (coins ? ` · ${coins} ${COIN}` : '');
   $('bagPill').classList.toggle('full', n >= cap);
 }
 function item(svg, name, n, locked, extra = '') {
@@ -2319,10 +2440,10 @@ function item(svg, name, n, locked, extra = '') {
 
 /* ---------- Village ---------- */
 const OW = 'Assets/Overworld/', OW_V = '?v=2';   // bump OW_V when the building images change
-$('icMuseum').innerHTML = img(OW + 'Museum.png' + OW_V, 'Musée');
-$('icShop').innerHTML = img(OW + 'Shop.png' + OW_V, 'Boutique');
-$('icForge').innerHTML = img(OW + 'Forge.png' + OW_V, 'Forge');
-$('icAtelier').innerHTML = img(OW + 'Workshop.png' + OW_V, 'Atelier');
+$('icMuseum').innerHTML = img(OW + 'Museum.png' + OW_V, tr('Musée'));
+$('icShop').innerHTML = img(OW + 'Shop.png' + OW_V, tr('Boutique'));
+$('icForge').innerHTML = img(OW + 'Forge.png' + OW_V, tr('Forge'));
+$('icAtelier').innerHTML = img(OW + 'Workshop.png' + OW_V, tr('Atelier'));
 const museumTotal = () => Object.keys(GEMS).length + Object.keys(ARTS).length;
 const museumOwned = () => [S.bag.gems, S.bag.arts].reduce((a, b) => a + Object.values(b).filter(Boolean).length, 0);
 /* ---------- Village goals (config.js > objectifs) ---------- */
@@ -2370,9 +2491,9 @@ function renderGoals() {
     const cur = g.type === 'niveau' ? Math.min(v, g.target) : Math.min(v - g.start, g.target - g.start);
     const tot = g.type === 'niveau' ? g.target : g.target - g.start;
     const pct = Math.max(0, Math.min(100, (v - g.start) / (g.target - g.start) * 100));
-    return `<div class="vg-row${done ? ' done' : ''}"><span class="vg-ic">${(GOAL_ICON[g.type] || (() => ''))()}</span><div class="vg-txt"><span>${o.texte.replace('{n}', g.n)}</span>
+    return `<div class="vg-row${done ? ' done' : ''}"><span class="vg-ic">${(GOAL_ICON[g.type] || (() => ''))()}</span><div class="vg-txt"><span>${tr(o.texte, { n: g.n })}</span>
       <div class="bar mini"><i style="width:${pct}%"></i><span>${cur} / ${tot}</span></div></div>
-      ${done ? `<button class="btn sm" data-claim="${i}" aria-label="Récupérer ${g.reward} pièces">+${g.reward}${COIN}</button>` : `<span class="vg-rw">+${g.reward}${COIN}</span>`}</div>`;
+      ${done ? `<button class="btn sm" data-claim="${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">+${g.reward}${COIN}</button>` : `<span class="vg-rw">+${g.reward}${COIN}</span>`}</div>`;
   }).join('');
 }
 document.addEventListener('click', e => {
@@ -2383,7 +2504,7 @@ document.addEventListener('click', e => {
   // A new goal takes its place (not the same kind)
   const next = newGoal([...S.goals.map(x => x.type)]);
   S.goals.splice(i, 1, ...(next ? [next] : []));
-  toast(`Objectif réussi : +${g.reward} pièces !`, 'good');
+  toast(tr('Objectif réussi : +{n} pièces !', { n: g.reward }), 'good');
   renderVillage(); save();
 });
 $('questBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); renderGoals(); $('goalsModal').hidden = false; $('goalsClose').focus(); });
@@ -2424,21 +2545,21 @@ function renderVillage() {
     const k = b.dataset.go;
     if (!revealing || !b.classList.contains('appear')) b.classList.toggle('pending', (S.newBuildings || []).includes(k));
     let nb = b.querySelector('.bnew');
-    if ((S.bldNew || {})[k] && !nb) { nb = document.createElement('span'); nb.className = 'badge bnew'; nb.textContent = 'Nouveau !'; b.querySelector('.plate').append(nb); }
+    if ((S.bldNew || {})[k] && !nb) { nb = document.createElement('span'); nb.className = 'badge bnew'; nb.textContent = tr('Nouveau !'); b.querySelector('.plate').append(nb); }
     if (nb) nb.hidden = !(S.bldNew || {})[k];
   });
   setTimeout(revealBuildings, 350);
   renderGoals();
   $('villageWallet').innerHTML = walletHTML(['coin', ...Object.keys(ORES)]);
-  $('subMuseum').textContent = `${museumOwned()} / ${museumTotal()} trésors`;
+  $('subMuseum').textContent = tr('{a} / {b} trésors', { a: museumOwned(), b: museumTotal() });
   const g = S.bag.geodes.length;
-  $('subAtelier').textContent = g ? `${g} géode${g > 1 ? 's' : ''}` : 'Aucune géode';
+  $('subAtelier').textContent = g ? tr(plural(g, '{n} géode', '{n} géodes'), { n: g }) : tr('Aucune géode');
   $('badgeAtelier').hidden = !g; $('badgeAtelier').textContent = g;
   $('badgeForge').hidden = !anyUpgradeAffordable();
   $('badgeMuseum').hidden = !museumPrimeWaiting() || !!(S.bldNew || {}).museum;
   $('badgeShop').hidden = !S.buildings.shop || !shopNew() || !!(S.bldNew || {}).shop;
   const cps = CHECKPOINTS.filter(l => l <= S.reached).length;
-  $('mineDepth').textContent = cps ? `Record : niveau ${S.reached} · ${cps} checkpoint${cps > 1 ? 's' : ''}` : `Record : niveau ${S.reached}`;
+  $('mineDepth').textContent = tr('Record : niveau {n}', { n: S.reached }) + (cps ? ' · ' + tr(plural(cps, '{n} checkpoint', '{n} checkpoints'), { n: cps }) : '');
   applyCam();
   updateEnergy(true);
 }
@@ -2502,7 +2623,7 @@ CHECKPOINTS.sort((a, b) => a - b);
 // Biome of a level (levels 1-100 = biome 1); a "camp" is the checkpoint closing a biome (100, 200…)
 const biomeOf = level => Math.ceil(level / BIOME_LEN);
 const isCamp = level => level % BIOME_LEN === 0;
-const biomeName = b => BIOME_NAMES[b - 1] || `Biome ${b}`;
+const biomeName = b => BIOME_NAMES[b - 1] ? tr(BIOME_NAMES[b - 1]) : tr('Biome {n}', { n: b });
 const galleryInProgress = () => S.rewards && S.rewards.length && !S.rewards.every(r => r.found);
 // Starting points the player can use: level 1 and every checkpoint reached
 const liftStops = () => [1, ...CHECKPOINTS.filter(l => l <= S.reached)];
@@ -2514,12 +2635,12 @@ function openLift() {
   $('liftModal').hidden = false;
   // A single biome: show its checkpoints right away
   if (biomes.length === 1) return showLiftBiome(biomes[0], false);
-  $('liftTitle').textContent = 'Ascenseur';
-  $('liftText').textContent = `Choisis d'abord un biome. Ton record : niveau ${S.reached}.`;
+  $('liftTitle').textContent = tr('Ascenseur');
+  $('liftText').textContent = tr('Choisis d\'abord un biome. Ton record : niveau {n}.', { n: S.reached });
   $('liftList').className = 'lift-grid biomes';
   $('liftList').innerHTML = biomes.map(b => {
     const n = stops.filter(l => biomeOf(l) === b).length, from = (b - 1) * BIOME_LEN + 1;
-    return `<button class="lift-btn biome" data-biome="${b}"><b>${biomeName(b)}</b><span>Niveaux ${from}–${b * BIOME_LEN}<br>${n} checkpoint${n > 1 ? 's' : ''}</span></button>`;
+    return `<button class="lift-btn biome" data-biome="${b}"><b>${biomeName(b)}</b><span>${tr('Niveaux {a}–{b}', { a: from, b: b * BIOME_LEN })}<br>${tr(plural(n, '{n} checkpoint', '{n} checkpoints'), { n })}</span></button>`;
   }).join('');
   $('liftBack').hidden = true;
   $('liftList').querySelector('button')?.focus();
@@ -2527,12 +2648,12 @@ function openLift() {
 function showLiftBiome(b, canGoBack) {
   const stops = liftStops().filter(l => biomeOf(l) === b);
   $('liftTitle').textContent = biomeName(b);
-  $('liftText').textContent = `Choisis ton niveau de départ. Ton record : niveau ${S.reached}.`;
+  $('liftText').textContent = tr('Choisis ton niveau de départ. Ton record : niveau {n}.', { n: S.reached });
   $('liftList').className = 'lift-grid';
   $('liftList').innerHTML = stops.map(l => {
     const current = l === S.level && galleryInProgress();
-    return `<button class="lift-btn${isCamp(l) ? ' camp' : ''}" data-lift="${l}" aria-label="Descendre au niveau ${l}">
-      <b>${isCamp(l) ? '⛺ ' : ''}Niveau ${l}</b>${isCamp(l) ? '<span>Camp de biome</span>' : ''}${current ? '<em>En cours</em>' : ''}</button>`;
+    return `<button class="lift-btn${isCamp(l) ? ' camp' : ''}" data-lift="${l}" aria-label="${tr('Descendre au niveau {n}', { n: l })}">
+      <b>${isCamp(l) ? '⛺ ' : ''}${tr('Niveau {n}', { n: l })}</b>${isCamp(l) ? `<span>${tr('Camp de biome')}</span>` : ''}${current ? `<em>${tr('En cours')}</em>` : ''}</button>`;
   }).join('');
   $('liftBack').hidden = !canGoBack;
   $('liftList').querySelector('button')?.focus();
@@ -2571,7 +2692,7 @@ const PRIME = CFG.economie.primeDecouverte;
 // Collection stars: completed once = 1 star, twice = 2 stars… (config.js > economie > etoilesSeries)
 const STARS = CFG.economie.etoilesSeries, MAX_STARS = STARS.max;
 const TIER_BONUS = [0, ...STARS.bonusRevente];
-const starsHTML = n => '<span class="stars-set" aria-label="' + n + ' étoile' + (n > 1 ? 's' : '') + ' sur ' + MAX_STARS + '">' + Array.from({ length: MAX_STARS }, (_, i) => `<i class="${i < n ? 'on' : ''}">★</i>`).join('') + '</span>';
+const starsHTML = n => '<span class="stars-set" aria-label="' + tr(plural(n, '{n} étoile sur {max}', '{n} étoiles sur {max}'), { n, max: MAX_STARS }) + '">' + Array.from({ length: MAX_STARS }, (_, i) => `<i class="${i < n ? 'on' : ''}">★</i>`).join('') + '</span>';
 // Prime of the n-th star of a collection, waiting at the Museum
 const starPrime = (set, n) => Math.round((SETS[set].prime || 0) * (STARS.primes[n - 1] ?? 0));
 const rarityOf = (kind, key) => kind === 'gem' ? GEMS[key].rarity : ARTS[key].rarity;
@@ -2608,12 +2729,12 @@ function applyFind(kind, key) {
   }
   return r;
 }
-const tagHTML = r => r.tag === 'new' ? `<span class="rtag new">Nouveau${r.prime ? ` +${r.prime}${COIN}` : ''}</span>`
-  : r.tag === 'geo' ? '<span class="rtag geo">Atelier</span>'
-  : `<span class="rtag sold">Vendu +${r.coins}${COIN}</span>`;
-const findRow = r => `<div class="rrow">${r.art}<div><b>${rarName(r.name, rarityOfFind(r.kind, r.key))}</b><span>${r.tag === 'sold' ? 'Doublon' : r.kind === 'geode' ? 'À ouvrir à l\'atelier' : 'Ajouté à ta collection'}</span></div>${tagHTML(r)}</div>`
-  + (r.tierUp ? `<div class="rrow">${r.art}<div><b>${r.setName} : nouvelle étoile ! ${starsHTML(r.tierUp)}</b><span>Prime à récupérer au Musée</span></div></div>` : '')
-  + (r.setMsg ? `<div class="rrow">${r.art}<div><b>${r.setMsg}</b><span>${r.setName} réunies !</span></div></div>` : '')
+const tagHTML = r => r.tag === 'new' ? `<span class="rtag new">${tr('Nouveau')}${r.prime ? ` +${r.prime}${COIN}` : ''}</span>`
+  : r.tag === 'geo' ? `<span class="rtag geo">${tr('Atelier')}</span>`
+  : `<span class="rtag sold">${tr('Vendu')} +${r.coins}${COIN}</span>`;
+const findRow = r => `<div class="rrow">${r.art}<div><b>${rarName(r.name, rarityOfFind(r.kind, r.key))}</b><span>${r.tag === 'sold' ? tr('Doublon') : r.kind === 'geode' ? tr('À ouvrir à l\'atelier') : tr('Ajouté à ta collection')}</span></div>${tagHTML(r)}</div>`
+  + (r.tierUp ? `<div class="rrow">${r.art}<div><b>${tr('{x} : nouvelle étoile !', { x: r.setName })} ${starsHTML(r.tierUp)}</b><span>${tr('Prime à récupérer au Musée')}</span></div></div>` : '')
+  + (r.setMsg ? `<div class="rrow">${r.art}<div><b>${r.setMsg}</b><span>${tr('{x} réunies !', { x: r.setName })}</span></div></div>` : '')
   + (r.legend ? `<div class="rlegend">${r.legend}</div>` : '');
 
 /* ---------- Recap when going back up ---------- */
@@ -2622,7 +2743,7 @@ function oreLootHTML(ores, title) {
   const list = Object.keys(ORES).filter(k => ores[k]);
   return `<p class="loot-title">${title}</p>` + (list.length
     ? `<div class="loot-ores">${list.map(k => `<div class="loot-ore">${resArt(k)}<b>+${ores[k]}</b><span>${ORES[k].name}</span></div>`).join('')}</div>`
-    : "<p class=\"loot-empty\">Aucun minerai récolté pour l'instant.</p>");
+    : `<p class="loot-empty">${tr('Aucun minerai récolté pour l\'instant.')}</p>`);
 }
 const BUILDINGS = {
   museum:  { name: 'le Musée',    key: null,       text: 'Tes trésors y sont exposés.' },
@@ -2648,10 +2769,10 @@ function openRecap() {
     if (g) { g.n++; g.isNew = g.isNew || r.tag === 'new'; } else groups.push({ kind: r.kind, key: r.key, art: r.art, name: r.name, n: 1, isNew: r.tag === 'new' });
   }
   const oreList = Object.keys(ORES).filter(k => T.ores[k]);
-  const cells = groups.map(g => `<div class="lt">${g.art}${g.isNew ? '<span class="lt-new">Nouveau</span>' : ''}${g.n > 1 ? `<i class="lt-n">×${g.n}</i>` : ''}<span class="lt-nm">${rarName(g.name, rarityOfFind(g.kind, g.key))}</span></div>`)
+  const cells = groups.map(g => `<div class="lt">${g.art}${g.isNew ? `<span class="lt-new">${tr('Nouveau')}</span>` : ''}${g.n > 1 ? `<i class="lt-n">×${g.n}</i>` : ''}<span class="lt-nm">${rarName(g.name, rarityOfFind(g.kind, g.key))}</span></div>`)
     .concat(oreList.map(k => `<div class="lt ore">${resArt(k)}<b>+${T.ores[k]}</b><span class="lt-nm">${ORES[k].name}</span></div>`));
   cells.forEach((h, i) => cells[i] = h.replace('<div class="lt', `<div style="animation-delay:${i * 60}ms" class="lt`));
-  $('recapText').textContent = cells.length || total ? `Ton butin du niveau ${S.level}` : 'Tu remontes les mains vides cette fois. Ton niveau t\'attend !';
+  $('recapText').textContent = cells.length || total ? tr('Ton butin du niveau {n}', { n: S.level }) : tr('Tu remontes les mains vides cette fois. Ton niveau t\'attend !');
   $('recapGrid').innerHTML = cells.join('');
   // The coin total counts up
   const out = $('recapTotal');
@@ -2685,24 +2806,24 @@ document.addEventListener('click', e => {
   const due = list.reduce((a, p) => a + starPrime(sk, p.tier), 0);
   S.coins += due; S.pendingPrimes = S.pendingPrimes.filter(p => p.set !== sk);
   unlockAudio(); sfx('reward');
-  toast(`${SETS[sk].name} : +${due} pièces !`, 'good');
+  toast(tr('{x} : +{n} pièces !', { x: SETS[sk].name, n: due }), 'good');
   renderMuseum(); save();
 });
 function renderMuseum() {
   const B = S.bag, cell = (art, name, owned, val, count, rar) =>
-    `<div class="item${owned ? '' : ' locked'}">${art}<span class="nm">${rarName(owned ? name : '???', rar)}</span>${owned ? `<span class="mtag" title="Prix de vente d'un doublon">${val}${COIN}</span>` : ''}${count > 1 ? `<span class="cnt">trouvé ×${count}</span>` : ''}</div>`;
+    `<div class="item${owned ? '' : ' locked'}">${art}<span class="nm">${rarName(owned ? name : '???', rar)}</span>${owned ? `<span class="mtag" title="${tr('Prix de vente d\'un doublon')}">${val}${COIN}</span>` : ''}${count > 1 ? `<span class="cnt">${tr('trouvé ×{n}', { n: count })}</span>` : ''}</div>`;
   const setHTML = ([sk, set]) => {
     const keys = setKeys(sk), tier = setTier(sk), book = setBook(sk), table = setTable(sk);
     // Progress towards the next level: items found at least (tier + 1) times
     const got = keys.filter(k => (book[k] || 0) > tier).length, missing = keys.length - got;
-    const next = tier < MAX_STARS ? `Prochaine étoile : encore ${missing} objet${missing > 1 ? 's' : ''}${set.prime && starPrime(sk, tier + 1) ? ` · prime ${starPrime(sk, tier + 1)} pièces` : ''}` : 'Toutes les étoiles obtenues !';
+    const next = tier < MAX_STARS ? tr(plural(missing, 'Prochaine étoile : encore {n} objet', 'Prochaine étoile : encore {n} objets'), { n: missing }) + (set.prime && starPrime(sk, tier + 1) ? ' · ' + tr('prime {n} pièces', { n: starPrime(sk, tier + 1) }) : '') : tr('Toutes les étoiles obtenues !');
     // Where to look: depth zones and ground
-    const where = set.kind === 'gem' ? 'Dans les géodes'
-      : 'Où : ' + rangeText(Math.min(...keys.map(k => table[k].range[0])), Math.max(...keys.map(k => table[k].range[1]))) + (SOIL_FR[table[keys[0]].soil] ? ', ' + SOIL_FR[table[keys[0]].soil] : '');
+    const where = set.kind === 'gem' ? tr('Dans les géodes')
+      : tr('Où :') + ' ' + rangeText(Math.min(...keys.map(k => table[k].range[0])), Math.max(...keys.map(k => table[k].range[1]))) + (SOIL_FR[table[keys[0]].soil] ? ', ' + SOIL_FR[table[keys[0]].soil] : '');
     // Primes waiting for this collection
     const waiting = (S.pendingPrimes || []).filter(p => p.set === sk), due = waiting.reduce((a, p) => a + starPrime(sk, p.tier), 0);
-    const claim = waiting.length ? `<div class="set-claim"><span>${waiting.length > 1 ? 'Nouvelles étoiles' : 'Nouvelle étoile'} !${set.message && waiting.some(p => p.tier === 1) ? ' ' + set.message : ''}</span><button class="btn sm" data-claimset="${sk}">Récupérer +${due}${COIN}</button></div>` : '';
-    return `<div class="set t${Math.min(tier, 3)}"><div class="set-head"><b>${set.name}${starsHTML(tier)}${tier ? `<span class="set-bonus">doublons +${Math.round(TIER_BONUS[tier] * 100)} %</span>` : ''}</b><small>${keys.filter(k => book[k]).length} / ${keys.length}</small></div>
+    const claim = waiting.length ? `<div class="set-claim"><span>${waiting.length > 1 ? tr('Nouvelles étoiles !') : tr('Nouvelle étoile !')}${set.message && waiting.some(p => p.tier === 1) ? ' ' + set.message : ''}</span><button class="btn sm" data-claimset="${sk}">${tr('Récupérer')} +${due}${COIN}</button></div>` : '';
+    return `<div class="set t${Math.min(tier, 3)}"><div class="set-head"><b>${set.name}${starsHTML(tier)}${tier ? `<span class="set-bonus">${tr('doublons +{n} %', { n: Math.round(TIER_BONUS[tier] * 100) })}</span>` : ''}</b><small>${keys.filter(k => book[k]).length} / ${keys.length}</small></div>
       ${claim}
       <p class="set-where">${where}</p>
       <div class="items">${keys.map(k => cell(itemArt(table[k]), table[k].name, book[k], findValue(set.kind, k), book[k], table[k].rarity)).join('')}</div>
@@ -2712,12 +2833,12 @@ function renderMuseum() {
   // Only series with at least one treasure found are shown (no spoilers)
   const all = Object.entries(SETS), sets = all.filter(([sk]) => setKeys(sk).some(k => setBook(sk)[k]));
   const hidden = all.length - sets.length;
-  $('museumBody').innerHTML = `<p>${museumOwned()} trésors sur ${museumTotal()} sont exposés. Chaque nouveau trésor rapporte une prime, les doublons sont vendus à leur valeur. Complète une collection pour gagner une étoile : chaque étoile augmente le prix de revente de ses doublons.</p>
+  $('museumBody').innerHTML = `<p>${tr('{a} trésors sur {b} sont exposés. Chaque nouveau trésor rapporte une prime, les doublons sont vendus à leur valeur. Complète une collection pour gagner une étoile : chaque étoile augmente le prix de revente de ses doublons.', { a: museumOwned(), b: museumTotal() })}</p>
     ${['gem', 'art'].map(kind => {
       const list = sets.filter(([, set]) => set.kind === kind);
-      return list.length ? `<h3>${kind === 'gem' ? 'Gemmes' : 'Artefacts'}</h3>${list.map(setHTML).join('')}` : '';
+      return list.length ? `<h3>${kind === 'gem' ? tr('Gemmes') : tr('Artefacts')}</h3>${list.map(setHTML).join('')}` : '';
     }).join('')}
-    ${hidden ? `<h3>${hidden} collection${hidden > 1 ? 's' : ''} restante${hidden > 1 ? 's' : ''} à découvrir</h3>` : ''}`;
+    ${hidden ? `<h3>${tr(plural(hidden, '{n} collection restante à découvrir', '{n} collections restantes à découvrir'), { n: hidden })}</h3>` : ''}`;
 }
 
 /* ---------- Atelier: timing mini-game to open geodes ---------- */
@@ -2744,7 +2865,7 @@ function renderGeoStock() {
   const counts = {};
   S.bag.geodes.forEach(g => counts[g] = (counts[g] || 0) + 1);
   const keys = Object.keys(counts);
-  $('geoStock').innerHTML = keys.map(g => `<button class="geo-btn rar-${GEODES[g].rarity}${MG && MG.g === g ? ' on' : ''}" data-geo="${g}" aria-label="Ouvrir : ${GEODES[g].name}">${geodeArt(g)}<i>${counts[g]}</i></button>`).join('');
+  $('geoStock').innerHTML = keys.map(g => `<button class="geo-btn rar-${GEODES[g].rarity}${MG && MG.g === g ? ' on' : ''}" data-geo="${g}" aria-label="${tr('Ouvrir : {x}', { x: GEODES[g].name })}">${geodeArt(g)}<i>${counts[g]}</i></button>`).join('');
   $('geoStock').hidden = !keys.length;
 }
 document.addEventListener('click', e => {
@@ -2760,12 +2881,12 @@ function startMini(g) {
   $('mini').hidden = false; $('mgHit').disabled = false;
   $('mgGeode').innerHTML = geodeArt(g); $('mgGeode').dataset.crack = 0;
   $('mgResist').innerHTML = rarTag(GEODES[g].rarity) + ' ' + '●'.repeat(tier + 1) + '<span class="off">' + '●'.repeat(3 - tier) + '</span>';
-  $('mgResist').setAttribute('aria-label', `Géode ${RARITY_FR[GEODES[g].rarity]}, résistance ${tier + 1} sur 4`);
+  $('mgResist').setAttribute('aria-label', tr('Géode {r}, résistance {n} sur 4', { r: RARITY_FR[GEODES[g].rarity], n: tier + 1 }));
   // Tell the rule for running out of hearts before the first strike
   const lives = CFG.atelier.vies;
   $('mgRule').innerHTML = tier > 0
-    ? `Si tu perds tes ${lives} cœurs, la géode s'ouvre quand même, mais donne une gemme ${rarTag(RARITIES[tier - 1])} au lieu de ${rarTag(RARITIES[tier])}.`
-    : `Si tu perds tes ${lives} cœurs, la géode blanche s'effrite et ne donne que <b>${CFG.atelier.piecesGeodeBlancheRatee} pièces</b>.`;
+    ? tr('Si tu perds tes {n} cœurs, la géode s\'ouvre quand même, mais donne une gemme {a} au lieu de {b}.', { n: lives, a: rarTag(RARITIES[tier - 1]), b: rarTag(RARITIES[tier]) })
+    : tr('Si tu perds tes {n} cœurs, la géode blanche s\'effrite et ne donne que <b>{c} pièces</b>.', { n: lives, c: CFG.atelier.piecesGeodeBlancheRatee });
   $('mgRule').hidden = false;
   placeZone(); paintHearts(); paintHits(); renderGeoStock();
   cancelAnimationFrame(mgRaf); mgRaf = requestAnimationFrame(mgTick);
@@ -2777,7 +2898,7 @@ function placeZone() {
   MG.zoneAt = at;
   $('mgZone').style.left = at + '%'; $('mgZone').style.width = MG.zone + '%';
 }
-function paintHits() { $('mgHits').innerHTML = 'Coups <b>' + '●'.repeat(MG.hits) + '</b>' + '○'.repeat(MG.need - MG.hits); $('mgHits').setAttribute('aria-label', `${MG.hits} coup(s) réussi(s) sur ${MG.need}`); }
+function paintHits() { $('mgHits').innerHTML = tr('Coups') + ' <b>' + '●'.repeat(MG.hits) + '</b>' + '○'.repeat(MG.need - MG.hits); $('mgHits').setAttribute('aria-label', tr('{a} coup(s) réussi(s) sur {b}', { a: MG.hits, b: MG.need })); }
 function paintHearts() { $('mgHearts').innerHTML = Array.from({ length: CFG.atelier.vies }, (_, i) => i).map(i => `<span class="${i < MG.lives ? '' : 'lost'}">${HEART}</span>`).join(''); }
 // Cursor position is derived from the clock, so a hit is judged at the exact moment of the tap
 const mgPhase = t => ((t - MG.t0) / 1000 * MG.speed) % 2;
@@ -2841,14 +2962,15 @@ function finishMini(win) {
     sfx(win ? 'reward' : 'break'); stopMini();
     $('mgGeode').innerHTML = gem ? gemArt(gem) : ''; $('mgGeode').dataset.crack = 0;
     const next = S.bag.geodes[0];
-    const text = win ? `${GEODES[g].name} : ${GEMS[gem].art} ${rarName(GEMS[gem].name, RARITY_GEM[gem])} !`
-      : gem ? `Plus de cœurs : la ${GEODES[g].name.toLowerCase()} s'ouvre quand même, mais donne ${GEMS[gem].art} ${rarName(GEMS[gem].name, RARITY_GEM[gem])}.`
-      : `Plus de cœurs : la géode blanche s'effrite. Tu récupères ${coins} pièces.`;
-    $('mgResult').innerHTML = `<h2>${win ? 'Géode ouverte !' : 'Raté…'}</h2>
+    const gemTxt = gem ? GEMS[gem].art + ' ' + rarName(GEMS[gem].name, RARITY_GEM[gem]) : '';
+    const text = win ? tr('{x} : {gem} !', { x: GEODES[g].name, gem: gemTxt })
+      : gem ? tr('Plus de cœurs : la {x} s\'ouvre quand même, mais donne {gem}.', { x: GEODES[g].name.toLowerCase(), gem: gemTxt })
+      : tr('Plus de cœurs : la géode blanche s\'effrite. Tu récupères {n} pièces.', { n: coins });
+    $('mgResult').innerHTML = `<h2>${win ? tr('Géode ouverte !') : tr('Raté…')}</h2>
       <div class="duo">${gem ? gemArt(gem) : COIN}</div>
       <p>${text}</p>
       ${r ? `<div class="recap-list">${findRow(r)}</div>` : `<div class="recap-total">+${coins} ${COIN}</div>`}
-      ${next ? `<button class="btn big" data-geo="${next}">Géode suivante</button>` : '<button class="btn big" data-go="village">Retour au village</button>'}`;
+      ${next ? `<button class="btn big" data-geo="${next}">${tr('Géode suivante')}</button>` : `<button class="btn big" data-go="village">${tr('Retour au village')}</button>`}`;
     $('mgResult').hidden = false;
     renderGeoStock(); save();
   }, 420);
@@ -2856,44 +2978,43 @@ function finishMini(win) {
 
 /* ---------- Help & reset ---------- */
 const renderHelp = () => $('help').innerHTML = [
-  [null, TOOLS.shovel, '<b>Pelle</b> : maintiens et glisse sur la terre pour la retirer. Elle ne coûte rien.'],
-  ['pioche', TOOLS.pickaxe, '<b>Pioche</b> : touche la pierre pour la casser. Chaque coup coûte 1 énergie : pierre 3 coups, minerai 3, magma refroidi 5.'],
-  ['magma', TOOLS.bucket, '<b>Arrosoir</b> : refroidit le magma. Il lui faut quelques secondes pour se remplir.'],
-  ['bombes', TOOLS.bomb, '<b>Bombe</b> : dans ton sac, onglet Consommables. Elle fait sauter les 9 cases autour de la cible, sauf le magma chaud.'],
-  ['radar', RADAR, '<b>Radar</b> : dans ton sac, onglet Consommables. Il entoure l\'emplacement d\'un trésor caché.'],
-  [() => S.bagSeen, img('Assets/Bag.png'), '<b>Sac</b> : chaque trésor et chaque géode prend une case (les minerais ne comptent pas). Agrandis-le à la boutique.'],
-  [() => S.reached >= CHECKPOINTS[0], UP_ICON, '<b>Ascenseur</b> : au village, « Descendre » te propose les checkpoints débloqués (niveau 10, 20, 30…), rangés par biome. C\'est gratuit.'],
-  [null, UP_ICON, '<b>Remonter</b> : quitte la mine quand tu veux. Ton sac se vide : les nouveaux trésors vont au musée, les doublons sont vendus.'],
-  [() => S.buildings.museum, artArt('lion'), '<b>Musée</b> : chaque nouveau trésor rapporte une prime. Complète une collection pour gagner une étoile (jusqu\'à ' + MAX_STARS + ') : ses doublons se vendent plus cher, et la prime se récupère au Musée.'],
-  [() => S.buildings.shop, img('Assets/Bag.png'), '<b>Boutique</b> : agrandis ton sac. D\'autres articles arrivent plus profond.'],
-  [() => S.buildings.forge, resArt('iron'), '<b>Forge</b> : améliore tes outils avec du fer, du cuivre, de l\'or et des pièces.'],
-  ['pierreDure', TOOLS.pickaxe, '<b>Pierre dure</b> : il faut deux fois plus de coups de pioche.'],
-  ['source', TOOLS.shovel, '<b>Source</b> : creuse-la à la pelle, son eau refroidit le magma collé à elle.'],
-  ['magmaChaine', TOOLS.bucket, '<b>Magma en chaîne</b> : arrose une case, tout le magma collé refroidit.'],
-  ['mystere', TOOLS.shovel, '<b>Case mystère</b> : toujours un cadeau (pièces, minerai, potion ou géode).'],
-  ['racines', TOOLS.pickaxe, '<b>Racines</b> : casse la souche, toutes ses racines disparaissent.'],
-  ['glace', TOOLS.pickaxe, '<b>Glace</b> : la pioche y fait moitié moins de dégâts. Collée au magma, elle fond d\'un coup de pelle. Une bombe la fait fondre aussi.'],
-  ['gaz', TOOLS.bomb, '<b>Gaz</b> : une bombe qui le touche fait une explosion 5×5.'],
-  ['coffre', TOOLS.shovel, '<b>Coffre bonus</b> : touche-le pour l\'ouvrir. Toujours des pièces, parfois plus.'],
-  [() => S.reached >= 10, COIN, '<b>Rythme</b> : tous les 10 niveaux, un niveau trésor rempli de minerai et de tas de pièces. Tous les 100 niveaux, un niveau gardien avec une grosse récompense.'],
-  ['geodes', geodeArt('crystal'), '<b>Géodes</b> : blanche (Common), rose (Rare), dorée (Epic), cristal (Legendary). Ouvre-les à l\'atelier : chacune donne une gemme de sa rareté. Les gemmes ne se trouvent que dans les géodes.'],
+  [null, TOOLS.shovel, tr('<b>Pelle</b> : maintiens et glisse sur la terre pour la retirer. Elle ne coûte rien.')],
+  ['pioche', TOOLS.pickaxe, tr('<b>Pioche</b> : touche la pierre pour la casser. Chaque coup coûte 1 énergie : pierre 3 coups, minerai 3, magma refroidi 5.')],
+  ['magma', TOOLS.bucket, tr('<b>Arrosoir</b> : refroidit le magma. Il lui faut quelques secondes pour se remplir.')],
+  ['bombes', TOOLS.bomb, tr('<b>Bombe</b> : dans ton sac, onglet Consommables. Elle fait sauter les 9 cases autour de la cible, sauf le magma chaud.')],
+  ['radar', RADAR, tr('<b>Radar</b> : dans ton sac, onglet Consommables. Il entoure l\'emplacement d\'un trésor caché.')],
+  [() => S.bagSeen, img('Assets/Bag.png'), tr('<b>Sac</b> : chaque trésor et chaque géode prend une case (les minerais ne comptent pas). Agrandis-le à la boutique.')],
+  [() => S.reached >= CHECKPOINTS[0], UP_ICON, tr('<b>Ascenseur</b> : au village, « Descendre » te propose les checkpoints débloqués (niveau 10, 20, 30…), rangés par biome. C\'est gratuit.')],
+  [null, UP_ICON, tr('<b>Remonter</b> : quitte la mine quand tu veux. Ton sac se vide : les nouveaux trésors vont au musée, les doublons sont vendus.')],
+  [() => S.buildings.museum, artArt('lion'), tr('<b>Musée</b> : chaque nouveau trésor rapporte une prime. Complète une collection pour gagner une étoile (jusqu\'à {n}) : ses doublons se vendent plus cher, et la prime se récupère au Musée.', { n: MAX_STARS })],
+  [() => S.buildings.shop, img('Assets/Bag.png'), tr('<b>Boutique</b> : agrandis ton sac. D\'autres articles arrivent plus profond.')],
+  [() => S.buildings.forge, resArt('iron'), tr('<b>Forge</b> : améliore tes outils avec du fer, du cuivre, de l\'or et des pièces.')],
+  ['pierreDure', TOOLS.pickaxe, tr('<b>Pierre dure</b> : il faut deux fois plus de coups de pioche.')],
+  ['source', TOOLS.shovel, tr('<b>Source</b> : creuse-la à la pelle, son eau refroidit le magma collé à elle.')],
+  ['magmaChaine', TOOLS.bucket, tr('<b>Magma en chaîne</b> : arrose une case, tout le magma collé refroidit.')],
+  ['mystere', TOOLS.shovel, tr('<b>Case mystère</b> : toujours un cadeau (pièces, minerai, potion ou géode).')],
+  ['racines', TOOLS.pickaxe, tr('<b>Racines</b> : casse la souche, toutes ses racines disparaissent.')],
+  ['glace', TOOLS.pickaxe, tr('<b>Glace</b> : la pioche y fait moitié moins de dégâts. Collée au magma, elle fond d\'un coup de pelle. Une bombe la fait fondre aussi.')],
+  ['gaz', TOOLS.bomb, tr('<b>Gaz</b> : une bombe qui le touche fait une explosion 5×5.')],
+  ['coffre', TOOLS.shovel, tr('<b>Coffre bonus</b> : touche-le pour l\'ouvrir. Toujours des pièces, parfois plus.')],
+  [() => S.reached >= 10, COIN, tr('<b>Rythme</b> : tous les 10 niveaux, un niveau trésor rempli de minerai et de tas de pièces. Tous les 100 niveaux, un niveau gardien avec une grosse récompense.')],
+  ['geodes', geodeArt('crystal'), tr('<b>Géodes</b> : blanche (Common), rose (Rare), dorée (Epic), cristal (Legendary). Ouvre-les à l\'atelier : chacune donne une gemme de sa rareté. Les gemmes ne se trouvent que dans les géodes.')],
 ].filter(([k]) => !k || (typeof k === 'function' ? k() : has(k))).map(([, s, t]) => `<div>${s}<span>${t}</span></div>`).join('');
-$('helpBtn').addEventListener('click', () => { unlockAudio(); renderHelp(); $('helpModal').hidden = false; $('helpClose').focus(); });
-$('helpClose').addEventListener('click', () => { $('helpModal').hidden = true; resetArm(false); });
-$('helpModal').addEventListener('click', e => { if (e.target.id === 'helpModal') { $('helpModal').hidden = true; resetArm(false); } });
+$('helpClose').addEventListener('click', () => { $('helpModal').hidden = true; });
+$('helpModal').addEventListener('click', e => { if (e.target.id === 'helpModal') $('helpModal').hidden = true; });
 let armT;
 function resetArm(on) {
   const b = $('resetBtn'); clearTimeout(armT);
   b.dataset.armed = on ? '1' : '';
-  b.textContent = on ? 'Confirmer : tout effacer ?' : 'Recommencer la partie';
+  b.textContent = on ? tr('Confirmer : tout effacer ?') : tr('Recommencer la partie');
   b.classList.toggle('danger', on);
   if (on) armT = setTimeout(() => resetArm(false), 3500);
 }
 $('resetBtn').addEventListener('click', () => {
   if (!$('resetBtn').dataset.armed) return resetArm(true);
-  const sound = S.sound; S = freshState(); S.sound = sound;
+  const { sound, music, lang } = S; S = freshState(); Object.assign(S, { sound, music, lang });
   genLevel(1); buildBoard(true); setTool('shovel'); updateBombs(); updateQuick(); updateBadge(); paintSound(); updateEnergy(true);
-  $('helpModal').hidden = true; resetArm(false); go('village'); save(); toast('Nouvelle partie !', 'good');
+  closeSettings(); go('village'); save(); toast(tr('Nouvelle partie !'), 'good');
 });
 
 /* ---------- Level complete: no popup, a "next level" button appears ---------- */
@@ -2904,15 +3025,15 @@ function levelDone() {
   if ((S.floor || floorKind(S.level)) === 'guardian' && !S.tuto && !S.guardDone[S.level]) {
     const R = RY.niveauGardien.recompense, parts = [];
     const coins = R.pieces + R.piecesEnPlusParBiome * (biomeOf(S.level) - 1);
-    S.coins += coins; parts.push(`+${coins} pièces`);
-    if (R.potions && has('potions')) { S.potions += R.potions; updateQuick(); parts.push(`+${R.potions} potion${R.potions > 1 ? 's' : ''}`); }
+    S.coins += coins; parts.push(tr('+{n} pièces', { n: coins }));
+    if (R.potions && has('potions')) { S.potions += R.potions; updateQuick(); parts.push(tr(plural(R.potions, '+{n} potion', '+{n} potions'), { n: R.potions })); }
     if (R.geode) {
       // The best geode colour unlocked so far goes straight to the Atelier
       const best = geodesAt(S.level).map(([k]) => k).sort((a, b) => RARITIES.indexOf(GEODES[b].rarity) - RARITIES.indexOf(GEODES[a].rarity))[0];
-      if (best) { S.bag.geodes.push(best); parts.push(rarName(GEODES[best].name, GEODES[best].rarity) + ' (à l\'Atelier)'); }
+      if (best) { S.bag.geodes.push(best); parts.push(rarName(GEODES[best].name, GEODES[best].rarity) + ' ' + tr('(à l\'Atelier)')); }
     }
     S.guardDone[S.level] = true;
-    S.rewardMsg = { level: S.level, html: `<b>Gardien vaincu !</b> ${parts.join(' · ')}` };
+    S.rewardMsg = { level: S.level, html: `<b>${tr('Gardien vaincu !')}</b> ${parts.join(' · ')}` };
     showTuto();
   }
   updateNextPill(); save();
@@ -2920,7 +3041,7 @@ function levelDone() {
 function updateNextPill() {
   const done = !!(S.rewards && S.rewards.length && S.rewards.every(r => r.found));
   $('nextPill').hidden = !done;
-  $('nextPill').textContent = S.level >= 1000 ? 'Mine suivante ↓' : `Niveau ${S.level + 1} ↓`;
+  $('nextPill').textContent = S.level >= 1000 ? tr('Mine suivante ↓') : tr('Niveau {n} ↓', { n: S.level + 1 });
 }
 $('mine2Up').addEventListener('click', () => { $('mine2Modal').hidden = true; openRecap(); });
 // A full bag or little energy left: ask before going down
@@ -2929,8 +3050,8 @@ function tryDescend() {
   const full = S.bagSeen && S.trip.finds.length >= bagCap(), low = has('pioche') && S.energy <= CFG.energie.alerteDescente;
   if (!full && !low) return descend();
   const why = [];
-  if (full) why.push(`Ton sac est plein (${S.trip.finds.length}/${bagCap()}) : les prochains trésors devront remplacer ceux que tu portes.`);
-  if (low) why.push(`Il ne te reste que ${S.energy} énergie.`);
+  if (full) why.push(tr('Ton sac est plein ({n}/{cap}) : les prochains trésors devront remplacer ceux que tu portes.', { n: S.trip.finds.length, cap: bagCap() }));
+  if (low) why.push(tr('Il ne te reste que {n} énergie.', { n: S.energy }));
   $('descendText').textContent = why.join(' ');
   sfx('deny'); $('descendModal').hidden = false; $('descendYes').focus();
 }
@@ -2941,7 +3062,7 @@ function descend() {
   S.rewardMsg = null; genLevel(S.level); buildBoard(true); updateEnergy(true); save();
   const newRecord = S.level > S.reached;
   if (newRecord) S.reached = S.level;
-  if (newRecord && CHECKPOINTS.includes(S.level)) { sfx('win'); toast(isCamp(S.level) ? `⛺ Camp de biome débloqué (niveau ${S.level}) !` : `Checkpoint niveau ${S.level} débloqué !`, 'good'); }
+  if (newRecord && CHECKPOINTS.includes(S.level)) { sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: S.level }) : tr('Checkpoint niveau {n} débloqué !', { n: S.level }), 'good'); }
   save();
 }
 $('nextPill').addEventListener('click', () => { unlockAudio(); sfx('pick'); tryDescend(); });
@@ -3036,9 +3157,24 @@ if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
     get S() { return S; }, CFG, GEODES, GEMS, ARTS, SETS, UPGRADES, SCREENS, CHECKPOINTS,
     genLevel, buildBoard, go, save, toast, paintTile, checkRewards, maxE, bagCap, BAG_UP,
     updateBombs, updateQuick, updateBadge, updateEnergy,
+    // Texts still missing an English version (shown in the console with __mine.missingEN())
+    missingEN: () => [...MISSING_EN],
   };
   const sc = document.createElement('script'); sc.src = 'cheat.js'; document.body.append(sc);
 }
+// English: the texts written in the page (titles, buttons, labels) are translated once at start
+function translatePage() {
+  if (LANG !== 'en') return;
+  const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('script, style') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  for (let n; (n = walk.nextNode());) {
+    const txt = n.data.trim();
+    if (txt && EN[txt] != null) n.data = n.data.replace(txt, EN[txt]);
+  }
+  for (const el of document.body.querySelectorAll('[aria-label], [title], [alt]'))
+    for (const a of ['aria-label', 'title', 'alt']) { const v = el.getAttribute(a); if (v && EN[v] != null) el.setAttribute(a, EN[v]); }
+  document.title = tr('Mine aux Trésors');
+}
+translatePage();
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 })();
 </script>

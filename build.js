@@ -30,4 +30,5 @@ fs.mkdirSync(out, { recursive: true });
 fs.writeFileSync(path.join(out, 'index.html'), page);
 fs.cpSync(path.join(root, 'Assets'), path.join(out, 'Assets'), { recursive: true });
 fs.copyFileSync(path.join(root, 'config.js'), path.join(out, 'config.js'));
+fs.copyFileSync(path.join(root, 'textes-en.js'), path.join(out, 'textes-en.js'));
 console.log('Built dist/index.html');
