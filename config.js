@@ -20,8 +20,16 @@ window.CONFIG = {
     // Énergie maximum au début du jeu
     maxDepart: 60,
 
-    // Énergie max gagnée à chaque niveau de l'amélioration "Réserve d'énergie" (Forge)
-    bonusParAmelioration: 10,
+    // (l'énergie max après chaque amélioration est dans forge > reserveEnergie)
+
+    // Énergie moyenne qu'il faut pour dégager les trésors d'un niveau, pour chaque biome (1 à 10).
+    // Si un niveau coûte plus, le jeu remplace de la roche au-dessus des trésors par de la terre.
+    // Avec 60 d'énergie au départ et 7 par niveau, une expédition fait environ 8 à 10 niveaux au biome 1 ;
+    // avec 450 d'énergie et 16 par niveau, environ 25 à 30 niveaux au biome 10.
+    coutNiveau: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+
+    // Ce coût moyen est multiplié selon le type de niveau (voir aussi "rythme")
+    multiplicateurCout: { facile: 0.8, niveau9: 1.3, tresor: 0.6, gardien: 2 },
 
     // Recharge automatique avec le temps : +1 point toutes les X millisecondes.
     // 0 = pas de recharge automatique (l'énergie ne revient qu'au village ou avec une potion).
@@ -30,8 +38,12 @@ window.CONFIG = {
     // Recharge complète quand le joueur remonte au village (true = oui, false = non)
     rechargeAuVillage: true,
 
-    // Recharge complète en descendant à l'étage suivant (true = oui, false = non)
+    // Recharge complète en descendant au niveau suivant (true = oui, false = non)
     rechargeEtageSuivant: false,
+
+    // Une fenêtre "Es-tu sûr de vouloir descendre ?" s'affiche si l'énergie est à ce nombre ou moins
+    // (elle s'affiche aussi quand le sac est plein)
+    alerteDescente: 10,
   },
 
   /* ---------------------------------------------------------------
@@ -48,30 +60,209 @@ window.CONFIG = {
      SAC À DOS
      Chaque trésor et chaque géode prend 1 case. Les minerais ne vont pas
      dans le sac (ils sont illimités). Le sac se vide au retour au village.
+     Un sac plein ne bloque jamais : le joueur peut toujours descendre.
+     Les doublons Common sont vendus automatiquement (pas de case utilisée).
      --------------------------------------------------------------- */
   sac: {
     // Nombre de cases au début du jeu
     casesDepart: 4,
 
     // Agrandissements achetables à la Boutique, dans l'ordre :
-    // "cases" = taille du sac après l'achat, "pieces" = prix
+    // "cases" = taille du sac après l'achat, "pieces" = prix,
+    // "biome" = à partir de quel biome atteint cet agrandissement est proposé
     agrandissements: [
-      { cases: 6, pieces: 80 },
-      { cases: 8, pieces: 160 },
-      { cases: 10, pieces: 300 },
-      { cases: 12, pieces: 500 },
+      { biome: 1, cases: 6,  pieces: 80 },
+      { biome: 1, cases: 8,  pieces: 160 },
+      { biome: 1, cases: 10, pieces: 300 },
+      { biome: 1, cases: 12, pieces: 500 },
+      { biome: 2, cases: 14, pieces: 800 },
+      { biome: 2, cases: 16, pieces: 1100 },
+      { biome: 3, cases: 18, pieces: 1500 },
+      { biome: 4, cases: 20, pieces: 2000 },
+      { biome: 5, cases: 22, pieces: 2600 },
+      { biome: 6, cases: 24, pieces: 3300 },
+      { biome: 7, cases: 26, pieces: 4100 },
+      { biome: 8, cases: 28, pieces: 5000 },
+      { biome: 9, cases: 30, pieces: 6000 },
     ],
   },
 
   /* ---------------------------------------------------------------
+     BIOMES
+     1 niveau = 1 étage. La mine est découpée en biomes.
+     --------------------------------------------------------------- */
+  biomes: {
+    // Nombre de niveaux dans chaque biome
+    niveauxParBiome: 100,
+
+    // Nom de chaque biome, dans l'ordre (biome 1 = niveaux 1 à 100, etc.)
+    noms: [
+      'Mine des pionniers',
+      'Cavernes de cristal',
+      'Rivière souterraine',
+      'Cœur volcanique',
+      'Grottes obscures',
+      'Forêt pétrifiée',
+      'Glacier profond',
+      'Abysses',
+      'Cité engloutie',
+      'Trône du Roi Mineur',
+    ],
+  },
+
+  /* ---------------------------------------------------------------
+     PROGRESSION : CE QUI SE DÉBLOQUE, ET QUAND
+     Une nouveauté n'existe pas du tout avant son niveau (pas de cadenas).
+     Le Musée s'ouvre au premier retour au village.
+     Les bâtiments apparaissent au village au retour qui suit leur niveau.
+     --------------------------------------------------------------- */
+  progression: {
+    // Niveau à partir duquel chaque nouveauté apparaît
+    deblocages: {
+      pioche: 6,       // pioche, pierre, énergie et sac
+      cuivre: 16,      // minerai de cuivre
+      forge: 16,       // la Forge apparaît au village
+      fer: 21,         // minerai de fer
+      geodes: 31,      // géodes blanches et roses
+      atelier: 31,     // l'Atelier apparaît au village
+      magma: 51,       // magma et arrosoir
+      boutique: 76,    // la Boutique (bombes, potions, agrandir le sac)
+      // Biomes suivants
+      pierreDure: 101,   // biome 2 : pierre dure
+      or: 101,           // minerai d'or
+      geodeDoree: 101,   // géodes dorées
+      source: 201,       // biome 3 : source
+      radar: 201,        // le radar arrive en boutique
+      magmaChaine: 301,  // biome 4 : magma en chaîne
+      mystere: 401,      // biome 5 : case mystère
+      geodeCristal: 401, // géodes de cristal
+      racines: 501,      // biome 6 : racines et souches
+      mithril: 501,      // minerai de mithril
+      glace: 601,        // biome 7 : glace
+      gaz: 701,          // biome 8 : gaz
+      coffre: 801,       // biome 9 : coffre bonus
+      cristalBrut: 801,  // minerai de cristal brut
+    },
+
+    // Cases spéciales des biomes 2 à 10.
+    // "biomes" = les biomes où la case apparaît (le biome 10 mélange toutes les cases).
+    // "part" = proportion des pierres (ou du magma) transformées ; "nombre" = [minimum, maximum] par niveau.
+    casesSpeciales: {
+      pierreDure:  { biomes: [2, 10], part: 0.5 },          // part des pierres qui deviennent dures
+      source:      { biomes: [3, 10], nombre: [1, 2] },     // posées de préférence à côté du magma
+      magmaChaine: { biomes: [4, 10], part: 1, magmaEnPlus: 1 }, // part du magma "en chaîne" + taches de magma en plus
+      mystere:     { biomes: [5, 10], nombre: [1, 2] },
+      racines:     { biomes: [6, 10], souches: [1, 2], racinesParSouche: [3, 5] },
+      glace:       { biomes: [7, 10], part: 0.5 },          // part des pierres qui deviennent de la glace
+      gaz:         { biomes: [8, 10], nombre: [1, 2] },
+      coffre:      { biomes: [9, 10], nombre: [1, 1] },
+    },
+
+    // Ce que donnent la case mystère et le coffre bonus (toujours positif !)
+    bonus: {
+      // Case mystère : un seul cadeau, tiré au hasard selon ces chances
+      mystere: {
+        chances: { pieces: 45, minerai: 30, potion: 15, geode: 10 },
+        pieces: [15, 40],       // [minimum, maximum]
+        minerai: [2, 4],
+      },
+      // Coffre bonus : toujours des pièces, et parfois un cadeau en plus
+      coffre: {
+        pieces: [40, 150],
+        chanceCadeauEnPlus: 0.4,
+        cadeauEnPlus: { minerai: 50, potion: 30, geode: 20 },
+        minerai: [3, 6],
+      },
+    },
+
+    // Taille de la grille (carrée) et nombre de trésors, selon le niveau.
+    // "depuis" = premier niveau concerné ; "tresors" = [minimum, maximum].
+    grilles: [
+      { depuis: 1,   taille: 3, tresors: [1, 1] },
+      { depuis: 16,  taille: 4, tresors: [2, 2] },
+      { depuis: 51,  taille: 5, tresors: [2, 2] },
+      { depuis: 201, taille: 6, tresors: [3, 3] },
+      { depuis: 501, taille: 7, tresors: [3, 4] },
+    ],
+
+    // Niveaux tutoriels : grille 3×3, une seule nouveauté, l'outil utile mis en avant
+    // et une petite bulle d'explication.
+    // "nouveaute" : 'pierre', 'cuivre', 'fer', 'geode', 'magma', 'bombe', 'pierreDure', 'source',
+    //               'magmaChaine', 'mystere', 'racines', 'glace', 'gaz' ou 'coffre'.
+    // "outil" : l'outil mis en avant ('shovel' pelle, 'pickaxe' pioche, 'bucket' arrosoir, 'bomb' bombe).
+    tutoriels: [
+      { niveau: 6,  nouveaute: 'pierre', outil: 'pickaxe', texte: "Nouvel outil : la pioche ! Touche la pierre pour la casser. Chaque coup coûte 1 énergie." },
+      { niveau: 16, nouveaute: 'cuivre', outil: 'pickaxe', texte: "Du minerai de cuivre ! Casse-le à la pioche pour le récolter : il sert à la Forge." },
+      { niveau: 21, nouveaute: 'fer',    outil: 'pickaxe', texte: "Du minerai de fer ! Récolte-le à la pioche pour améliorer tes outils." },
+      { niveau: 31, nouveaute: 'geode',  outil: 'shovel',  texte: "Une géode ! Dégage-la, puis ouvre-la à l'Atelier du village pour trouver une gemme." },
+      { niveau: 51, nouveaute: 'magma',  outil: 'bucket',  texte: "Du magma ! Arrose-le pour le refroidir, puis casse-le à la pioche." },
+      { niveau: 76, nouveaute: 'bombe',  outil: 'bomb',    texte: "Voici une bombe offerte ! Ouvre ton sac, onglet Consommables, puis touche une case : elle fait sauter les 9 cases autour." },
+      { niveau: 101, nouveaute: 'pierreDure',  outil: 'pickaxe', texte: "De la pierre dure ! Il faut deux fois plus de coups de pioche pour la casser." },
+      { niveau: 201, nouveaute: 'source',      outil: 'shovel',  texte: "Une source ! Creuse-la à la pelle : son eau refroidit le magma collé à elle." },
+      { niveau: 301, nouveaute: 'magmaChaine', outil: 'bucket',  texte: "Du magma en chaîne ! Arrose une seule case : tout le magma collé refroidit d'un coup." },
+      { niveau: 401, nouveaute: 'mystere',     outil: 'shovel',  texte: "Une case mystère ! Creuse-la : c'est toujours un cadeau (pièces, minerai, potion ou géode)." },
+      { niveau: 501, nouveaute: 'racines',     outil: 'pickaxe', texte: "Des racines ! Casse la souche à la pioche : toutes ses racines disparaissent." },
+      { niveau: 601, nouveaute: 'glace',       outil: 'shovel',  texte: "De la glace ! La pioche y fait moitié moins de dégâts, mais collée au magma, elle fond : un coup de pelle suffit." },
+      { niveau: 701, nouveaute: 'gaz',         outil: 'bomb',    texte: "Du gaz ! Une bombe qui le touche fait une énorme explosion 5×5. Voici une bombe offerte : elle est dans ton sac, onglet Consommables." },
+      { niveau: 801, nouveaute: 'coffre',      outil: 'shovel',  texte: "Un coffre bonus ! Touche-le pour l'ouvrir : il contient toujours des pièces, et parfois plus." },
+    ],
+  },
+
+  /* ---------------------------------------------------------------
+     RYTHME EN DENTS DE SCIE
+     Dans chaque tranche de 10 niveaux : les niveaux 1 à 8 sont faciles,
+     le 9e un peu plus dur, le 10e (le checkpoint) est un "niveau trésor".
+     Les niveaux 100, 200… 900 sont des "niveaux gardiens".
+     --------------------------------------------------------------- */
+  rythme: {
+    // Quantité de pierre et de magma : 1 = normal, plus petit = plus facile
+    difficulte: {
+      facile: 0.8,     // niveaux 1 à 8 de chaque tranche
+      niveau9: 1.3,    // 9e niveau de la tranche : un peu plus dur
+    },
+
+    // Niveau trésor (10, 20, 30…) : rempli de minerai et de tas de pièces
+    niveauTresor: {
+      chanceMinerai: 0.75,         // chance qu'une pierre contienne du minerai (au lieu de 0.26)
+      tasDePieces: [3, 5],         // nombre de tas de pièces (un coup de pelle pour les ramasser)
+      piecesParTas: [6, 12],       // pièces dans chaque tas
+      bonusParBiome: 0.5,          // les tas valent +50 % à chaque biome plus profond
+      texte: "Niveau trésor ! Plein de minerai et de tas de pièces à ramasser à la pelle.",
+    },
+
+    // Niveau gardien (100, 200… 900) : un petit défi, une grosse récompense
+    niveauGardien: {
+      pierreEnPlus: 1.6,           // quantité de pierre (1 = normal)
+      partPierreDure: 0.6,         // part des pierres qui deviennent dures (dès que la pierre dure existe)
+      casesDuBiomeEnPlus: 2,       // les cases spéciales du biome sont 2 fois plus nombreuses
+      recompense: {
+        pieces: 300,               // pièces au biome 1…
+        piecesEnPlusParBiome: 200, // … et autant en plus à chaque biome
+        potions: 1,
+        geode: true,               // une géode de la meilleure couleur déjà débloquée
+      },
+      texte: "Niveau gardien ! Un peu plus de roche dure… et une grosse récompense à la fin.",
+    },
+
+    // Niveau 1000 : la salle du trésor du Roi Mineur (grille 7×7)
+    niveau1000: {
+      // Le coffre du centre s'ouvre avec les 5 Clés du Roi Mineur (c'est un bonus, pas obligatoire)
+      coffreDuRoi: { pieces: 5000, message: "Le trésor du Roi Mineur est à toi !" },
+      texte: "La salle du trésor du Roi Mineur ! Le grand coffre du centre s'ouvre avec les 5 Clés du Roi Mineur.",
+    },
+  },
+
+  /* ---------------------------------------------------------------
      CHECKPOINTS (ASCENSEUR)
-     Profondeurs (en mètres) où le joueur peut redescendre directement depuis
-     le village. Un checkpoint se débloque dès que le joueur atteint cette
-     profondeur. Utiliser un checkpoint est gratuit.
-     Chaque étage fait 10 m : utilise des multiples de 10.
+     Niveaux où le joueur peut redescendre directement depuis le village.
+     Un checkpoint se débloque dès que le joueur atteint ce niveau.
+     Utiliser un checkpoint est gratuit.
+     Les checkpoints placés à la fin d'un biome (100, 200…) sont des
+     "camps de biome", mis en avant dans l'ascenseur.
      --------------------------------------------------------------- */
   checkpoints: {
-    profondeurs: [10, 50, 90, 130, 190, 260],
+    tousLesNiveaux: 10,   // un checkpoint tous les X niveaux (10, 20, 30…)
+    dernier: 990,         // dernier niveau qui a un checkpoint
   },
 
   /* ---------------------------------------------------------------
@@ -82,15 +273,20 @@ window.CONFIG = {
     coupsPierre: 3,
     coupsPierreMinerai: 3,
     coupsMagmaRefroidi: 5,
+    coupsPierreDure: 6,     // pierre dure (biome 2) : 2 fois plus que la pierre
+    coupsGlace: 3,          // glace (biome 7) : la pioche y fait moitié moins de dégâts, donc 6 coups en vrai
+    coupsRacine: 4,         // une racine (biome 6) cassée sans passer par sa souche
+    coupsSouche: 3,         // la souche : la casser fait disparaître toutes ses racines
 
     // Chance qu'une pierre contienne du minerai (0.26 = 26 %)
     chanceMinerai: 0.26,
 
     // Fréquence relative de chaque minerai (plus le nombre est grand, plus il est courant)
-    frequenceMinerais: { fer: 55, cuivre: 32, or: 13 },
+    // (chaque minerai n'apparaît qu'à partir de son niveau, voir progression > deblocages)
+    frequenceMinerais: { fer: 55, cuivre: 32, or: 13, mithril: 10, cristalBrut: 8 },
 
     // Quantité obtenue en cassant une pierre à minerai : [minimum, maximum]
-    quantiteMinerais: { fer: [1, 3], cuivre: [1, 2], or: [1, 1] },
+    quantiteMinerais: { fer: [1, 3], cuivre: [1, 2], or: [1, 1], mithril: [1, 1], cristalBrut: [1, 1] },
   },
 
   /* ---------------------------------------------------------------
@@ -124,15 +320,11 @@ window.CONFIG = {
      COLLECTIONS DU MUSÉE
      Rareté : 'common', 'rare', 'epic' ou 'legendary'.
      "prime" = pièces gagnées la PREMIÈRE fois que la série est complétée.
-     Tu peux changer les noms, les raretés, les primes et les phases.
+     Tu peux changer les noms, les raretés, les primes et les niveaux.
      Ne change pas les mots avant les deux-points (quartz:, fossiles:…) :
      ce sont les identifiants utilisés par le jeu et par les images.
      --------------------------------------------------------------- */
   collections: {
-    // Les "phases" sont des zones de profondeur. Profondeur (en mètres) où commence chaque phase :
-    //        phase 0, 1,  2,  3,   4,   5,   6
-    phases: [10, 20, 50, 90, 130, 190, 260],
-
     // Chance d'apparition d'un artefact dans la mine selon sa rareté
     // (plus le nombre est grand, plus il apparaît souvent)
     frequenceArtefacts: { common: 12, rare: 6, epic: 3, legendary: 2 },
@@ -166,28 +358,32 @@ window.CONFIG = {
     },
 
     // ARTEFACTS : trouvés dans la grille de la mine.
-    // "phases" = dans quelles phases la série peut apparaître.
+    // "niveaux" = [premier niveau, dernier niveau] où la série peut apparaître.
     // "sol" = ce qui recouvre l'artefact : 'terre', 'pierre', 'magma', ou 'tout' (n'importe quoi).
-    // Un objet peut avoir ses propres "phases" (ex. une pièce ou une clé par zone).
+    // Un objet peut avoir son propre "biome" (ex. une pièce ou une clé par biome) :
+    // il n'apparaît alors que dans ce biome (biome 1 = niveaux 1 à 100, biome 2 = 101 à 200…).
+    // Sols possibles : 'terre', 'pierre', 'pierreDure', 'magma', 'coffre' ou 'tout'.
+    // (pierre dure et coffres arrivent avec les biomes 2 et 9 : en attendant, ils sont remplacés
+    //  par de la pierre normale / n'importe quelle case.)
     artefacts: {
-      fossiles: { nom: 'Fossiles de surface', prime: 50, phases: [0, 1], sol: 'terre', objets: {
+      fossiles: { nom: 'Fossiles de surface', prime: 50, niveaux: [1, 30], sol: 'terre', objets: {
         coquillage: { nom: 'Coquillage fossile', rarete: 'common' },
         feuille:    { nom: 'Feuille fossile',    rarete: 'common' },
         ammonite:   { nom: 'Petite ammonite',    rarete: 'common' },
       } },
-      celestes: { nom: 'Cartes célestes', prime: 50, phases: [1, 2], sol: 'tout', objets: {
+      celestes: { nom: 'Cartes célestes', prime: 50, niveaux: [10, 100], sol: 'tout', objets: {
         lion:     { nom: 'Plaque du Lion',     rarete: 'common' },
         taureau:  { nom: 'Plaque du Taureau',  rarete: 'common' },
         scorpion: { nom: 'Plaque du Scorpion', rarete: 'common' },
         dragon:   { nom: 'Plaque du Dragon',   rarete: 'rare' },
       } },
-      outils: { nom: 'Outils du mineur oublié', prime: 100, phases: [2], sol: 'pierre', objets: {
+      outils: { nom: 'Outils du mineur oublié', prime: 100, niveaux: [16, 100], sol: 'pierre', objets: {
         lampe:   { nom: 'Lampe rouillée',          rarete: 'common' },
         gourde:  { nom: 'Vieille gourde',          rarete: 'common' },
         casque:  { nom: 'Casque cabossé',          rarete: 'common' },
         pioche:  { nom: 'Pioche du premier mineur', rarete: 'rare' },
       } },
-      tablette: { nom: 'Tablette ancienne', prime: 100, phases: [3, 4], sol: 'pierre',
+      tablette: { nom: 'Tablette ancienne', prime: 100, niveaux: [101, 200], sol: 'pierreDure',
         // Texte affiché quand la tablette est complète
         legende: "« Sous la montagne dort le trésor du Roi Mineur. Cinq clés, cachées de plus en plus profond, ouvrent son coffre. »",
         objets: {
@@ -195,38 +391,40 @@ window.CONFIG = {
           fragmentCentral: { nom: 'Fragment central', rarete: 'common' },
           fragmentDroit:   { nom: 'Fragment droit',   rarete: 'common' },
         } },
-      feu: { nom: 'Pierres de feu', prime: 200, phases: [4], sol: 'magma', objets: {
+      feu: { nom: 'Pierres de feu', prime: 200, niveaux: [301, 400], sol: 'magma', objets: {
         obsidienne:   { nom: 'Obsidienne',     rarete: 'common' },
         pierreDeLave: { nom: 'Pierre de lave', rarete: 'common' },
         coeurDeBraise: { nom: 'Cœur de braise', rarete: 'epic' },
       } },
-      abysses: { nom: 'Trésors des abysses', prime: 200, phases: [5], sol: 'tout', objets: {
+      abysses: { nom: 'Trésors des abysses', prime: 200, niveaux: [701, 800], sol: 'tout', objets: {
         corail:     { nom: 'Corail pétrifié', rarete: 'common' },
         conque:     { nom: 'Conque abyssale', rarete: 'common' },
         perleNoire: { nom: 'Perle noire',     rarete: 'epic' },
       } },
+      // Une pièce par biome, du biome 1 au biome 6
       monnaies: { nom: 'Monnaies du royaume perdu', prime: 200, sol: 'tout', objets: {
-        sou:     { nom: 'Sou de cuivre',     rarete: 'common', phases: [0] },
-        denier:  { nom: "Denier d'argent",   rarete: 'common', phases: [1] },
-        ecu:     { nom: 'Écu de bronze',     rarete: 'common', phases: [2] },
-        ducat:   { nom: "Ducat d'or",        rarete: 'common', phases: [3] },
-        florin:  { nom: 'Florin de platine', rarete: 'common', phases: [4] },
-        pieceDuRoi: { nom: 'Pièce du roi',   rarete: 'epic',   phases: [5] },
+        sou:     { nom: 'Sou de cuivre',     rarete: 'common', biome: 1 },
+        denier:  { nom: "Denier d'argent",   rarete: 'common', biome: 2 },
+        ecu:     { nom: 'Écu de bronze',     rarete: 'common', biome: 3 },
+        ducat:   { nom: "Ducat d'or",        rarete: 'common', biome: 4 },
+        florin:  { nom: 'Florin de platine', rarete: 'common', biome: 5 },
+        pieceDuRoi: { nom: 'Pièce du roi',   rarete: 'epic',   biome: 6 },
       } },
-      reliques: { nom: 'Reliques ornées', prime: 400, phases: [6], sol: 'tout', objets: {
+      reliques: { nom: 'Reliques ornées', prime: 400, niveaux: [801, 900], sol: 'coffre', objets: {
         calice:  { nom: 'Calice orné',          rarete: 'epic' },
         masque:  { nom: "Masque d'or",          rarete: 'epic' },
         sceptre: { nom: 'Sceptre du roi mineur', rarete: 'legendary' },
       } },
+      // Une clé par biome, du biome 6 au biome 10
       cles: { nom: 'Clés du Roi Mineur', prime: 1000, sol: 'tout',
         // Message affiché quand toutes les clés sont réunies
         message: 'Coffre du roi ouvert !',
         objets: {
-          cleFer:     { nom: 'Clé de fer',     rarete: 'legendary', phases: [2] },
-          cleCuivre:  { nom: 'Clé de cuivre',  rarete: 'legendary', phases: [3] },
-          cleArgent:  { nom: "Clé d'argent",   rarete: 'legendary', phases: [4] },
-          cleOr:      { nom: "Clé d'or",       rarete: 'legendary', phases: [5] },
-          cleCristal: { nom: 'Clé de cristal', rarete: 'legendary', phases: [6] },
+          cleFer:     { nom: 'Clé de fer',     rarete: 'legendary', biome: 6 },
+          cleCuivre:  { nom: 'Clé de cuivre',  rarete: 'legendary', biome: 7 },
+          cleArgent:  { nom: "Clé d'argent",   rarete: 'legendary', biome: 8 },
+          cleOr:      { nom: "Clé d'or",       rarete: 'legendary', biome: 9 },
+          cleCristal: { nom: 'Clé de cristal', rarete: 'legendary', biome: 10 },
         } },
     },
   },
@@ -246,31 +444,54 @@ window.CONFIG = {
      fer / cuivre / or = minerais, pieces = pièces.
      --------------------------------------------------------------- */
   forge: {
+    // Chaque ligne = un niveau d'amélioration, dans l'ordre.
+    // "biome" = à partir de quel biome atteint ce niveau est proposé (les niveaux max se débloquent biome par biome).
+    // Le reste est le prix : pieces, fer, cuivre, or, mithril, cristalBrut.
+
+    // Réserve d'énergie : "energie" = énergie max après l'achat
     reserveEnergie: [
-      { fer: 6, pieces: 20 },
-      { fer: 10, cuivre: 2, pieces: 40 },
-      { fer: 14, cuivre: 4, pieces: 70 },
-      { fer: 18, cuivre: 6, or: 1, pieces: 100 },
-      { fer: 24, cuivre: 8, or: 3, pieces: 150 },
+      { biome: 1,  energie: 70,  pieces: 100 },
+      { biome: 1,  energie: 80,  pieces: 150, cuivre: 6 },
+      { biome: 1,  energie: 90,  pieces: 220, cuivre: 10, fer: 6 },
+      { biome: 1,  energie: 100, pieces: 300, cuivre: 14, fer: 12 },
+      { biome: 2,  energie: 120, pieces: 450, fer: 20, or: 3 },
+      { biome: 2,  energie: 140, pieces: 600, fer: 26, or: 6 },
+      { biome: 3,  energie: 160, pieces: 800, fer: 32, or: 10 },
+      { biome: 3,  energie: 180, pieces: 1000, fer: 38, or: 14 },
+      { biome: 4,  energie: 200, pieces: 1250, cuivre: 40, or: 18 },
+      { biome: 4,  energie: 220, pieces: 1500, cuivre: 50, or: 24 },
+      { biome: 5,  energie: 240, pieces: 1800, fer: 60, or: 30 },
+      { biome: 5,  energie: 260, pieces: 2100, fer: 70, or: 36 },
+      { biome: 6,  energie: 280, pieces: 2500, or: 40, mithril: 4 },
+      { biome: 6,  energie: 300, pieces: 2900, or: 46, mithril: 8 },
+      { biome: 7,  energie: 320, pieces: 3300, mithril: 12 },
+      { biome: 7,  energie: 340, pieces: 3800, mithril: 16 },
+      { biome: 8,  energie: 360, pieces: 4300, mithril: 20 },
+      { biome: 8,  energie: 380, pieces: 4800, mithril: 26 },
+      { biome: 9,  energie: 400, pieces: 5400, mithril: 30, cristalBrut: 4 },
+      { biome: 9,  energie: 420, pieces: 6000, mithril: 34, cristalBrut: 8 },
+      { biome: 10, energie: 450, pieces: 7000, mithril: 40, cristalBrut: 14 },
     ],
+    // Pioche renforcée : +1 dégât par coup à chaque niveau
     piocheRenforcee: [
-      { fer: 10, cuivre: 3, pieces: 50 },
-      { fer: 20, cuivre: 8, or: 3, pieces: 150 },
+      { biome: 1, pieces: 250, fer: 15, cuivre: 10 },
+      { biome: 2, pieces: 900, fer: 30, or: 10 },
+      { biome: 6, pieces: 3000, or: 30, mithril: 10 },
     ],
     coupEnEclats: [
-      { cuivre: 5, pieces: 40 },
-      { cuivre: 9, or: 1, pieces: 80 },
-      { cuivre: 14, or: 3, pieces: 140 },
+      { biome: 1, pieces: 120, cuivre: 5 },
+      { biome: 2, pieces: 400, cuivre: 9, or: 2 },
+      { biome: 4, pieces: 1200, cuivre: 14, or: 8 },
     ],
     arrosoirRapide: [
-      { fer: 5, cuivre: 2, pieces: 30 },
-      { fer: 9, cuivre: 5, pieces: 60 },
-      { fer: 14, cuivre: 8, or: 2, pieces: 110 },
+      { biome: 1, pieces: 150, fer: 5, cuivre: 2 },
+      { biome: 2, pieces: 400, fer: 9, cuivre: 5, or: 2 },
+      { biome: 4, pieces: 1200, or: 10 },
     ],
     grandArrosoir: [
-      { cuivre: 6, pieces: 40 },
-      { cuivre: 10, or: 2, pieces: 90 },
-      { cuivre: 15, or: 4, pieces: 150 },
+      { biome: 1, pieces: 200, cuivre: 6 },
+      { biome: 3, pieces: 800, cuivre: 10, or: 4 },
+      { biome: 4, pieces: 1500, or: 12 },
     ],
 
     // Chance de casser une roche voisine, pour chaque niveau de "Coup en éclats"
@@ -282,15 +503,49 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
+     OBJECTIFS AU VILLAGE
+     3 objectifs simples sont affichés à la fois. Quand l'un est réussi,
+     le joueur touche "Récupérer" pour gagner ses pièces, et un nouvel
+     objectif le remplace.
+     --------------------------------------------------------------- */
+  objectifs: {
+    nombre: 3,                   // objectifs affichés en même temps
+
+    // La récompense grandit avec la profondeur : +50 % par biome atteint
+    bonusParBiome: 0.5,
+
+    // Liste des objectifs possibles.
+    // "texte" : {n} est remplacé par la quantité.
+    // "quantite" : [minimum, maximum] tirée au hasard.
+    // "pieces" : récompense (au biome 1).
+    // "deblocage" : l'objectif n'est proposé qu'une fois cette nouveauté débloquée
+    //   (mêmes noms que progression > deblocages, ou 'musee').
+    // Pour "Atteins le niveau {n}", la quantité est l'écart avec ton record (arrondi à 5).
+    liste: [
+      { type: 'terre',      texte: 'Creuse {n} cases de terre',          quantite: [20, 40], pieces: 25 },
+      { type: 'tresors',    texte: 'Trouve {n} trésors',                 quantite: [3, 6],   pieces: 40 },
+      { type: 'niveaux',    texte: 'Termine {n} niveaux',                quantite: [3, 6],   pieces: 40 },
+      { type: 'niveau',     texte: 'Atteins le niveau {n}',              quantite: [5, 15],  pieces: 60 },
+      { type: 'pierres',    texte: 'Casse {n} pierres',                  quantite: [10, 25], pieces: 40, deblocage: 'pioche' },
+      { type: 'minerais',   texte: 'Récolte {n} minerais',               quantite: [8, 20],  pieces: 50, deblocage: 'cuivre' },
+      { type: 'forge',      texte: 'Achète une amélioration à la Forge', quantite: [1, 1],   pieces: 50, deblocage: 'forge' },
+      { type: 'geodes',     texte: 'Ouvre {n} géodes',                   quantite: [2, 4],   pieces: 60, deblocage: 'atelier' },
+      { type: 'magma',      texte: 'Refroidis {n} cases de magma',       quantite: [5, 12],  pieces: 40, deblocage: 'magma' },
+      { type: 'bombes',     texte: 'Utilise {n} bombes',                 quantite: [3, 5],   pieces: 50, deblocage: 'boutique' },
+      { type: 'collection', texte: 'Complète une collection',            quantite: [1, 1],   pieces: 100, deblocage: 'musee' },
+    ],
+  },
+
+  /* ---------------------------------------------------------------
      ATELIER : MINI-JEU D'OUVERTURE DES GÉODES
      Chaque liste a 4 valeurs, une par géode :
      [Blanche (Common), Rose (Rare), Dorée (Epic), Cristal (Legendary)]
      --------------------------------------------------------------- */
   atelier: {
     coupsNecessaires: [2, 3, 4, 5],              // coups réussis pour ouvrir
-    largeurZoneVerte: [32, 26, 21, 16],          // en % de la barre
+    largeurZoneVerte: [48, 39, 31, 24],          // en % de la barre (50 % plus large qu'avant : 32, 26, 21, 16)
     vitesseCurseur: [0.7, 0.85, 1.0, 1.15],      // allers-retours par seconde
-    vies: 3,                                     // nombre de cœurs
+    vies: 4,                                     // nombre de cœurs
     accelerationParCoup: 0.08,                   // le curseur accélère de 8 % après chaque coup réussi
 
     // Si le joueur perd tous ses cœurs, la géode s'ouvre quand même mais donne une gemme
