@@ -61,11 +61,16 @@ window.CONFIG = {
      Chaque trésor et chaque géode prend 1 case. Les minerais ne vont pas
      dans le sac (ils sont illimités). Le sac se vide au retour au village.
      Un sac plein ne bloque jamais : le joueur peut toujours descendre.
-     Les doublons Common sont vendus automatiquement (pas de case utilisée).
+     Chaque trésor prend une case, doublons compris (pas de vente automatique pour l'instant :
+     ce sera une amélioration de la Tour du sorcier).
      --------------------------------------------------------------- */
   sac: {
     // Nombre de cases au début du jeu
-    casesDepart: 4,
+    casesDepart: 8,
+
+    // Sac plein : un doublon trouvé reste au sol, avec ce petit message (pas de fenêtre).
+    // Une nouvelle découverte ouvre une fenêtre pour laisser un doublon du sac à la place.
+    texteDoublonLaisse: "Sac plein : doublon laissé",
 
     // Le sac apparaît avec le premier trésor ramassé. La première fois qu'il est plein,
     // un petit tutoriel montre le bouton Remonter (texte : progression > textesTuto > sacPlein)
@@ -74,10 +79,8 @@ window.CONFIG = {
     // "cases" = taille du sac après l'achat, "pieces" = prix,
     // "biome" = à partir de quel biome atteint cet agrandissement est proposé
     agrandissements: [
-      { biome: 1, cases: 6,  pieces: 80 },
-      { biome: 1, cases: 8,  pieces: 160 },
-      { biome: 1, cases: 10, pieces: 300 },
-      { biome: 1, cases: 12, pieces: 500 },
+      { biome: 1, cases: 10, pieces: 200 },
+      { biome: 1, cases: 12, pieces: 400 },
       { biome: 2, cases: 14, pieces: 800 },
       { biome: 2, cases: 16, pieces: 1100 },
       { biome: 3, cases: 18, pieces: 1500 },
@@ -184,7 +187,8 @@ window.CONFIG = {
     // "depuis" = premier niveau concerné ; "tresors" = [minimum, maximum].
     grilles: [
       { depuis: 1,   taille: 3, tresors: [1, 1] },
-      { depuis: 6,   taille: 4, tresors: [2, 2] },
+      { depuis: 6,   taille: 4, tresors: [1, 1] },
+      { depuis: 16,  taille: 4, tresors: [2, 2] },
       { depuis: 31,  taille: 5, tresors: [2, 2] },
       { depuis: 201, taille: 6, tresors: [3, 3] },
       { depuis: 501, taille: 7, tresors: [3, 4] },
@@ -366,6 +370,9 @@ window.CONFIG = {
     // Chance d'apparition d'un artefact dans la mine selon sa rareté
     // (plus le nombre est grand, plus il apparaît souvent)
     frequenceArtefacts: { common: 12, rare: 6, epic: 3, legendary: 2 },
+
+    // Un artefact pas encore découvert (ni au Musée, ni déjà dans le sac) a X fois plus de chances d'apparaître
+    chanceNonDecouvert: 3,
 
     // GEMMES : elles sortent uniquement des géodes (une géode donne une gemme de sa rareté)
     gemmes: {
