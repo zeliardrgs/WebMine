@@ -1033,7 +1033,10 @@ const GUARD_EXTRA = RY.niveauGardien.niveauxEnPlus || [];
 const baseKind = level => level >= 1000 ? 'king' : level % 100 === 0 || GUARD_EXTRA.includes(level) ? 'guardian' : level % 10 === 0 ? 'treasure' : level % 10 === 9 ? 'hard' : 'easy';
 // A treasure level is only a treasure level the first time: replayed later (from its checkpoint), it is a normal level
 const floorKind = level => { const k = baseKind(level); return k === 'treasure' && (S.treasureDone || {})[level] ? 'easy' : k; };
-const levelDims = level => { const n = TUTO[level] ? 3 : gridRow(level).taille; return [n, n]; };
+// A tutorial level is a tutorial only until the player has gone past it: replayed later (starting again from the top
+// of the mine or from a checkpoint), it is a normal level
+const isTuto = level => !!TUTO[level] && level >= (S.reached || 1);
+const levelDims = level => { const n = isTuto(level) ? 3 : gridRow(level).taille; return [n, n]; };
 function setDims(cols, rows) {
   COLS = cols; ROWS = rows; N = cols * rows;
   document.documentElement.style.setProperty('--cols', cols);
@@ -1273,7 +1276,7 @@ function genLevel(level) {
 function genLevelOnce(level, kindArg) {
   const [cols, rows] = levelDims(level);
   setDims(cols, rows); S.cols = cols; S.rows = rows;
-  S.tuto = TUTO[level] ? level : 0;
+  S.tuto = isTuto(level) ? level : 0;
   if (S.tuto) return genTutorial(level, TUTO[level]);
   const kind = kindArg || floorKind(level);
   // How much stone and magma: easier on most levels, a bit more on the 9th, much more on guardian levels
