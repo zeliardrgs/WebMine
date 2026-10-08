@@ -732,6 +732,8 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   .card,.board.enter,.rw.done{animation:none}
 }
 
+/* Cheats switched off in the Settings: the cheat button and panel are hidden */
+.cheats-off #cheatBtn,.cheats-off #cheatPanel{display:none!important}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -925,6 +927,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
     <div class="set-list">
       <div class="set-row"><span>Son</span><button class="switch" id="optSound" role="switch" aria-checked="true" aria-label="Son"><i></i></button></div>
       <div class="set-row"><span>Musique</span><button class="switch" id="optMusic" role="switch" aria-checked="true" aria-label="Musique"><i></i></button></div>
+      <div class="set-row" id="cheatRow" hidden><span>Cheats</span><button class="switch" id="optCheats" role="switch" aria-checked="false" aria-label="Cheats"><i></i></button></div>
       <div class="set-row"><span>Langue</span><div class="seg" role="group" aria-label="Langue">
         <button data-lang="fr" aria-pressed="true">Français</button><button data-lang="en" aria-pressed="false">English</button>
       </div></div>
@@ -1720,6 +1723,8 @@ function sfx(k) {
 function paintSound() {
   $('optSound').setAttribute('aria-checked', S.sound ? 'true' : 'false');
   $('optMusic').setAttribute('aria-checked', S.music ? 'true' : 'false');
+  $('optCheats').setAttribute('aria-checked', cheatsOn() ? 'true' : 'false');
+  $('cheatRow').hidden = !cheatsShown();
 }
 
 /* ---------- Music (synthesized: a calm, cheerful loop C - Am - F - G) ---------- */
@@ -1785,6 +1790,15 @@ $('settingsBtnMine').addEventListener('click', openSettings);
 $('settingsClose').addEventListener('click', closeSettings);
 $('settingsModal').addEventListener('click', e => { if (e.target.id === 'settingsModal') closeSettings(); });
 $('optSound').addEventListener('click', () => { S.sound = !S.sound; paintSound(); unlockAudio(); sfx('pick'); save(); });
+$('optCheats').addEventListener('click', () => { setCheats(!cheatsOn()); paintSound(); sfx('pick'); });
+// The Cheats switch is hidden: tapping the "Paramètres" title 5 times in a row reveals it (and it stays visible on this device)
+let titleTaps = 0, titleTapT = 0;
+$('settingsTitle').addEventListener('click', () => {
+  const now = Date.now(); titleTaps = now - titleTapT < 800 ? titleTaps + 1 : 1; titleTapT = now;
+  if (titleTaps < 5 || cheatsShown()) return;
+  try { localStorage.setItem(CHEAT_SHOWN_KEY, '1'); } catch (e) {}
+  paintSound(); sfx('pick'); toast(tr('Cheats débloqués'), 'good');
+});
 $('optMusic').addEventListener('click', () => { S.music = !S.music; paintSound(); if (S.music) startMusic(); else stopMusic(); sfx('pick'); save(); });
 document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
   if (b.dataset.lang === S.lang) return;
@@ -3185,17 +3199,35 @@ function start(data) {
   loop();
   go(S.screen === 'mine' ? 'mine' : 'village');
 }
-// Cheat menu: only on the local computer (cheat.js is never copied to the website)
-if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
+// Cheat menu (cheat.js): switched on or off in the Settings. The choice is kept apart from the save (so a reset keeps it);
+// with no choice made yet, cheats are on only on the local computer.
+const CHEAT_KEY = 'mine-cheats', CHEAT_SHOWN_KEY = 'mine-cheats-shown';
+// The switch shows once revealed (5 taps on the Settings title), when cheats are on, or on the local computer
+function cheatsShown() {
+  let v = null; try { v = localStorage.getItem(CHEAT_SHOWN_KEY); } catch (e) {}
+  return v === '1' || cheatsOn() || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+}
+function cheatsOn() {
+  let v = null; try { v = localStorage.getItem(CHEAT_KEY); } catch (e) {}
+  return v ? v === '1' : /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+}
+function setCheats(on) {
+  try { localStorage.setItem(CHEAT_KEY, on ? '1' : '0'); } catch (e) {}
+  document.body.classList.toggle('cheats-off', !on);
+  if (on && !document.getElementById('cheatScript')) loadCheats();
+}
+function loadCheats() {
   window.__mine = {
     get S() { return S; }, CFG, GEODES, GEMS, ARTS, SETS, UPGRADES, SCREENS, CHECKPOINTS,
     genLevel, buildBoard, go, save, toast, paintTile, checkRewards, maxE, bagCap, BAG_UP,
     updateBombs, updateQuick, updateBadge, updateEnergy,
     // Texts still missing an English version (shown in the console with __mine.missingEN())
     missingEN: () => [...MISSING_EN],
+    cheatsOn,
   };
-  const sc = document.createElement('script'); sc.src = 'cheat.js'; document.body.append(sc);
+  const sc = document.createElement('script'); sc.id = 'cheatScript'; sc.src = 'cheat.js'; document.body.append(sc);
 }
+if (cheatsOn()) loadCheats();
 // English: the texts written in the page (titles, buttons, labels) are translated once at start
 function translatePage() {
   if (LANG !== 'en') return;

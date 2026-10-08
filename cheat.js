@@ -1,6 +1,6 @@
 /* =====================================================================
-   MENU CHEAT — uniquement en local (localhost)
-   Ce fichier n'est jamais mis en ligne : build.js ne le copie pas.
+   MENU CHEAT — s'active dans les Paramètres du jeu (interrupteur « Cheats »).
+   Par défaut, il est activé seulement en local (localhost).
    ===================================================================== */
 (() => {
   const M = window.__mine;
@@ -179,6 +179,6 @@
 
   // Infinite energy: keep the gauge full while the option is on
   setInterval(() => {
-    if (localStorage.getItem(INF) === '1' && S().energy < M.maxE()) { S().energy = M.maxE(); M.updateEnergy(true); }
+    if (M.cheatsOn() && localStorage.getItem(INF) === '1' && S().energy < M.maxE()) { S().energy = M.maxE(); M.updateEnergy(true); }
   }, 300);
 })();

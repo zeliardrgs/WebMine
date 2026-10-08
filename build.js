@@ -40,6 +40,7 @@ fs.writeFileSync(path.join(out, 'index.html'), page);
 fs.cpSync(path.join(root, 'Assets'), path.join(out, 'Assets'), { recursive: true });
 fs.copyFileSync(path.join(root, 'config.js'), path.join(out, 'config.js'));
 fs.copyFileSync(path.join(root, 'textes-en.js'), path.join(out, 'textes-en.js'));
+fs.copyFileSync(path.join(root, 'cheat.js'), path.join(out, 'cheat.js'));   // loaded only when Cheats is switched on in the Settings
 
 // Installable web app: fullscreen hides the phone's status bar and navigation bar once added to the home screen.
 const manifest = {
@@ -65,7 +66,7 @@ const listFiles = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e 
   const p = path.join(dir, e.name);
   return e.isDirectory() ? listFiles(p) : e.name.startsWith('.') ? [] : [p];
 });
-const precache = ['./', 'config.js', 'textes-en.js', 'manifest.webmanifest',
+const precache = ['./', 'config.js', 'textes-en.js', 'cheat.js', 'manifest.webmanifest',
   ...listFiles(path.join(out, 'Assets')).map(f => path.relative(out, f).split(path.sep).map(encodeURIComponent).join('/'))];
 const sw = `const CACHE = 'mine-${Date.now()}';
 const PRECACHE = ${JSON.stringify(precache)};

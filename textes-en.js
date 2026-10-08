@@ -48,6 +48,8 @@ window.TEXTES_EN = {
   "Paramètres": "Settings",
   "Son": "Sound",
   "Musique": "Music",
+  "Cheats": "Cheats",
+  "Cheats débloqués": "Cheats unlocked",
   "Langue": "Language",
   "Français": "Français",
   "English": "English",
