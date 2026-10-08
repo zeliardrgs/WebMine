@@ -276,6 +276,7 @@ window.CONFIG = {
       prime: "Récupère ta récompense",                // 1re prime de collection au Musée
       museeRetour: "Retourne au village",             // fin de la 1re visite du Musée
       redescendre: "Redescends dans la mine",         // après la 1re visite du Musée
+      checkpoints: "Un checkpoint tous les {n} niveaux",  // 1re fois dans l'ascenseur, avant « Reprends au niveau »
       ascenseur: "Reprends au niveau {n}",            // 1re fois que l'ascenseur propose un checkpoint
       ouvrirSac: "Ouvre ton sac",                     // tutoriels de la bombe
       utiliserBombe: "Utilise la bombe",

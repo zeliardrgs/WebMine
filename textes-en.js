@@ -464,6 +464,8 @@ window.TEXTES_EN = {
   "Poche à géodes : {a} → {b} géodes sans prendre de case": "Geode pocket: {a} → {b} geodes that take no slot",
   "Poche à géodes : {n} géodes sans prendre de case !": "Geode pocket: {n} geodes take no slot!",
   "Sac": "Bag",
+  "Un checkpoint tous les {n} niveaux": "A checkpoint every {n} levels",
+  "Touche pour continuer": "Tap to continue",
   "Casse le magma refroidi": "Break the cooled magma",
   "Rentre au village avec ton butin": "Head home with your loot",
   "Descends dans la mine": "Go down into the mine",

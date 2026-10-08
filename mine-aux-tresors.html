@@ -579,6 +579,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 #coachTxt{position:fixed; left:50%; z-index:62; transform:translateX(-50%); max-width:min(320px, calc(100vw - 32px)); box-sizing:border-box;
   padding:8px 16px; border-radius:16px; background:#fff8e6; color:var(--ink); box-shadow:0 4px 0 #e6c48a, 0 10px 20px rgba(0,0,0,.35);
   font-family:var(--font-display); font-size:19px; line-height:1.15; text-align:center; pointer-events:none; white-space:nowrap}
+#coachTxt.info::after{content:attr(data-more); display:block; margin-top:3px; font-family:var(--font-body, inherit); font-size:12px; opacity:.6}
 @media (prefers-reduced-motion: reduce){#coachHand.tap img,#coachHand.swipe{animation:none}}
 .tuto{cursor:pointer}
 .tool.hint{animation:toolHint 1.1s ease-in-out infinite}
@@ -1604,7 +1605,7 @@ function renderCoach(st) {
   coachArea = { l: Math.min(r.left, q.left) - 4, t: Math.min(r.top, q.top) - 4, r: Math.max(r.right, q.right) + 4, b: Math.max(r.bottom, q.bottom) + 4 };
   // Measured again only when the target moves (camera, board animation, screen size)
   const sig = [r.left, r.top, r.width, r.height, q.left, q.top, innerWidth, innerHeight, st.text].map(v => typeof v === 'number' ? Math.round(v) : v).join();
-  if (st._sig === sig) { dim.hidden = hand.hidden = txt.hidden = false; return; }
+  if (st._sig === sig) { dim.hidden = txt.hidden = false; hand.hidden = !!st.info; return; }
   st._sig = sig;
   const cx = r.left + r.width / 2, cy = r.top + Math.min(r.height, r.width) / 2;
   let x2 = cx, y2 = cy;
@@ -1616,16 +1617,21 @@ function renderCoach(st) {
   hand.className = el2 ? 'swipe' : 'tap';
   set(hand, '--x1', cx); set(hand, '--y1', cy); set(hand, '--x2', x2); set(hand, '--y2', y2);
   txt.textContent = tr(st.text, st.vars);
+  // An info step (no action to do): no hand, and "tap to continue" under the sentence
+  txt.classList.toggle('info', !!st.info); txt.dataset.more = st.info ? tr('Touche pour continuer') : '';
   // The sentence sits just outside the lit circle: below it when the target is high on the screen or in a popup
   // (so it never hides the popup's title), above otherwise
   const high = my < innerHeight * .55 || !!el.closest('.modal');
   txt.style.top = high ? (el.closest('.modal') ? r.bottom + 14 : Math.max(my + rad + 28, r.bottom + 64)) + 'px' : '';
   txt.style.bottom = high ? '' : innerHeight - (my - rad - 10) + 'px';
-  dim.hidden = hand.hidden = txt.hidden = false;
+  dim.hidden = txt.hidden = false; hand.hidden = !!st.info;
 }
 // Touches outside the tutorial's target are ignored (the cheat menu stays usable for testing)
 for (const type of ['pointerdown', 'mousedown', 'touchstart', 'click']) addEventListener(type, e => {
   if (!coachArea || (e.target.closest && e.target.closest('#cheatBtn, #cheatPanel'))) return;
+  // Info step: any tap goes on to the next step, and does nothing else
+  const st = coachStep();
+  if (st && st.info) { e.preventDefault(); e.stopImmediatePropagation(); if (type === 'click') st.tapped = true; return; }
   const p = e.touches ? e.touches[0] : e;
   if (p && p.clientX >= coachArea.l && p.clientX <= coachArea.r && p.clientY >= coachArea.t && p.clientY <= coachArea.b) return;
   e.preventDefault(); e.stopImmediatePropagation();
@@ -2840,7 +2846,11 @@ function showLiftBiome(b, canGoBack) {
   $('liftList').querySelector('button')?.focus();
   const deepest = [...$('liftList').querySelectorAll('[data-lift]')].pop();
   if (deepest && stops.length > 1 && !S.tutoSeen.ascenseur)
-    startCoach('ascenseur', [{ text: TX.ascenseur, vars: { n: deepest.dataset.lift }, target: () => deepest, done: () => $('liftModal').hidden }]);
+    startCoach('ascenseur', [
+      // First, what checkpoints are (tap to continue), then where to start from
+      { text: TX.checkpoints, vars: { n: CP.tousLesNiveaux }, info: true, target: () => $('liftList'), done() { return this.tapped || $('liftModal').hidden; } },
+      { text: TX.ascenseur, vars: { n: deepest.dataset.lift }, target: () => deepest, done: () => $('liftModal').hidden },
+    ]);
 }
 function descendTo(level) {
   $('liftModal').hidden = true;
