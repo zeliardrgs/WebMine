@@ -298,7 +298,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .v-title p{margin:6px 0 0; font-size:13px; opacity:.85}
 /* Village: a painted grass map larger than the screen. The player drags it around (#world is the viewport,
    #map the 1000×1150 px world moved with a translate). Buildings are anchored by the middle of their base; each name plate floats above its building. */
-#scr-village{position:relative; max-width:none; padding:0; overflow:hidden; background:#8fd146}
+#scr-village{position:fixed; inset:0; height:auto; max-width:none; padding:0; overflow:hidden; background:#8fd146}   /* fills the whole phone screen, under the status bar and home indicator; the HUD keeps clear of them */
 .world{position:absolute; inset:0; overflow:hidden; touch-action:none; cursor:grab}
 .world.dragging{cursor:grabbing}
 .map{position:absolute; left:0; top:0; width:1000px; height:1150px; will-change:transform;
@@ -333,14 +333,14 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .shaft-sign{position:absolute; transform:translate(-50%, 0); pointer-events:none; padding:4px 14px 6px; border-radius:12px; background:#8a5426; color:#ffe7b0;
   font-family:var(--font-display); font-size:17px; box-shadow:0 4px 0 #5b3214}
 /* HUD floating above the map */
-.v-hud{position:absolute; left:0; right:0; top:0; padding:12px 16px 0; display:flex; align-items:center; gap:8px; pointer-events:none; z-index:10}
+.v-hud{position:absolute; left:0; right:0; top:0; padding:calc(env(safe-area-inset-top, 0px) + 12px) 16px 0; display:flex; align-items:center; gap:8px; pointer-events:none; z-index:10}
 .v-hud > *{pointer-events:auto}
 .v-hud .wallet-bar{flex:1}
 .v-hud .iconbtn{width:46px; height:46px; align-self:flex-start}
 #settingsBtn svg,#settingsBtnMine svg{width:26px; height:26px}
-.v-bottom{position:absolute; left:50%; bottom:0; width:min(480px, 100%); transform:translateX(-50%); box-sizing:border-box; padding:0 16px 16px; z-index:10; pointer-events:none}
+.v-bottom{position:absolute; left:50%; bottom:0; width:min(480px, 100%); transform:translateX(-50%); box-sizing:border-box; padding:0 16px calc(env(safe-area-inset-bottom, 0px) + 16px); z-index:10; pointer-events:none}
 .v-bottom .mine-door{pointer-events:auto}
-.v-hint{position:absolute; left:50%; top:62px; transform:translateX(-50%); z-index:10; pointer-events:none; padding:5px 12px; border-radius:12px;
+.v-hint{position:absolute; left:50%; top:calc(env(safe-area-inset-top, 0px) + 62px); transform:translateX(-50%); z-index:10; pointer-events:none; padding:5px 12px; border-radius:12px;
   background:rgba(30,60,10,.55); color:#fff; font-size:12px; white-space:nowrap; transition:opacity .4s}
 /* Village goals: 3 simple objectives with a coin reward */
 .v-goals{margin-bottom:10px; border-radius:18px; background:rgba(255,248,230,.96); color:var(--ink); box-shadow:0 5px 0 #d9b77a, 0 10px 22px rgba(0,0,0,.3); overflow:hidden}
