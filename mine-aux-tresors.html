@@ -710,6 +710,23 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .flyer svg{width:100%; height:100%}
 .board.enter{animation:dropin .5s cubic-bezier(.3,1.4,.5,1)}
 @keyframes dropin{from{transform:translateY(-30px); opacity:0}}
+/* Going down a level: the cleared board slides up and out, "Niveau N" shows, the new board rises from below */
+.frame.leaving{animation:frameOut .34s cubic-bezier(.5,0,.8,.4) forwards}
+@keyframes frameOut{to{transform:translateY(-70px) scale(.92); opacity:0}}
+.frame.arriving{animation:frameIn .55s cubic-bezier(.25,1.35,.5,1) both}
+@keyframes frameIn{from{transform:translateY(90px) scale(.94); opacity:0} 55%{opacity:1}}
+.descend-fx{position:absolute; inset:0; z-index:8; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; pointer-events:none}
+.descend-fx[hidden]{display:none}
+.descend-fx b{font-family:var(--font-display); font-weight:400; font-size:34px; color:#fff; letter-spacing:.02em;
+  text-shadow:0 3px 0 #2b0a3d, 0 0 18px rgba(255,214,107,.55)}
+.descend-fx img{width:34px; height:34px; transform:rotate(180deg); filter:drop-shadow(0 3px 0 #2b0a3d)}
+.descend-fx img:nth-of-type(2){margin-top:-18px; opacity:.6}
+.descend-fx.on{animation:dfShow .95s ease both}
+.descend-fx.on img{animation:dfArrow .45s ease-in-out infinite alternate}
+@keyframes dfShow{0%{opacity:0; transform:translateY(-24px) scale(.85)} 22%{opacity:1; transform:none} 70%{opacity:1; transform:none} 100%{opacity:0; transform:translateY(26px)}}
+@keyframes dfArrow{to{transform:rotate(180deg) translateY(-6px)}}
+.chip.depth.bump b{animation:depthBump .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes depthBump{40%{transform:scale(1.45); color:#ffd36b}}
 
 /* Phones */
 @media (max-width:430px){
@@ -754,7 +771,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 
 @media (prefers-reduced-motion: reduce){
   .t-magma,.t-magma::before,.o-gold{animation:none}
-  .card,.board.enter,.rw.done{animation:none}
+  .card,.board.enter,.rw.done,.frame.leaving,.frame.arriving,.descend-fx.on{animation:none}
 }
 
 /* Cheats switched off in the Settings: the cheat button and panel are hidden */
@@ -845,6 +862,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   </section>
 
   <main class="stage">
+    <div class="descend-fx" id="descendFx" hidden aria-hidden="true"><b id="descendFxTxt"></b><img src="Assets/Arrow_Up.png" alt="" draggable="false"><img src="Assets/Arrow_Up.png" alt="" draggable="false"></div>
     <div class="frame">
       <div class="board" id="board">
         <div class="under" id="under"></div>
@@ -1599,9 +1617,10 @@ function renderCoach(st) {
   hand.className = el2 ? 'swipe' : 'tap';
   set(hand, '--x1', cx); set(hand, '--y1', cy); set(hand, '--x2', x2); set(hand, '--y2', y2);
   txt.textContent = tr(st.text, st.vars);
-  // The sentence sits just outside the lit circle: below it when the target is high on the screen, above otherwise
-  const high = my < innerHeight * .55;
-  txt.style.top = high ? Math.max(my + rad + 28, r.bottom + 64) + 'px' : '';
+  // The sentence sits just outside the lit circle: below it when the target is high on the screen or in a popup
+  // (so it never hides the popup's title), above otherwise
+  const high = my < innerHeight * .55 || !!el.closest('.modal');
+  txt.style.top = high ? (el.closest('.modal') ? r.bottom + 14 : Math.max(my + rad + 28, r.bottom + 64)) + 'px' : '';
   txt.style.bottom = high ? '' : innerHeight - (my - rad - 10) + 'px';
   dim.hidden = hand.hidden = txt.hidden = false;
 }
@@ -1786,6 +1805,7 @@ function sfx(k) {
       case 'win': [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone(f, .3, 'triangle', .12, i * .1)); break;
       case 'boom': noise(.6, 220, .5, .7, 'lowpass'); tone(110, .45, 'sine', .35, 0, 35); break;
       case 'pick': tone(700, .05, 'sine', .07); break;
+      case 'descend': tone(520, .38, 'triangle', .09, 0, 190); noise(.3, 900, .8, .12, 'lowpass'); tone(330, .2, 'sine', .08, .3); break;
     }
   } catch (e) {}
 }
@@ -2165,13 +2185,15 @@ function clearCell(i) {
 function checkAutoNext() {
   if (!S.rewards || !S.rewards.length || S.level >= 1000) return;
   if (!S.rewards.every(r => r.taken === true) || !S.grid.every(c => c.t === 'empty')) return;
+  // The first full bag is handled by pickUp (tutorial: down one level, then the "Sac plein" popup)
+  if (bagFull() && !S.tutoSeen.sacPlein) return;
   const gen = boardGen;
   clearTimeout(checkAutoNext.t);
   checkAutoNext.t = setTimeout(() => {
     // Still the same level, nothing open on screen
     if (gen !== boardGen || $('scr-mine').hidden || bagQueue.length || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
     tryDescend();
-  }, 900);
+  }, 1100);
 }
 
 /* ---------- Rewards ---------- */
@@ -2324,8 +2346,23 @@ function pickUp(rw, ri) {
   // The bag appears with the very first treasure picked up
   if (!S.bagSeen) { S.bagSeen = true; applyUnlocks(); }
   // The first time it gets full: a short tutorial pointing at "go back up" (shown once)
-  if (bagFull())
-    startCoach('sacPlein', [{ text: TX.sacPlein, target: () => $('descendModal').hidden ? $('upBtn') : $('descendUp'), done: () => $('scr-mine').hidden || !$('recapModal').hidden }]);
+  // The bag just got full: the "Sac plein" popup opens by itself once the treasure has flown into the bag
+  // (even if some dirt is left), and the first time a short tutorial points at "Remonter"
+  if (bagFull()) {
+    const gen = boardGen;
+    const showFull = () => {
+      if ($('scr-mine').hidden) return;
+      if (!bagQueue.length && ![...document.querySelectorAll('.modal')].some(m => !m.hidden)) tryDescend();
+      startCoach('sacPlein', [{ text: TX.sacPlein, target: () => $('descendModal').hidden ? $('upBtn') : $('descendUp'), done: () => $('scr-mine').hidden || !$('recapModal').hidden }]);
+    };
+    setTimeout(() => {
+      if (gen !== boardGen || $('scr-mine').hidden) return;
+      // First full bag (tutorial), on a finished level: go down one level first, so the first return
+      // starts from there next time (the bag fills at level 4, the first checkpoint is level 5)
+      if (!S.tutoSeen.sacPlein && S.rewards.every(r => r.found) && S.level < 1000) { descend(); setTimeout(showFull, DESCEND_MS + 700); }
+      else showFull();
+    }, 1000);
+  }
   updateBadge();
   sfx('reward');
   const el = rwEls[ri]; el.classList.add('done');
@@ -3241,11 +3278,31 @@ function tryDescend() {
   $('descendStats').innerHTML = (full ? stat('Assets/Bag.png', `${bagUsed()} / ${bagCap()}`) : '') + (low ? stat('Assets/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
   sfx('deny'); $('descendModal').hidden = false; $('descendUp').focus();
 }
+// Going down a level takes DESCEND_MS: the cleared board leaves, "Niveau N" shows, the new board arrives
+const DESCEND_MS = reduced ? 0 : 560;
+let descending = false;
 function descend() {
+  if (descending) return;
   $('descendModal').hidden = true;
   bagQueue.length = 0; $('bagFullModal').hidden = true;
+  if (!DESCEND_MS) return arriveNext();
+  descending = true; digLock = true; sfx('descend'); $('nextPill').hidden = true;
+  const frame = document.querySelector('.frame'), fx = $('descendFx');
+  $('descendFxTxt').textContent = tr('Niveau {n}', { n: S.level + 1 });
+  fx.hidden = false; fx.classList.remove('on'); void fx.offsetWidth; fx.classList.add('on');
+  frame.classList.remove('arriving'); frame.classList.add('leaving');
+  setTimeout(() => {
+    frame.classList.remove('leaving');
+    arriveNext();
+    frame.classList.add('arriving');
+    descending = false;
+  }, DESCEND_MS);
+  setTimeout(() => { frame.classList.remove('arriving'); fx.classList.remove('on'); fx.hidden = true; }, DESCEND_MS + 600);
+}
+function arriveNext() {
   S.level++; if (CFG.energie.rechargeEtageSuivant) S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges();
-  S.rewardMsg = null; genLevel(S.level); buildBoard(true); updateEnergy(true); save();
+  S.rewardMsg = null; genLevel(S.level); buildBoard(!DESCEND_MS); updateEnergy(true); save();
+  const dc = $('depthChip'); dc.classList.remove('bump'); void dc.offsetWidth; dc.classList.add('bump');
   const newRecord = S.level > S.reached;
   if (newRecord) S.reached = S.level;
   if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: S.level }) : tr('Checkpoint niveau {n} débloqué !', { n: S.level }), 'good'); }

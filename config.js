@@ -341,7 +341,7 @@ window.CONFIG = {
      --------------------------------------------------------------- */
   checkpoints: {
     tousLesNiveaux: 10,   // un checkpoint tous les X niveaux (10, 20, 30…)
-    enPlus: [4],          // checkpoints en plus : le 4 évite de refaire le début après le premier retour (sac de 4 cases plein au niveau 4)
+    enPlus: [5],          // checkpoints en plus (le 5 évite de refaire le tout début après le premier retour)
     dernier: 990,         // dernier niveau qui a un checkpoint
   },
 
