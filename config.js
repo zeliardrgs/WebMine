@@ -264,6 +264,19 @@ window.CONFIG = {
       creuser: "Glisse pour creuser",                 // niveau 2 (première grille 2×2)
       tresor: "Touche le trésor pour le ramasser",    // le 1er trésor dégagé
       sacPlein: "Sac plein ! Remonte au village",     // la 1re fois que le sac est plein
+      casserRefroidi: "Casse le magma refroidi",     // tutoriel du magma, après l'arrosoir
+      surface: "Rentre au village avec ton butin",    // la 1re fin d'expédition
+      descendre: "Descends dans la mine",             // tout premier lancement, au village
+      batiments: {                                    // quand un bâtiment apparaît au village
+        museum: "Entre dans ton Musée",
+        forge: "Entre dans la Forge",
+        atelier: "Entre dans l'Atelier",
+        shop: "Entre dans la Boutique",
+      },
+      prime: "Récupère ta récompense",                // 1re prime de collection au Musée
+      museeRetour: "Retourne au village",             // fin de la 1re visite du Musée
+      redescendre: "Redescends dans la mine",         // après la 1re visite du Musée
+      ascenseur: "Reprends au niveau {n}",            // 1re fois que l'ascenseur propose un checkpoint
       ouvrirSac: "Ouvre ton sac",                     // tutoriels de la bombe
       utiliserBombe: "Utilise la bombe",
       // Quand il faut d'abord changer d'outil
@@ -328,7 +341,7 @@ window.CONFIG = {
      --------------------------------------------------------------- */
   checkpoints: {
     tousLesNiveaux: 10,   // un checkpoint tous les X niveaux (10, 20, 30…)
-    enPlus: [5],          // checkpoints en plus (le 5 évite de refaire le tout début après le premier retour)
+    enPlus: [4],          // checkpoints en plus : le 4 évite de refaire le début après le premier retour (sac de 4 cases plein au niveau 4)
     dernier: 990,         // dernier niveau qui a un checkpoint
   },
 

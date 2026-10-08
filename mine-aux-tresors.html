@@ -1569,33 +1569,52 @@ function coachTick() {
 }
 setInterval(coachTick, 150);
 const coachStep = () => coach && coach.steps[coach.i];
+/* While a tutorial step shows, only its target (and, for a swipe, the way to its end) can be touched.
+   The step hides itself when its target is not on screen, or when a popup is open on top of it. */
+let coachArea = null;
+function coachShown(el) {
+  if (!el || !el.isConnected || !el.getClientRects().length) return false;
+  const r = el.getBoundingClientRect();
+  if (!r.width || !r.height || r.bottom < 0 || r.top > innerHeight) return false;
+  const open = [...document.querySelectorAll('.modal')].filter(m => !m.hidden);
+  return !open.length || open.some(m => m.contains(el));
+}
 function renderCoach(st) {
   const dim = $('coachDim'), hand = $('coachHand'), txt = $('coachTxt');
   const el = st && st.target(), el2 = st && st.to && st.to();
-  if (!st || !el) { dim.hidden = hand.hidden = txt.hidden = true; return; }
-  // Measured once per step (and again only if the screen size or the target element changes)
-  if (st._el === el && st._w === innerWidth && st._h === innerHeight) { dim.hidden = hand.hidden = txt.hidden = false; return; }
-  const r = el.getBoundingClientRect();
-  if (!r.width) { dim.hidden = hand.hidden = txt.hidden = true; return; }
-  Object.assign(st, { _el: el, _w: innerWidth, _h: innerHeight });
+  if (!st || !coachShown(el)) { dim.hidden = hand.hidden = txt.hidden = true; coachArea = null; return; }
+  const r = el.getBoundingClientRect(), q = el2 ? el2.getBoundingClientRect() : r;
+  coachArea = { l: Math.min(r.left, q.left) - 4, t: Math.min(r.top, q.top) - 4, r: Math.max(r.right, q.right) + 4, b: Math.max(r.bottom, q.bottom) + 4 };
+  // Measured again only when the target moves (camera, board animation, screen size)
+  const sig = [r.left, r.top, r.width, r.height, q.left, q.top, innerWidth, innerHeight, st.text].map(v => typeof v === 'number' ? Math.round(v) : v).join();
+  if (st._sig === sig) { dim.hidden = hand.hidden = txt.hidden = false; return; }
+  st._sig = sig;
   const cx = r.left + r.width / 2, cy = r.top + Math.min(r.height, r.width) / 2;
   let x2 = cx, y2 = cy;
-  if (el2) { const q = el2.getBoundingClientRect(); x2 = q.left + q.width / 2; y2 = q.top + Math.min(q.height, q.width) / 2; }
+  if (el2) { x2 = q.left + q.width / 2; y2 = q.top + Math.min(q.height, q.width) / 2; }
   const set = (e, k, v) => e.style.setProperty(k, v + 'px');
   set(dim, '--cx', (cx + x2) / 2); set(dim, '--cy', (cy + y2) / 2);
   const rad = Math.max(r.width, r.height) * .6 + Math.hypot(x2 - cx, y2 - cy) / 2, my = (cy + y2) / 2;
   set(dim, '--r', rad);
   hand.className = el2 ? 'swipe' : 'tap';
   set(hand, '--x1', cx); set(hand, '--y1', cy); set(hand, '--x2', x2); set(hand, '--y2', y2);
-  txt.textContent = tr(st.text);
+  txt.textContent = tr(st.text, st.vars);
   // The sentence sits just outside the lit circle: below it when the target is high on the screen, above otherwise
   const high = my < innerHeight * .55;
   txt.style.top = high ? Math.max(my + rad + 28, r.bottom + 64) + 'px' : '';
   txt.style.bottom = high ? '' : innerHeight - (my - rad - 10) + 'px';
   dim.hidden = hand.hidden = txt.hidden = false;
 }
+// Touches outside the tutorial's target are ignored (the cheat menu stays usable for testing)
+for (const type of ['pointerdown', 'mousedown', 'touchstart', 'click']) addEventListener(type, e => {
+  if (!coachArea || (e.target.closest && e.target.closest('#cheatBtn, #cheatPanel'))) return;
+  const p = e.touches ? e.touches[0] : e;
+  if (p && p.clientX >= coachArea.l && p.clientX <= coachArea.r && p.clientY >= coachArea.t && p.clientY <= coachArea.b) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+}, { capture: true, passive: false });
 const toolStep = tool => ({ text: TX.outils[tool] || '', target: () => $('tool-' + tool), done: () => S.tool === tool });
-const cellStep = (text, i) => { const snap = JSON.stringify(S.grid[i]); return { text, target: () => tileEls[i], done: () => JSON.stringify(S.grid[i]) !== snap }; };
+// Done once the tile has changed kind (a stone broken, magma cooled…), not after the first hit
+const cellStep = (text, i) => { const t0 = S.grid[i].t; return { text, target: () => tileEls[i], done: () => S.grid[i].t !== t0 }; };
 // Where each tutorial level points (the new tile)
 const COACH_FIND = {
   pierre: c => c.t === 'stone', cuivre: c => c.t === 'ore' && c.ore === 'copper', fer: c => c.t === 'ore' && c.ore === 'iron',
@@ -1603,7 +1622,13 @@ const COACH_FIND = {
   mystere: c => c.t === 'mystery', racines: c => c.t === 'stump', glace: (c, i) => c.t === 'ice' && isMelting(i), gaz: c => c.t === 'gas',
   coffre: c => c.t === 'chest', bombe: c => c.t !== 'empty',
 };
+// Tutorials tied to the mine board are dropped when the player leaves the mine (they come back with the next board)
+function dropBoardCoaches() {
+  for (let i = coachQueue.length - 1; i >= 0; i--) if (coachQueue[i].gen) coachQueue.splice(i, 1);
+  if (coach && coach.gen) endCoach(false);
+}
 function levelCoach() {
+  if ($('scr-mine').hidden) return;
   const lv = S.level, t = TUTO[lv];
   // Level 1 (a single tile): tap to dig; level 2 (2×2): swipe to dig
   if (lv === 1 && !S.tutoSeen.toucher) {
@@ -1611,8 +1636,9 @@ function levelCoach() {
     startCoach('toucher', [toolStep('shovel'), { text: TX.toucher, target: () => tileEls[0], done: () => dirt() < n0 }], true);
   }
   if (lv === 2 && !S.tutoSeen.creuser) {
-    const dirt = () => S.grid.filter(c => c.t === 'dirt').length, n0 = dirt(), row = (ROWS >> 1) * COLS;
-    startCoach('creuser', [toolStep('shovel'), { text: TX.creuser, target: () => tileEls[row], to: () => tileEls[row + COLS - 1], done: () => dirt() < n0 }], true);
+    // Along the treasure's row, so the swipe finds it; done once a whole row is dug or the treasure shows
+    const dirt = () => S.grid.filter(c => c.t === 'dirt').length, n0 = dirt(), rw = S.rewards[0], row = (rw ? rw.r : ROWS >> 1) * COLS;
+    startCoach('creuser', [toolStep('shovel'), { text: TX.creuser, target: () => tileEls[row], to: () => tileEls[row + COLS - 1], done: () => dirt() <= n0 - COLS || (rw && rw.found) }], true);
   }
   if (!S.tuto || !t || S.tutoSeen[lv]) return;
   let steps;
@@ -1631,6 +1657,8 @@ function levelCoach() {
     const i = S.grid.findIndex(COACH_FIND[t.nouveaute] || (() => false));
     if (i < 0) return;
     steps = [toolStep(t.outil), cellStep(t.texte, i)];
+    // Cooled magma still has to be broken with the pickaxe
+    if (t.nouveaute === 'magma') steps.push(toolStep('pickaxe'), { ...cellStep(TX.casserRefroidi, i), done: () => S.grid[i].t !== 'magma' && S.grid[i].t !== 'cool' });
   }
   startCoach(lv, steps, true);
 }
@@ -2297,7 +2325,7 @@ function pickUp(rw, ri) {
   if (!S.bagSeen) { S.bagSeen = true; applyUnlocks(); }
   // The first time it gets full: a short tutorial pointing at "go back up" (shown once)
   if (bagFull())
-    startCoach('sacPlein', [{ text: TX.sacPlein, target: () => $('upBtn'), done: () => $('scr-mine').hidden || !$('recapModal').hidden }]);
+    startCoach('sacPlein', [{ text: TX.sacPlein, target: () => $('descendModal').hidden ? $('upBtn') : $('descendUp'), done: () => $('scr-mine').hidden || !$('recapModal').hidden }]);
   updateBadge();
   sfx('reward');
   const el = rwEls[ri]; el.classList.add('done');
@@ -2499,6 +2527,7 @@ function usePotion() {
 const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier'];
 function go(name) {
   SCREENS.forEach(n => $('scr-' + n).hidden = n !== name);
+  if (name !== 'mine') dropBoardCoaches();
   if (name === 'village' || name === 'mine') S.screen = name;
   if (name !== 'atelier') stopMini();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
@@ -2773,6 +2802,9 @@ function showLiftBiome(b, canGoBack) {
   }).join('');
   $('liftBack').hidden = !canGoBack;
   $('liftList').querySelector('button')?.focus();
+  const deepest = [...$('liftList').querySelectorAll('[data-lift]')].pop();
+  if (deepest && stops.length > 1 && !S.tutoSeen.ascenseur)
+    startCoach('ascenseur', [{ text: TX.ascenseur, vars: { n: deepest.dataset.lift }, target: () => deepest, done: () => $('liftModal').hidden }]);
 }
 function descendTo(level) {
   $('liftModal').hidden = true;
@@ -2794,6 +2826,7 @@ $('liftModal').addEventListener('click', e => { if (e.target.id === 'liftModal')
 for (const b of [$('descendBtn'), $('shaftBtn')]) b.addEventListener('click', () => { unlockAudio(); sfx('pick'); openLift(); });
 function enterMine() {
   fitBoard();
+  setTimeout(levelCoach, 60);
   S.introDone = true;
   updateNextPill();
 }
@@ -2869,6 +2902,7 @@ const BUILDINGS = {
 };
 const OW_IMG = { museum: 'Museum', forge: 'Forge', atelier: 'Workshop', shop: 'Shop' };
 function openRecap() {
+  if (!S.tutoSeen.surface) startCoach('surface', [{ text: TX.surface, target: () => $('recapVillage'), done: () => $('recapModal').hidden }]);
   const T = S.trip; let coins = 0;
   // New buildings appear in the village itself (not on this screen)
   const opened = Object.entries(BUILDINGS).filter(([k, b]) => !S.buildings[k] && (!b.key || has(b.key))).map(([k]) => k);
@@ -2916,6 +2950,26 @@ function openRecap() {
 }
 $('recapAtelier').addEventListener('click', () => { $('recapModal').hidden = true; go('atelier'); });
 $('recapVillage').addEventListener('click', () => { $('recapModal').hidden = true; go('village'); });
+/* ---------- First steps in the village: go down, visit each new building, claim the first prime, use the lift ---------- */
+let villageCoachBusy = false;
+function villageCoach() {
+  if (villageCoachBusy || coach || $('scr-village').hidden || revealing || (S.newBuildings || []).length
+    || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
+  // Very first visit: go down into the mine
+  if (S.reached <= 1 && !S.tutoSeen.descendre)
+    return startCoach('descendre', [{ text: TX.descendre, target: () => $('descendBtn'), done: () => $('scr-village').hidden || !$('liftModal').hidden }]);
+  // A building that just appeared: the camera goes to it, then the player enters it
+  const k = ['museum', 'forge', 'atelier', 'shop'].find(k => S.buildings[k] && (S.bldNew || {})[k] && !S.tutoSeen['bld-' + k]);
+  if (k) {
+    const b = document.querySelector(`.bld[data-go="${k}"]`);
+    villageCoachBusy = true;
+    return panTo(b, () => { villageCoachBusy = false; startCoach('bld-' + k, [{ text: TX.batiments[k], target: () => b, done: () => !$('scr-' + k).hidden }]); });
+  }
+  // Back from the first Museum visit: go down again
+  if (S.tutoSeen['bld-museum'] && !S.tutoSeen.redescendre)
+    startCoach('redescendre', [{ text: TX.redescendre, target: () => $('descendBtn'), done: () => $('scr-village').hidden || !$('liftModal').hidden }]);
+}
+setInterval(villageCoach, 400);
 
 /* ---------- Museum ---------- */
 const museumPrimeWaiting = () => (S.pendingPrimes || []).length > 0;
@@ -2929,7 +2983,13 @@ document.addEventListener('click', e => {
   toast(tr('{x} : +{n} pièces !', { x: SETS[sk].name, n: due }), 'good');
   renderMuseum(); save();
 });
+function museumCoach() {
+  const claim = () => document.querySelector('#scr-museum [data-claimset]');
+  if (!S.tutoSeen.prime && claim()) startCoach('prime', [{ text: TX.prime, target: claim, done: () => !claim() }]);
+  if (!S.tutoSeen.museeRetour) startCoach('museeRetour', [{ text: TX.museeRetour, target: () => document.querySelector('#scr-museum [data-go="village"]'), done: () => $('scr-museum').hidden }]);
+}
 function renderMuseum() {
+  setTimeout(museumCoach);
   const B = S.bag, cell = (art, name, owned, val, count, rar) =>
     `<div class="item${owned ? '' : ' locked'}">${art}<span class="nm">${rarName(owned ? name : '???', rar)}</span>${owned ? `<span class="mtag" title="${tr('Prix de vente d\'un doublon')}">${val}${COIN}</span>` : ''}${count > 1 ? `<span class="cnt">${tr('trouvé ×{n}', { n: count })}</span>` : ''}</div>`;
   const setHTML = ([sk, set]) => {
@@ -3238,6 +3298,8 @@ function start(data) {
   }
   S.up = Object.assign(freshState().up, S.up || {});
   if (!S.tutoSeen) S.tutoSeen = {};
+  // Saves from before the first-steps tutorial: players already past it don't see it again
+  if (saved && S.reached > 5) for (const k of ['toucher', 'creuser', 'tresor', 'sacPlein', 'surface', 'descendre', 'bld-museum', 'prime', 'museeRetour', 'redescendre', 'ascenseur']) S.tutoSeen[k] = true;
   if (saved && !saved.bagV2) {
     // Before: 4 slots, then 6, 8, 10, 12, 14… Keep at least the size the player had
     const OLD = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], had = S.bagLvl > 0 ? OLD[Math.min(S.bagLvl, OLD.length) - 1] : 4;
