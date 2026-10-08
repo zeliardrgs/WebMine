@@ -27,15 +27,15 @@ window.CONFIG = {
      ÉNERGIE
      --------------------------------------------------------------- */
   energie: {
-    // Énergie maximum au début du jeu
-    maxDepart: 60,
+    // Énergie maximum au début du jeu (l'énergie arrive avec la pioche, au niveau 6)
+    maxDepart: 30,
 
     // (l'énergie max après chaque amélioration est dans forge > reserveEnergie)
 
     // Énergie moyenne qu'il faut pour dégager les trésors d'un niveau, pour chaque biome (1 à 10).
     // Si un niveau coûte plus, le jeu remplace de la roche au-dessus des trésors par de la terre.
-    // Avec 60 d'énergie au départ et 7 par niveau, une expédition fait environ 8 à 10 niveaux au biome 1 ;
-    // avec 450 d'énergie et 16 par niveau, environ 25 à 30 niveaux au biome 10.
+    // Avec 30 d'énergie au départ et 7 par niveau, une expédition fait environ 4 à 5 niveaux au biome 1
+    // (10 avec la réserve à 70) ; avec 340 d'énergie et 16 par niveau, environ 20 niveaux au biome 10.
     coutNiveau: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
 
     // Ce coût moyen est multiplié selon le type de niveau (voir aussi "rythme")
@@ -51,9 +51,13 @@ window.CONFIG = {
     // Recharge complète en descendant au niveau suivant (true = oui, false = non)
     rechargeEtageSuivant: false,
 
+    // Retour forcé au village : plus d'énergie, plus de bombe, plus de potion, et plus rien à creuser
+    // gratuitement sur l'étage (terre, cases bonus, trésor à ramasser). Le butin du sac est gardé.
+    texteRetourForce: "Plus d'énergie ! Retour au village avec ton butin.",
+
     // Une fenêtre "Es-tu sûr de vouloir descendre ?" s'affiche si l'énergie est à ce nombre ou moins
     // (elle s'affiche aussi quand le sac est plein)
-    alerteDescente: 10,
+    alerteDescente: 5,
   },
 
   /* ---------------------------------------------------------------
@@ -76,7 +80,7 @@ window.CONFIG = {
      --------------------------------------------------------------- */
   sac: {
     // Nombre de cases au début du jeu
-    casesDepart: 8,
+    casesDepart: 4,
 
     // Sac plein : un doublon trouvé reste au sol, avec ce petit message (pas de fenêtre).
     // Une nouvelle découverte ouvre une fenêtre pour laisser un doublon du sac à la place.
@@ -89,17 +93,19 @@ window.CONFIG = {
     // "cases" = taille du sac après l'achat, "pieces" = prix,
     // "biome" = à partir de quel biome atteint cet agrandissement est proposé
     agrandissements: [
-      { biome: 1, cases: 10, pieces: 200 },
-      { biome: 1, cases: 12, pieces: 400 },
-      { biome: 2, cases: 14, pieces: 800 },
-      { biome: 2, cases: 16, pieces: 1100 },
-      { biome: 3, cases: 18, pieces: 1500 },
-      { biome: 4, cases: 20, pieces: 2000 },
-      { biome: 5, cases: 22, pieces: 2600 },
-      { biome: 6, cases: 24, pieces: 3300 },
-      { biome: 7, cases: 26, pieces: 4100 },
-      { biome: 8, cases: 28, pieces: 5000 },
-      { biome: 9, cases: 30, pieces: 6000 },
+      { biome: 1, cases: 5, pieces: 100 },
+      { biome: 1, cases: 6, pieces: 200 },
+      { biome: 1, cases: 8, pieces: 350 },
+      { biome: 2, cases: 10, pieces: 600 },
+      { biome: 2, cases: 12, pieces: 900 },
+      { biome: 3, cases: 14, pieces: 1300 },
+      { biome: 4, cases: 16, pieces: 1800 },
+      { biome: 5, cases: 18, pieces: 2400 },
+      { biome: 6, cases: 20, pieces: 3000 },
+      { biome: 7, cases: 22, pieces: 3800 },
+      { biome: 8, cases: 24, pieces: 4600 },
+      { biome: 9, cases: 26, pieces: 5500 },
+      { biome: 10, cases: 28, pieces: 6500 },
     ],
   },
 
@@ -133,33 +139,40 @@ window.CONFIG = {
      Les bâtiments apparaissent au village au retour qui suit leur niveau.
      --------------------------------------------------------------- */
   progression: {
-    // Niveau à partir duquel chaque nouveauté apparaît
+    // Niveau à partir duquel chaque nouveauté apparaît.
+    // Rythme : une nouveauté tous les 5 niveaux (6, 11, 16), puis tous les 10 (26 à 66),
+    // puis tous les 15 (81 à 216), puis au début et au milieu de chaque biome.
+    // Toujours un niveau en …1 ou …6 : jamais sur un checkpoint, un niveau trésor ou un gardien.
     deblocages: {
-      pioche: 3,       // pioche, pierre et énergie (le sac est présenté la 1re fois qu'il est plein)
-      cuivre: 6,       // minerai de cuivre
-      forge: 6,        // la Forge apparaît au village (au retour suivant)
-      fer: 21,         // minerai de fer
-      geodes: 11,      // géodes blanches et roses
-      atelier: 11,     // l'Atelier apparaît au village (au retour suivant)
-      magma: 16,       // magma et arrosoir
-      boutique: 10,    // la Boutique, avec seulement "Agrandir le sac"
-      bombes: 36,      // les bombes arrivent à la Boutique (tutoriel avec une bombe offerte)
-      potions: 41,     // les potions d'énergie arrivent à la Boutique
+      pioche: 6,         // pioche, pierre et énergie (le sac est présenté la 1re fois qu'il est plein)
+      cuivre: 11,        // minerai de cuivre
+      forge: 11,         // la Forge apparaît au village (au retour suivant)
+      geodes: 16,        // géodes blanches
+      atelier: 16,       // l'Atelier apparaît au village (au retour suivant)
+      magma: 26,         // magma et arrosoir (et Arrosoir rapide à la Forge)
+      fer: 36,           // minerai de fer (niveaux 3 et 4 de la Réserve d'énergie)
+      boutique: 46,      // la Boutique, avec seulement "Agrandir le sac"
+      bombes: 56,        // les bombes arrivent à la Boutique (tutoriel avec une bombe offerte)
+      geodeRose: 66,     // géodes roses
+      potions: 81,       // les potions d'énergie arrivent à la Boutique
+      coupEnEclats: 96,  // Coup en éclats à la Forge
       // Biomes suivants
       pierreDure: 101,   // biome 2 : pierre dure
-      or: 101,           // minerai d'or
-      geodeDoree: 101,   // géodes dorées
+      or: 116,           // minerai d'or
+      geodeDoree: 131,   // géodes dorées
+      grandArrosoir: 146, // Grand arrosoir à la Forge
+      // (161, 176, 191 : nouveautés à créer)
       source: 201,       // biome 3 : source
-      radar: 201,        // le radar arrive en boutique
+      radar: 216,        // le radar arrive en boutique
       magmaChaine: 301,  // biome 4 : magma en chaîne
       mystere: 401,      // biome 5 : case mystère
-      geodeCristal: 401, // géodes de cristal
+      geodeCristal: 451, // géodes de cristal
       racines: 501,      // biome 6 : racines et souches
-      mithril: 501,      // minerai de mithril
+      mithril: 551,      // minerai de mithril
       glace: 601,        // biome 7 : glace
       gaz: 701,          // biome 8 : gaz
       coffre: 801,       // biome 9 : coffre bonus
-      cristalBrut: 801,  // minerai de cristal brut
+      cristalBrut: 851,  // minerai de cristal brut
     },
 
     // Cases spéciales des biomes 2 à 10.
@@ -197,11 +210,11 @@ window.CONFIG = {
     // "depuis" = premier niveau concerné ; "tresors" = [minimum, maximum].
     grilles: [
       { depuis: 1,   taille: 3, tresors: [1, 1] },
-      { depuis: 6,   taille: 4, tresors: [1, 1] },
-      { depuis: 16,  taille: 4, tresors: [2, 2] },
-      { depuis: 31,  taille: 5, tresors: [2, 2] },
-      { depuis: 201, taille: 6, tresors: [3, 3] },
-      { depuis: 501, taille: 7, tresors: [3, 4] },
+      { depuis: 7,   taille: 4, tresors: [1, 1] },
+      { depuis: 41,  taille: 5, tresors: [1, 1] },
+      { depuis: 51,  taille: 5, tresors: [2, 2] },
+      { depuis: 201, taille: 6, tresors: [2, 3] },
+      { depuis: 501, taille: 7, tresors: [3, 3] },
     ],
 
     // Niveaux tutoriels : grille 3×3, une seule nouveauté. Une main animée montre quoi faire,
@@ -215,16 +228,16 @@ window.CONFIG = {
       { niveau: 1,  tresor: 'feuille' },
       { niveau: 2,  tresor: 'coquillage' },
       { niveau: 3,  tresor: 'ammonite' },
-      { niveau: 11, geode: 'blanche' },
+      { niveau: 16, geode: 'blanche' },
     ],
 
     tutoriels: [
-      { niveau: 3,   nouveaute: 'pierre',      outil: 'pickaxe', texte: "Touche la pierre pour la casser" },
-      { niveau: 6,   nouveaute: 'cuivre',      outil: 'pickaxe', texte: "Casse le minerai de cuivre" },
-      { niveau: 11,  nouveaute: 'geode',       outil: 'shovel',  texte: "Glisse pour dégager la géode" },
-      { niveau: 16,  nouveaute: 'magma',       outil: 'bucket',  texte: "Arrose le magma" },
-      { niveau: 21,  nouveaute: 'fer',         outil: 'pickaxe', texte: "Casse le minerai de fer" },
-      { niveau: 36,  nouveaute: 'bombe',       outil: 'bomb',    texte: "Touche une case pour exploser" },
+      { niveau: 6,   nouveaute: 'pierre',      outil: 'pickaxe', texte: "Touche la pierre pour la casser" },
+      { niveau: 11,  nouveaute: 'cuivre',      outil: 'pickaxe', texte: "Casse le minerai de cuivre" },
+      { niveau: 16,  nouveaute: 'geode',       outil: 'shovel',  texte: "Glisse pour dégager la géode" },
+      { niveau: 26,  nouveaute: 'magma',       outil: 'bucket',  texte: "Arrose le magma" },
+      { niveau: 36,  nouveaute: 'fer',         outil: 'pickaxe', texte: "Casse le minerai de fer" },
+      { niveau: 56,  nouveaute: 'bombe',       outil: 'bomb',    texte: "Touche une case pour exploser" },
       { niveau: 101, nouveaute: 'pierreDure',  outil: 'pickaxe', texte: "La pierre dure demande plus de coups" },
       { niveau: 201, nouveaute: 'source',      outil: 'shovel',  texte: "Creuse la source" },
       { niveau: 301, nouveaute: 'magmaChaine', outil: 'bucket',  texte: "Arrose une case : tout refroidit" },
@@ -342,6 +355,10 @@ window.CONFIG = {
     // Fréquence d'apparition de chaque géode dans la mine
     // (plus le nombre est grand, plus elle apparaît souvent)
     frequence: { blanche: 60, rose: 25, doree: 12, cristal: 3 },
+
+    // Sur un étage à un seul trésor : chance que ce trésor soit une géode plutôt qu'un artefact
+    // (avec 2 trésors ou plus, un sur deux est une géode)
+    chanceEtageUnTresor: 0.35,
   },
 
   /* ---------------------------------------------------------------
@@ -488,9 +505,9 @@ window.CONFIG = {
      BOUTIQUE : PRIX DES CONSOMMABLES (en pièces)
      --------------------------------------------------------------- */
   boutique: {
-    bombe: 15,
+    bombe: 25,
     radar: 30,
-    potion: 25,
+    potion: 50,
   },
 
   /* ---------------------------------------------------------------
@@ -505,27 +522,27 @@ window.CONFIG = {
 
     // Réserve d'énergie : "energie" = énergie max après l'achat
     reserveEnergie: [
-      { biome: 1,  energie: 70,  pieces: 100 },
-      { biome: 1,  energie: 80,  pieces: 150, cuivre: 6 },
-      { biome: 1,  energie: 90,  pieces: 220, cuivre: 10, fer: 6 },
-      { biome: 1,  energie: 100, pieces: 300, cuivre: 14, fer: 12 },
-      { biome: 2,  energie: 120, pieces: 450, fer: 20, or: 3 },
-      { biome: 2,  energie: 140, pieces: 600, fer: 26, or: 6 },
-      { biome: 3,  energie: 160, pieces: 800, fer: 32, or: 10 },
-      { biome: 3,  energie: 180, pieces: 1000, fer: 38, or: 14 },
-      { biome: 4,  energie: 200, pieces: 1250, cuivre: 40, or: 18 },
-      { biome: 4,  energie: 220, pieces: 1500, cuivre: 50, or: 24 },
-      { biome: 5,  energie: 240, pieces: 1800, fer: 60, or: 30 },
-      { biome: 5,  energie: 260, pieces: 2100, fer: 70, or: 36 },
-      { biome: 6,  energie: 280, pieces: 2500, or: 40, mithril: 4 },
-      { biome: 6,  energie: 300, pieces: 2900, or: 46, mithril: 8 },
-      { biome: 7,  energie: 320, pieces: 3300, mithril: 12 },
-      { biome: 7,  energie: 340, pieces: 3800, mithril: 16 },
-      { biome: 8,  energie: 360, pieces: 4300, mithril: 20 },
-      { biome: 8,  energie: 380, pieces: 4800, mithril: 26 },
-      { biome: 9,  energie: 400, pieces: 5400, mithril: 30, cristalBrut: 4 },
-      { biome: 9,  energie: 420, pieces: 6000, mithril: 34, cristalBrut: 8 },
-      { biome: 10, energie: 450, pieces: 7000, mithril: 40, cristalBrut: 14 },
+      { biome: 1,  energie: 40,  pieces: 100 },
+      { biome: 1,  energie: 50,  pieces: 150, cuivre: 6 },
+      { biome: 1,  energie: 60,  pieces: 220, cuivre: 10, fer: 6 },
+      { biome: 1,  energie: 70,  pieces: 300, cuivre: 14, fer: 12 },
+      { biome: 2,  energie: 85,  pieces: 450, fer: 20, or: 3 },
+      { biome: 2,  energie: 100, pieces: 600, fer: 26, or: 6 },
+      { biome: 3,  energie: 115, pieces: 800, fer: 32, or: 10 },
+      { biome: 3,  energie: 130, pieces: 1000, fer: 38, or: 14 },
+      { biome: 4,  energie: 145, pieces: 1250, cuivre: 40, or: 18 },
+      { biome: 4,  energie: 160, pieces: 1500, cuivre: 50, or: 24 },
+      { biome: 5,  energie: 175, pieces: 1800, fer: 60, or: 30 },
+      { biome: 5,  energie: 190, pieces: 2100, fer: 70, or: 36 },
+      { biome: 6,  energie: 205, pieces: 2500, or: 40, mithril: 4 },
+      { biome: 6,  energie: 220, pieces: 2900, or: 46, mithril: 8 },
+      { biome: 7,  energie: 235, pieces: 3300, mithril: 12 },
+      { biome: 7,  energie: 250, pieces: 3800, mithril: 16 },
+      { biome: 8,  energie: 265, pieces: 4300, mithril: 20 },
+      { biome: 8,  energie: 280, pieces: 4800, mithril: 26 },
+      { biome: 9,  energie: 295, pieces: 5400, mithril: 30, cristalBrut: 4 },
+      { biome: 9,  energie: 310, pieces: 6000, mithril: 34, cristalBrut: 8 },
+      { biome: 10, energie: 340, pieces: 7000, mithril: 40, cristalBrut: 14 },
     ],
     // Pioche renforcée : +1 dégât par coup à chaque niveau
     piocheRenforcee: [

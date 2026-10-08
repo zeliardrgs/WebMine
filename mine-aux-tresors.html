@@ -1208,7 +1208,7 @@ function pick(weights) {
 
 // Which ores and geodes exist at a level
 const ORE_UNLOCK = { copper: 'cuivre', iron: 'fer', gold: 'or', mithril: 'mithril', crystal: 'cristalBrut' };
-const GEODE_UNLOCK = { white: 'geodes', pink: 'geodes', gold: 'geodeDoree', crystal: 'geodeCristal' };
+const GEODE_UNLOCK = { white: 'geodes', pink: 'geodeRose', gold: 'geodeDoree', crystal: 'geodeCristal' };
 const artsAt = level => Object.entries(ARTS).filter(([, o]) => level >= o.range[0] && level <= o.range[1]);
 const geodesAt = level => Object.entries(GEODES).filter(([k]) => at(level, GEODE_UNLOCK[k]));
 // Cover a treasure with the ground its series asks for
@@ -1312,7 +1312,9 @@ function genLevelOnce(level, kindArg) {
   const [tmin, tmax] = gridRow(level).tresors, count = randInt(tmin, tmax);
   const geodes = geodesAt(level), arts = artsAt(level);
   const kinds = [];
-  for (let k = 0; k < count; k++) kinds.push(geodes.length && k % 2 ? 'geode' : 'art');
+  // One treasure: sometimes a geode; several: every other one is a geode
+  if (count === 1) kinds.push(geodes.length && Math.random() < (CFG.geodes.chanceEtageUnTresor ?? 0) ? 'geode' : 'art');
+  else for (let k = 0; k < count; k++) kinds.push(geodes.length && k % 2 ? 'geode' : 'art');
   let budget = area * (area < 30 ? .7 : .45);
   const pool = (entries, size, weight) => Object.fromEntries(entries.filter(([, o]) => { const [w, h] = size(o); return w <= COLS && h <= ROWS && w * h <= budget; }).map(([k, o]) => [k, weight(o)]));
   const known = k => !!S.bag.arts[k] || S.trip.finds.some(f => f.kind === 'art' && f.key === k);
@@ -2344,7 +2346,21 @@ function updateBucket() {
   const t = empty ? tr('Remplissage {s} s', { s: Math.ceil(left / 1000) }) : max > 1 ? tr('Prêt ×{n}', { n: S.bucketCharges }) : tr('Prêt');
   if (t !== lastB) { lastB = t; $('bucketSub').textContent = t; btn.classList.toggle('charging', empty); if (left <= 0 && lastB) {} }
 }
-function loop() { updateEnergy(); updateBucket(); requestAnimationFrame(loop); }
+/* Forced return: no energy, no bomb, no potion and nothing left to dig for free on this level
+   (dirt, bonus tiles, ice melting next to magma, a treasure to pick up) → back to the village with the loot */
+function isStuck() {
+  if (!has('pioche') || S.energy > 0 || S.bombs > 0 || S.potions > 0 || !S.grid || !S.rewards) return false;
+  if (S.rewards.every(r => r.found)) return false;   // level done: the player can still go down
+  if (S.rewards.some(r => r.found && r.taken !== true && r.taken !== 'left')) return false;
+  return !S.grid.some((c, i) => c.t === 'dirt' || freeTap(i));
+}
+let stuckT = null;
+function checkStuck() {
+  if (stuckT || $('scr-mine').hidden || [...document.querySelectorAll('.modal')].some(m => !m.hidden) || !isStuck()) return;
+  toast(tr(CFG.energie.texteRetourForce), 'warn'); sfx('deny');
+  stuckT = setTimeout(() => { stuckT = null; if (!$('scr-mine').hidden && isStuck()) openRecap(); }, 1800);
+}
+function loop() { updateEnergy(); updateBucket(); checkStuck(); requestAnimationFrame(loop); }
 
 /* ---------- Forge & shop ---------- */
 const pct = v => Math.round(v * 100) + (LANG === 'en' ? '%' : ' %');
@@ -2382,8 +2398,8 @@ const pay = cost => Object.entries(cost).forEach(([k, n]) => { if (k === 'coin')
 const priceHTML = cost => '<div class="price">' + Object.entries(cost).map(([k, n]) =>
   `<span class="${haveRes(k) < n ? 'short' : ''}">${n}${resArt(k)}</span>`).join('') + '</div>';
 const walletHTML = keys => keys.filter(k => k === 'coin' || has(ORE_UNLOCK[k]) || haveRes(k) > 0).map(k => `<span class="res" title="${k === 'coin' ? tr('Pièces') : ORES[k].name}">${resArt(k)}${haveRes(k)}</span>`).join('');
-// The watering-can upgrades only show once magma exists
-const UP_UNLOCK = { fast: 'magma', charges: 'magma' };
+// Some upgrades only show from their level on (config.js > progression > deblocages)
+const UP_UNLOCK = { fast: 'magma', charges: 'grandArrosoir', splash: 'coupEnEclats' };
 const upgradesShown = () => Object.entries(UPGRADES).filter(([k]) => !UP_UNLOCK[k] || has(UP_UNLOCK[k]));
 const anyUpgradeAffordable = () => upgradesShown().some(([k, u]) => upOpen(k) && canPay(u.cost[S.up[k]]));
 function renderForge() {

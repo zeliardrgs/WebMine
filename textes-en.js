@@ -457,4 +457,5 @@ window.TEXTES_EN = {
   "Refroidis {n} cases de magma": "Cool {n} magma cells",
   "Utilise {n} bombes": "Use {n} bombs",
   "Complète une collection": "Complete a collection",
+  "Plus d'énergie ! Retour au village avec ton butin.": "Out of energy! Back to the village with your loot.",
 };
