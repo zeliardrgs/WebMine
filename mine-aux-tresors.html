@@ -720,11 +720,10 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .descend-fx b{font-family:var(--font-display); font-weight:400; font-size:34px; color:#fff; letter-spacing:.02em;
   text-shadow:0 3px 0 #2b0a3d, 0 0 18px rgba(255,214,107,.55)}
 .descend-fx img{width:34px; height:34px; transform:rotate(180deg); filter:drop-shadow(0 3px 0 #2b0a3d)}
-.descend-fx img:nth-of-type(2){margin-top:-18px; opacity:.6}
 .descend-fx.on{animation:dfShow .95s ease both}
 .descend-fx.on img{animation:dfArrow .45s ease-in-out infinite alternate}
 @keyframes dfShow{0%{opacity:0; transform:translateY(-24px) scale(.85)} 22%{opacity:1; transform:none} 70%{opacity:1; transform:none} 100%{opacity:0; transform:translateY(26px)}}
-@keyframes dfArrow{to{transform:rotate(180deg) translateY(-6px)}}
+@keyframes dfArrow{from{transform:rotate(180deg) translateY(-4px)} to{transform:rotate(180deg) translateY(-12px)}}
 .chip.depth.bump b{animation:depthBump .45s cubic-bezier(.3,1.6,.5,1)}
 @keyframes depthBump{40%{transform:scale(1.45); color:#ffd36b}}
 
@@ -862,7 +861,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   </section>
 
   <main class="stage">
-    <div class="descend-fx" id="descendFx" hidden aria-hidden="true"><b id="descendFxTxt"></b><img src="Assets/Arrow_Up.png" alt="" draggable="false"><img src="Assets/Arrow_Up.png" alt="" draggable="false"></div>
+    <div class="descend-fx" id="descendFx" hidden aria-hidden="true"><b id="descendFxTxt"></b><img src="Assets/Arrow_Up.png" alt="" draggable="false"></div>
     <div class="frame">
       <div class="board" id="board">
         <div class="under" id="under"></div>
