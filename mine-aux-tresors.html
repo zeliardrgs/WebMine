@@ -1036,7 +1036,8 @@ const floorKind = level => { const k = baseKind(level); return k === 'treasure' 
 // A tutorial level is a tutorial only until the player has gone past it: replayed later (starting again from the top
 // of the mine or from a checkpoint), it is a normal level
 const isTuto = level => !!TUTO[level] && level >= (S.reached || 1);
-const levelDims = level => { const n = isTuto(level) ? 3 : gridRow(level).taille; return [n, n]; };
+// Treasure levels (10, 20, 30…) are one size bigger than the levels around them, the first time
+const levelDims = (level, kind) => { const n = isTuto(level) ? 3 : Math.min(MAX_COLS, gridRow(level).taille + (kind === 'treasure' ? RY.niveauTresor.tailleEnPlus || 0 : 0)); return [n, n]; };
 function setDims(cols, rows) {
   COLS = cols; ROWS = rows; N = cols * rows;
   document.documentElement.style.setProperty('--cols', cols);
@@ -1274,7 +1275,7 @@ function genLevel(level) {
   if (kind === 'treasure') (S.treasureDone = S.treasureDone || {})[level] = true;
 }
 function genLevelOnce(level, kindArg) {
-  const [cols, rows] = levelDims(level);
+  const [cols, rows] = levelDims(level, kindArg || floorKind(level));
   setDims(cols, rows); S.cols = cols; S.rows = rows;
   S.tuto = isTuto(level) ? level : 0;
   if (S.tuto) return genTutorial(level, TUTO[level]);
@@ -1296,7 +1297,7 @@ function genLevelOnce(level, kindArg) {
   if (at(level, 'magma')) blob(Math.max(1, Math.round(Math.min(1 + Math.floor(lv / 2), 4) * scale * Math.min(D, 1.3))) + (special(level, 'magmaChaine') ? SP.magmaChaine.magmaEnPlus : 0), .7 * small, 1.5 * small, i => g[i].t = 'magma');
   const ores = Object.fromEntries(Object.entries(ORES).filter(([k]) => at(level, ORE_UNLOCK[k])).map(([k, o]) => [k, o.w]));
   for (const c of g) {
-    if (c.t === 'stone' && Object.keys(ores).length && Math.random() < (kind === 'treasure' ? RY.niveauTresor.chanceMinerai : CFG.mine.chanceMinerai)) { c.t = 'ore'; c.ore = pick(ores); }
+    if (c.t === 'stone' && Object.keys(ores).length && Math.random() < (kind === 'treasure' ? RY.niveauTresor.chanceMinerai : gridRow(level).chanceMinerai ?? CFG.mine.chanceMinerai)) { c.t = 'ore'; c.ore = pick(ores); }
     if (HP[c.t]) c.hp = c.max = HP[c.t];
   }
   addSpecials(g, level, kind === 'guardian' ? RY.niveauGardien.casesDuBiomeEnPlus : 1);
@@ -1304,7 +1305,9 @@ function genLevelOnce(level, kindArg) {
   if (kind === 'guardian' && at(level, 'pierreDure')) g.forEach((c, i) => { if (c.t === 'stone' && Math.random() < RY.niveauGardien.partPierreDure) g[i] = tileOf('hard'); });
   // Treasure level: piles of coins to scoop up with the shovel
   const free = () => g.map((c, i) => c.t !== 'magma' && c.t !== 'stump' && c.t !== 'root' && c.t !== 'coins' ? i : -1).filter(i => i >= 0);
-  if (kind === 'treasure') for (let n = randInt(...RY.niveauTresor.tasDePieces), list = free(); n > 0 && list.length; n--) g[list.splice(randInt(0, list.length - 1), 1)[0]] = tileOf('coins');
+  // Treasure level: many piles; bigger grids also hold a few (config.js > progression > grilles > tasDePieces)
+  const piles = kind === 'treasure' ? RY.niveauTresor.tasDePieces : gridRow(level).tasDePieces;
+  if (piles) for (let n = randInt(...piles), list = free(); n > 0 && list.length; n--) g[list.splice(randInt(0, list.length - 1), 1)[0]] = tileOf('coins');
   // Level 1000: the King's chest in the middle (until it has been opened)
   const reserved = [];
   if (kind === 'king' && !S.kingOpened) { const mid = (ROWS >> 1) * COLS + (COLS >> 1); g[mid] = tileOf('king'); reserved.push(mid); }
@@ -1602,8 +1605,12 @@ const COACH_FIND = {
 };
 function levelCoach() {
   const lv = S.level, t = TUTO[lv];
-  // Level 1: swipe to dig
-  if (lv === 1 && !S.tutoSeen.creuser) {
+  // Level 1 (a single tile): tap to dig; level 2 (2×2): swipe to dig
+  if (lv === 1 && !S.tutoSeen.toucher) {
+    const dirt = () => S.grid.filter(c => c.t === 'dirt').length, n0 = dirt();
+    startCoach('toucher', [toolStep('shovel'), { text: TX.toucher, target: () => tileEls[0], done: () => dirt() < n0 }], true);
+  }
+  if (lv === 2 && !S.tutoSeen.creuser) {
     const dirt = () => S.grid.filter(c => c.t === 'dirt').length, n0 = dirt(), row = (ROWS >> 1) * COLS;
     startCoach('creuser', [toolStep('shovel'), { text: TX.creuser, target: () => tileEls[row], to: () => tileEls[row + COLS - 1], done: () => dirt() < n0 }], true);
   }
@@ -2006,7 +2013,7 @@ function breakCell(i) {
     giveBonus(i, t === 'chest' ? 'coffre' : 'mystere');
   }
   if (t === 'coins') {
-    // Coin pile of a treasure level, worth more in deeper biomes
+    // Coin pile (treasure levels and big grids), worth more in deeper biomes
     const T = RY.niveauTresor, n = Math.round(randInt(...T.piecesParTas) * (1 + T.bonusParBiome * (biomeOf(S.level) - 1)));
     S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
     sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 14, { spread: 34, up: 16, size: [3, 7] });
@@ -2045,7 +2052,7 @@ function giveBonus(i, kind) {
     if (g === 'potion' && !has('potions')) g = 'pieces';
     if (g === 'geode') {
       const geos = Object.fromEntries(geodesAt(S.level).map(([k, o]) => [k, o.w]));
-      if (Object.keys(geos).length && S.trip.finds.length < bagCap()) {
+      if (Object.keys(geos).length && roomFor('geode')) {
         const k = pick(geos); S.trip.finds.push({ kind: 'geode', key: k }); updateBadge(); lines.push(GEODES[k].name); continue;
       }
       g = 'pieces';
@@ -2163,7 +2170,7 @@ function takeReward(ri) {
 // Treasures found while the bag is full wait here, one choice at a time
 const bagQueue = [];
 function collect(rw, ri) {
-  if (S.trip.finds.length >= bagCap()) {
+  if (!roomFor(rw.kind)) {
     // Bag full: a duplicate simply stays on the ground; a new discovery asks to swap with a duplicate of the bag
     if (isDuplicate(rw.kind, rw.key)) return leaveDuplicate(rw, ri);
     bagQueue.push([rw, ri]); if (bagQueue.length === 1) askBagFull(); return;
@@ -2191,7 +2198,9 @@ function bagWorth(f) {
   return inMuseum(f.kind, f.key) ? findValue(f.kind, f.key) : PRIME[r] + SALE[r];
 }
 const cheapestInBag = () => {
-  const idx = S.trip.finds.map((f, i) => i), dupes = idx.filter(bagItemIsDupe), pool = dupes.length ? dupes : idx;
+  const pocketOnly = geodesInBag() <= geoPocket();
+  const idx = S.trip.finds.map((f, i) => i).filter(i => !(pocketOnly && S.trip.finds[i].kind === 'geode'));
+  const all = idx.length ? idx : S.trip.finds.map((f, i) => i), dupes = all.filter(bagItemIsDupe), pool = dupes.length ? dupes : all;
   return pool.reduce((best, i) => best < 0 || bagWorth(S.trip.finds[i]) < bagWorth(S.trip.finds[best]) ? i : best, -1);
 };
 function askBagFull() {
@@ -2252,8 +2261,9 @@ function openBagView() {
   renderCons();
   // During the bomb tutorial, open straight on the consumables
   bagTab(coachStep() && coachStep().cons && !$('bagTabs').hidden ? 'cons' : 'items');
-  const n = S.trip.finds.length, cap = bagCap(), free = cap - n;
-  $('bagViewText').textContent = tr('{n} / {cap} cases utilisées', { n, cap }) + ' · ' + (free > 0 ? tr(plural(free, '{n} place libre', '{n} places libres'), { n: free }) : tr('sac plein'));
+  const n = bagUsed(), cap = bagCap(), free = cap - n, gp = geoPocket();
+  $('bagViewText').textContent = tr('{n} / {cap} cases utilisées', { n, cap }) + ' · ' + (free > 0 ? tr(plural(free, '{n} place libre', '{n} places libres'), { n: free }) : tr('sac plein'))
+    + (gp ? ' · ' + tr('poche à géodes {a} / {b}', { a: Math.min(geodesInBag(), gp), b: gp }) : '');
   $('bagViewList').innerHTML = n
     ? S.trip.finds.map(f => `<div class="bf-item static">${findArt(f.kind, f.key)}<b>${rarName(findName(f.kind, f.key), rarityOfFind(f.kind, f.key))}</b>${f.kind !== 'geode' && !inMuseum(f.kind, f.key) ? `<span class="tagnew">${tr('Nouveau')}</span>` : ''}</div>`).join('')
     : `<p class="bv-empty" style="grid-column:1 / -1">${tr('Ton sac est vide pour l\'instant.')}</p>`;
@@ -2286,7 +2296,7 @@ function pickUp(rw, ri) {
   // The bag appears with the very first treasure picked up
   if (!S.bagSeen) { S.bagSeen = true; applyUnlocks(); }
   // The first time it gets full: a short tutorial pointing at "go back up" (shown once)
-  if (S.trip.finds.length >= bagCap())
+  if (bagFull())
     startCoach('sacPlein', [{ text: TX.sacPlein, target: () => $('upBtn'), done: () => $('scr-mine').hidden || !$('recapModal').hidden }]);
   updateBadge();
   sfx('reward');
@@ -2420,9 +2430,14 @@ function renderShopScreen() {
   S.shopSeen = S.shopSeen || {}; SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; });
   $('shopWallet').innerHTML = walletHTML(['coin']);
   const lvl = S.bagLvl, next = BAG_UP[lvl], later = next && (next.biome || 1) > curBiome();
+  // The next upgrade shows its own name: more slots, or a bigger geode pocket
+  const nowTxt = tr('{a} cases', { a: bagCap() }) + (geoPocket() ? ' · ' + tr('poche à géodes {b}', { b: geoPocket() }) : '');
+  const nextTxt = !next || later ? nowTxt : next.geodes != null
+    ? (next.geodes > 1 ? tr('Poche à géodes : {a} → {b} géodes sans prendre de case', { a: geoPocket(), b: next.geodes }) : tr('Poche à géodes : 1 géode sans prendre de case'))
+    : tr('{a} → {b} cases', { a: bagCap(), b: next.cases });
   const bagRow = `<div class="srow"><div class="sic">${img('Assets/Bag.png')}<i>${bagCap()}</i></div>
-      <div class="stxt"><b>${tr('Agrandir le sac')}</b><span>${next && !later ? tr('{a} → {b} cases', { a: bagCap(), b: next.cases }) : tr('{a} cases', { a: bagCap() })}</span><span class="pips">${pipsHTML(lvl, BAG_UP.map(b => ({ biome: b.biome || 1 })))}</span></div>
-      <div class="sbuy">${later ? LATER : next ? priceHTML({ coin: next.pieces }) + `<button class="btn sm" data-bagup="1" ${canPay({ coin: next.pieces }) ? '' : 'disabled'}>${tr('Agrandir')}</button>` : '<span class="maxed">Max</span>'}</div></div>`;
+      <div class="stxt"><b>${next && !later ? tr(next.nom || 'Agrandir le sac') : tr('Sac')}</b><span>${nextTxt}</span><span class="pips">${pipsHTML(lvl, BAG_UP.map(b => ({ biome: b.biome || 1 })))}</span></div>
+      <div class="sbuy">${later ? LATER : next ? priceHTML({ coin: next.pieces }) + `<button class="btn sm" data-bagup="1" ${canPay({ coin: next.pieces }) ? '' : 'disabled'}>${tr('Acheter')}</button>` : '<span class="maxed">Max</span>'}</div></div>`;
   $('conList').innerHTML = bagRow + Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k])).map(([k, c]) =>
     `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
       <div class="stxt"><b>${c.name}</b><span>${c.desc}</span></div>
@@ -2432,7 +2447,7 @@ document.addEventListener('click', e => {
   const u = e.target.closest('button[data-bagup]'); if (!u || u.disabled) return;
   const next = BAG_UP[S.bagLvl]; if (!next || (next.biome || 1) > curBiome() || !canPay({ coin: next.pieces })) return;
   pay({ coin: next.pieces }); S.bagLvl++;
-  toast(tr('Sac agrandi : {n} cases !', { n: bagCap() }), 'good'); sfx('reward');
+  toast(next.geodes != null ? tr(plural(geoPocket(), 'Poche à géodes : {n} géode sans prendre de case !', 'Poche à géodes : {n} géodes sans prendre de case !'), { n: geoPocket() }) : tr('Sac agrandi : {n} cases !', { n: bagCap() }), 'good'); sfx('reward');
   renderShopScreen(); updateBadge(); save();
 });
 document.addEventListener('click', e => {
@@ -2496,8 +2511,17 @@ document.addEventListener('click', e => {
   unlockAudio(); sfx('pick'); go(b.dataset.go);
 });
 /* Backpack: treasures and geodes found during an expedition take one slot each (ores don't) */
+/* Bag upgrades (config.js > sac > agrandissements), bought in order: some add slots ("cases"),
+   others a geode pocket ("geodes": that many geodes take no slot) */
 const BAG_UP = CFG.sac.agrandissements;
-const bagCap = () => S.bagLvl > 0 ? BAG_UP[Math.min(S.bagLvl, BAG_UP.length) - 1].cases : CFG.sac.casesDepart;
+const lastBagStep = key => BAG_UP.slice(0, S.bagLvl).filter(b => b[key] != null).pop();
+const bagCap = () => (lastBagStep('cases') || { cases: CFG.sac.casesDepart }).cases;
+const geoPocket = () => (lastBagStep('geodes') || { geodes: 0 }).geodes;
+const geodesInBag = () => S.trip.finds.filter(f => f.kind === 'geode').length;
+// Slots used: geodes in the pocket don't count
+const bagUsed = () => S.trip.finds.length - Math.min(geodesInBag(), geoPocket());
+const bagFull = () => bagUsed() >= bagCap();
+const roomFor = kind => !bagFull() || (kind === 'geode' && geodesInBag() < geoPocket());
 // Coins picked up in the mine fly from the cell to the bag block
 function flyCoins(i, n) {
   const b = board.getBoundingClientRect(), t = ts(), dst = $('bagPill').getBoundingClientRect();
@@ -2521,7 +2545,7 @@ function flyCoins(i, n) {
   }
 }
 function updateBadge() {
-  const n = S.trip.finds.length, cap = bagCap();
+  const n = bagUsed(), cap = bagCap();
   const coins = S.trip.coins || 0;
   $('bagTxt').innerHTML = tr('Sac {n}/{cap}', { n, cap }) + (coins ? ` · ${coins} ${COIN}` : '');
   $('bagPill').classList.toggle('full', n >= cap);
@@ -3143,7 +3167,7 @@ $('mine2Up').addEventListener('click', () => { $('mine2Modal').hidden = true; op
 // A full bag or little energy left: ask before going down
 function tryDescend() {
   if (S.level >= 1000) { S.mine2 = true; save(); $('mine2Modal').hidden = false; $('mine2Up').focus(); return; }
-  const full = S.bagSeen && S.trip.finds.length >= bagCap(), low = has('pioche') && S.energy <= CFG.energie.alerteDescente;
+  const full = S.bagSeen && bagFull(), low = has('pioche') && S.energy <= CFG.energie.alerteDescente;
   if (!full && !low) return descend();
   // Warning laid out like the mockup: the miner (loaded down or worn out), a short title and sentence, then the bag / energy count
   $('descendArt').innerHTML = img(full ? 'Assets/Characters/Miner_BagFull.png' : 'Assets/Characters/Miner_Tired.png');
@@ -3154,7 +3178,7 @@ function tryDescend() {
     : CFG.energie.rechargeAuVillage ? tr('Attention, il te reste peu d\'énergie : remonte au village pour recharger.') : tr('Attention, il te reste peu d\'énergie.');
   const stat = (icon, txt) => `<div class="dw-stat">${img(icon)}<span>${txt}</span></div>`;
   $('descendStats').className = 'dw-stats' + (full && low ? ' two' : '');
-  $('descendStats').innerHTML = (full ? stat('Assets/Bag.png', `${S.trip.finds.length} / ${bagCap()}`) : '') + (low ? stat('Assets/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
+  $('descendStats').innerHTML = (full ? stat('Assets/Bag.png', `${bagUsed()} / ${bagCap()}`) : '') + (low ? stat('Assets/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
   sfx('deny'); $('descendModal').hidden = false; $('descendUp').focus();
 }
 function descend() {
@@ -3217,7 +3241,7 @@ function start(data) {
   if (saved && !saved.bagV2) {
     // Before: 4 slots, then 6, 8, 10, 12, 14… Keep at least the size the player had
     const OLD = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], had = S.bagLvl > 0 ? OLD[Math.min(S.bagLvl, OLD.length) - 1] : 4;
-    S.bagLvl = BAG_UP.filter(b => b.cases <= had).length;
+    S.bagLvl = BAG_UP.reduce((l, b, i) => b.cases != null && b.cases <= had ? i + 1 : l, 0);
   }
   S.bagV2 = true;
   // Saves from before: the bag and the shop articles already met are known

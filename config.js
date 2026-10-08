@@ -89,23 +89,27 @@ window.CONFIG = {
     // Le sac apparaît avec le premier trésor ramassé. La première fois qu'il est plein,
     // un petit tutoriel montre le bouton Remonter (texte : progression > textesTuto > sacPlein)
 
-    // Agrandissements achetables à la Boutique, dans l'ordre :
-    // "cases" = taille du sac après l'achat, "pieces" = prix,
-    // "biome" = à partir de quel biome atteint cet agrandissement est proposé
+    // Améliorations du sac à la Boutique, achetées dans l'ordre. Deux sortes :
+    // - "cases" = taille du sac après l'achat ;
+    // - "geodes" = poche à géodes : ce nombre de géodes ne prend pas de case dans le sac.
+    // "nom" = nom affiché à la Boutique, "pieces" = prix,
+    // "biome" = à partir de quel biome atteint cette amélioration est proposée.
     agrandissements: [
-      { biome: 1, cases: 5, pieces: 100 },
-      { biome: 1, cases: 6, pieces: 200 },
-      { biome: 1, cases: 8, pieces: 350 },
-      { biome: 2, cases: 10, pieces: 600 },
-      { biome: 2, cases: 12, pieces: 900 },
-      { biome: 3, cases: 14, pieces: 1300 },
-      { biome: 4, cases: 16, pieces: 1800 },
-      { biome: 5, cases: 18, pieces: 2400 },
-      { biome: 6, cases: 20, pieces: 3000 },
-      { biome: 7, cases: 22, pieces: 3800 },
-      { biome: 8, cases: 24, pieces: 4600 },
-      { biome: 9, cases: 26, pieces: 5500 },
-      { biome: 10, cases: 28, pieces: 6500 },
+      { biome: 1,  cases: 5,  pieces: 150,  nom: "Poche cousue" },
+      { biome: 1,  geodes: 1, pieces: 250,  nom: "Poche à géodes" },
+      { biome: 1,  cases: 6,  pieces: 400,  nom: "Sac renforcé" },
+      { biome: 2,  cases: 8,  pieces: 700,  nom: "Sac en cuir" },
+      { biome: 2,  geodes: 2, pieces: 900,  nom: "Grande poche à géodes" },
+      { biome: 3,  cases: 10, pieces: 1300, nom: "Sac de mineur" },
+      { biome: 4,  cases: 12, pieces: 1800, nom: "Sac à soufflets" },
+      { biome: 4,  geodes: 3, pieces: 2000, nom: "Poche à géodes doublée" },
+      { biome: 5,  cases: 14, pieces: 2400, nom: "Sac d'explorateur" },
+      { biome: 6,  cases: 16, pieces: 3000, nom: "Sac d'expédition" },
+      { biome: 7,  cases: 18, pieces: 3800, nom: "Sac des profondeurs" },
+      { biome: 7,  geodes: 4, pieces: 4000, nom: "Coffret à géodes" },
+      { biome: 8,  cases: 20, pieces: 4600, nom: "Sac de cristal" },
+      { biome: 9,  cases: 22, pieces: 5500, nom: "Sac royal" },
+      { biome: 10, cases: 24, pieces: 6500, nom: "Sac du Roi Mineur" },
     ],
   },
 
@@ -208,13 +212,18 @@ window.CONFIG = {
 
     // Taille de la grille (carrée) et nombre de trésors, selon le niveau.
     // "depuis" = premier niveau concerné ; "tresors" = [minimum, maximum].
+    // La grille grandit avec la profondeur : 1 case au niveau 1, puis 2×2, 3×3… jusqu'à 7×7.
+    // Les trésors restent rares : les grandes grilles sont plus riches en minerai et en tas de pièces
+    // (qui ne prennent pas de place dans le sac). "chanceMinerai" remplace mine > chanceMinerai ;
+    // "tasDePieces" = [minimum, maximum] de tas de pièces sur un étage normal.
     grilles: [
-      { depuis: 1,   taille: 3, tresors: [1, 1] },
-      { depuis: 7,   taille: 4, tresors: [1, 1] },
-      { depuis: 41,  taille: 5, tresors: [1, 1] },
-      { depuis: 51,  taille: 5, tresors: [2, 2] },
-      { depuis: 201, taille: 6, tresors: [2, 3] },
-      { depuis: 501, taille: 7, tresors: [3, 3] },
+      { depuis: 1,   taille: 1, tresors: [1, 1] },
+      { depuis: 2,   taille: 2, tresors: [1, 1] },
+      { depuis: 6,   taille: 3, tresors: [1, 1] },
+      { depuis: 16,  taille: 4, tresors: [1, 1], tasDePieces: [0, 1] },
+      { depuis: 51,  taille: 5, tresors: [2, 2], tasDePieces: [1, 1], chanceMinerai: 0.30 },
+      { depuis: 251, taille: 6, tresors: [2, 3], tasDePieces: [1, 2], chanceMinerai: 0.33 },
+      { depuis: 501, taille: 7, tresors: [3, 3], tasDePieces: [2, 2], chanceMinerai: 0.36 },
     ],
 
     // Niveaux tutoriels : grille 3×3, une seule nouveauté. Une main animée montre quoi faire,
@@ -251,7 +260,8 @@ window.CONFIG = {
     // Textes des autres tutoriels (une phrase très courte, 8 mots maximum).
     // Chaque tutoriel montre une main animée et disparaît dès que le joueur fait l'action.
     textesTuto: {
-      creuser: "Glisse pour creuser",                 // niveau 1
+      toucher: "Touche la terre pour creuser",        // niveau 1 (une seule case)
+      creuser: "Glisse pour creuser",                 // niveau 2 (première grille 2×2)
       tresor: "Touche le trésor pour le ramasser",    // le 1er trésor dégagé
       sacPlein: "Sac plein ! Remonte au village",     // la 1re fois que le sac est plein
       ouvrirSac: "Ouvre ton sac",                     // tutoriels de la bombe
@@ -276,6 +286,7 @@ window.CONFIG = {
 
     // Niveau trésor (10, 20, 30…) : rempli de minerai et de tas de pièces
     niveauTresor: {
+      tailleEnPlus: 1,             // la grille est plus grande d'un cran (7×7 maximum), la première fois
       chanceMinerai: 0.75,         // chance qu'une pierre contienne du minerai (au lieu de 0.26)
       tasDePieces: [3, 5],         // nombre de tas de pièces (un coup de pelle pour les ramasser)
       piecesParTas: [6, 12],       // pièces dans chaque tas
