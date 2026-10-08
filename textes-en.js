@@ -126,11 +126,16 @@ window.TEXTES_EN = {
   "⛺ Camp de biome débloqué (niveau {n}) !": "⛺ Biome camp unlocked (level {n})!",
 
   /* ---------- Descendre ---------- */
-  "Es-tu sûr de vouloir descendre ?": "Are you sure you want to go down?",
-  "Oui, descendre": "Yes, go down",
+  "Sac plein, peu d'énergie": "Full bag, low energy",
+  "Sac plein": "Full bag",
+  "Peu d'énergie": "Low energy",
+  "Attention, ton sac est plein et il te reste peu d'énergie.": "Careful, your bag is full and you're low on energy.",
+  "Attention, ton sac est plein : tu ne pourras plus récupérer de trésors.": "Careful, your bag is full: you won't be able to pick up more treasures.",
+  "Attention, il te reste peu d'énergie : remonte au village pour recharger.": "Careful, you're low on energy: go back to the village to recharge.",
+  "Attention, il te reste peu d'énergie.": "Careful, you're low on energy.",
+  "Remonter": "Go back up",
+  "Descendre quand même": "Go down anyway",
   "Rester ici": "Stay here",
-  "Ton sac est plein ({n}/{cap}) : les prochains trésors devront remplacer ceux que tu portes.": "Your bag is full ({n}/{cap}): the next treasures will have to replace the ones you carry.",
-  "Il ne te reste que {n} énergie.": "You only have {n} energy left.",
 
   /* ---------- Sac ---------- */
   "Mon sac": "My bag",
