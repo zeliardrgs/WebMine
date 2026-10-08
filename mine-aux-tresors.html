@@ -407,6 +407,14 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .scr-head h1{flex:1; font-size:30px; min-width:0}
 .back{border:0; border-radius:14px; padding:8px 12px; background:var(--panel); color:var(--ink); font-family:var(--font-display); font-size:15px; box-shadow:0 4px 0 var(--panel-edge); cursor:pointer}
 .back:active{transform:translateY(2px); box-shadow:0 2px 0 var(--panel-edge)}
+/* Back button: bottom left, within thumb reach (just above the navigation bar when it is shown) */
+.scr-head .back{position:fixed; z-index:41; left:max(16px, calc(50% - 224px)); bottom:calc(env(safe-area-inset-bottom, 0px) + 16px);
+  min-height:52px; padding:10px 18px; border-radius:18px; font-size:17px; box-shadow:0 5px 0 var(--panel-edge), 0 8px 18px rgba(0,0,0,.35)}
+.scr-head .back:active{box-shadow:0 2px 0 var(--panel-edge), 0 4px 10px rgba(0,0,0,.3)}
+body.nav-on .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 14px)}
+/* Room at the bottom of the page so the button never hides its end */
+.screen:has(.scr-head .back){padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 90px)}
+body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 90px)}
 .card.flat{width:100%; max-height:none; overflow:visible; animation:none; flex:none}
 .card.flat > p:first-child{margin-top:0}
 .item .tag{margin-top:2px}
