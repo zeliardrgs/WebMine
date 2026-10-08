@@ -17,7 +17,7 @@
 <link rel="preload" as="image" href="Assets/Tools/Radar.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Nunito:wght@700;800;900&display=swap">
 <style>
 /* Layout: one-screen game that fills the viewport — HUD, treasure strip, timber-framed mine grid sized by script to the space left, thumb-reach tool dock. Landscape phones put the board on the left. */
 :root{
@@ -26,7 +26,7 @@
   --sun:#ffc23d; --sun-edge:#c98a12; --mint:#35d49a; --lava:#ff5b2e; --water:#3db5ff;
   --wood:#a86a34; --wood-dark:#5b3214; --ground:#3b2416;
   --rar-common:#1f9a4a; --rar-rare:#2670d6; --rar-epic:#8d42cc; --rar-legendary:#e27a0c;
-  --font-display:'Lilita One','Trebuchet MS',system-ui,sans-serif;
+  --font-display:'Fredoka','Trebuchet MS',system-ui,sans-serif;   /* only the bold weight is loaded, so every title uses it */
   --font-body:'Nunito',system-ui,sans-serif;
   --tile:min(calc((100vw - 52px) / 7), calc((100vh - 352px) / 10), 58px); /* fallback, refined by fitBoard() */
   color-scheme:dark;
@@ -391,18 +391,6 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 
 /* Recap */
 .recap{text-align:center}
-/* Loot grid of the return screen */
-.loot-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(76px, 1fr)); gap:10px 8px; margin-top:14px}
-.lt{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 4px 6px; border-radius:14px; background:#fff; box-shadow:0 3px 0 #ecd3a8;
-  animation:ltIn .35s ease-out backwards}
-.lt img{width:46px; height:46px; object-fit:contain}
-.lt-nm{font-size:10px; font-weight:800; line-height:1.1; text-align:center}
-.lt-n{position:absolute; right:4px; top:34px; min-width:22px; padding:1px 5px; box-sizing:border-box; border-radius:9px; background:var(--ink); color:#fff;
-  font-style:normal; font-family:var(--font-display); font-size:13px}
-.lt-new{position:absolute; top:-8px; left:50%; transform:translateX(-50%); padding:1px 7px; border-radius:8px; background:#1fae7a; color:#fff;
-  font-size:10px; font-weight:900; white-space:nowrap; box-shadow:0 2px 0 #0f6b47}
-.lt.ore b{font-family:var(--font-display); font-weight:400; font-size:17px; line-height:1.1}
-.lt.ore{background:#fff8ea}
 @keyframes ltIn{from{transform:scale(.6); opacity:0}}
 .recap-total{font-size:28px}
 /* A new building appearing in the village */
@@ -436,6 +424,46 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .recap-total{margin-top:14px; display:flex; align-items:center; justify-content:center; gap:6px; font-family:var(--font-display); font-size:22px}
 .recap-total img{width:30px; height:30px; object-fit:contain}
 .recap-actions{display:grid; gap:4px}
+/* End of expedition, over the darkened mine — a parchment with a purple ribbon, the loot sorted into Ores / Geodes / Artefacts
+   (tiles coloured by rarity, big counts), two buttons below. Sizes follow the mockup, in cqw (1cqw = 1% of the screen width):
+   the parchment only takes the height of its content. */
+.modal.xp-screen{place-items:stretch; padding:0; background:rgba(16,8,26,.78)}
+/* Width of the layout: the mockup's proportions (923×2000) are kept, so on a shorter screen everything shrinks instead of filling the height */
+.xp{--xpw:min(480px, 100vw, 43dvh); container-type:inline-size; display:flex; flex-direction:column; justify-content:center; width:var(--xpw); height:100%; margin:0 auto; box-sizing:border-box;
+  padding:calc(env(safe-area-inset-top, 0px) + var(--xpw) * .09) 0 calc(env(safe-area-inset-bottom, 0px) + var(--xpw) * .04); color:#fff; text-align:center}
+.xp-paper{position:relative; flex:0 1 auto; min-height:0; display:flex; flex-direction:column; margin:0 6cqw; padding:10cqw 3cqw 5cqw; border:3px solid #6e5546; border-radius:2.6cqw;
+  background:#ecc59f; box-shadow:0 1cqw 0 rgba(0,0,0,.25); animation:popin .35s cubic-bezier(.3,1.5,.5,1)}
+.xp-out{font-family:var(--font-display); font-weight:400; color:var(--ink)}   /* same type style as the rest of the game */
+.xp-ribbon{position:absolute; left:50%; top:-6.5cqw; transform:translateX(-50%); width:64cqw; box-sizing:border-box; margin:0; padding:3px; background:#2b1a12;
+  clip-path:polygon(4cqw 0, calc(100% - 4cqw) 0, 100% 50%, calc(100% - 4cqw) 100%, 4cqw 100%, 0 50%)}
+.xp-ribbon span{display:flex; align-items:center; justify-content:center; height:12cqw; padding:0 5cqw; white-space:nowrap; background:#77718f; box-shadow:inset 0 0 0 .8cqw #c9b6f2;
+  font-size:4.9cqw; line-height:1; color:#fff; text-shadow:0 2px 0 rgba(0,0,0,.3); clip-path:polygon(3.6cqw 0, calc(100% - 3.6cqw) 0, 100% 50%, calc(100% - 3.6cqw) 100%, 3.6cqw 100%, 0 50%)}
+.xp-level{display:flex; flex-direction:column; justify-content:center; align-items:center; gap:.8cqw; min-height:15cqw; box-sizing:border-box; padding:2cqw; border-radius:1.8cqw; background:#e3a979; margin:0 1cqw}
+.xp-level b{font-size:5.3cqw; line-height:1}
+.xp-level span{font-size:4.4cqw; line-height:1; color:#7d3c98}
+.xp-body{flex:0 1 auto; min-height:0; overflow-y:auto; margin:0 -2cqw; padding:0 2cqw 1cqw}
+.xp-sec{display:flex; align-items:center; gap:2.6cqw; margin:4cqw 0 2.6cqw; font-size:4.1cqw; line-height:1.2}
+.xp-sec::before,.xp-sec::after{content:""; flex:1; height:.5cqw; border-radius:.25cqw; background:#dfa77c}
+.xp-tiles{display:flex; flex-wrap:wrap; justify-content:center; gap:2cqw}
+.xp-tile{position:relative; width:18.4cqw; aspect-ratio:1; box-sizing:border-box; display:grid; place-items:center; border:3px solid #9a7a62; border-radius:2.2cqw; background:linear-gradient(#f8ece3, #efdccf);
+  box-shadow:inset 0 0 0 .6cqw rgba(255,255,255,.6); animation:ltIn .35s ease-out backwards}
+.xp-tile img{width:64%; height:64%; object-fit:contain; margin-bottom:10%}
+.xp-tile.common{border-color:#22a33a; background:linear-gradient(#d2ee9e, #b9df84)}
+.xp-tile.rare{border-color:#1d9ccb; background:linear-gradient(#a8ebf2, #78d3e6)}
+.xp-tile.epic{border-color:#a23fc4; background:linear-gradient(#f3c0f6, #df9aef)}
+.xp-tile.legendary{border-color:#ee9b10; background:linear-gradient(#fff0b6, #ffe08a)}
+.xp-n{position:absolute; right:1cqw; bottom:.6cqw; font-size:4.2cqw; line-height:1; font-variant-numeric:tabular-nums; text-shadow:0 0 3px #fff, 0 0 3px #fff}
+.xp-new{position:absolute; top:-2.4cqw; right:-1.6cqw; z-index:1; display:flex; align-items:center; gap:.5cqw; padding:.3cqw 1.6cqw .5cqw 1.2cqw; border:2px solid #fff; border-radius:3cqw;
+  background:#f0384f; color:#fff; font-family:var(--font-display); font-size:2.7cqw; line-height:1.1; transform:rotate(5deg); box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.xp-new::before{content:"✦"; font-size:2.5cqw}
+.xp-empty{margin:6cqw 2cqw 2cqw; font-size:3.6cqw; line-height:1.4; color:#7a4e30}
+.xp-actions{display:flex; gap:2.7cqw; flex:none; margin:3.8cqw 6.5cqw 0}
+/* Same look as the game's .btn (ink text, coloured body, solid bottom edge), in blue and gold */
+.xp-btn{flex:1; min-height:15cqw; padding:2cqw; border:0; border-radius:16px; cursor:pointer; color:var(--ink); font-family:var(--font-display); font-weight:400; font-size:5cqw; line-height:1.05;
+  background:var(--sun); box-shadow:0 5px 0 var(--sun-edge), 0 10px 18px rgba(0,0,0,.35)}
+.xp-btn.blue{background:#7cd0ff; box-shadow:0 5px 0 #2f8ed6, 0 10px 18px rgba(0,0,0,.35)}
+.xp-btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--sun-edge)}
+.xp-btn.blue:active{box-shadow:0 2px 0 #2f8ed6}
 
 /* Atelier: a phone-shaped scene (the background art is 1282×2778) kept whole and centred; everything is placed
    in % of the scene so the geode always sits on the painted anvil. Outside the scene, the same art blurred. */
@@ -703,6 +731,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   .t-magma,.t-magma::before,.o-gold{animation:none}
   .card,.board.enter,.rw.done{animation:none}
 }
+
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -848,15 +877,16 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   </div>
 </div>
 
-<div class="modal" id="recapModal" hidden>
-  <div class="card recap" role="dialog" aria-labelledby="recapTitle">
-    <h2 id="recapTitle">Retour à la surface</h2>
-    <p id="recapText"></p>
-    <div class="loot-grid" id="recapGrid"></div>
-    <div class="recap-total" id="recapTotal"></div>
-    <div class="recap-actions">
-      <button class="btn big" id="recapAtelier">Ouvrir mes géodes à l'atelier</button>
-      <button class="btn big ghosty" id="recapVillage">Aller au village</button>
+<div class="modal xp-screen" id="recapModal" hidden>
+  <div class="xp" role="dialog" aria-labelledby="recapTitle">
+    <div class="xp-paper">
+      <h2 class="xp-ribbon" id="recapTitle"><span class="xp-out">Fin de l'expédition</span></h2>
+      <div class="xp-level"><b class="xp-out" id="recapLevel"></b><span class="xp-out" id="recapCp" hidden>Nouveau checkpoint !</span></div>
+      <div class="xp-body" id="recapBody"></div>
+    </div>
+    <div class="xp-actions">
+      <button class="xp-btn blue" id="recapVillage">Retour à la surface</button>
+      <button class="xp-btn" id="recapAtelier">Ouvrir les géodes</button>
     </div>
   </div>
 </div>
@@ -2768,30 +2798,34 @@ function openRecap() {
     const g = groups.find(x => x.kind === r.kind && x.key === r.key);
     if (g) { g.n++; g.isNew = g.isNew || r.tag === 'new'; } else groups.push({ kind: r.kind, key: r.key, art: r.art, name: r.name, n: 1, isNew: r.tag === 'new' });
   }
-  const oreList = Object.keys(ORES).filter(k => T.ores[k]);
-  const cells = groups.map(g => `<div class="lt">${g.art}${g.isNew ? `<span class="lt-new">${tr('Nouveau')}</span>` : ''}${g.n > 1 ? `<i class="lt-n">×${g.n}</i>` : ''}<span class="lt-nm">${rarName(g.name, rarityOfFind(g.kind, g.key))}</span></div>`)
-    .concat(oreList.map(k => `<div class="lt ore">${resArt(k)}<b>+${T.ores[k]}</b><span class="lt-nm">${ORES[k].name}</span></div>`));
-  cells.forEach((h, i) => cells[i] = h.replace('<div class="lt', `<div style="animation-delay:${i * 60}ms" class="lt`));
-  $('recapText').textContent = cells.length || total ? tr('Ton butin du niveau {n}', { n: S.level }) : tr('Tu remontes les mains vides cette fois. Ton niveau t\'attend !');
-  $('recapGrid').innerHTML = cells.join('');
+  // Loot sorted into sections; each tile is coloured by rarity and shows how many were brought back
+  let i = 0;
+  const tile = (art, n, cls = '', isNew = false, id = '') => `<div class="xp-tile ${cls}" style="animation-delay:${i++ * 60}ms">${art}${isNew ? `<span class="xp-new">${tr('Nouveau')}</span>` : ''}<b class="xp-n xp-out"${id ? ` id="${id}"` : ''}>${n}</b></div>`;
+  const section = (title, tiles) => tiles.length ? `<p class="xp-sec xp-out">${title}</p><div class="xp-tiles">${tiles.join('')}</div>` : '';
+  const nf = n => n.toLocaleString(LANG === 'en' ? 'en-US' : 'fr-FR');
+  const loot = geode => groups.filter(g => (g.kind === 'geode') === geode).map(g => tile(g.art, g.n, rarityOfFind(g.kind, g.key) || '', g.isNew));
+  const oreTiles = Object.keys(ORES).filter(k => T.ores[k]).map(k => tile(resArt(k), nf(T.ores[k])));
+  if (total) oreTiles.push(tile(COIN, 0, '', false, 'recapCount'));
+  const body = section(tr('Minerais'), oreTiles) + section(tr('Géodes'), loot(true)) + section(tr('Artefacts'), loot(false));
+  $('recapBody').innerHTML = body || `<p class="xp-empty">${tr('Tu remontes les mains vides cette fois. Ton niveau t\'attend !')}</p>`;
+  $('recapLevel').textContent = tr('Niveau atteint : {n}', { n: S.level });
+  $('recapCp').hidden = !T.newCp;
   // The coin total counts up
-  const out = $('recapTotal');
-  out.innerHTML = total ? `+<span id="recapCount">0</span> ${COIN}` : '';
   if (total) {
-    const t0 = performance.now(), dur = Math.min(1600, 500 + total * 4), delay = 300 + cells.length * 60;
+    const t0 = performance.now(), dur = Math.min(1600, 500 + total * 4), delay = 300 + i * 60;
     const step = now => {
       const k = Math.min(1, Math.max(0, (now - t0 - delay) / dur)), el = $('recapCount');
       if (!el) return;
-      el.textContent = Math.round(total * (1 - Math.pow(1 - k, 3)));
+      el.textContent = nf(Math.round(total * (1 - Math.pow(1 - k, 3))));
       if (k < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
-    setTimeout(() => { const el = $('recapCount'); if (el) el.textContent = total; }, delay + dur + 200);
+    setTimeout(() => { const el = $('recapCount'); if (el) el.textContent = nf(total); }, delay + dur + 200);
   }
   $('recapAtelier').hidden = !S.bag.geodes.length || !S.buildings.atelier;
   $('descendModal').hidden = true;
   $('recapModal').hidden = false;
-  if (cells.length) sfx('reward');
+  if (body) sfx('reward');
   save();
 }
 $('recapAtelier').addEventListener('click', () => { $('recapModal').hidden = true; go('atelier'); });
@@ -3062,7 +3096,7 @@ function descend() {
   S.rewardMsg = null; genLevel(S.level); buildBoard(true); updateEnergy(true); save();
   const newRecord = S.level > S.reached;
   if (newRecord) S.reached = S.level;
-  if (newRecord && CHECKPOINTS.includes(S.level)) { sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: S.level }) : tr('Checkpoint niveau {n} débloqué !', { n: S.level }), 'good'); }
+  if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: S.level }) : tr('Checkpoint niveau {n} débloqué !', { n: S.level }), 'good'); }
   save();
 }
 $('nextPill').addEventListener('click', () => { unlockAudio(); sfx('pick'); tryDescend(); });

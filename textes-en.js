@@ -213,6 +213,12 @@ window.TEXTES_EN = {
 
   /* ---------- Retour à la surface ---------- */
   "Retour à la surface": "Back to the surface",
+  "Fin de l'expédition": "End of expedition",
+  "Niveau atteint : {n}": "Level reached: {n}",
+  "Nouveau checkpoint !": "New checkpoint!",
+  "Ouvrir les géodes": "Open geodes",
+  "Minerais": "Ores",
+  "Géodes": "Geodes",
   "Ton butin du niveau {n}": "Your loot from level {n}",
   "Tu remontes les mains vides cette fois. Ton niveau t'attend !": "You're coming back empty-handed this time. Your level is waiting for you!",
   "Ouvrir mes géodes à l'atelier": "Open my geodes at the workshop",
