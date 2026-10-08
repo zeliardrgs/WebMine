@@ -17,7 +17,7 @@
 <link rel="preload" as="image" href="Assets/Tools/Radar.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Nunito:wght@700;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap">
 <style>
 /* Layout: one-screen game that fills the viewport — HUD, treasure strip, timber-framed mine grid sized by script to the space left, thumb-reach tool dock. Landscape phones put the board on the left. */
 :root{
@@ -26,8 +26,8 @@
   --sun:#ffc23d; --sun-edge:#c98a12; --mint:#35d49a; --lava:#ff5b2e; --water:#3db5ff;
   --wood:#a86a34; --wood-dark:#5b3214; --ground:#3b2416;
   --rar-common:#1f9a4a; --rar-rare:#2670d6; --rar-epic:#8d42cc; --rar-legendary:#e27a0c;
-  --font-display:'Fredoka','Trebuchet MS',system-ui,sans-serif;   /* only the bold weight is loaded, so every title uses it */
-  --font-body:'Nunito',system-ui,sans-serif;
+  --font-display:'Montserrat','Arial Black',system-ui,sans-serif;   /* Montserrat Black (900) only: every text uses it */
+  --font-body:var(--font-display);   /* one typeface everywhere (Montserrat Black) */
   --tile:min(calc((100vw - 52px) / 7), calc((100vh - 352px) / 10), 58px); /* fallback, refined by fitBoard() */
   color-scheme:dark;
 }
@@ -601,6 +601,87 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .coin{display:flex; align-items:center; gap:4px; padding:3px 10px 3px 3px; border-radius:12px; background:#fff; box-shadow:0 2px 0 #ecd3a8; font-family:var(--font-display); font-size:17px; font-variant-numeric:tabular-nums}
 .coin img{width:28px; height:28px; object-fit:contain}
 .shop-list{display:grid; gap:8px}
+/* Bottom navigation bar, mobile-game style: 5 tabs, the World tab in the middle is bigger */
+:root{--nav-h:74px}
+.navbar{position:fixed; left:50%; bottom:0; z-index:40; transform:translateX(-50%); width:min(480px, 100%); box-sizing:border-box; display:grid; grid-template-columns:repeat(5, 1fr); align-items:end;
+  padding:6px 6px calc(env(safe-area-inset-bottom, 0px) + 6px); border-radius:22px 22px 0 0; background:linear-gradient(#4a2a63, #2e1840); box-shadow:0 -4px 0 #6d4590, 0 -8px 22px rgba(0,0,0,.35)}
+.nav-tab{position:relative; min-height:62px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:3px; padding:4px 2px 2px; border:0; border-radius:16px; background:none; cursor:pointer; color:#e9d9ff}
+.nav-ic{display:grid; place-items:center; width:40px; height:40px; transition:transform .15s}
+.nav-ic img,.nav-ic svg{width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}
+.hero-ic{overflow:hidden; border-radius:50%; background:#ffe2a8; box-shadow:inset 0 0 0 3px #3b2245}
+.hero-ic img{width:150%; height:150%; object-fit:cover; object-position:30% 8%; filter:none}
+.nav-lb{font-family:var(--font-display); font-size:10px; line-height:1; white-space:nowrap; letter-spacing:-.2px}
+.nav-tab.on{background:rgba(255,194,61,.18)}
+.nav-tab.on .nav-lb{color:var(--sun)}
+.nav-tab.on .nav-ic{transform:translateY(-2px) scale(1.08)}
+.nav-tab:active .nav-ic{transform:scale(.92)}
+.nav-tab.soon .nav-ic{filter:grayscale(.75) brightness(.8)}
+.nav-tab.soon .nav-lb{opacity:.6}
+.nav-soon{position:absolute; top:-2px; left:50%; transform:translateX(-50%) rotate(-6deg); padding:1px 6px; border-radius:7px; background:#7a5a74; color:#fff; font-family:var(--font-display); font-size:10px; white-space:nowrap; box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.nav-tab.locked .nav-ic{filter:grayscale(1) brightness(.7)}
+.nav-tab .badge{top:0; right:10%}
+/* The World tab: a big round button sticking out of the bar */
+.nav-tab.main .nav-ic{width:62px; height:62px; margin-top:-26px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #ffe27a, var(--sun) 60%, var(--sun-edge)); box-shadow:0 4px 0 #8a5a0a, 0 0 0 4px #2e1840}
+.nav-tab.main .nav-ic svg{width:46px; height:46px}
+.nav-tab.main.on{background:none}
+/* Room for the bar under the screens that show it */
+body.nav-on .screen{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 18px)}
+body.nav-on #scr-village{padding-bottom:0}
+body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 14px)}
+/* Premium shop and Events pages (offers and events are not available yet: "Bientôt" buttons) */
+.pm-body{display:flex; flex-direction:column; gap:14px}
+.pm-note{margin:0; padding:8px 12px; border-radius:14px; background:rgba(0,0,0,.25); color:#ffe7b0; font-size:13px; text-align:center}
+.pm-h{margin:6px 0 -4px; font-family:var(--font-display); font-weight:400; font-size:20px; color:var(--sun); text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.pm-hero{position:relative; overflow:hidden; display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:22px; color:#fff;
+  background:linear-gradient(135deg, #ff8a3d, #d9432a 55%, #8d42cc); box-shadow:0 5px 0 #6a1f60, 0 10px 22px rgba(0,0,0,.35)}
+.pm-hero.ev{background:linear-gradient(135deg, #ffd13d, #f29a1b 50%, #b5560a); box-shadow:0 5px 0 #7a3a06, 0 10px 22px rgba(0,0,0,.35)}
+.pm-hero b{font-family:var(--font-display); font-weight:400; font-size:24px; line-height:1.05; text-shadow:0 2px 0 rgba(0,0,0,.3)}
+.pm-hero p{margin:0; font-size:13px; line-height:1.35}
+.pm-tag{align-self:flex-start; padding:2px 9px; border-radius:9px; background:rgba(0,0,0,.28); font-family:var(--font-display); font-size:12px}
+.pm-items{display:flex; gap:8px; flex-wrap:wrap}
+.pm-items span{display:flex; align-items:center; gap:4px; padding:4px 10px 4px 4px; border-radius:12px; background:rgba(255,255,255,.92); color:var(--ink); font-family:var(--font-display); font-size:15px}
+.pm-items img{width:30px; height:30px; object-fit:contain}
+.pm-art{position:absolute; right:-10px; top:-6px; width:120px; height:120px; opacity:.95; pointer-events:none; transform:rotate(8deg)}
+.pm-art img{width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 4px 0 rgba(0,0,0,.25))}
+.pm-hero .pm-txt{padding-right:96px}
+.pm-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px}
+.pm-card{display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 6px 10px; border-radius:18px; background:var(--panel); color:var(--ink); box-shadow:0 4px 0 var(--panel-edge); text-align:center}
+.pm-card b{font-family:var(--font-display); font-weight:400; font-size:15px; line-height:1.1}
+.pm-card small{font-size:11px; color:var(--ink-soft)}
+.pm-pile{position:relative; width:64px; height:52px}
+.pm-pile img{position:absolute; width:30px; height:30px; object-fit:contain}
+.pm-row{display:flex; align-items:center; gap:12px; padding:12px; border-radius:18px; background:var(--panel); color:var(--ink); box-shadow:0 4px 0 var(--panel-edge)}
+.pm-row .sic{width:52px; height:52px}
+.pm-row .stxt b{font-size:17px}
+.btn.soon{opacity:.75; cursor:default; background:#c9b49a; box-shadow:0 4px 0 #9c8670; color:#fff}
+.pm-hero .btn.soon{align-self:stretch; background:rgba(255,255,255,.9); color:var(--ink); box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.pm-row .btn{flex:none}
+/* Equipment screen: the miner in the middle, her equipment in slots on both sides */
+.eq-record{padding:5px 12px; border-radius:12px; background:rgba(0,0,0,.25); font-size:13px; color:#ffe7b0}
+.eq-stage{position:relative; display:grid; grid-template-columns:84px 1fr 84px; align-items:center; gap:6px; min-height:330px; padding:10px 8px; border-radius:24px; flex:none;
+  background:radial-gradient(60% 55% at 50% 52%, rgba(255,214,120,.55), rgba(255,214,120,0) 70%), linear-gradient(#5b3a78, #3a2252); box-shadow:inset 0 -6px 0 rgba(0,0,0,.2), 0 6px 18px rgba(0,0,0,.3)}
+.eq-hero{position:relative; align-self:stretch; display:flex; align-items:flex-end; justify-content:center}
+.eq-hero::after{content:""; position:absolute; left:14%; right:14%; bottom:2px; height:22px; border-radius:50%; background:rgba(0,0,0,.3); z-index:0}
+.eq-hero img{position:relative; z-index:1; width:100%; max-width:230px; object-fit:contain; filter:drop-shadow(0 6px 0 rgba(0,0,0,.18))}
+.eq-col{display:flex; flex-direction:column; justify-content:center; gap:12px}
+.eq-slot{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; width:84px; min-height:96px; padding:8px 4px 6px; box-sizing:border-box; border:0; border-radius:18px; cursor:pointer;
+  background:var(--panel); color:var(--ink); box-shadow:0 4px 0 var(--panel-edge), 0 8px 14px rgba(0,0,0,.25)}
+.eq-slot.on{background:#fff; box-shadow:0 0 0 3px var(--sun), 0 4px 0 var(--sun-edge), 0 8px 14px rgba(0,0,0,.25)}
+.eq-slot:active{transform:translateY(2px)}
+.eq-ic{width:46px; height:46px; display:grid; place-items:center}
+.eq-ic img,.eq-ic svg{width:100%; height:100%; object-fit:contain}
+.eq-lv{padding:1px 7px; border-radius:8px; background:var(--ink); color:#fff; font-family:var(--font-display); font-size:11px}
+.eq-nm{font-family:var(--font-display); font-size:12px; line-height:1.1; text-align:center}
+.eq-slot.locked .eq-ic{filter:grayscale(1) brightness(.6)}
+.eq-slot.locked .eq-lv{background:#9a8aa0}
+.eq-detail h2{margin:0; font-family:var(--font-display); font-weight:400; font-size:22px; color:var(--ink)}
+.eq-detail .eq-sub{margin:2px 0 10px; font-size:13px; color:var(--ink-soft)}
+.eq-detail ul{margin:0 0 4px; padding:0; list-style:none; display:grid; gap:6px}
+.eq-detail li{display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; background:#fff; color:var(--ink); font-size:14px; box-shadow:0 2px 0 #ecd3a8}
+.eq-detail li::before{content:"✦"; color:var(--sun-edge)}
+.eq-detail .btn{width:100%; margin-top:12px}
+.eq-detail .eq-max{margin-top:12px; text-align:center; font-family:var(--font-display); color:var(--mint)}
+@media (max-width:360px){ .eq-stage{grid-template-columns:76px 1fr 76px} .eq-slot{width:76px} }
 .srow{display:flex; align-items:center; gap:10px; padding:10px; border-radius:16px; background:#fff; box-shadow:0 3px 0 #ecd3a8}
 .sic{position:relative; width:46px; height:46px; flex:none}
 .sic img,.sic svg{width:100%; height:100%; object-fit:contain}
@@ -824,6 +905,26 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   <div class="card flat" id="museumBody"></div>
 </div>
 
+<div class="screen" id="scr-hero" hidden>
+  <header class="scr-head"><h1>Équipement</h1><span class="eq-record" id="heroSub"></span></header>
+  <div class="eq-stage">
+    <div class="eq-col" id="eqLeft"></div>
+    <div class="eq-hero"><img src="Assets/Characters/Miner.png" alt="" draggable="false"></div>
+    <div class="eq-col" id="eqRight"></div>
+  </div>
+  <div class="card flat eq-detail" id="eqDetail"></div>
+</div>
+
+<div class="screen" id="scr-premium" hidden>
+  <header class="scr-head"><h1>Boutique premium</h1></header>
+  <div id="premiumBody" class="pm-body"></div>
+</div>
+
+<div class="screen" id="scr-events" hidden>
+  <header class="scr-head"><h1>Événements</h1></header>
+  <div id="eventsBody" class="pm-body"></div>
+</div>
+
 <div class="screen" id="scr-shop" hidden>
   <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Boutique</h1><div class="wallet-bar" id="shopWallet"></div></header>
   <div class="card flat"><p>De l'équipement et des consommables pour tes descentes, payés en pièces.</p><div class="shop-list" id="conList"></div></div>
@@ -897,6 +998,14 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   </nav>
 </div>
 
+<!-- Bottom navigation bar (village, museum, character screens) -->
+<nav class="navbar" id="navBar" aria-label="Navigation" hidden>
+  <button class="nav-tab" data-nav="premium"><span class="nav-ic"><img src="Assets/Treasures/Rubis.png" alt="" draggable="false"></span><span class="nav-lb">Premium</span></button>
+  <button class="nav-tab" data-nav="museum"><span class="nav-ic"><img src="Assets/Overworld/Museum.png" alt="" draggable="false"></span><span class="nav-lb">Musée</span><span class="badge" id="navMuseumBadge" hidden>!</span></button>
+  <button class="nav-tab main" data-nav="village"><span class="nav-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="#3db5ff" stroke="#1b4f7a" stroke-width="3"/><path d="M11 15 C15 12 20 13 21 17 C22 21 17 22 18 26 C19 30 14 32 11 29 C8 25 8 18 11 15Z M27 9 C31 10 36 13 38 18 C35 19 33 17 30 18 C27 19 25 15 27 9Z M29 26 C33 24 38 26 39 30 C37 35 33 39 29 40 C27 36 31 33 28 30 C27 29 27 27 29 26Z" fill="#35d49a" stroke="#1b6e4f" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 11 C17 9 21 8 24 8" stroke="#fff" stroke-opacity=".7" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span><span class="nav-lb">Monde</span></button>
+  <button class="nav-tab" data-nav="hero"><span class="nav-ic hero-ic"><img src="Assets/Characters/Miner.png" alt="" draggable="false"></span><span class="nav-lb">Personnage</span></button>
+  <button class="nav-tab" data-nav="events"><span class="nav-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="10" width="36" height="32" rx="7" fill="#fff3d6" stroke="#3b2245" stroke-width="3"/><path d="M6 17 C6 13 9 10 13 10 H35 C39 10 42 13 42 17 V20 H6Z" fill="#ff5b6e" stroke="#3b2245" stroke-width="3" stroke-linejoin="round"/><path d="M16 6 V14 M32 6 V14" stroke="#3b2245" stroke-width="3.4" stroke-linecap="round"/><path d="M24 24.5 L26.6 29.6 L32.2 30.3 L28.1 34.1 L29.2 39.6 L24 37 L18.8 39.6 L19.9 34.1 L15.8 30.3 L21.4 29.6Z" fill="#ffc23d" stroke="#c98a12" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="nav-lb">Événements</span></button>
+</nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="coachDim" hidden></div>
 <div id="coachHand" hidden aria-hidden="true"><img src="Assets/TutoHand.png" alt="" draggable="false"></div>
@@ -2577,17 +2686,122 @@ function usePotion() {
 }
 
 /* ---------- Screens ---------- */
-const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier'];
+const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier', 'hero', 'premium', 'events'];
 function go(name) {
   SCREENS.forEach(n => $('scr-' + n).hidden = n !== name);
   if (name !== 'mine') dropBoardCoaches();
   if (name === 'village' || name === 'mine') S.screen = name;
   if (name !== 'atelier') stopMini();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, forge: renderForge, atelier: renderAtelier, mine: enterMine })[name]();
+  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, forge: renderForge, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents })[name]();
+  updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
 }
+/* ---------- Bottom navigation bar ----------
+   Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
+   Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
+const NAV_OF = { village: 'village', shop: 'village', forge: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events' };
+function updateNav(name) {
+  const tab = NAV_OF[name];
+  $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
+  document.querySelectorAll('.nav-tab').forEach(b => { b.classList.toggle('on', b.dataset.nav === tab); b.setAttribute('aria-current', b.dataset.nav === tab ? 'page' : 'false'); });
+  const museumOpen = !!S.buildings.museum;
+  document.querySelector('.nav-tab[data-nav="museum"]').classList.toggle('locked', !museumOpen);
+  $('navMuseumBadge').hidden = !museumOpen || !museumPrimeWaiting();
+}
+$('navBar').addEventListener('click', e => {
+  const b = e.target.closest('.nav-tab'); if (!b) return;
+  unlockAudio();
+  const k = b.dataset.nav;
+  if (k === 'museum' && !S.buildings.museum) { sfx('deny'); return toast(tr('Le Musée s\'ouvre à ton premier retour de la mine.'), ''); }
+  if (b.classList.contains('on') && k !== 'village') return;
+  sfx('pick'); go(k);
+});
+/* ---------- Premium shop and Events pages ----------
+   Nothing can be bought or played there yet: every button says "Bientôt" and only shows a message. */
+const SOON_BTN = cls => `<button class="btn ${cls || ''} soon" data-soon="1">${tr('Bientôt')}</button>`;
+const coinPile = n => '<span class="pm-pile">' + [[0, 18], [17, 18], [34, 18], [8, 4], [26, 4], [17, -9]].slice(0, n).map(([x, y]) => `<img src="Assets/Icon_Coin.png" alt="" draggable="false" style="left:${x}px; top:${y + 12}px">`).join('') + '</span>';
+function renderPremium() {
+  const pack = (n, title, sub) => `<div class="pm-card">${coinPile(n)}<b>${title}</b><small>${sub}</small>${SOON_BTN('sm')}</div>`;
+  $('premiumBody').innerHTML = `<p class="pm-note">${tr('Les achats arrivent bientôt. Voici un aperçu de ce qui t\'attend !')}</p>
+    <div class="pm-hero"><span class="pm-art">${img('Assets/Treasures/Rubis.png')}</span>
+      <span class="pm-tag">${tr('Offre spéciale')}</span>
+      <div class="pm-txt"><b>${tr('Pack de départ')}</b><p>${tr('Tout ce qu\'il faut pour bien commencer l\'aventure.')}</p></div>
+      <div class="pm-items"><span>${COIN}1 000</span><span>${TOOLS.bomb}×5</span><span>${POTION}×3</span></div>
+      ${SOON_BTN('big')}</div>
+    <h2 class="pm-h">${tr('Pièces')}</h2>
+    <div class="pm-grid">${pack(3, tr('Poignée de pièces'), '500')}${pack(5, tr('Bourse de pièces'), '1 500')}${pack(6, tr('Coffre de pièces'), '5 000')}</div>
+    <h2 class="pm-h">${tr('Avantages')}</h2>
+    <div class="pm-row"><div class="sic">${img('Assets/Bag.png')}</div><div class="stxt"><b>${tr('Pass du mineur')}</b><span>${tr('Des récompenses en plus à chaque palier de niveaux.')}</span></div>${SOON_BTN('sm')}</div>`;
+}
+function renderEvents() {
+  const ev = (icon, title, text) => `<div class="pm-row"><div class="sic">${icon}</div><div class="stxt"><b>${title}</b><span>${text}</span></div>${SOON_BTN('sm')}</div>`;
+  $('eventsBody').innerHTML = `<p class="pm-note">${tr('Des événements limités dans le temps, avec des récompenses spéciales. Le premier arrive bientôt !')}</p>
+    <div class="pm-hero ev"><span class="pm-art">${resArt('gold')}</span>
+      <span class="pm-tag">${tr('Prochain événement')}</span>
+      <div class="pm-txt"><b>${tr('Ruée vers l\'or')}</b><p>${tr('Pendant un week-end, plus d\'or et plus de tas de pièces dans la mine.')}</p></div>
+      ${SOON_BTN('big')}</div>
+    <h2 class="pm-h">${tr('À venir')}</h2>
+    ${ev(artArt('coquillage'), tr('Chasse aux fossiles'), tr('Trouve un maximum de fossiles pour gagner des récompenses.'))}
+    ${ev(geodeArt('crystal'), tr('Festival des géodes'), tr('Des géodes plus rares, à ouvrir à l\'Atelier.'))}`;
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-soon]')) return;
+  unlockAudio(); sfx('deny'); toast(tr('Bientôt disponible !'), '');
+});
+/* ---------- Equipment screen ----------
+   Shows what the miner carries, with the level of each piece (= upgrades bought + 1).
+   Tapping a piece shows its effects and leads to the Forge or the Shop to improve it. */
+let eqSel = 'pick';
+// Forge upgrades that improve each piece
+const EQ_UP = { pick: ['pick', 'splash'], bucket: ['fast', 'charges'], energy: ['energy'] };
+const upReady = keys => keys.some(k => UPGRADES[k] && upOpen(k) && canPay(UPGRADES[k].cost[S.up[k]]));
+const upMaxed = keys => keys.every(k => S.up[k] >= UPGRADES[k].max);
+const bagNext = () => { const n = BAG_UP[S.bagLvl]; return n && (n.biome || 1) <= curBiome() ? n : null; };
+function equipment() {
+  const bagStep = BAG_UP[S.bagLvl - 1];
+  return {
+    pick: { side: 'L', name: tr('Pioche'), icon: TOOLS.pickaxe, lv: 1 + S.up.pick + S.up.splash, open: has('pioche'),
+      lines: [tr('{a} dégâts par coup', { a: pickPower() }), ...(S.up.splash ? [tr('{a} de chance de casser une roche voisine', { a: pct(SPLASH[S.up.splash]) })] : [])],
+      where: 'forge', ready: upReady(EQ_UP.pick), maxed: upMaxed(EQ_UP.pick) },
+    shovel: { side: 'L', name: tr('Pelle'), icon: TOOLS.shovel, lv: 1, open: true,
+      lines: [tr('Retire la terre d\'un simple glissement'), tr('Toujours gratuite : aucune énergie dépensée')], where: null },
+    bucket: { side: 'L', name: tr('Arrosoir'), icon: TOOLS.bucket, lv: 1 + S.up.fast + S.up.charges, open: has('magma'),
+      lines: [tr('Recharge en {a} s', { a: bucketCd() / 1000 }), tr('{a} arrosages avant de recharger', { a: maxCharges() })],
+      where: 'forge', ready: upReady(EQ_UP.bucket), maxed: upMaxed(EQ_UP.bucket) },
+    bag: { side: 'R', name: bagStep && bagStep.nom ? tr(bagStep.nom) : tr('Sac de départ'), short: tr('Sac'), icon: img('Assets/Bag.png'), lv: 1 + S.bagLvl, open: true,
+      lines: [tr('{a} cases', { a: bagCap() }), ...(geoPocket() ? [tr('poche à géodes {b}', { b: geoPocket() })] : [])],
+      where: 'shop', ready: !!(bagNext() && canPay({ coin: bagNext().pieces })), maxed: S.bagLvl >= BAG_UP.length },
+    energy: { side: 'R', name: tr('Réserve d\'énergie'), short: tr('Énergie'), icon: BOLT, lv: 1 + S.up.energy, open: has('pioche'),
+      lines: [tr('Énergie max {a}', { a: maxE() }), tr('Rechargée à chaque retour au village')],
+      where: 'forge', ready: upReady(EQ_UP.energy), maxed: upMaxed(EQ_UP.energy) },
+  };
+}
+function renderHero() {
+  $('heroSub').textContent = tr('Record : niveau {n}', { n: S.reached });
+  const EQ = equipment();
+  if (!EQ[eqSel] || !EQ[eqSel].open) eqSel = 'shovel';
+  const slot = ([k, e]) => `<button class="eq-slot${k === eqSel ? ' on' : ''}${e.open ? '' : ' locked'}" data-eq="${k}" aria-pressed="${k === eqSel}">
+    <span class="eq-ic">${e.open ? e.icon : '<b style="font-size:26px">?</b>'}</span><span class="eq-lv">${e.open ? tr('Niv. {n}', { n: e.lv }) : '–'}</span>
+    <span class="eq-nm">${e.open ? e.short || e.name : '???'}</span>${e.open && e.ready ? '<span class="badge">!</span>' : ''}</button>`;
+  const list = Object.entries(EQ);
+  $('eqLeft').innerHTML = list.filter(([, e]) => e.side === 'L').map(slot).join('');
+  $('eqRight').innerHTML = list.filter(([, e]) => e.side === 'R').map(slot).join('');
+  const e = EQ[eqSel];
+  const bld = e.where === 'shop' ? 'shop' : 'forge', bldOpen = e.where && !!S.buildings[bld];
+  const action = !e.where ? ''
+    : e.maxed ? `<p class="eq-max">${tr('Niveau maximum atteint')}</p>`
+    : bldOpen ? `<button class="btn" data-go="${bld}">${e.where === 'shop' ? tr('Agrandir à la Boutique') : tr('Améliorer à la Forge')}</button>`
+    : `<p class="eq-sub" style="margin-top:12px">${e.where === 'shop' ? tr('La Boutique arrive bientôt au village.') : tr('La Forge arrive bientôt au village.')}</p>`;
+  $('eqDetail').innerHTML = `<h2>${e.name}</h2><p class="eq-sub">${tr('Niveau {n}', { n: e.lv })}</p><ul>${e.lines.map(l => `<li>${l}</li>`).join('')}</ul>${action}`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-eq]'); if (!b) return;
+  unlockAudio();
+  if (b.classList.contains('locked')) { sfx('deny'); return toast(tr('Pas encore découvert : continue de descendre !'), ''); }
+  sfx('pick'); eqSel = b.dataset.eq; renderHero();
+});
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-go]'); if (!b) return;
   unlockAudio(); sfx('pick'); go(b.dataset.go);
