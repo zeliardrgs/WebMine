@@ -674,25 +674,8 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .btn.big{width:100%; font-size:21px; padding:14px; margin-top:16px}
 .btn.ghosty{background:#f3dcb0; box-shadow:0 4px 0 #d9b77f; font-size:14px}
 .btn.danger{background:#ff8a70; box-shadow:0 4px 0 #c24a2e}
-.set + .set{margin-top:14px}
-.set-head{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:6px}
-.set-head b{font-family:var(--font-display); font-weight:400; font-size:15px; color:#7d3c98}
-.set-head small{font-size:12px; color:var(--ink-soft)}
-.set.complete .item:not(.locked){background:#fffbe8; box-shadow:0 3px 0 #f5c542}
-/* Collection frames by number of stars */
-.set{padding:10px; border-radius:18px; border:3px solid transparent; background:rgba(255,255,255,.35)}
-.set.t1{border-color:#c47a3a; background:linear-gradient(135deg, #f7dcc2, #fff3e4)}
-.set.t2{border-color:#a9b4c2; background:linear-gradient(135deg, #e6ebf1, #fafcff)}
-.set.t3{border-color:#e8b923; background:linear-gradient(135deg, #ffe9a3, #fff8dc); box-shadow:0 0 14px rgba(232,185,35,.45)}
 .stars-set{display:inline-flex; gap:1px; margin-left:6px; font-size:16px; line-height:1; vertical-align:0; letter-spacing:0}
 .stars-set i{font-style:normal; color:#d8cbb4} .stars-set i.on{color:#ffbf1f; text-shadow:0 1px 0 #b5760a}
-.set-bonus{margin-left:4px; font-size:11px; font-family:var(--font-body); font-weight:800; color:#8a5a00}
-.set-claim{display:flex; align-items:center; gap:10px; margin:0 0 8px; padding:8px 10px; border-radius:14px; background:#e3fbe9; box-shadow:0 3px 0 #9bdcb0}
-.set-claim span{flex:1; font-size:13px; font-weight:800; text-align:left}
-.set-claim .btn{flex:none; min-height:44px; display:flex; align-items:center; gap:4px; animation:twinkle 1.6s ease-in-out infinite}
-.set-claim .btn img{width:18px; height:18px; object-fit:contain}
-.set-next{margin:6px 2px 0; font-size:12px; color:var(--ink-soft)}
-.set-where{margin:-2px 2px 6px; font-size:12px; color:var(--ink-soft)}
 .set-legend{margin:8px 2px 0; padding:8px 10px; border-radius:12px; background:rgba(255,255,255,.7); font-size:13px; font-style:italic; color:var(--ink)}
 .rlegend{padding:8px 12px; border-radius:14px; background:#fff8e6; box-shadow:0 3px 0 #ecd3a8; font-size:13px; font-style:italic; text-align:center}
 .rtag.tier{background:#fff1c9; color:#8a5a00}
@@ -776,6 +759,34 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 
 /* Cheats switched off in the Settings: the cheat button and panel are hidden */
 .cheats-off #cheatBtn,.cheats-off #cheatPanel{display:none!important}
+
+/* ---------- Museum: shelves in the game's style — pedestals on a wooden plank, name and progress below, prime dome on the right ---------- */
+.mu-shelf{margin-top:12px; padding:14px 10px 10px; border-radius:18px; background:#f6e2bd; box-shadow:inset 0 3px 0 rgba(0,0,0,.06)}
+.mu-peds{display:flex; justify-content:center; gap:6px}
+.mu-ped{position:relative; width:72px; height:70px; padding:0; border:0; background:none; cursor:pointer; display:flex; align-items:flex-end; justify-content:center}
+.mu-shelf.many .mu-ped{width:52px; height:58px}
+.mu-ped::before{content:""; position:absolute; left:6%; right:6%; bottom:-6px; height:22px; border-radius:50%; background:#fff; box-shadow:0 4px 0 #ecd3a8}
+.mu-ped img{position:relative; width:78%; height:82%; object-fit:contain; object-position:bottom; filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+.mu-ped.locked img{filter:brightness(0) opacity(.16)}
+.mu-ped i{position:absolute; right:-2px; top:0; padding:0 6px; border-radius:9px; background:var(--ink); color:#fff; font-style:normal; font-family:var(--font-display); font-size:11px; line-height:18px}
+.mu-plank{height:14px; margin:6px -10px 0; border-radius:4px; background:linear-gradient(var(--wood) 0 55%, var(--wood-dark) 55%); box-shadow:0 3px 6px rgba(0,0,0,.18)}
+.mu-label{display:flex; align-items:center; gap:10px; margin-top:10px; text-align:left}
+.mu-label > div{flex:1; min-width:0}
+.mu-label b{display:block; font-family:var(--font-display); font-weight:400; font-size:17px; line-height:1.15; color:#7d3c98}
+.mu-label span{display:block; margin-top:2px; font-size:12px; color:var(--ink-soft)}
+.mu-dome{position:relative; flex:none; width:58px; height:62px; margin-bottom:6px; padding:0; border:0; cursor:pointer; display:grid; place-items:center;
+  border-radius:50% 50% 8px 8px / 58% 58% 8px 8px; background:radial-gradient(ellipse at 34% 26%, rgba(255,255,255,.95), rgba(220,240,255,.55) 35%, rgba(170,210,240,.4) 75%, rgba(255,255,255,.6));
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.8), 0 4px 0 var(--sun-edge), 0 6px 0 #8f5f10, 0 10px 12px rgba(0,0,0,.2)}
+.mu-dome img{width:30px; height:30px; object-fit:contain; margin-top:-8px}
+.mu-dome i{position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); padding:0 7px; border-radius:9px; background:var(--panel); color:var(--ink);
+  font-style:normal; font-family:var(--font-display); font-size:14px; line-height:18px; white-space:nowrap; box-shadow:0 2px 0 var(--panel-edge)}
+.mu-dome b{font-size:30px; color:#ffbf1f; text-shadow:0 2px 0 #b5760a}
+.mu-dome.ready{animation:domeGlow 1.4s ease-in-out infinite}
+.mu-dome.ready i{background:var(--mint); color:#fff; box-shadow:0 2px 0 #1fae7a}
+@keyframes domeGlow{50%{transform:scale(1.08); filter:drop-shadow(0 0 10px #fff36b)}}
+.mu-locked{display:flex; justify-content:center; gap:22px; height:70px; padding-top:14px; box-sizing:border-box; border-radius:18px 18px 8px 8px; border:2px solid rgba(255,255,255,.8);
+  background:linear-gradient(rgba(170,210,240,.45), rgba(120,170,220,.5))}
+.mu-locked span{width:46px; height:46px; border-radius:50%; background:radial-gradient(circle, rgba(59,34,69,.28), transparent 70%)}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -3034,27 +3045,35 @@ function museumCoach() {
   if (!S.tutoSeen.prime && claim()) startCoach('prime', [{ text: TX.prime, target: claim, done: () => !claim() }]);
   if (!S.tutoSeen.museeRetour) startCoach('museeRetour', [{ text: TX.museeRetour, target: () => document.querySelector('#scr-museum [data-go="village"]'), done: () => $('scr-museum').hidden }]);
 }
+// Museum = display shelves: one shelf per collection (found treasures on pedestals, missing ones as silhouettes),
+// with a glass dome on the right holding the next star prime. Gems and artefacts on the same screen.
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-muitem], [data-mudome]'); if (!t) return;
+  unlockAudio(); sfx('pick');
+  if (t.dataset.muitem) {
+    const [sk, k] = t.dataset.muitem.split(':'), o = setTable(sk)[k], n = setBook(sk)[k] || 0;
+    return toast(n ? `${o.name} · ${RARITY_FR[o.rarity]} · ${tr('doublon : {n} pièces', { n: findValue(SETS[sk].kind, k) })}` : tr('Pas encore trouvé'));
+  }
+  const sk = t.dataset.mudome, tier = setTier(sk);
+  toast(tier >= MAX_STARS ? tr('Toutes les étoiles obtenues !') : tr('Complète encore la collection pour gagner {n} pièces', { n: starPrime(sk, tier + 1) }));
+});
 function renderMuseum() {
   setTimeout(museumCoach);
-  const B = S.bag, cell = (art, name, owned, val, count, rar) =>
-    `<div class="item${owned ? '' : ' locked'}">${art}<span class="nm">${rarName(owned ? name : '???', rar)}</span>${owned ? `<span class="mtag" title="${tr('Prix de vente d\'un doublon')}">${val}${COIN}</span>` : ''}${count > 1 ? `<span class="cnt">${tr('trouvé ×{n}', { n: count })}</span>` : ''}</div>`;
-  const setHTML = ([sk, set]) => {
+  const shelf = ([sk, set]) => {
     const keys = setKeys(sk), tier = setTier(sk), book = setBook(sk), table = setTable(sk);
-    // Progress towards the next level: items found at least (tier + 1) times
-    const got = keys.filter(k => (book[k] || 0) > tier).length, missing = keys.length - got;
-    const next = tier < MAX_STARS ? tr(plural(missing, 'Prochaine étoile : encore {n} objet', 'Prochaine étoile : encore {n} objets'), { n: missing }) + (set.prime && starPrime(sk, tier + 1) ? ' · ' + tr('prime {n} pièces', { n: starPrime(sk, tier + 1) }) : '') : tr('Toutes les étoiles obtenues !');
-    // Where to look: depth zones and ground
+    const owned = keys.filter(k => book[k]).length;
     const where = set.kind === 'gem' ? tr('Dans les géodes')
-      : tr('Où :') + ' ' + rangeText(Math.min(...keys.map(k => table[k].range[0])), Math.max(...keys.map(k => table[k].range[1]))) + (SOIL_FR[table[keys[0]].soil] ? ', ' + SOIL_FR[table[keys[0]].soil] : '');
-    // Primes waiting for this collection
-    const waiting = (S.pendingPrimes || []).filter(p => p.set === sk), due = waiting.reduce((a, p) => a + starPrime(sk, p.tier), 0);
-    const claim = waiting.length ? `<div class="set-claim"><span>${waiting.length > 1 ? tr('Nouvelles étoiles !') : tr('Nouvelle étoile !')}${set.message && waiting.some(p => p.tier === 1) ? ' ' + set.message : ''}</span><button class="btn sm" data-claimset="${sk}">${tr('Récupérer')} +${due}${COIN}</button></div>` : '';
-    return `<div class="set t${Math.min(tier, 3)}"><div class="set-head"><b>${set.name}${starsHTML(tier)}${tier ? `<span class="set-bonus">${tr('doublons +{n} %', { n: Math.round(TIER_BONUS[tier] * 100) })}</span>` : ''}</b><small>${keys.filter(k => book[k]).length} / ${keys.length}</small></div>
-      ${claim}
-      <p class="set-where">${where}</p>
-      <div class="items">${keys.map(k => cell(itemArt(table[k]), table[k].name, book[k], findValue(set.kind, k), book[k], table[k].rarity)).join('')}</div>
-      ${tier && set.message ? `<p class="set-legend">${set.message}</p>` : ''}${tier && set.legend ? `<p class="set-legend">${set.legend}</p>` : ''}
-      <p class="set-next">${next}</p></div>`;
+      : rangeText(Math.min(...keys.map(k => table[k].range[0])), Math.max(...keys.map(k => table[k].range[1]))) + (SOIL_FR[table[keys[0]].soil] ? ', ' + SOIL_FR[table[keys[0]].soil] : '');
+    const sub = `${owned} / ${keys.length}` + (tier ? ' · ' + tr('doublons +{n} %', { n: Math.round(TIER_BONUS[tier] * 100) }) : ' · ' + where);
+    const peds = keys.map(k => `<button class="mu-ped${book[k] ? '' : ' locked'}" data-muitem="${sk}:${k}" aria-label="${book[k] ? table[k].name : tr('Pas encore trouvé')}">${itemArt(table[k])}${book[k] > 1 ? `<i>×${book[k]}</i>` : ''}</button>`).join('');
+    // The dome: a prime waiting (tap to collect), the next star's prime, or a gold star when every star is won
+    const w = (S.pendingPrimes || []).filter(p => p.set === sk), due = w.reduce((a, p) => a + starPrime(sk, p.tier), 0), next = tier < MAX_STARS ? starPrime(sk, tier + 1) : 0;
+    const dome = w.length ? `<button class="mu-dome ready" data-claimset="${sk}" aria-label="${tr('Récupérer')} +${due}">${COIN}<i>+${due}</i></button>`
+      : next ? `<button class="mu-dome" data-mudome="${sk}" aria-label="${tr('prime {n} pièces', { n: next })}">${COIN}<i>${next}</i></button>`
+      : tier >= MAX_STARS ? `<button class="mu-dome star" data-mudome="${sk}" aria-label="${tr('Toutes les étoiles obtenues !')}"><b>★</b></button>` : '';
+    const legend = tier && (set.message || set.legend) ? `<p class="set-legend">${[set.message, set.legend].filter(Boolean).join(' ')}</p>` : '';
+    return `<div class="mu-shelf${keys.length > 4 ? ' many' : ''}"><div class="mu-peds">${peds}</div><div class="mu-plank"></div>
+      <div class="mu-label"><div><b>${set.name}${starsHTML(tier)}</b><span>${sub}</span></div>${dome}</div>${legend}</div>`;
   };
   // Only series with at least one treasure found are shown (no spoilers)
   const all = Object.entries(SETS), sets = all.filter(([sk]) => setKeys(sk).some(k => setBook(sk)[k]));
@@ -3062,9 +3081,9 @@ function renderMuseum() {
   $('museumBody').innerHTML = `<p>${tr('{a} trésors sur {b} sont exposés. Chaque nouveau trésor rapporte une prime, les doublons sont vendus à leur valeur. Complète une collection pour gagner une étoile : chaque étoile augmente le prix de revente de ses doublons.', { a: museumOwned(), b: museumTotal() })}</p>
     ${['gem', 'art'].map(kind => {
       const list = sets.filter(([, set]) => set.kind === kind);
-      return list.length ? `<h3>${kind === 'gem' ? tr('Gemmes') : tr('Artefacts')}</h3>${list.map(setHTML).join('')}` : '';
+      return list.length ? `<h3>${kind === 'gem' ? tr('Gemmes') : tr('Artefacts')}</h3>${list.map(shelf).join('')}` : '';
     }).join('')}
-    ${hidden ? `<h3>${tr(plural(hidden, '{n} collection restante à découvrir', '{n} collections restantes à découvrir'), { n: hidden })}</h3>` : ''}`;
+    ${hidden ? `<h3>${tr(plural(hidden, '{n} collection restante à découvrir', '{n} collections restantes à découvrir'), { n: hidden })}</h3><div class="mu-locked" aria-hidden="true"><span></span><span></span><span></span></div>` : ''}`;
 }
 
 /* ---------- Atelier: timing mini-game to open geodes ---------- */
