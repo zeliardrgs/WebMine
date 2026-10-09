@@ -1126,6 +1126,66 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .goals-label{color:#fff; text-shadow:none; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
 .goals-label small{color:#fff3d6; -webkit-text-stroke:0}
 #scr-mine .slot.found{border:2px solid var(--outline); background:#fbf1dc; background-clip:padding-box; box-shadow:none}
+/* ---------- Player progression: the card at the top left of the village and the Progression popup ---------- */
+.v-hud .wallet-bar{flex:none}
+.pl-card{position:relative; flex:1; min-width:0; max-width:240px; display:flex; align-items:center; gap:8px; padding:3px 10px 3px 3px; border:3px solid var(--outline); border-radius:16px;
+  background:#fbf1dc; background-clip:padding-box; box-shadow:inset 0 -4px 0 #e2c89a; color:var(--ink); cursor:pointer; font-family:var(--font-display); text-align:left}
+.pl-card:active{transform:translateY(2px)}
+.pl-card .badge{top:-9px; right:-9px}
+.pl-face{position:relative; flex:none; width:42px; height:42px; border-radius:12px; background:#ffe2a8; display:grid; place-items:center}
+.pl-face img{width:100%; height:100%; object-fit:contain}
+.pl-face b{position:absolute; right:-7px; bottom:-7px; min-width:22px; height:22px; padding:0 4px; box-sizing:border-box; border:2px solid var(--outline); border-radius:11px;
+  background:linear-gradient(#ffe100, #ffb400); color:#fff; font-weight:400; font-size:12px; line-height:18px; text-align:center; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill}
+.pl-info{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px}
+.pl-info > b{font-weight:400; font-size:14px; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pl-bar{position:relative; display:block; height:16px; border:2px solid var(--outline); border-radius:9px; background:#5a3f6b; overflow:hidden}
+.pl-bar i{position:absolute; inset:0 auto 0 0; background:linear-gradient(#9fd4ff, #3d8ff0); transition:width .3s}
+.pl-bar span{position:absolute; inset:0; display:grid; place-items:center; font-size:10px; color:#fff; -webkit-text-stroke:2.5px var(--outline); paint-order:stroke fill; white-space:nowrap}
+/* Progression page: the player's card, then the levels */
+.prog-card{flex:none; padding:14px 16px 12px; border-radius:calc(var(--u) * 4); background:var(--card-bg); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge), 0 calc(var(--u) * .8) 0 var(--card-edge)}
+.prog-head{display:flex; align-items:center; gap:14px; margin:0 0 8px; text-align:left}
+.pl-face.big{width:64px; height:64px; border-radius:16px; border:3px solid var(--outline)}
+.pl-face.big b{min-width:28px; height:28px; font-size:15px; line-height:24px; border-radius:14px}
+.prog-who{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; font-family:var(--font-display)}
+.prog-who > b{font-weight:400; font-size:20px; color:var(--ink)}
+.prog-who > span:not(.pl-bar){font-size:13px; color:var(--ink-soft)}
+.prog-who .pl-bar{height:20px}
+.prog-who .pl-bar span{font-size:12px}
+.prog-note{margin:0; font-size:13px; color:var(--ink-soft); text-align:center}
+/* The track scrolls sideways, edge to edge; it starts and ends in line with the page's content */
+.prog-list{display:flex; flex:none; margin:auto calc(-1 * var(--side)); padding:6px var(--side) 12px; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none}
+.prog-list::-webkit-scrollbar{display:none}
+/* One level = a badge on the track with its reward card under it; the gauge stretch goes from this badge's centre to the next one's */
+.prog-row{--gap:12px; position:relative; flex:none; width:136px; display:flex; flex-direction:column; align-items:center; gap:10px; padding-right:var(--gap)}
+.prog-row.end{padding-right:0}
+.prog-node{position:relative; width:100%; height:58px; display:grid; place-items:center}
+.prog-row:not(.end) .prog-node::before,.prog-row:not(.end) .prog-node::after{content:""; position:absolute; left:50%; top:50%; transform:translateY(-50%);
+  width:calc(100% + var(--gap))}
+.prog-row:not(.end) .prog-node::before{height:14px; background:#5a3f6b; border:3px solid var(--outline); box-sizing:border-box}
+.prog-row:not(.end) .prog-node::after{height:8px; width:calc((100% + var(--gap)) * var(--f)); background:linear-gradient(90deg, #9fd4ff, #3d8ff0)}
+.prog-lv{position:relative; z-index:1; width:44px; height:44px; border:3px solid var(--outline); border-radius:50%; box-sizing:border-box; display:grid; place-items:center; background:#e6d2b0;
+  font-family:var(--font-display); font-size:17px; color:#fff; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill}
+.prog-row.done .prog-lv,.prog-row.ready .prog-lv{background:linear-gradient(#ffe100, #ffb400)}
+.prog-row.next .prog-lv{background:#9fd4ff}
+.prog-row.here .prog-lv{width:52px; height:52px; font-size:20px; box-shadow:0 0 0 4px #fff, 0 0 0 7px #3d8ff0}
+.prog-box{width:100%; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:10px; min-height:132px; padding:12px 8px 10px;
+  box-sizing:border-box; border:3px solid var(--card-edge); border-radius:16px; background:#fffaf0; text-align:center}
+.prog-rw{min-width:0; display:flex; flex-direction:column; align-items:center; gap:6px}
+.prog-chip.unlock{flex-direction:column; padding:6px 8px; text-align:center}
+.prog-chip.unlock img{width:30px; height:30px}
+.prog-chip{display:inline-flex; align-items:center; gap:4px; padding:2px 8px 2px 3px; border-radius:10px; background:#fbf1dc; box-shadow:inset 0 0 0 2px var(--card-edge);
+  font-family:var(--font-display); font-size:14px; color:var(--ink)}
+.prog-chip img,.prog-chip svg{width:24px; height:24px; object-fit:contain}
+.prog-chip.unlock{background:#ffe9a8; box-shadow:inset 0 0 0 2px #e0b23a; font-size:12px}
+.prog-none{font-family:var(--font-display); font-size:13px; color:var(--ink-soft)}
+.prog-ok{flex:none; width:30px; height:30px; border-radius:50%; display:grid; place-items:center; background:var(--mint); color:#fff; font-size:16px; box-shadow:inset 0 0 0 2px var(--outline)}
+.prog-xp{flex:none; font-family:var(--font-display); font-size:12px; color:var(--ink-soft); white-space:nowrap}
+.prog-row.ready .prog-box{border-color:var(--outline); background:#fff3c4}
+.prog-row.next .prog-box{border-color:#3d8ff0}
+.prog-row.locked .prog-box,.prog-row.locked .prog-lv{opacity:.6}
+.prog-box .btn.sm{flex:none}
+/* XP of each mission, next to its coins */
+.vg-xp{flex:none; margin-left:4px; padding:2px 6px; border-radius:8px; background:#3d8ff0; color:#fff; font-family:var(--font-display); font-size:11px; white-space:nowrap}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -1141,6 +1201,7 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
     </div>
   </div>
   <header class="v-hud">
+    <button class="pl-card" id="plCard" aria-label="Progression" hidden><span class="pl-face"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b id="plLv">1</b></span><span class="pl-info"><b id="plName"></b><span class="pl-bar"><i id="plFill"></i><span id="plTxt"></span></span></span><span class="badge" id="plBadge" hidden>!</span></button>
     <div class="wallet-bar" data-money></div>
     <button class="iconbtn" id="settingsBtn" aria-label="Paramètres"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M26.0 12.9 L30.3 13.5 L30.3 18.5 L26.0 19.1 L25.3 20.9 L27.9 24.3 L24.3 27.9 L20.9 25.3 L19.1 26.0 L18.5 30.3 L13.5 30.3 L12.9 26.0 L11.1 25.3 L7.7 27.9 L4.1 24.3 L6.7 20.9 L6.0 19.1 L1.7 18.5 L1.7 13.5 L6.0 12.9 L6.7 11.1 L4.1 7.7 L7.7 4.1 L11.1 6.7 L12.9 6.0 L13.5 1.7 L18.5 1.7 L19.1 6.0 L20.9 6.7 L24.3 4.1 L27.9 7.7 L25.3 11.1Z" fill="#7d3c98" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="4.6" fill="#fff4dc" stroke="#3b2245" stroke-width="2"/></svg></button>
   </header>
@@ -1178,6 +1239,15 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 
 <div class="screen menu" id="scr-premium" hidden>
   <header class="scr-head"><h1>Boutique premium</h1><div class="wallet-bar" data-money></div></header>
+</div>
+
+<div class="screen menu" id="scr-progress" hidden>
+  <header class="scr-head"><h1>Progression</h1><div class="wallet-bar" data-money></div></header>
+  <div class="prog-card">
+    <div class="prog-head" id="progHead"></div>
+    <p class="prog-note">Réussis des missions pour gagner de l'XP.</p>
+  </div>
+  <div class="prog-list" id="progList"></div>
 </div>
 
 <div class="screen menu" id="scr-events" hidden>
@@ -3635,7 +3705,7 @@ function gearCoach() {
 }
 
 /* ---------- Screens ---------- */
-const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier', 'hero', 'premium', 'events'];
+const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier', 'hero', 'premium', 'events', 'progress'];
 function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
@@ -3646,7 +3716,7 @@ function go(name) {
   if (name === 'village' || name === 'mine') S.screen = name;
   if (name !== 'atelier') stopMini();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, forge: renderForge, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents })[name]();
+  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, forge: renderForge, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg })[name]();
   updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -3654,13 +3724,14 @@ function go(name) {
 /* ---------- Bottom navigation bar ----------
    Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
    Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
-const NAV_OF = { village: 'village', shop: 'premium', forge: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events' };
+const NAV_OF = { village: 'village', shop: 'premium', forge: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village' };
 function updateNav(name) {
   const tab = NAV_OF[name];
   $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
   document.querySelectorAll('.nav-tab').forEach(b => { b.classList.toggle('on', b.dataset.nav === tab); b.setAttribute('aria-current', b.dataset.nav === tab ? 'page' : 'false'); });
   const museumOpen = !!S.buildings.museum;
   document.querySelector('.nav-tab[data-nav="museum"]').classList.toggle('locked', !museumOpen);
+  document.querySelector('.nav-tab[data-nav="events"]').classList.toggle('locked', !eventsOpen());
   // First steps: only what is open shows (Museum after the first return, Character with the equipment, Premium and Events at the end)
   const off = { museum: !museumOpen, hero: !gearOpen(), premium: !S.tutoSeen.guideFin, events: !S.tutoSeen.guideFin };
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('nav-off', !!off[b.dataset.nav]));
@@ -3673,6 +3744,7 @@ $('navBar').addEventListener('click', e => {
   unlockAudio();
   const k = b.dataset.nav;
   if (k === 'museum' && !S.buildings.museum) { sfx('deny'); return toast(tr('Le Musée s\'ouvre à ton premier retour de la mine.'), ''); }
+  if (k === 'events' && !eventsOpen()) { sfx('deny'); return toast(tr('Les Événements se débloquent au niveau {n} du joueur.', { n: plUnlockAt('evenements') }), ''); }
   if (b.classList.contains('on') && k !== 'village') return;
   sfx('pick'); go(k);
 });
@@ -3811,7 +3883,7 @@ function renderGoals() {
     const pct = Math.max(0, Math.min(100, (v - g.start) / (g.target - g.start) * 100));
     return `<div class="vg-row${done ? ' done' : ''}"><span class="vg-ic">${(GOAL_ICON[g.type] || (() => ''))()}</span><div class="vg-txt"><span>${tr(o.texte, { n: g.n })}</span>
       <div class="bar mini"><i style="width:${pct}%"></i><span>${cur} / ${tot}</span></div></div>
-      ${done ? `<button class="btn sm" data-claim="${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">+${g.reward}${COIN}</button>` : `<span class="vg-rw">+${g.reward}${COIN}</span>`}</div>`;
+      ${done ? `<button class="btn sm" data-claim="${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">+${g.reward}${COIN}</button>` : `<span class="vg-rw">+${g.reward}${COIN}</span>`}${goalXP(g) ? `<span class="vg-xp">+${goalXP(g)} XP</span>` : ''}</div>`;
   }).join('');
 }
 document.addEventListener('click', e => {
@@ -3819,17 +3891,109 @@ document.addEventListener('click', e => {
   const i = +b.dataset.claim, g = S.goals[i]; if (!g || !goalDone(g)) return;
   unlockAudio(); sfx('reward');
   S.coins += g.reward;
+  const xp = goalXP(g);
+  gainXP(xp);
   const GO = EQC.cles.objectifs;
   if (gearOpen() && GO && ++G().goals % GO.tousLes === 0) setTimeout(() => giveKey(GO.cle, 1), 700);
   // A new goal takes its place (not the same kind)
   const next = newGoal([...S.goals.map(x => x.type)]);
   S.goals.splice(i, 1, ...(next ? [next] : []));
-  toast(tr('Objectif réussi : +{n} pièces !', { n: g.reward }), 'good');
+  toast(xp ? tr('Objectif réussi : +{n} pièces, +{x} XP !', { n: g.reward, x: xp }) : tr('Objectif réussi : +{n} pièces !', { n: g.reward }), 'good');
   renderVillage(); save();
 });
 $('questBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); renderGoals(); $('goalsModal').hidden = false; $('goalsClose').focus(); });
 $('goalsClose').addEventListener('click', () => { $('goalsModal').hidden = true; });
 $('goalsModal').addEventListener('click', e => { if (e.target.id === 'goalsModal') $('goalsModal').hidden = true; });
+/* ---------- Player progression (config.js > progressionJoueur) ----------
+   Missions give XP; the player's level comes from the total XP. Each level reached gives a reward, claimed in the
+   Progression popup (the card at the top left of the village); some levels open a feature (the Events). */
+const PJ = CFG.progressionJoueur || { xpParMission: 0, niveaux: [], fonctionnalites: {} };
+const goalXP = g => { const o = OBJ.liste.find(x => x.type === g.type); return (o && o.xp != null ? o.xp : PJ.xpParMission) || 0; };
+// XP to go from level l to l + 1 (after the list, the last step again); what level l gives (l >= 2)
+const plStep = l => PJ.niveaux.length ? PJ.niveaux[Math.min(l - 1, PJ.niveaux.length - 1)].xp : Infinity;
+const plRow = l => PJ.niveaux[l - 2];
+function plInfo() {
+  let lv = 1, xp = S.pxp || 0;
+  while (xp >= plStep(lv)) { xp -= plStep(lv); lv++; }
+  return { lv, xp, need: plStep(lv) };
+}
+const plLevel = () => plInfo().lv;
+// Level that opens a feature (1 = open from the start)
+const plUnlockAt = k => { const i = PJ.niveaux.findIndex(r => r.deblocage === k); return i < 0 ? 1 : i + 2; };
+const eventsOpen = () => plLevel() >= plUnlockAt('evenements');
+const plReady = l => l <= plLevel() && !!plRow(l) && !!plRow(l).recompense && !(S.pclaim || {})[l];
+const plWaiting = () => { let n = 0; for (let l = 2; l <= plLevel(); l++) if (plReady(l)) n++; return n; };
+function gainXP(n) {
+  if (!n) return;
+  const before = plLevel();
+  S.pxp = (S.pxp || 0) + n;
+  const lv = plLevel();
+  if (lv > before) setTimeout(() => { sfx('win'); toast(tr('Niveau {n} atteint ! Ta récompense t\'attend dans Progression.', { n: lv }), 'good'); }, 900);
+  renderPlCard(); refreshNav();
+}
+const refreshNav = () => { const scr = SCREENS.find(n => !$('scr-' + n).hidden); if (scr) updateNav(scr); };
+const PL_FEAT_ICON = { evenements: 'Assets/UI/Event.png' };
+// A level's reward and unlock, as small chips
+function plRewardHTML(row) {
+  const r = row.recompense || {}, chip = (icon, n) => `<span class="prog-chip">${icon}${n}</span>`;
+  return (r.pieces ? chip(COIN, r.pieces) : '') + (r.gemmes ? chip(GEM_ICON, r.gemmes) : '')
+    + (r.cle ? chip(keyArt(r.cle), '×' + (r.cles || 1)) : '') + (r.potions ? chip(POTION, '×' + r.potions) : '') + (r.bombes ? chip(TOOLS.bomb, '×' + r.bombes) : '')
+    + (row.deblocage ? `<span class="prog-chip unlock">${PL_FEAT_ICON[row.deblocage] ? img(PL_FEAT_ICON[row.deblocage]) : ''}${tr('Débloque : {x}', { x: tr((PJ.fonctionnalites || {})[row.deblocage] || row.deblocage) })}</span>` : '');
+}
+function plGive(l) {
+  const r = plRow(l).recompense || {};
+  S.coins += r.pieces || 0; G().gems += r.gemmes || 0; S.potions += r.potions || 0; S.bombs += r.bombes || 0;
+  if (r.cle) G().keys[r.cle] = (G().keys[r.cle] || 0) + (r.cles || 1);
+  (S.pclaim = S.pclaim || {})[l] = true;
+  updateBombs(); updateQuick(); refreshGear();
+}
+// The card on the village: face with the level, name, XP gauge (hidden during the first steps, like the missions)
+function renderPlCard() {
+  const p = plInfo();
+  $('plCard').hidden = inGuide();
+  $('plLv').textContent = p.lv;
+  $('plName').textContent = tr(EQC.nomPersonnage || '');
+  $('plFill').style.width = Math.min(100, p.xp / p.need * 100) + '%';
+  $('plTxt').textContent = `${p.xp} / ${p.need} XP`;
+  $('plBadge').hidden = !plWaiting();
+}
+function renderProg() {
+  const p = plInfo(), last = Math.max(PJ.niveaux.length + 1, p.lv + 1);
+  $('progHead').innerHTML = `<span class="pl-face big"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b>${p.lv}</b></span>
+    <div class="prog-who"><b>${tr(EQC.nomPersonnage || '')}</b><span>${tr('Niveau {n}', { n: p.lv })}</span>
+    <span class="pl-bar"><i style="width:${Math.min(100, p.xp / p.need * 100)}%"></i><span>${p.xp} / ${p.need} XP</span></span></div>`;
+  // Horizontal track from level 1 to the right: each level's badge sits on a gauge that fills up to the player's XP
+  // (--f = how full the stretch to the next level is), with the level's reward card beside it
+  let html = '';
+  for (let l = 1; l <= last; l++) {
+    const row = plRow(l) || {}, reached = l <= p.lv;
+    const state = l === 1 ? 'done' : !reached ? (l === p.lv + 1 ? 'next' : 'locked') : plReady(l) ? 'ready' : 'done';
+    const fill = l < p.lv ? 1 : l === p.lv ? p.xp / p.need : 0;
+    const act = l === 1 ? ''
+      : state === 'ready' ? `<button class="btn sm" data-plclaim="${l}">${tr('Récupérer')}</button>`
+      : state === 'done' ? `<span class="prog-ok" aria-label="${tr('Récupéré')}">✓</span>`
+      : state === 'next' ? `<span class="prog-xp">${tr('encore {n} XP', { n: p.need - p.xp })}</span>` : '';
+    const rw = l === 1 ? `<span class="prog-none">${tr('Début de l\'aventure')}</span>` : plRewardHTML(row) || '<span class="prog-none">–</span>';
+    html += `<div class="prog-row ${state}${l === p.lv ? ' here' : ''}${l === last ? ' end' : ''}" style="--f:${fill}">
+      <div class="prog-node"><span class="prog-lv">${l}</span></div>
+      <div class="prog-box"><div class="prog-rw">${rw}</div>${act}</div></div>`;
+  }
+  $('progList').innerHTML = html;
+}
+function openProg() {
+  unlockAudio(); sfx('pick'); go('progress');
+  // Show the first reward waiting, or else the next level
+  const row = $('progList').querySelector('.prog-row.ready, .prog-row.next');
+  if (row) row.scrollIntoView({ block: 'nearest', inline: 'center' });
+}
+$('plCard').addEventListener('click', openProg);
+$('scr-progress').addEventListener('click', e => {
+  const b = e.target.closest('[data-plclaim]'); if (!b) return;
+  const l = +b.dataset.plclaim; if (!plReady(l)) return;
+  plGive(l); unlockAudio(); sfx('reward');
+  toast(tr('Récompense du niveau {n} récupérée !', { n: l }), 'good');
+  renderProg(); renderPlCard(); refreshNav(); save();
+});
 // Camera slides to a building (keeps the map inside the screen)
 function panTo(el, done) {
   const w = world.getBoundingClientRect(), r = el.getBoundingClientRect();
@@ -3859,7 +4023,7 @@ function revealBuildings() {
   });
 }
 function renderVillage() {
-  applyUnlocks();
+  applyUnlocks(); renderPlCard();
   // Buildings waiting for their entrance stay hidden until the camera reaches them; "Nouveau !" until first visit
   document.querySelectorAll('.bld').forEach(b => {
     const k = b.dataset.go;

@@ -826,6 +826,7 @@ window.CONFIG = {
     // "texte" : {n} est remplacé par la quantité.
     // "choix" : la quantité est tirée au hasard parmi ces nombres ronds.
     // "pieces" : récompense (au biome 1).
+    // "xp" (facultatif) : XP du joueur gagnée, à la place de progressionJoueur > xpParMission.
     // "deblocage" : l'objectif n'est proposé qu'une fois cette nouveauté débloquée
     //   (mêmes noms que progression > deblocages, ou 'musee').
     // Pour "Atteins le niveau {n}", c'est l'écart avec ton record (le niveau visé est arrondi à 5).
@@ -843,6 +844,38 @@ window.CONFIG = {
       { type: 'bombes',     texte: 'Utilise {n} bombes',                 choix: [3, 5],           pieces: 50, deblocage: 'bombes' },
       { type: 'collection', texte: 'Complète une collection',            choix: [1],              pieces: 100, deblocage: 'musee' },
     ],
+  },
+
+  /* ---------------------------------------------------------------
+     PROGRESSION DU JOUEUR (niveau du personnage)
+     Le joueur gagne de l'XP en réussissant des missions (les objectifs du village).
+     Chaque niveau atteint donne une récompense, à récupérer dans le menu Progression
+     (en touchant l'encart en haut à gauche du village). Certains niveaux débloquent une fonctionnalité.
+     --------------------------------------------------------------- */
+  progressionJoueur: {
+    // XP gagnée par mission réussie (une mission peut avoir sa propre valeur : "xp" dans objectifs > liste)
+    xpParMission: 20,
+
+    // Les niveaux, à partir du niveau 2 : "xp" = XP à gagner depuis le niveau précédent.
+    // "recompense" : pieces, gemmes (perles), potions, bombes, ou cle ('bois', 'argent', 'or', 'etoile') avec "cles" = combien.
+    // "deblocage" : la fonctionnalité qui s'ouvre à ce niveau (voir "fonctionnalites" ci-dessous).
+    // Après le dernier niveau de la liste, chaque niveau demande l'XP du dernier, sans récompense.
+    niveaux: [
+      { xp: 40,  recompense: { pieces: 100 } },                        // niveau 2
+      { xp: 60,  recompense: { gemmes: 10 } },                         // niveau 3
+      { xp: 80,  recompense: { cle: 'bois', cles: 1 } },                   // niveau 4
+      { xp: 100, recompense: { pieces: 300 }, deblocage: 'evenements' },  // niveau 5
+      { xp: 120, recompense: { potions: 2 } },                         // niveau 6
+      { xp: 140, recompense: { gemmes: 20 } },                         // niveau 7
+      { xp: 160, recompense: { cle: 'argent', cles: 1 } },                 // niveau 8
+      { xp: 180, recompense: { pieces: 600 } },                        // niveau 9
+      { xp: 200, recompense: { gemmes: 50, cle: 'or', cles: 1 } },         // niveau 10
+    ],
+
+    // Les fonctionnalités débloquées par le niveau du joueur : nom affiché dans le menu Progression
+    fonctionnalites: {
+      evenements: 'Événements',
+    },
   },
 
   /* ---------------------------------------------------------------

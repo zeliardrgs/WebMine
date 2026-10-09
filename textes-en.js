@@ -702,4 +702,15 @@ window.TEXTES_EN = {
   "Confirmer": "Confirm",
   "Ouvrir des coffres": "Open chests",
   "Les articles arrivent plus profond dans la mine.": "Items arrive deeper in the mine.",
+  // Player progression
+  "Progression": "Progress",
+  "Réussis des missions pour gagner de l'XP.": "Complete missions to earn XP.",
+  "Objectif réussi : +{n} pièces, +{x} XP !": "Mission complete: +{n} coins, +{x} XP!",
+  "Niveau {n} atteint ! Ta récompense t'attend dans Progression.": "Level {n} reached! Your reward is waiting in Progress.",
+  "Débloque : {x}": "Unlocks: {x}",
+  "Récupéré": "Claimed",
+  "encore {n} XP": "{n} XP to go",
+  "Récompense du niveau {n} récupérée !": "Level {n} reward claimed!",
+  "Les Événements se débloquent au niveau {n} du joueur.": "Events unlock at player level {n}.",
+  "Début de l'aventure": "Start of the adventure",
 };
