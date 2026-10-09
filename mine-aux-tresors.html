@@ -144,6 +144,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .dw-title.long{font-size:8cqw}
 .dw-card p{margin:5cqw 2cqw 4cqw; font-family:var(--font-display); font-weight:400; font-size:3.8cqw; line-height:1.2; color:var(--ink-soft); text-wrap:balance}
 .dw-stats{display:flex; justify-content:center; gap:3cqw}
+.dw-cp{margin:-1cqw 0 2.5cqw; font-family:var(--font-display); font-size:4.2cqw; color:#7d3c98}
 .dw-stat{display:flex; align-items:center; justify-content:center; gap:5cqw; min-width:55cqw; height:21cqw; padding:0 5cqw; box-sizing:border-box; border-radius:4cqw; background:#f6dcaa;
   font-family:var(--font-display); font-weight:400; font-size:10cqw; color:var(--ink); font-variant-numeric:tabular-nums; white-space:nowrap}
 .dw-stats.two .dw-stat{min-width:0; flex:1; gap:3cqw; padding:0 3cqw; font-size:7.5cqw}
@@ -252,7 +253,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 /* Level chip: treasure, guardian and King's levels */
 /* Special level: the chip still says "Niveau N", with a "Niveau spécial" ribbon under it */
 .depth{position:relative}
-.depth-band{position:absolute; left:50%; top:calc(100% - 8px); transform:translateX(-50%); z-index:3; white-space:nowrap; padding:2px 8px; border-radius:8px;
+.depth-band{position:absolute; left:0; top:calc(100% - 8px); z-index:3; white-space:nowrap; padding:2px 8px; border-radius:8px;
   font-family:var(--font-display); font-size:10px; line-height:1.2; color:#fff; box-shadow:0 2px 0 rgba(0,0,0,.3); pointer-events:none}
 .depth-band.k-treasure{background:linear-gradient(#ffd23d, #e0a400); color:#5a3a00}
 .depth-band.k-guardian{background:linear-gradient(#ff6b5b, #d93a3a)}
@@ -575,9 +576,9 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
   12%{transform:translate(calc(var(--x1) - 6px), calc(var(--y1) - 6px)); opacity:1}
   72%{transform:translate(calc(var(--x2) - 6px), calc(var(--y2) - 6px)); opacity:1}
   100%{transform:translate(calc(var(--x2) - 6px), calc(var(--y2) - 6px)); opacity:0}}
-#coachTxt{position:fixed; left:50%; z-index:62; transform:translateX(-50%); max-width:min(320px, calc(100vw - 32px)); box-sizing:border-box;
+#coachTxt{position:fixed; left:50%; z-index:62; transform:translateX(-50%); width:max-content; max-width:min(340px, calc(100vw - 32px)); box-sizing:border-box;
   padding:8px 16px; border-radius:16px; background:#fff8e6; color:var(--ink); box-shadow:0 4px 0 #e6c48a, 0 10px 20px rgba(0,0,0,.35);
-  font-family:var(--font-display); font-size:19px; line-height:1.15; text-align:center; pointer-events:none; white-space:nowrap}
+  font-family:var(--font-display); font-size:19px; line-height:1.15; text-align:center; pointer-events:none; white-space:normal; text-wrap:balance}
 #coachTxt.info::after{content:attr(data-more); display:block; margin-top:3px; font-family:var(--font-body, inherit); font-size:12px; opacity:.6}
 @media (prefers-reduced-motion: reduce){#coachHand.tap img,#coachHand.swipe{animation:none}}
 .tuto{cursor:pointer}
@@ -617,6 +618,8 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .nav-tab.soon .nav-ic{filter:grayscale(.75) brightness(.8)}
 .nav-tab.soon .nav-lb{opacity:.6}
 .nav-soon{position:absolute; top:-2px; left:50%; transform:translateX(-50%) rotate(-6deg); padding:1px 6px; border-radius:7px; background:#7a5a74; color:#fff; font-family:var(--font-display); font-size:10px; white-space:nowrap; box-shadow:0 2px 0 rgba(0,0,0,.3)}
+/* Tabs not open yet during the first steps: hidden, but they keep their place so the World tab stays in the middle */
+.nav-tab.nav-off{visibility:hidden; pointer-events:none}
 .nav-tab.locked .nav-ic{filter:grayscale(1) brightness(.7)}
 .nav-tab .badge{top:0; right:10%}
 /* The World tab: a big round button sticking out of the bar */
@@ -711,6 +714,8 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .gi img,.gi-art img{width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
 .gi-art{width:78%; height:78%; display:grid; place-items:center}
 .gi-lv{position:absolute; left:50%; bottom:-6px; transform:translateX(-50%); padding:0 6px; border-radius:8px; background:var(--ink); color:#fff; font-family:var(--font-display); font-size:10.5px; line-height:16px; white-space:nowrap}
+.gi-s{position:absolute; top:3px; left:4px; min-width:16px; height:16px; padding:0 3px; box-sizing:border-box; border-radius:5px; background:#fff; color:var(--g2, var(--ink)); font-family:var(--font-display); font-size:11px; line-height:16px; text-align:center; box-shadow:0 1px 0 rgba(0,0,0,.25); z-index:1}
+.eq-slot .gi-s{top:6px; left:6px}
 .gi-new{position:absolute; top:-6px; left:-4px; padding:0 5px; border-radius:7px; background:var(--lava); color:#fff; font-family:var(--font-display); font-size:9.5px; line-height:15px; transform:rotate(-8deg)}
 .gi-on{position:absolute; top:-6px; right:-5px; width:20px; height:20px; border-radius:50%; background:var(--mint); color:#fff; font-size:12px; display:grid; place-items:center; box-shadow:0 2px 0 #1fae7a}
 .gi.better::after,.gi.can::after{content:"▲"; position:absolute; top:-7px; right:-6px; width:20px; height:20px; border-radius:50%; background:var(--mint); color:#fff; font-size:10px; display:grid; place-items:center; box-shadow:0 2px 0 #1fae7a}
@@ -770,7 +775,23 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .ch-key img{width:24px; height:24px}
 .ch-odds{display:flex; flex-wrap:wrap; justify-content:center; gap:2px 6px; font-family:var(--font-display); font-size:11px; line-height:1.3}
 .ch-odds small{width:100%; font-family:var(--font-body); font-size:10.5px; color:var(--ink-soft)}
-.ch-card .btn{margin-top:4px; min-width:96px; display:flex; align-items:center; justify-content:center; gap:4px}
+.ch-btns{display:flex; flex-direction:column; gap:6px; width:100%; margin-top:6px}
+.ch-btns .btn{display:flex; align-items:center; justify-content:space-between; gap:6px; padding:6px 10px; font-size:13px}
+.ch-btns .btn span{display:flex; align-items:center; gap:2px; font-size:12px}
+.ch-btns .btn span img{width:20px; height:20px}
+.ch-btns .btn span.short{color:#b8341c}
+.ch-btns .x10{background:#ffd23d}
+.ch-btns .ch-ad{background:var(--mint); box-shadow:0 4px 0 #1fae7a; color:#fff}
+.ch-btns .ch-ad:disabled{opacity:.55}
+.cm-grid{position:relative; z-index:1; display:grid; grid-template-columns:repeat(5, 54px); gap:8px}
+.cm-mini{width:54px; animation:cmPop .4s cubic-bezier(.2,1.6,.4,1) both}
+.buy-modal .card{text-align:center; color:var(--ink)}
+.buy-modal h2{margin:0 0 6px; font-family:var(--font-display); font-weight:400; font-size:21px}
+.buy-art{width:90px; height:90px; margin:0 auto} .buy-art img{width:100%; height:100%; object-fit:contain}
+.buy-cost{display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--font-display); font-size:20px}
+.buy-cost span{display:flex; align-items:center; gap:3px} .buy-cost img{width:30px; height:30px}
+.buy-have{font-size:13px; color:var(--ink-soft)} .buy-have.short{color:#d9432a}
+.buy-btns{display:flex; gap:10px; margin-top:12px} .buy-btns .btn{flex:1}
 .ch-none{margin-top:6px; font-size:12px; color:var(--ink-soft)}
 .btn.gem img,.res img[alt="gemmes"]{width:20px; height:20px}
 .sic i{font-style:normal}
@@ -1242,6 +1263,8 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <div class="cm-btns" id="chestBtns" hidden></div>
   </div>
 </div>
+<div class="modal buy-modal" id="buyModal" hidden><div class="card" role="dialog" aria-label="Ouvrir des coffres"><h2 id="buyTitle"></h2><div id="buyBody"></div>
+  <div class="buy-btns"><button class="btn ghosty" id="buyNo">Annuler</button><button class="btn" id="buyOk">Confirmer</button></div></div></div>
 <div class="modal ad-modal" id="adModal" hidden><div class="card"><p class="ad-tag">Publicité (simulée)</p><b id="adCount">3</b><p>Ton coffre arrive…</p></div></div>
 <div class="modal" id="goalsModal" hidden>
   <div class="card goals-modal" role="dialog" aria-labelledby="goalsTitle" style="text-align:center">
@@ -1257,6 +1280,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <div class="dw-card">
       <h2 class="dw-title" id="descendTitle"></h2>
       <p id="descendText"></p>
+      <p class="dw-cp" id="descendCp" hidden></p>
       <div class="dw-stats" id="descendStats"></div>
       <button class="btn big dw-up" id="descendUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false">Remonter</button>
       <div class="dw-more">
@@ -1315,6 +1339,14 @@ const floorKind = level => { const k = baseKind(level); return k === 'treasure' 
 // A tutorial level is a tutorial only until the player has gone past it: replayed later (starting again from the top
 // of the mine or from a checkpoint), it is a normal level
 const isTuto = level => !!TUTO[level] && level >= (S.reached || 1);
+/* First steps (config.js > progression > guide): until the player is back from the last planned return,
+   every expedition ends at a planned return (5: Museum, 11: Shop and Forge, 16: Atelier) */
+const GUIDE = PROG.guide || { fin: 0, retours: [] };
+const inGuide = () => (S.guideBack || 0) < GUIDE.fin;
+const nextReturn = () => GUIDE.retours.find(r => r > (S.guideBack || 0)) ?? Infinity;
+// "Remonter" only shows from the next planned return on. Guided levels never ask for more energy than is left
+// (and tutorial levels give what they need), so the player can always go on; if ever stuck, the forced return still applies.
+const upAllowed = () => !inGuide() || S.level >= nextReturn();
 // Treasure levels (10, 20, 30…) are one size bigger than the levels around them, the first time
 const levelDims = (level, kind) => { const n = isTuto(level) ? 3 : Math.min(MAX_COLS, gridRow(level).taille + (kind === 'treasure' ? RY.niveauTresor.tailleEnPlus || 0 : 0)); return [n, n]; };
 function setDims(cols, rows) {
@@ -1454,7 +1486,15 @@ function rwLabel(rw) { return rw.kind === 'gem' ? tr('Gemme') : rw.kind === 'geo
    Items come from the Shop's chests and are levelled up and merged at the Forge. */
 const EQC = CFG.equipement;
 const RAR_KEYS = Object.keys(EQC.raretes);                       // commun, rare, epique, legendaire, mythique
-const RAR_CSS = { commun: 'common', rare: 'rare', epique: 'epic', legendaire: 'legendary', mythique: 'mythic' };
+// Colour of each rarity (CSS --rar-*); the "S" tiers keep the colour of their rarity and get an S badge
+const RAR_CSS = { commun: 'common', rare: 'rare', epique: 'epic', epiqueS: 'epic', legendaire: 'legendary', legendaireS: 'legendary', mythique: 'mythic' };
+const isS = r => !!(EQC.raretes[r] || {}).S;
+const PAS_TIERS = RAR_KEYS.slice(RAR_KEYS.indexOf('epique'));   // rarities with a passive: Epic and above
+// Depth rewards are spaced out in the faster mines (config.js > equipement > cles > facteurParMine)
+const MINE_LEN = 1000;
+const mineOf = level => Math.ceil(level / MINE_LEN);
+const inMine = level => (level - 1) % MINE_LEN + 1;
+const keyEvery = (level, n) => { const F = EQC.cles.facteurParMine || [1]; return n > 0 && level > 0 && inMine(level) % (n * F[Math.min(mineOf(level), F.length) - 1]) === 0; };
 const GSLOTS = ['pioche', 'pelle', 'gants', 'casque', 'lanterne', 'bottes'];   // left column, then right column
 const SLOT_STAT = { pioche: 'dmg', pelle: 'coin', gants: 'ore', casque: 'free', lanterne: 'geode', bottes: 'pile' };
 const CHESTS = Object.keys(EQC.coffres);                         // bois, argent, or, etoile
@@ -1477,7 +1517,7 @@ function statOf(it) {
   return st.max != null ? Math.min(st.max, v) : v;
 }
 // Passive of the item's model: from Epic on, stronger at Legendary and Mythic
-const passiveOf = it => { const i = rarIdx(it.rar) - 2; return i >= 0 ? ARCH[it.arch].valeurs[Math.min(i, ARCH[it.arch].valeurs.length - 1)] : 0; };
+const passiveOf = it => { const i = PAS_TIERS.indexOf(it.rar), v = ARCH[it.arch].valeurs; return i >= 0 ? v[Math.min(i, v.length - 1)] : 0; };
 // What the equipped items give, all together: { dmg, coin, ore, free, geode, pile, pas: { model: value } }
 function gearTotals() {
   const t = { dmg: 0, coin: 0, ore: 0, free: 0, geode: 0, pile: 0, pas: {} };
@@ -1508,11 +1548,12 @@ const maxCharges = () => 1 + S.up.charges;
 
 // finds = treasures in the bag; dupes = Common duplicates sold automatically (no bag space)
 const zeroOres = () => Object.fromEntries(Object.keys(ORES).map(k => [k, 0]));
-const newTrip = () => ({ finds: [], dupes: [], coins: 0, ores: zeroOres() });
+// bonus = treasures of tutorial levels: they take no bag slot
+const newTrip = () => ({ finds: [], dupes: [], bonus: [], coins: 0, ores: zeroOres() });
 
 function freshState() {
   return {
-    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, up: { energy: 0, fast: 0, charges: 0 }, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false,
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, up: { energy: 0, fast: 0, charges: 0 }, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false, guideBack: 0,
     bag: {
       ores: zeroOres(),
       gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
@@ -1600,6 +1641,34 @@ function genLevel(level) {
   // The kind of this visit (shown in the HUD and the bubble); a treasure level is used up once generated
   S.floor = S.tuto ? 'easy' : kind;
   if (kind === 'treasure') (S.treasureDone = S.treasureDone || {})[level] = true;
+  if (S.tuto) tutoEnergy(); else if (inGuide() && level < nextReturn()) guideStone();
+}
+// Energy needed to break every rock of the board with the pickaxe (cooled magma included)
+const hitsOf = c => Math.ceil((c.t === 'magma' ? HP.cool : c.hp || 0) / pickPower());
+const ROCK = ['stone', 'ore', 'hard', 'ice', 'stump', 'magma', 'cool'];
+// A tutorial level always gives the energy needed to finish it (never stuck on the new tile)
+function tutoEnergy() {
+  if (!has('pioche') || TUTO[S.tuto].outil === 'bomb') return;
+  const need = Math.min(maxE(), S.grid.reduce((a, c) => a + (ROCK.includes(c.t) ? hitsOf(c) : 0), 0));
+  if (S.energy >= need) return;
+  S.energy = need;
+  setTimeout(() => { updateEnergy(true); toast(tr(TX.energieOfferte), 'good'); }, 700);
+}
+// Guided levels: little enough stone that breaking all of it still leaves energy to reach the next planned return
+// (tutorial levels top the energy up themselves, so they don't count)
+function guideStone() {
+  if (!at(S.level, 'pioche')) return;
+  let left = 0;
+  for (let l = S.level; l < nextReturn(); l++) if (!isTuto(l)) left++;
+  const budget = Math.floor(S.energy / Math.max(1, left)), cover = new Set(S.rewards.flatMap(rwCells));
+  // Rocks over a treasure are kept first, so the pickaxe stays useful
+  const rocks = S.grid.map((c, i) => i).filter(i => ROCK.includes(S.grid[i].t)).sort((a, b) => cover.has(b) - cover.has(a));
+  let spent = 0, kept = 0;
+  for (const i of rocks) {
+    const h = hitsOf(S.grid[i]);
+    if (kept < (GUIDE.pierresMax ?? 3) && spent + h <= budget) { spent += h; kept++; }
+    else S.grid[i] = { t: 'dirt', v: randInt(0, 2) };
+  }
 }
 function genLevelOnce(level, kindArg) {
   const [cols, rows] = levelDims(level, kindArg || floorKind(level));
@@ -1694,9 +1763,10 @@ function genLevelOnce(level, kindArg) {
   // Some series lie only in dirt, under stone or under magma: cover them accordingly
   for (const { p, cells } of best) coverSoil(g, cells, p.kind === 'art' ? ARTS[p.key].soil : 'tout', level);
   trimCost(g, best, level, kind);
-  // A chest key: on every treasure level (the first time), sometimes on a normal level (once the equipment is open)
-  const KC = EQC.cles;
-  if (gearOpen() && (kind === 'treasure' ? KC.niveauTresor : Math.random() < KC.chanceEtage)) {
+  // A chest key: on a treasure level every X levels (the first time), sometimes on a normal level (once the equipment is open)
+  // (multiples of 100 are guardian levels: the key goes on the first treasure level after the interval, e.g. 410, 810)
+  const KC = EQC.cles, keyHere = kind === 'treasure' ? KC.niveauTresor && keyEvery(level - 10, KC.niveauTresorTousLes || 10) : Math.random() < (KC.chanceEtage || 0);
+  if (gearOpen() && keyHere) {
     const taken = new Set([...reserved, ...best.flatMap(b => b.cells)]);
     const list = free().filter(i => !taken.has(i));
     if (list.length) g[list[randInt(0, list.length - 1)]] = { t: 'gkey', k: kind === 'treasure' ? KC.niveauTresor : 'bois' };
@@ -1736,8 +1806,10 @@ function genTutorial(level, tuto) {
     const gt = guaranteeFor(level);
     rw = { kind: 'geode', key: gt && gt.kind === 'geode' ? gt.key : 'white', w: 2, h: 2, r: corner >> 1, c: corner & 1, ...(gt ? { guaranteed: true } : {}) };
   } else {
-    // The smallest artefact of this level, in the middle of the grid
-    const arts = artsAt(level).map(([k, o]) => [k, o]).sort((a, b) => a[1].w * a[1].h - b[1].w * b[1].h);
+    // The smallest artefact of this level not found yet (a new discovery), in the middle of the grid
+    const owned = k => S.bag.arts[k] || S.trip.finds.some(f => f.kind === 'art' && f.key === k);
+    const all = artsAt(level).map(([k, o]) => [k, o]).filter(([, o]) => o.w <= 3 && o.h <= 3).sort((a, b) => a[1].w * a[1].h - b[1].w * b[1].h);
+    const arts = all.some(([k]) => !owned(k)) ? all.filter(([k]) => !owned(k)) : all;
     const gt = guaranteeFor(level);
     const [key, o] = gt && gt.kind === 'art' ? [gt.key, ARTS[gt.key]] : arts.length ? arts[0] : ['coquillage', ARTS.coquillage];
     rw = { kind: 'art', key, w: o.w, h: o.h, r: o.h === 1 ? 1 : 0, c: o.w === 1 ? 1 : 0, ...(gt ? { guaranteed: true } : {}) };
@@ -1787,7 +1859,8 @@ function genTutorial(level, tuto) {
       break;
     }
   }
-  S.grid = g; S.rewards = [{ ...rw, found: false }];
+  // The treasure of a tutorial level is a bonus: it takes no bag slot
+  S.grid = g; S.rewards = [{ ...rw, found: false, bonus: true }];
 }
 
 /* ---------- DOM ---------- */
@@ -1847,6 +1920,7 @@ function buildBoard(animate) {
 function updateGoals() {
   const f = S.rewards.filter(r => r.found).length;
   $('goalCount').textContent = tr('{f} / {n} dégagés', { f, n: S.rewards.length });
+  updateNextPill();
 }
 
 /* ---------- Unlocks: a tool, a building or a counter only appears once unlocked ---------- */
@@ -1858,6 +1932,9 @@ function applyUnlocks() {
   if ((TOOL_UNLOCK[S.tool] && !has(TOOL_UNLOCK[S.tool])) || (S.tool === 'bomb' && $('armBar').hidden)) setTool('shovel');
   $('energyChip').hidden = !has('pioche');
   $('bagPill').hidden = !S.bagSeen;
+  $('upBtn').hidden = !upAllowed();
+  // First steps: the goals and the "drag the village" hint wait until the end
+  $('questBtn').hidden = inGuide(); $('vHint').hidden = inGuide();
   updateBadge();
   for (const k of ['museum', 'forge', 'atelier', 'shop']) { const b = document.querySelector(`.bld[data-go="${k}"]`); if (b) b.hidden = !S.buildings[k]; }
 }
@@ -1909,6 +1986,9 @@ function coachTick() {
   renderCoach(st);
 }
 setInterval(coachTick, 150);
+// Checked again right after every tap, so a finished step never lingers on the next screen
+addEventListener('click', () => setTimeout(coachTick), true);
+addEventListener('pointerup', () => setTimeout(coachTick, 30), true);
 const coachStep = () => coach && coach.steps[coach.i];
 /* While a tutorial step shows, only its target (and, for a swipe, the way to its end) can be touched.
    The step hides itself when its target is not on screen, or when a popup is open on top of it. */
@@ -1923,7 +2003,10 @@ function coachShown(el) {
 function renderCoach(st) {
   const dim = $('coachDim'), hand = $('coachHand'), txt = $('coachTxt');
   const el = st && st.target(), el2 = st && st.to && st.to();
-  if (!st || !coachShown(el)) { dim.hidden = hand.hidden = txt.hidden = true; coachArea = null; return; }
+  // A step the player can't do right now (no energy left for the pickaxe) hides itself and never locks the screen
+  const cant = st && st.energy && has('pioche') && S.energy <= 0;
+  if (st && st.scroll && !st._scrolled && el && el.isConnected && el.getClientRects().length) { st._scrolled = true; el.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' }); }
+  if (!st || cant || !coachShown(el)) { dim.hidden = hand.hidden = txt.hidden = true; coachArea = null; return; }
   const r = el.getBoundingClientRect(), q = el2 ? el2.getBoundingClientRect() : r;
   coachArea = { l: Math.min(r.left, q.left) - 4, t: Math.min(r.top, q.top) - 4, r: Math.max(r.right, q.right) + 4, b: Math.max(r.bottom, q.bottom) + 4 };
   // Measured again only when the target moves (camera, board animation, screen size)
@@ -1942,11 +2025,11 @@ function renderCoach(st) {
   txt.textContent = tr(st.text, st.vars);
   // An info step (no action to do): no hand, and "tap to continue" under the sentence
   txt.classList.toggle('info', !!st.info); txt.dataset.more = st.info ? tr('Touche pour continuer') : '';
-  // The sentence sits just outside the lit circle: below it when the target is high on the screen or in a popup
-  // (so it never hides the popup's title), above otherwise
-  const high = my < innerHeight * .55 || !!el.closest('.modal');
-  txt.style.top = high ? (el.closest('.modal') ? r.bottom + 14 : Math.max(my + rad + 28, r.bottom + 64)) + 'px' : '';
-  txt.style.bottom = high ? '' : innerHeight - (my - rad - 10) + 'px';
+  // The sentence sits right next to the target: below it when the target is high on the screen or in a popup
+  // (so it never hides the popup's title), above otherwise, or above when the step asks for it (buttons below)
+  const inModal = !!el.closest('.modal'), high = !st.above && (my < innerHeight * .55 || inModal);
+  txt.style.top = high ? Math.min(innerHeight - 90, inModal ? r.bottom + 14 : Math.max(r.bottom + 16, cy + 64)) + 'px' : '';
+  txt.style.bottom = high ? '' : innerHeight - (st.above || inModal ? r.top - 12 : Math.min(r.top - 12, my - rad - 10)) + 'px';
   dim.hidden = txt.hidden = false; hand.hidden = !!st.info;
 }
 // Touches outside the tutorial's target are ignored (the cheat menu stays usable for testing)
@@ -2003,9 +2086,11 @@ function levelCoach() {
   } else {
     const i = S.grid.findIndex(COACH_FIND[t.nouveaute] || (() => false));
     if (i < 0) return;
-    steps = [toolStep(t.outil), cellStep(t.texte, i)];
+    steps = [toolStep(t.outil), { ...cellStep(t.texte, i), energy: t.outil === 'pickaxe' }];
+    // The pickaxe level also introduces energy (tap to continue)
+    if (t.nouveaute === 'pierre') steps.unshift({ text: TX.energie, info: true, target: () => $('energyChip'), done() { return this.tapped; } });
     // Cooled magma still has to be broken with the pickaxe
-    if (t.nouveaute === 'magma') steps.push(toolStep('pickaxe'), { ...cellStep(TX.casserRefroidi, i), done: () => S.grid[i].t !== 'magma' && S.grid[i].t !== 'cool' });
+    if (t.nouveaute === 'magma') steps.push(toolStep('pickaxe'), { ...cellStep(TX.casserRefroidi, i), energy: true, done: () => S.grid[i].t !== 'magma' && S.grid[i].t !== 'cool' });
   }
   startCoach(lv, steps, true);
 }
@@ -2557,6 +2642,9 @@ function checkAutoNext() {
   checkAutoNext.t = setTimeout(() => {
     // Still the same level, nothing open on screen
     if (gen !== boardGen || $('scr-mine').hidden || bagQueue.length || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
+    // A tutorial is showing (or the player must go back up): wait for it
+    if (coach) return checkAutoNext();
+    if (inGuide() && S.level >= nextReturn()) return;
     tryDescend();
   }, 1100);
 }
@@ -2585,7 +2673,7 @@ function takeReward(ri) {
 // Treasures found while the bag is full wait here, one choice at a time
 const bagQueue = [];
 function collect(rw, ri) {
-  if (!roomFor(rw.kind)) {
+  if (!rw.bonus && !roomFor(rw.kind)) {
     // Bag full: a duplicate simply stays on the ground; a new discovery asks to swap with a duplicate of the bag
     if (isDuplicate(rw.kind, rw.key)) return leaveDuplicate(rw, ri);
     bagQueue.push([rw, ri]); if (bagQueue.length === 1) askBagFull(); return;
@@ -2630,6 +2718,7 @@ function askBagFull() {
   $('bagReplace').dataset.drop = i;
   $('bagReplace').innerHTML = `${findArt(old.kind, old.key)}<span>${tr('Laisser {x}', { x: findName(old.kind, old.key) })}<small>${bagItemIsDupe(i) ? tr('doublon · et prendre le nouveau') : tr('objet le moins précieux · et prendre le nouveau')}</small></span>`;
   $('bagFullModal').hidden = false; $('bagReplace').focus();
+  startCoach('echanger', [{ text: TX.echanger, above: true, target: () => $('bagReplace'), done: () => $('bagFullModal').hidden }]);
 }
 function resolveBagFull(dropIndex) {
   const [rw, ri] = bagQueue.shift();
@@ -2695,7 +2784,8 @@ function findLabel(rw, note) {
   // Just the name, in its rarity colour (plus a short note for an auto-sold duplicate)
   d.innerHTML = rarName(rwName(rw), rarityOfFind(rw.kind, rw.key)) + (note ? `<small>${note}</small>` : '');
   fx.append(d);
-  const half = d.offsetWidth / 2 + 4, x = Math.min(Math.max((rw.c + rw.w / 2) * t, half), board.clientWidth - half);
+  const half = d.offsetWidth / 2 + 4, bl = board.getBoundingClientRect().left;
+  const x = Math.min(Math.max((rw.c + rw.w / 2) * t, half - bl + 8), innerWidth - bl - half - 8);
   Object.assign(d.style, { left: x + 'px', top: Math.max(rw.r * t - 4, d.offsetHeight + 4) + 'px' });
   d.animate([
     { opacity: 0, transform: 'translate(-50%, -80%) scale(.6)' },
@@ -2706,19 +2796,23 @@ function findLabel(rw, note) {
 }
 function pickUp(rw, ri) {
   stat('tresors');
-  S.trip.finds.push({ kind: rw.kind, key: rw.key });
+  // A tutorial level's treasure is a bonus: it takes no bag slot
+  if (rw.bonus) { (S.trip.bonus = S.trip.bonus || []).push({ kind: rw.kind, key: rw.key }); floatText(rw.r * COLS + rw.c, tr(TX.horsSac), '#fff6a8'); }
+  else S.trip.finds.push({ kind: rw.kind, key: rw.key });
+  // The very first treasure: a short tutorial shows the bag (tap to continue)
+  if (!S.bagSeen) setTimeout(() => startCoach('sac', [{ text: TX.sac, info: true, target: () => $('bagPill'), done() { return this.tapped; } }], true), 1000);
   // The bag is introduced the first time it gets full: it appears, with a short bubble pointing at "go back up"
   // The bag appears with the very first treasure picked up
   if (!S.bagSeen) { S.bagSeen = true; applyUnlocks(); }
   // The first time it gets full: a short tutorial pointing at "go back up" (shown once)
   // The bag just got full: the "Sac plein" popup opens by itself once the treasure has flown into the bag
   // (even if some dirt is left), and the first time a short tutorial points at "Remonter"
-  if (bagFull()) {
+  if (!rw.bonus && bagFull()) {
     const gen = boardGen;
     const showFull = () => {
       if ($('scr-mine').hidden) return;
       if (!bagQueue.length && ![...document.querySelectorAll('.modal')].some(m => !m.hidden)) tryDescend();
-      startCoach('sacPlein', [{ text: TX.sacPlein, target: () => $('descendModal').hidden ? $('upBtn') : $('descendUp'), done: () => $('scr-mine').hidden || !$('recapModal').hidden }]);
+      startCoach('sacPlein', [{ text: TX.sacPlein, above: true, target: () => $('descendModal').hidden ? $('upBtn') : $('descendUp'), done: () => $('scr-mine').hidden || !$('recapModal').hidden }]);
     };
     setTimeout(() => {
       if (gen !== boardGen || $('scr-mine').hidden) return;
@@ -2800,7 +2894,11 @@ function checkStuck() {
   toast(tr(CFG.energie.texteRetourForce), 'warn'); sfx('deny');
   stuckT = setTimeout(() => { stuckT = null; if (!$('scr-mine').hidden && isStuck()) openRecap(); }, 1800);
 }
-function loop() { updateEnergy(); updateBucket(); checkStuck(); requestAnimationFrame(loop); }
+function loop() {
+  updateEnergy(); updateBucket(); checkStuck();
+  const up = !upAllowed(); if ($('upBtn').hidden !== up) $('upBtn').hidden = up;
+  requestAnimationFrame(loop);
+}
 
 /* ---------- Forge & shop ---------- */
 const pct = v => Math.round(v * 100) + (LANG === 'en' ? '%' : ' %');
@@ -2859,6 +2957,10 @@ function renderShopScreen() {
   const cons = Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k]));
   $('conCard').hidden = !has('sac') && !cons.length;
   setTimeout(gearCoach);
+  if (S.tutoSeen.sacBoutique && !S.tutoSeen.sacAcheter) startCoach('sacAcheter', [
+    { text: TX.sacAcheter, scroll: true, target: () => document.querySelector('button[data-bagup]'), done: () => S.bagLvl > 0 || $('scr-shop').hidden },
+    { text: TX.retourVillage, target: () => document.querySelector('#scr-shop .back'), done: () => $('scr-shop').hidden },
+  ]);
   $('conList').innerHTML = (has('sac') ? bagRow : '') + cons.map(([k, c]) =>
     `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
       <div class="stxt"><b>${c.name}</b><span>${c.desc}</span></div>
@@ -2969,6 +3071,7 @@ const statTxt = (sk, v) => { const st = EQC.emplacements[sk].stat; return tr(st.
 const passiveTxt = (ak, v) => tr(ARCH[ak].passif, { v: ARCH[ak].nombre ? nfG(v) : pctG(v) });
 const rarLabel = r => tr(EQC.raretes[r].nom);
 const rarTagG = r => `<span class="rar rar-${RAR_CSS[r]}">${rarLabel(r)}</span>`;
+const sBadge = r => isS(r) ? '<span class="gi-s">S</span>' : '';
 const slotName = sk => tr(EQC.emplacements[sk].nom);
 const itemName = it => tr(ARCH[it.arch].nom);
 const capOf = it => EQC.raretes[it.rar].niveauMax;
@@ -3002,9 +3105,11 @@ function equip(it) {
 }
 
 /* ---------- Equipment: merge (Forge) ----------
-   3 → 1 of the next rarity: 3 identical items up to Epic, then the item + 2 of the same slot (any model).
+   3 → 1 of the next rarity. Each rarity says what the 2 others must be (config.js > raretes > fusion):
+   'identique' = the same model, 'emplacement' = any model of the same slot (Habby: only Epic → Epic S).
    The chosen item keeps its level; what was spent levelling the two others is given back. */
-const bySlot = r => rarIdx(r) >= rarIdx(EQC.fusion.emplacementDepuis);
+const bySlot = r => (EQC.raretes[r] || {}).fusion === 'emplacement';
+const autoTier = r => rarIdx(r) <= rarIdx(EQC.fusion.autoJusqua || 'rare');
 const nextRar = r => RAR_KEYS[rarIdx(r) + 1];
 // The other items a merge would use (unequipped, lowest level first), or null
 function mergeFodder(it) {
@@ -3038,7 +3143,7 @@ function autoMerge() {
   for (let again = true; again;) {
     again = false;
     for (const it of [...G().items].sort((a, b) => b.lv - a.lv)) {
-      if (bySlot(it.rar)) continue;
+      if (!autoTier(it.rar)) continue;
       const fod = mergeFodder(it); if (!fod) continue;
       mergeCore(it, fod); n++; again = true;
       if (!best || score(it) > score(best)) best = it;
@@ -3068,12 +3173,12 @@ function rollItem(chest) {
   return newItem(archs.length ? archs[randInt(0, archs.length - 1)] : Object.keys(EQC.emplacements[sk].modeles)[0], rar);
 }
 const today = () => new Date().toDateString();
-function dailyReset() { const g = G(); if (g.day !== today()) { g.day = today(); g.free = 0; g.ad = 0; g.buys = 0; } }
-const freeChestReady = () => { dailyReset(); return !!EQC.cles.coffreDuJour && G().free < 1; };
-const adReady = () => { dailyReset(); return !!EQC.cles.coffrePub && G().ad < 1; };
-const keyPrice = () => Math.round(EQC.cles.achatPieces.prix * Math.pow(EQC.cles.achatPieces.hausse, G().buys) / 10) * 10;
-const keyBuyOpen = () => { dailyReset(); return G().buys < EQC.cles.achatPieces.maxParJour; };
-const chestReady = () => gearOpen() && (freeChestReady() || adReady() || CHESTS.some(k => G().keys[k] > 0));
+function dailyReset() { const g = G(); if (g.day !== today()) { g.day = today(); g.ads = {}; } }
+// Ads left today on a chest (config.js > coffres > pub)
+const adsLeft = k => { dailyReset(); return Math.max(0, (EQC.coffres[k].pub || 0) - ((G().ads || {})[k] || 0)); };
+// The very first wooden chest is offered (tutorial)
+const firstGift = k => !G().firstFree && k === 'bois';
+const chestReady = () => gearOpen() && (!G().firstFree || CHESTS.some(k => G().keys[k] > 0 || adsLeft(k) > 0));
 const untilTomorrow = () => { const d = new Date(), m = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1) - d, h = Math.floor(m / 36e5); return h ? tr('{h} h', { h }) : tr('{m} min', { m: Math.ceil(m / 6e4) }); };
 function giveKey(k, n = 1, cell = null, why = '') {
   G().keys[k] += n;
@@ -3082,31 +3187,59 @@ function giveKey(k, n = 1, cell = null, why = '') {
   toast((why ? why + ' ' : '') + txt, 'good');
   save(); refreshGear();
 }
-function openChest(chest, how) {
+// Opens n chests: the keys are used first, gems pay for the rest ('gift' = tutorial, 'ad' = one ad)
+function openChests(chest, n, how) {
   const g = G(), C = EQC.coffres[chest];
-  if (how === 'key') { if (!(g.keys[chest] > 0)) return; g.keys[chest]--; }
-  else if (how === 'gems') { if (!C.gemmes || g.gems < C.gemmes) return toast(tr('Pas assez de gemmes.'), ''); g.gems -= C.gemmes; }
-  else if (how === 'free') { if (!freeChestReady()) return; g.free++; }
-  else if (how === 'ad') g.ad++;
-  else return;
-  // The very first chest always holds a Common Pickaxe (tutorial)
-  const it = g.firstFree ? rollItem(chest) : newItem(Object.keys(EQC.emplacements.pioche.modeles)[0], RAR_KEYS[0]);
-  g.firstFree = true; g.items.push(it); stat('coffres');
-  save(); refreshGear(); showChest(chest, it);
+  if (how === 'gift') { if (!firstGift(chest)) return; n = 1; }
+  else if (how === 'ad') { if (!adsLeft(chest)) return; g.ads = g.ads || {}; g.ads[chest] = (g.ads[chest] || 0) + 1; n = 1; }
+  else {
+    const keys = Math.min(g.keys[chest], n), gems = (n - keys) * (C.gemmes || 0);
+    if (n > keys && !C.gemmes) return toast(tr('Il faut des clés pour ce coffre.'), '');
+    if (g.gems < gems) return toast(tr('Pas assez de gemmes.'), '');
+    g.keys[chest] -= keys; g.gems -= gems;
+  }
+  const items = [];
+  for (let i = 0; i < n; i++) {
+    // The very first chest always holds a Common Pickaxe (tutorial)
+    items.push(g.firstFree ? rollItem(chest) : newItem(Object.keys(EQC.emplacements.pioche.modeles)[0], RAR_KEYS[0]));
+    g.firstFree = true;
+  }
+  g.items.push(...items); stat('coffres', n);
+  save(); refreshGear(); showChest(chest, items);
 }
-// Fake rewarded ad (prototype): 3 seconds, then a wooden chest
-function watchAd() {
-  if (!adReady()) return;
+// "Ouvrir 1" / "Ouvrir 10": straight away with enough keys, otherwise a popup with the gem price of the missing ones
+let buyAsk = null;
+function askOpen(chest, n) {
+  unlockAudio();
+  if (n === 1 && firstGift(chest)) return openChests(chest, 1, 'gift');
+  const g = G(), C = EQC.coffres[chest], keys = Math.min(g.keys[chest], n), missing = n - keys;
+  if (!missing) return openChests(chest, n, 'keys');
+  if (!C.gemmes) { sfx('deny'); return toast(tr('Il faut des clés pour ce coffre.'), ''); }
+  const cost = missing * C.gemmes; buyAsk = { chest, n };
+  $('buyTitle').textContent = tr('Ouvrir {n} × {x}', { n, x: tr(C.nom) });
+  $('buyBody').innerHTML = `<div class="buy-art">${chestArt(chest)}</div>
+    <p>${tr(plural(missing, 'Il te manque {m} clé : {g} gemmes.', 'Il te manque {m} clés : {g} gemmes.'), { m: missing, g: cost })}${keys ? ' ' + tr(plural(keys, 'Ta clé sera aussi utilisée.', 'Tes {k} clés seront aussi utilisées.'), { k: keys }) : ''}</p>
+    <div class="buy-cost">${keys ? `<span>${keyArt(chest)}×${keys}</span><b>+</b>` : ''}<span>${GEM_ICON}×${cost}</span></div>
+    <p class="buy-have${g.gems < cost ? ' short' : ''}">${tr('Tu as {g} gemmes.', { g: g.gems })}</p>`;
+  $('buyOk').disabled = g.gems < cost;
+  $('buyModal').hidden = false; sfx('pick');
+}
+$('buyOk').addEventListener('click', () => { $('buyModal').hidden = true; if (buyAsk) openChests(buyAsk.chest, buyAsk.n, 'keys'); buyAsk = null; });
+$('buyNo').addEventListener('click', () => { $('buyModal').hidden = true; buyAsk = null; });
+$('buyModal').addEventListener('click', e => { if (e.target.id === 'buyModal') { $('buyModal').hidden = true; buyAsk = null; } });
+// Fake rewarded ad (prototype): 3 seconds, then the chest opens
+function watchAd(chest) {
+  if (!adsLeft(chest)) return;
   unlockAudio(); sfx('pick');
   const m = $('adModal'); m.hidden = false;
   let s = 3; $('adCount').textContent = s;
-  const t = setInterval(() => { s--; $('adCount').textContent = s; if (s <= 0) { clearInterval(t); m.hidden = true; openChest('bois', 'ad'); } }, 1000);
+  const t = setInterval(() => { s--; $('adCount').textContent = s; if (s <= 0) { clearInterval(t); m.hidden = true; openChests(chest, 1, 'ad'); } }, 1000);
 }
 
 /* ---------- Equipment: chest opening and reveal ---------- */
-let cmItem = null, cmChest = null, cmState = 'closed';
-function showChest(chest, it) {
-  cmItem = it; cmChest = chest; cmState = 'closed';
+let cmItem = null, cmItems = [], cmChest = null, cmState = 'closed';
+function showChest(chest, items) {
+  cmItems = items; cmItem = items[0]; cmChest = chest; cmState = 'closed';
   $('chestTitle').textContent = tr(EQC.coffres[chest].nom);
   $('chestBtn').hidden = false; $('chestBtn').className = 'cm-chest ch-' + chest;
   $('chestBtn').innerHTML = chestArt(chest) + `<span>${tr('Touche pour ouvrir')}</span>`;
@@ -3120,7 +3253,7 @@ function crackChest() {
   const b = $('chestBtn'); b.classList.add('shake');
   setTimeout(() => {
     b.classList.remove('shake'); b.classList.add('opened'); b.innerHTML = chestArt(cmChest, true);
-    sfx('win'); revealItem(cmItem);
+    sfx('win'); if (cmItems.length > 1) revealMany(cmItems); else revealItem(cmItem);
   }, reduced ? 0 : 900);
 }
 function revealItem(it) {
@@ -3128,7 +3261,7 @@ function revealItem(it) {
   const r = RAR_CSS[it.rar];
   $('chestModal').classList.add('r-' + r);
   $('chestItem').innerHTML = `<div class="cm-rays"></div>${it.rar === 'mythique' ? '<div class="cm-bolts"></div>' : ''}
-    <div class="gi big r-${r} cm-card">${gearArt(it.arch)}</div>
+    <div class="gi big r-${r} cm-card">${gearArt(it.arch)}${sBadge(it.rar)}</div>
     <b class="cm-name rar rar-${r}">${itemName(it)}</b><span class="cm-sub">${rarTagG(it.rar)} · ${slotName(it.slot)} · ${tr('Niv. {n}', { n: it.lv })}</span>
     <span class="cm-stat">${statTxt(it.slot, statOf(it))}</span>`;
   $('chestItem').hidden = false;
@@ -3138,9 +3271,22 @@ function revealItem(it) {
     + `<button class="btn ghosty" data-cm="close">${tr('Continuer')}</button>`;
   $('chestBtns').hidden = false;
 }
+// Ten chests at once: every item in a grid, best first (they go to the inventory)
+function revealMany(items) {
+  cmState = 'open';
+  const list = [...items].sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot)), best = list[0];
+  $('chestModal').classList.add('r-' + RAR_CSS[best.rar]);
+  $('chestItem').innerHTML = `<div class="cm-rays"></div>
+    <div class="cm-grid">${list.map((it, i) => `<div class="gi r-${RAR_CSS[it.rar]} cm-mini" style="animation-delay:${i * 70}ms">${gearArt(it.arch)}${sBadge(it.rar)}</div>`).join('')}</div>
+    <span class="cm-sub">${tr('Meilleur objet : {x}', { x: itemName(best) })} · ${rarTagG(best.rar)}</span>
+    <span class="cm-stat">${tr('Tous tes objets sont dans ton inventaire (onglet Personnage).')}</span>`;
+  $('chestItem').hidden = false;
+  $('chestBtns').innerHTML = `<button class="btn" data-cm="again10">${tr('Ouvrir encore 10')}</button><button class="btn ghosty" data-cm="close">${tr('Continuer')}</button>`;
+  $('chestBtns').hidden = false;
+}
 // After a merge: the new item, without a chest
 function showReveal(it, chest) {
-  cmItem = it; cmChest = chest;
+  cmItem = it; cmItems = [it]; cmChest = chest;
   $('chestTitle').textContent = tr('Fusion réussie !');
   $('chestBtn').hidden = true; $('chestModal').className = 'modal chest-modal'; $('chestModal').hidden = false;
   unlockAudio(); sfx('win'); revealItem(it);
@@ -3151,7 +3297,8 @@ document.addEventListener('click', e => {
   const k = b.dataset.cm;
   if (k === 'equip') equip(cmItem);
   $('chestModal').hidden = true;
-  if (k === 'again' && cmChest) openChest(cmChest, 'key');
+  if (k === 'again' && cmChest) askOpen(cmChest, 1);
+  if (k === 'again10' && cmChest) askOpen(cmChest, 10);
 });
 
 /* ---------- Equipment: item sheet (tap an item anywhere) ---------- */
@@ -3161,16 +3308,16 @@ function openSheet(id) {
   if (it && it.isNew) { it.isNew = false; save(); }
   renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick');
 }
-const gcard = (it, cls = '') => `<button class="gi r-${RAR_CSS[it.rar]} ${cls}" data-gi="${it.id}" aria-label="${itemName(it)} ${rarLabel(it.rar)}"><span class="gi-art">${gearArt(it.arch)}</span><span class="gi-lv">${tr('Niv. {n}', { n: it.lv })}</span>${it.isNew ? `<span class="gi-new">${tr('Nouveau')}</span>` : ''}${isEquipped(it) ? '<span class="gi-on">✓</span>' : ''}</button>`;
+const gcard = (it, cls = '') => `<button class="gi r-${RAR_CSS[it.rar]} ${cls}" data-gi="${it.id}" aria-label="${itemName(it)} ${rarLabel(it.rar)}"><span class="gi-art">${gearArt(it.arch)}</span><span class="gi-lv">${tr('Niv. {n}', { n: it.lv })}</span>${sBadge(it.rar)}${it.isNew ? `<span class="gi-new">${tr('Nouveau')}</span>` : ''}${isEquipped(it) ? '<span class="gi-on">✓</span>' : ''}</button>`;
 function renderSheet() {
   if (sheetId === 'stats') return renderStatsSheet();
   const it = gearItem(sheetId); if (!it) { $('gearModal').hidden = true; return; }
   const a = ARCH[it.arch], r = RAR_CSS[it.rar], cap = capOf(it), maxed = it.lv >= cap, cost = levelCost(it), free = upFree();
   const next = maxed ? null : statOf({ ...it, lv: it.lv + 1 });
-  const tiers = ['epique', 'legendaire', 'mythique'].map((rr, i) => `<li class="${rarIdx(it.rar) >= i + 2 ? 'on' : 'off'}">${rarTagG(rr)}<span>${passiveTxt(it.arch, a.valeurs[i])}</span></li>`).join('');
+  const tiers = PAS_TIERS.map((rr, i) => `<li class="${rarIdx(it.rar) >= rarIdx(rr) ? 'on' : 'off'}">${rarTagG(rr)}<span>${passiveTxt(it.arch, a.valeurs[Math.min(i, a.valeurs.length - 1)])}</span></li>`).join('');
   const fod = mergeFodder(it), nr = nextRar(it.rar);
   $('gearCard').innerHTML = `<button class="x" data-gclose aria-label="${tr('Fermer')}">×</button>
-    <div class="gs-head"><div class="gi big r-${r}">${gearArt(it.arch)}</div>
+    <div class="gs-head"><div class="gi big r-${r}">${gearArt(it.arch)}${sBadge(it.rar)}</div>
       <div><h2 class="rar rar-${r}">${itemName(it)}</h2><p>${rarTagG(it.rar)} · ${slotName(it.slot)}</p><p class="gs-lv">${tr('Niveau {n} / {m}', { n: it.lv, m: cap })}</p></div></div>
     <div class="gs-stat"><b>${statTxt(it.slot, statOf(it))}</b>${next != null ? `<span>${tr('Niveau suivant : {x}', { x: statTxt(it.slot, next) })}</span>` : ''}</div>
     <p class="gs-h">${tr('Passif du modèle (dès Épique)')}</p><ul class="gs-pas">${tiers}</ul>
@@ -3209,12 +3356,8 @@ document.addEventListener('click', e => {
     if (!slotOpen(sk)) return toast(tr('Se débloque au niveau {n}.', { n: UNLOCK[d] }), '');
     return toast(tr('Trouve un objet {s} dans les coffres de la Boutique.', { s: slotName(sk) }), '');
   }
-  const ch = t.closest('[data-chest]'); if (ch && !ch.disabled) return openChest(ch.dataset.chest, ch.dataset.how);
-  if (t.closest('[data-ad]')) return watchAd();
-  if (t.closest('[data-buykey]')) {
-    const price = keyPrice(); if (!keyBuyOpen() || !canPay({ coin: price })) return;
-    pay({ coin: price }); G().buys++; giveKey('bois', 1); sfx('reward'); return;
-  }
+  const op = t.closest('[data-open]'); if (op) return askOpen(op.dataset.open, +op.dataset.n);
+  const ad = t.closest('[data-ad]'); if (ad && !ad.disabled) return watchAd(ad.dataset.ad);
   const ft = t.closest('[data-ftab]'); if (ft) { forgeTab = ft.dataset.ftab; sfx('pick'); renderForge(); return; }
   if (t.closest('#autoMerge')) return autoMerge();
 });
@@ -3239,7 +3382,7 @@ function renderHero() {
     if (!open || !slotOpen(sk)) return `<button class="eq-slot locked" data-eqslot="${sk}"><span class="eq-ic"><b>?</b></span><span class="eq-lv">${open && d ? tr('Niv. {n}', { n: UNLOCK[d] }) : '–'}</span><span class="eq-nm">???</span></button>`;
     const up = G().items.some(x => x.slot === sk && better(x));
     if (!it) return `<button class="eq-slot empty" data-eqslot="${sk}" id="eqs-${sk}"><span class="eq-ic">${slotArt(sk)}</span><span class="eq-lv">+</span><span class="eq-nm">${slotName(sk)}</span>${up ? '<span class="badge">!</span>' : ''}</button>`;
-    return `<button class="eq-slot r-${RAR_CSS[it.rar]}" data-gi="${it.id}" id="eqs-${sk}"><span class="eq-ic">${gearArt(it.arch)}</span><span class="eq-lv">${tr('Niv. {n}', { n: it.lv })}</span><span class="eq-nm">${slotName(sk)}</span>${up ? '<span class="badge">!</span>' : ''}</button>`;
+    return `<button class="eq-slot r-${RAR_CSS[it.rar]}" data-gi="${it.id}" id="eqs-${sk}"><span class="eq-ic">${gearArt(it.arch)}</span><span class="eq-lv">${tr('Niv. {n}', { n: it.lv })}</span><span class="eq-nm">${slotName(sk)}</span>${sBadge(it.rar)}${up ? '<span class="badge">!</span>' : ''}</button>`;
   };
   $('eqLeft').innerHTML = GSLOTS.slice(0, 3).map(slot).join('');
   $('eqRight').innerHTML = GSLOTS.slice(3).map(slot).join('');
@@ -3276,8 +3419,8 @@ function renderForge() {
       }).join('') + '</div>';
   } else if (forgeTab === 'merge') {
     const all = [...G().items].sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot) || b.lv - a.lv);
-    const auto = G().items.some(it => !bySlot(it.rar) && mergeFodder(it));
-    html = `<p>${tr('3 objets identiques donnent 1 objet de la rareté au-dessus. À partir d\'Épique, l\'objet + 2 objets du même emplacement suffisent. Ce que tu as dépensé pour les objets fusionnés t\'est rendu.')}</p>
+    const auto = G().items.some(it => autoTier(it.rar) && mergeFodder(it));
+    html = `<p>${tr('3 objets identiques donnent 1 objet de la rareté au-dessus. Seule exception : Épique → Épique S accepte 2 autres Épiques du même emplacement. Ce que tu as dépensé pour les objets fusionnés t\'est rendu.')}</p>
       <button class="btn" id="autoMerge" ${auto ? '' : 'disabled'}>${tr('Fusion auto (Commun et Rare)')}</button>
       ${all.length ? `<div class="gi-grid">${all.map(it => gcard(it, mergeFodder(it) ? 'can' : '')).join('')}</div>` : `<p class="eq-soon">${tr('Aucun objet pour l\'instant.')}</p>`}`;
   } else {
@@ -3289,6 +3432,11 @@ function renderForge() {
     }).join('') + '</div>';
   }
   $('forgeBody').innerHTML = html;
+  // First visit after the first chest: what the ores are for, then back to the village
+  if (S.tutoSeen['eq-premier'] && !S.tutoSeen.forge && document.querySelector('#forgeBody .srow')) startCoach('forge', [
+    { text: TX.forge, info: true, target: () => document.querySelector('#forgeBody .srow'), done() { return this.tapped || $('scr-forge').hidden; } },
+    { text: TX.retourVillage, target: () => document.querySelector('#scr-forge .back'), done: () => $('scr-forge').hidden },
+  ]);
   // First merge possible: show where it happens
   if (canMerge && !S.tutoSeen['eq-fusion']) startCoach('eq-fusion', [
     { text: TXE.fusionner, target: () => $('ftab-merge'), done: () => forgeTab === 'merge' || G().merges > 0 },
@@ -3301,38 +3449,34 @@ function renderForge() {
 const TXE = TX.equipement || {};
 function chestsHTML() {
   if (!gearOpen()) return '';
-  dailyReset();
-  const g = G(), AP = EQC.cles.achatPieces;
+  const g = G();
   const card = k => {
-    const c = EQC.coffres[k], n = g.keys[k];
+    const c = EQC.coffres[k], n = g.keys[k], ads = adsLeft(k), gift = firstGift(k);
     const odds = Object.entries(c.chances).map(([r, p]) => `<span class="rar rar-${RAR_CSS[r]}">${rarLabel(r)} ${p} %</span>`).join('');
     const pity = c.pitie ? `<small>${tr('{r} garanti dans {n}', { r: rarLabel(c.pitieRarete), n: c.pitie - (g.pity[k] || 0) })}</small>` : '';
-    const btn = n > 0 ? `<button class="btn sm" data-chest="${k}" data-how="key">${tr('Ouvrir')}</button>`
-      : c.gemmes ? `<button class="btn sm gem" data-chest="${k}" data-how="gems" ${g.gems >= c.gemmes ? '' : 'disabled'}>${c.gemmes}${GEM_ICON}</button>`
-      : `<span class="ch-none">${tr('Il faut une clé')}</span>`;
+    // Keys owned / keys needed, like Dicero ("2/1"); short of keys, the gem price is asked in a popup
+    const open = num => `<button class="btn sm ch-open${num > 1 ? ' x10' : ''}" data-open="${k}" data-n="${num}"${num === 1 && k === 'bois' ? ' id="chestOpen1"' : ''}>
+      <b>${num === 1 && gift ? tr('Offert !') : tr('Ouvrir {n}', { n: num })}</b>${num === 1 && gift ? '' : `<span class="${n < num ? 'short' : ''}">${keyArt(k)}${n}/${num}</span>`}</button>`;
+    const ad = c.pub ? `<button class="btn sm ch-ad" data-ad="${k}" ${ads ? '' : 'disabled'}><b>▶ ${tr('Pub')}</b><span>${ads ? `${ads}/${c.pub}` : untilTomorrow()}</span></button>` : '';
     return `<div class="ch-card ch-${k}"><div class="ch-art">${chestArt(k)}</div><b>${tr(c.nom)}</b>
-      <span class="ch-key">${keyArt(k)}×${n}</span><span class="ch-odds">${odds}${pity}</span>${btn}</div>`;
+      <span class="ch-odds">${odds}${pity}</span><div class="ch-btns">${ad}${open(1)}${open(10)}</div></div>`;
   };
-  const free = `<div class="srow"><div class="sic">${chestArt('bois')}</div><div class="stxt"><b>${tr('Coffre du jour')}</b><span>${tr('Un coffre en bois gratuit chaque jour.')}</span></div>
-    <div class="sbuy">${freeChestReady() ? `<button class="btn sm" data-chest="bois" data-how="free" id="chestFree">${g.firstFree ? tr('Gratuit') : tr('Offert !')}</button>` : `<span class="maxed">${tr('Revient dans')}<small>${untilTomorrow()}</small></span>`}</div></div>`;
-  const ad = EQC.cles.coffrePub ? `<div class="srow"><div class="sic">${chestArt('bois')}<i>▶</i></div><div class="stxt"><b>${tr('Coffre publicité')}</b><span>${tr('Regarde une publicité pour un coffre en bois (simulée dans le prototype).')}</span></div>
-    <div class="sbuy">${adReady() ? `<button class="btn sm" data-ad>${tr('Regarder')}</button>` : `<span class="maxed">${tr('Revient dans')}<small>${untilTomorrow()}</small></span>`}</div></div>` : '';
-  const buy = `<div class="srow"><div class="sic">${keyArt('bois')}</div><div class="stxt"><b>${keyName('bois')}</b><span>${tr('Le prix monte à chaque achat ({n}/{m} aujourd\'hui).', { n: g.buys, m: AP.maxParJour })}</span></div>
-    <div class="sbuy">${keyBuyOpen() ? priceHTML({ coin: keyPrice() }) + `<button class="btn sm" data-buykey ${canPay({ coin: keyPrice() }) ? '' : 'disabled'}>${tr('Acheter')}</button>` : `<span class="maxed">${tr('Revient dans')}<small>${untilTomorrow()}</small></span>`}</div></div>`;
   return `<h2 class="sh-h">${tr('Coffres d\'équipement')}</h2><div class="ch-grid">${CHESTS.map(card).join('')}</div>
-    <div class="shop-list">${free}${ad}${buy}</div><p class="sh-note">${tr('Les chances de chaque rareté sont affichées sur chaque coffre.')}</p>`;
+    <p class="sh-note">${tr('Les chances de chaque rareté sont affichées sur chaque coffre.')}</p>`;
 }
 const gemsWallet = () => gearOpen() ? `<span class="res" title="${tr('Gemmes')}">${GEM_ICON}${G().gems}</span>` + CHESTS.filter(k => G().keys[k] > 0).map(k => `<span class="res" title="${keyName(k)}">${keyArt(k)}${G().keys[k]}</span>`).join('') : '';
 // Tutorial of the first chest: open it, equip the pickaxe, look at it on the miner, level it up
 function gearCoach() {
   if (!gearOpen() || G().firstUp || S.tutoSeen['eq-premier']) return;
   startCoach('eq-premier', [
-    { text: TXE.ouvrirCoffre, target: () => $('chestFree'), done: () => G().firstFree },
+    { text: TXE.ouvrirCoffre, target: () => $('chestOpen1'), done: () => G().firstFree },
     { text: TXE.toucherCoffre, target: () => $('chestBtn'), done: () => cmState !== 'closed' || $('chestModal').hidden },
     { text: TXE.equiper, target: () => $('cmEquip'), done: () => !!G().eq.pioche },
     { text: TXE.personnage, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden || !$('gearModal').hidden },
     { text: TXE.toucherObjet, target: () => $('eqs-pioche'), done: () => !$('gearModal').hidden },
     { text: TXE.ameliorer, target: () => $('gUp'), done: () => G().firstUp },
+    // (shown once the item sheet is closed)
+    { text: TX.retourVillage, target: () => document.querySelector('.nav-tab[data-nav="village"]'), done: () => !$('scr-village').hidden },
   ]);
 }
 
@@ -3359,6 +3503,9 @@ function updateNav(name) {
   document.querySelectorAll('.nav-tab').forEach(b => { b.classList.toggle('on', b.dataset.nav === tab); b.setAttribute('aria-current', b.dataset.nav === tab ? 'page' : 'false'); });
   const museumOpen = !!S.buildings.museum;
   document.querySelector('.nav-tab[data-nav="museum"]').classList.toggle('locked', !museumOpen);
+  // First steps: only what is open shows (Museum after the first return, Character with the equipment, Premium and Events at the end)
+  const off = { museum: !museumOpen, hero: !gearOpen(), premium: !S.tutoSeen.guideFin, events: !S.tutoSeen.guideFin };
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('nav-off', !!off[b.dataset.nav]));
   $('navMuseumBadge').hidden = !museumOpen || !museumPrimeWaiting();
   $('navHeroBadge').hidden = !gearOpen() || !heroBadge();
 }
@@ -3775,13 +3922,15 @@ const BUILDINGS = {
 };
 const OW_IMG = { museum: 'Museum', forge: 'Forge', atelier: 'Workshop', shop: 'Shop' };
 function openRecap() {
+  // First steps: the planned returns reached so far
+  if (inGuide()) S.guideBack = Math.max(S.guideBack || 0, ...GUIDE.retours.filter(r => r <= S.level));
   if (!S.tutoSeen.surface) startCoach('surface', [{ text: TX.surface, target: () => $('recapVillage'), done: () => $('recapModal').hidden }]);
   const T = S.trip; let coins = 0;
   // New buildings appear in the village itself (not on this screen)
   const opened = Object.entries(BUILDINGS).filter(([k, b]) => !S.buildings[k] && (!b.key || has(b.key))).map(([k]) => k);
   opened.forEach(k => { S.buildings[k] = true; (S.bldNew = S.bldNew || {})[k] = true; });
   S.newBuildings = [...(S.newBuildings || []), ...opened];
-  const rows = [...T.finds, ...(T.dupes || [])].map(f => { const r = applyFind(f.kind, f.key); coins += r.coins; return r; });
+  const rows = [...T.finds, ...(T.bonus || []), ...(T.dupes || [])].map(f => { const r = applyFind(f.kind, f.key); coins += r.coins; return r; });
   const total = coins + (T.coins || 0);
   S.coins += coins; S.trip = newTrip(); updateBadge();
   if (CFG.energie.rechargeAuVillage) { S.energy = maxE(); updateEnergy(true); }
@@ -3798,8 +3947,8 @@ function openRecap() {
   const nf = n => n.toLocaleString(LANG === 'en' ? 'en-US' : 'fr-FR');
   const loot = geode => groups.filter(g => (g.kind === 'geode') === geode).map(g => tile(g.art, g.n, rarityOfFind(g.kind, g.key) || '', g.isNew));
   const oreTiles = Object.keys(ORES).filter(k => T.ores[k]).map(k => tile(resArt(k), nf(T.ores[k])));
-  if (total) oreTiles.push(tile(COIN, 0, '', false, 'recapCount'));
-  const body = section(tr('Minerais'), oreTiles) + section(tr('Géodes'), loot(true)) + section(tr('Artefacts'), loot(false));
+  const body = section(tr('Minerais'), oreTiles) + (total ? section(tr('Pièces'), [tile(COIN, 0, '', false, 'recapCount')]) : '')
+    + section(tr('Géodes'), loot(true)) + section(tr('Artefacts'), loot(false));
   $('recapBody').innerHTML = body || `<p class="xp-empty">${tr('Tu remontes les mains vides cette fois. Ton niveau t\'attend !')}</p>`;
   $('recapLevel').textContent = tr('Niveau atteint : {n}', { n: S.level });
   $('recapCp').hidden = !T.newCp;
@@ -3838,10 +3987,34 @@ function villageCoach() {
     villageCoachBusy = true;
     return panTo(b, () => { villageCoachBusy = false; startCoach('bld-' + k, [{ text: TX.batiments[k], target: () => b, done: () => !$('scr-' + k).hidden }]); });
   }
-  // Back from the first Museum visit: go down again
-  if (S.tutoSeen['bld-museum'] && !S.tutoSeen.redescendre)
-    startCoach('redescendre', [{ text: TX.redescendre, target: () => $('descendBtn'), done: () => $('scr-village').hidden || !$('liftModal').hidden }]);
+  // After the first steps: a bigger bag at the Shop as soon as the player can pay for it
+  const nextBag = BAG_UP[S.bagLvl];
+  if (!inGuide() && has('sac') && S.buildings.shop && S.bagLvl === 0 && !S.tutoSeen.sacBoutique && nextBag && canPay({ coin: nextBag.pieces })) {
+    const b = document.querySelector('.bld[data-go="shop"]');
+    villageCoachBusy = true;
+    return panTo(b, () => { villageCoachBusy = false; startCoach('sacBoutique', [{ text: TX.sacBoutique, target: () => b, done: () => !$('scr-shop').hidden }]); });
+  }
+  // End of the first steps: the goals appear, then a short "well done"
+  if (!inGuide() && !S.tutoSeen.guideFin) {
+    if (!S.tutoSeen.objectifs) { applyUnlocks(); return startCoach('objectifs', [{ text: TX.objectifs, target: () => $('questBtn'), done: () => !$('goalsModal').hidden }]); }
+    S.tutoSeen.guideFin = true; save(); applyUnlocks(); updateNav('village');
+    return toast(tr(TX.fin), 'good');
+  }
+  // Back from a planned return, new buildings visited: go down again
+  const back = S.guideBack || 0;
+  if (back && (inGuide() || S.tutoSeen.guideFin) && !S.tutoSeen['redescendre-' + back])
+    startCoach('redescendre-' + back, [{ text: TX.redescendre, target: () => $('descendBtn'), done: () => $('scr-village').hidden || !$('liftModal').hidden }]);
 }
+/* ---------- First steps in the mine: show the "next level" button once, and send the player back up at each planned return ---------- */
+function mineCoach() {
+  if (coach || $('scr-mine').hidden || descending || bagQueue.length || !settled() || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
+  if (inGuide() && S.level >= nextReturn())
+    return startCoach('retour-' + nextReturn(), [{ text: TX.remonter, target: () => $('upBtn'), done: () => $('scr-mine').hidden }], true);
+  const lv = S.level;
+  if (!S.tutoSeen.suivant && !$('nextPill').hidden && S.grid.some(c => c.t !== 'empty'))
+    startCoach('suivant', [{ text: TX.suivant, target: () => $('nextPill'), done: () => S.level !== lv || $('scr-mine').hidden }]);
+}
+setInterval(mineCoach, 400);
 setInterval(villageCoach, 400);
 
 /* ---------- Museum ---------- */
@@ -3952,6 +4125,10 @@ function startMini(g) {
   placeZone(); paintHearts(); paintHits(); renderGeoStock();
   cancelAnimationFrame(mgRaf); mgRaf = requestAnimationFrame(mgTick);
   save();
+  if (!S.tutoSeen.atelier) startCoach('atelier', [
+    { text: TX.atelier, target: () => $('mgHit'), done: () => !$('mgResult').hidden || !MG && $('scr-atelier').hidden },
+    { text: TX.retourVillage, target: () => document.querySelector('#mgResult [data-go="village"]'), done: () => $('scr-atelier').hidden },
+  ]);
 }
 function placeZone() {
   let at;
@@ -3986,6 +4163,9 @@ function mgHit() {
     // Short pause on the gold flash, then the zone jumps and the cursor speeds up a little
     MG.busy = true;
     setTimeout(() => { if (!MG) return; MG.busy = false; const t = performance.now(), ph = mgPhase(t); MG.speed *= 1 + CFG.atelier.accelerationParCoup; MG.t0 = t - ph / MG.speed * 1000; placeZone(); }, 280);
+  } else if (!S.tutoSeen.atelier) {
+    // The very first geode (tutorial) never breaks: a miss costs no heart
+    sfx('deny'); flashZone('miss');
   } else {
     MG.lives--; sfx('deny'); paintHearts(); flashZone('miss');
     if (!reduced) $('mgBar').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'translateX(0)' }], { duration: 240 });
@@ -4093,15 +4273,19 @@ function levelDone() {
       const best = geodesAt(S.level).map(([k]) => k).sort((a, b) => RARITIES.indexOf(GEODES[b].rarity) - RARITIES.indexOf(GEODES[a].rarity))[0];
       if (best) { S.bag.geodes.push(best); parts.push(rarName(GEODES[best].name, GEODES[best].rarity) + ' ' + tr('(à l\'Atelier)')); }
     }
-    if (gearOpen() && EQC.cles.gardien) { const k = EQC.cles.gardien; G().keys[k]++; parts.push(tr('+1 {x}', { x: keyName(k) })); }
+    if (gearOpen() && EQC.cles.gardien && keyEvery(S.level, EQC.cles.gardienTousLes || 100)) { const k = EQC.cles.gardien; G().keys[k]++; parts.push(tr('+1 {x}', { x: keyName(k) })); }
     S.guardDone[S.level] = true;
     S.rewardMsg = { level: S.level, html: `<b>${tr('Gardien vaincu !')}</b> ${parts.join(' · ')}` };
     showTuto();
   }
   updateNextPill(); save();
 }
+// Every treasure uncovered and picked up (or left on purpose): the level is settled
+const settled = () => !!(S.rewards && S.rewards.length && S.rewards.every(r => r.found && (r.taken === true || r.taken === 'left')));
 function updateNextPill() {
-  const done = !!(S.rewards && S.rewards.length && S.rewards.every(r => r.found));
+  // "Next level" only once the uncovered treasures are picked up, so none is left behind by mistake
+  // (first steps: at a planned return, the only way is back up)
+  const done = settled() && !(inGuide() && S.level >= nextReturn());
   $('nextPill').hidden = !done;
   $('nextPill').textContent = S.level >= 1000 ? tr('Mine suivante ↓') : tr('Niveau {n} ↓', { n: S.level + 1 });
 }
@@ -4109,19 +4293,29 @@ $('mine2Up').addEventListener('click', () => { $('mine2Modal').hidden = true; op
 // A full bag or little energy left: ask before going down
 function tryDescend() {
   if (S.level >= 1000) { S.mine2 = true; save(); $('mine2Modal').hidden = false; $('mine2Up').focus(); return; }
-  const full = S.bagSeen && bagFull(), low = has('pioche') && S.energy <= CFG.energie.alerteDescente;
+  // (first steps: no low-energy warning before a planned return, the guided levels are sized to the energy left)
+  const guide = !upAllowed();
+  const full = S.bagSeen && bagFull(), low = !guide && has('pioche') && S.energy <= CFG.energie.alerteDescente;
   if (!full && !low) return descend();
   // Warning laid out like the mockup: the miner (loaded down or worn out), a short title and sentence, then the bag / energy count
   $('descendArt').innerHTML = img(full ? 'Assets/Characters/Miner_BagFull.png' : 'Assets/Characters/Miner_Tired.png');
   $('descendTitle').textContent = full && low ? tr('Sac plein, peu d\'énergie') : full ? tr('Sac plein') : tr('Peu d\'énergie');
   $('descendTitle').classList.toggle('long', full && low);
   $('descendText').textContent = full && low ? tr('Attention, ton sac est plein et il te reste peu d\'énergie.')
+    : full && guide ? tr('Ton sac est plein, mais tu peux continuer : les pièces et les minerais ne prennent pas de place.')
     : full ? tr('Attention, ton sac est plein : tu ne pourras plus récupérer de trésors.')
     : CFG.energie.rechargeAuVillage ? tr('Attention, il te reste peu d\'énergie : remonte au village pour recharger.') : tr('Attention, il te reste peu d\'énergie.');
   const stat = (icon, txt) => `<div class="dw-stat">${img(icon)}<span>${txt}</span></div>`;
   $('descendStats').className = 'dw-stats' + (full && low ? ' two' : '');
   $('descendStats').innerHTML = (full ? stat('Assets/UI/Bag.png', `${bagUsed()} / ${bagCap()}`) : '') + (low ? stat('Assets/UI/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
-  sfx('deny'); $('descendModal').hidden = false; $('descendUp').focus();
+  // How far the next checkpoint is: worth going on when it is close
+  const cp = CHECKPOINTS.find(l => l > S.level);
+  $('descendCp').textContent = cp ? tr(plural(cp - S.level, 'Prochain checkpoint : niveau {n} (dans {k} niveau)', 'Prochain checkpoint : niveau {n} (dans {k} niveaux)'), { n: cp, k: cp - S.level }) : '';
+  $('descendCp').hidden = !cp;
+  // First steps, before a planned return: no "Remonter" here, the player is shown how to keep going
+  $('descendUp').hidden = guide;
+  sfx('deny'); $('descendModal').hidden = false; (guide ? $('descendYes') : $('descendUp')).focus();
+  if (guide && full) startCoach('continuer', [{ text: TX.continuer, above: true, target: () => $('descendYes'), done: () => $('descendModal').hidden }]);
 }
 // Going down a level takes DESCEND_MS: the cleared board leaves, "Niveau N" shows, the new board arrives
 const DESCEND_MS = reduced ? 0 : 560;
@@ -4150,7 +4344,7 @@ function arriveNext() {
   const dc = $('depthChip'); dc.classList.remove('bump'); void dc.offsetWidth; dc.classList.add('bump');
   const newRecord = S.level > S.reached;
   if (newRecord) S.reached = S.level;
-  if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (S.level % r.tousLes === 0) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: S.level })), 900);
+  if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (keyEvery(S.level, r.tousLes)) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: S.level })), 900);
   if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: S.level }) : tr('Checkpoint niveau {n} débloqué !', { n: S.level }), 'good'); }
   save();
 }
@@ -4203,7 +4397,10 @@ function start(data) {
   S.gear = Object.assign(newGear(), S.gear || {}); S.gear.keys = Object.assign(newGear().keys, S.gear.keys);
   if (!S.tutoSeen) S.tutoSeen = {};
   // Saves from before the first-steps tutorial: players already past it don't see it again
-  if (saved && S.reached > 5) for (const k of ['toucher', 'creuser', 'tresor', 'sacPlein', 'surface', 'descendre', 'bld-museum', 'prime', 'museeRetour', 'redescendre', 'ascenseur']) S.tutoSeen[k] = true;
+  if (saved && S.reached > 5) for (const k of ['toucher', 'creuser', 'tresor', 'sacPlein', 'surface', 'descendre', 'bld-museum', 'prime', 'museeRetour', 'redescendre-5', 'ascenseur', 'sac', 'suivant', 'retour-5']) S.tutoSeen[k] = true;
+  // Saves from before the guided first steps: the planned returns already passed count as done
+  if (saved && saved.guideBack === undefined) S.guideBack = S.reached > GUIDE.fin ? GUIDE.fin : GUIDE.retours.filter(r => r < S.reached && S.buildings.museum).pop() || 0;
+  if (saved && S.reached > GUIDE.fin) for (const k of ['energie', 'continuer', 'echanger', 'forge', 'atelier', 'objectifs', 'guideFin', 'redescendre-11', 'redescendre-16', 'retour-11', 'retour-16']) S.tutoSeen[k] = true;
   if (saved && !saved.bagV2) {
     // Before: 4 slots, then 6, 8, 10, 12, 14… Keep at least the size the player had
     const OLD = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], had = S.bagLvl > 0 ? OLD[Math.min(S.bagLvl, OLD.length) - 1] : 4;
