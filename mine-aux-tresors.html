@@ -1049,6 +1049,83 @@ body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !importan
 .mu-locked{display:flex; justify-content:center; gap:22px; height:70px; padding-top:14px; box-sizing:border-box; border-radius:18px 18px 8px 8px; border:2px solid rgba(255,255,255,.8);
   background:linear-gradient(rgba(170,210,240,.45), rgba(120,170,220,.5))}
 .mu-locked span{width:46px; height:46px; border-radius:50%; background:radial-gradient(circle, rgba(59,34,69,.28), transparent 70%)}
+
+/* =====================================================================
+   ART DIRECTION (from the Character screen mock-up), shared by every menu:
+   beige page under an outdoor header with a round bottom, white titles with a dark outline,
+   brown-edged money pills, black-outlined badges and selected tabs, rarity card backgrounds.
+   Sizes follow the screen width: --u = 1/100 of a phone-wide column (480 px at most).
+   ===================================================================== */
+:root{--u:calc(min(100vw, 480px) / 100); --side:max(calc(var(--u) * 4.9), calc(50vw - 240px + var(--u) * 4.9)); --outline:#1d1a2b; --page:#fcefd8; --card-bg:#fffaf0; --card-edge:#ead6b0}
+/* Menu screens: full width, beige; the header (scene, title, money) stays at the top while the page scrolls under it */
+.screen.menu{max-width:none; padding:0 var(--side) calc(var(--u) * 6); background:var(--page); gap:calc(var(--u) * 4); scrollbar-width:none}
+.screen.menu::-webkit-scrollbar{display:none}
+/* --side is measured on the window (vw), so the header's negative margins reach both edges exactly */
+body.nav-on .screen.menu{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + var(--u) * 20)}
+.menu .scr-head{position:sticky; top:0; z-index:3; flex:none; margin:0 calc(-1 * var(--side)); padding:calc(env(safe-area-inset-top, 0px) + var(--u) * 3) var(--side) calc(var(--u) * 6);
+  gap:calc(var(--u) * 2); background:url("Assets/UI/Character%20BG.png") center 42% / cover no-repeat; border-radius:0 0 50% 50% / 0 0 calc(var(--u) * 6) calc(var(--u) * 6); box-shadow:0 calc(var(--u) * 1.2) 0 var(--card-edge)}
+.menu .scr-head h1,.eq-name{color:#fff; text-shadow:none; -webkit-text-stroke:calc(var(--u) * 1.1) var(--outline); paint-order:stroke fill}
+.menu .scr-head{display:grid; grid-template-columns:1fr; justify-items:center; row-gap:calc(var(--u) * 4)}
+.menu .scr-head .wallet-bar{grid-row:1; justify-self:end; margin:0 calc(var(--u) * -1.4) 0 0}
+.menu .scr-head h1{grid-row:2; flex:none; margin-bottom:calc(var(--u) * 2); font-size:calc(var(--u) * 7.4); text-align:center}
+/* Banners: each menu has its own scene (the Forge keeps the Character screen's). The header is taller so the
+   scene's subject (chest, campfire, museum hall) shows whole, with the title on the ground below it */
+#scr-shop .scr-head,#scr-premium .scr-head{background-image:url("Assets/UI/ShopBanner.png"); background-position:center 38%}
+#scr-events .scr-head{background-image:url("Assets/UI/EventBanner.png"); background-position:center 46%}
+#scr-museum .scr-head{background-image:url("Assets/UI/MuseumBanner.jpg"); background-position:center 60%}
+#scr-shop .scr-head,#scr-premium .scr-head,#scr-events .scr-head,#scr-museum .scr-head{min-height:calc(var(--u) * 50); grid-template-rows:auto 1fr; box-sizing:border-box}
+#scr-shop .scr-head h1,#scr-premium .scr-head h1,#scr-events .scr-head h1,#scr-museum .scr-head h1{align-self:end; margin-bottom:0}
+/* The Shop's banner is lower than the others */
+#scr-shop .scr-head,#scr-premium .scr-head{min-height:calc(var(--u) * 38); background-position:center 43%}
+/* Money pills (pearls, coins, ores, keys): beige with a brown edge, everywhere */
+.wallet-bar .res{gap:calc(var(--u) * 1.6); min-width:calc(var(--u) * 15); height:calc(var(--u) * 7.6); padding:0 calc(var(--u) * 2.2) 0 calc(var(--u) * 1.2); box-sizing:border-box;
+  border-radius:calc(var(--u) * 2.4); background:#fbf1dc; color:var(--ink); box-shadow:inset 0 0 0 calc(var(--u) * .5) #a8763e; font-size:calc(var(--u) * 3.6)}
+.wallet-bar .res img,.wallet-bar .res img[alt="gemmes"],.wallet-bar .res svg{width:calc(var(--u) * 4.9); height:calc(var(--u) * 4.9)}
+.wallet-bar{gap:calc(var(--u) * 1.1)}
+.menu .scr-head .res,.eq-top .res{min-width:calc(var(--u) * 26.5)}
+/* The Forge's ores under its header */
+#forgeWallet{justify-content:center}
+#forgeWallet .res{min-width:calc(var(--u) * 17)}
+/* Panels on the beige page */
+.menu .card.flat,.menu .pm-row,.menu .pm-card,.menu .ch-card,.menu .srow{background:var(--card-bg); color:var(--ink); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge), 0 calc(var(--u) * .8) 0 var(--card-edge)}
+.menu .card.flat{border-radius:calc(var(--u) * 4)}
+/* Titles and notes written on the page: dark instead of light */
+.menu .sh-h,.menu .pm-h{color:var(--ink); text-shadow:none; font-size:calc(var(--u) * 4.8)}
+.menu .sh-note{color:var(--ink-soft)}
+.menu .pm-note{background:var(--card-edge); color:var(--ink)}
+/* Sub-tabs (Shop, Forge): the selected one is a yellow block with a dark outline, like the bottom bar */
+.seg{padding:calc(var(--u) * 1); border-radius:calc(var(--u) * 3.4); background:var(--card-edge); box-shadow:inset 0 0 0 calc(var(--u) * .5) #d9bf93}
+.seg button{min-height:calc(var(--u) * 9.4); border-radius:calc(var(--u) * 2.6); font-size:calc(var(--u) * 3.6); color:var(--ink)}
+.seg button[aria-pressed="true"]{background:linear-gradient(#ffe100, #ffb400); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--outline), inset 0 calc(var(--u) * -1) 0 #ff9a00}
+/* Back to the village: a tab stuck to the left edge, above the bottom bar */
+.menu .scr-head .back{left:0; border-radius:0 calc(var(--u) * 4) calc(var(--u) * 4) 0; min-height:calc(var(--u) * 11); padding:0 calc(var(--u) * 4) 0 calc(var(--u) * 3);
+  background:#fbf1dc; color:var(--ink); font-size:calc(var(--u) * 4); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--outline), 0 calc(var(--u) * .8) 0 rgba(0,0,0,.25)}
+body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + var(--u) * 2.5)}
+/* Badges everywhere: red dot with a black outline */
+.badge{background:#f04a4a; box-shadow:0 0 0 calc(var(--u) * .45) var(--outline)}
+/* Item cards everywhere: the rarity card backgrounds, the level written over the picture, the outlined "New" tag */
+.r-common{--card:url("Assets/UI/ItemCard_BG_Common.png")} .r-rare{--card:url("Assets/UI/ItemCard_BG_Rare.png")} .r-epic{--card:url("Assets/UI/ItemCard_BG_Epic.png")}
+.r-legendary{--card:url("Assets/UI/ItemCard_BG_Legendary.png")} .r-mythic{--card:url("Assets/UI/ItemCard_BG_Prismatic.png")}
+.gi{background:var(--card, url("Assets/UI/ItemCard_BG_Base.png")) center / 100% 100% no-repeat; box-shadow:none}
+.gi-lv{bottom:3px; transform:translateX(-50%); padding:0; background:none; color:#fff; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill}
+.gi-new{box-shadow:0 0 0 2px var(--outline); white-space:nowrap}
+.gi-new::before{content:"✦ "}
+.gi.better::after{content:""; width:24px; height:24px; border-radius:0; background:url("Assets/UI/Icon_ArrowUp.png") center / contain no-repeat; box-shadow:none}
+
+/* ---------- Art direction in the mine: cream buttons with one dark outline (a real border, so no light fringe
+   shows outside it) and a darker strip inside at the bottom; the selected tool in yellow ---------- */
+#scr-mine .chip,#scr-mine .iconbtn,#scr-mine .bag-pill,#scr-mine .pill,.tool{border:3px solid var(--outline); background:#fbf1dc; background-clip:padding-box; box-shadow:inset 0 -4px 0 #e2c89a}
+#scr-mine .iconbtn:active,.bag-pill:active,#scr-mine .pill:active{box-shadow:inset 0 -1px 0 #e2c89a}
+.bag-pill.full{background:#ffd7cf; box-shadow:inset 0 -4px 0 #e0907f}
+#scr-mine .bar{box-shadow:inset 0 3px 0 rgba(0,0,0,.35)}
+.tool.on{background:linear-gradient(#ffe100, #ffb400); background-clip:padding-box; box-shadow:inset 0 -5px 0 #ff9a00}
+.tool .tl{margin-top:3px; color:#fff; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
+#scr-mine .pill.next{background:linear-gradient(#5fe6b0, var(--mint)); background-clip:padding-box; color:#fff; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill; box-shadow:inset 0 -5px 0 #1fae7a}
+#scr-mine .pill.next *{-webkit-text-stroke:0}
+#scr-mine .pill.shop{background:linear-gradient(#ffe100, #ffb400); background-clip:padding-box; box-shadow:inset 0 -4px 0 #ff9a00}
+.goals-label{color:#fff; text-shadow:none; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
+.goals-label small{color:#fff3d6; -webkit-text-stroke:0}
+#scr-mine .slot.found{border:2px solid var(--outline); background:#fbf1dc; background-clip:padding-box; box-shadow:none}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -1080,8 +1157,8 @@ body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !importan
   </div>
 </div>
 
-<div class="screen" id="scr-museum" hidden>
-  <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Musée</h1><div class="wallet-bar" data-money></div></header>
+<div class="screen menu" id="scr-museum" hidden>
+  <header class="scr-head"><h1>Musée</h1><div class="wallet-bar" data-money></div></header>
   <div class="card flat" id="museumBody"></div>
 </div>
 
@@ -1099,25 +1176,25 @@ body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !importan
   <div class="eq-actions" id="eqActions"></div>
 </div>
 
-<div class="screen" id="scr-premium" hidden>
+<div class="screen menu" id="scr-premium" hidden>
   <header class="scr-head"><h1>Boutique premium</h1><div class="wallet-bar" data-money></div></header>
 </div>
 
-<div class="screen" id="scr-events" hidden>
+<div class="screen menu" id="scr-events" hidden>
   <header class="scr-head"><h1>Événements</h1><div class="wallet-bar" data-money></div></header>
   <div id="eventsBody" class="pm-body"></div>
 </div>
 
-<div class="screen" id="scr-shop" hidden>
-  <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Boutique</h1><div class="wallet-bar" id="shopWallet"></div></header>
+<div class="screen menu" id="scr-shop" hidden>
+  <header class="scr-head"><h1>Boutique</h1><div class="wallet-bar" id="shopWallet"></div></header>
   <div class="seg shop-tabs" id="shopTabs"></div>
   <div id="chestList" class="ch-list"></div>
   <div class="card flat" id="conCard"><p>Des articles pour tes descentes, payés en pièces.</p><div class="shop-list" id="conList"></div></div>
   <div id="premiumBody" class="pm-body"></div>
 </div>
 
-<div class="screen" id="scr-forge" hidden>
-  <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Forge</h1></header>
+<div class="screen menu" id="scr-forge" hidden>
+  <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Forge</h1><div class="wallet-bar" data-money></div></header>
   <div class="wallet-bar" id="forgeWallet"></div>
   <div class="seg forge-tabs" id="forgeTabs"></div>
   <div class="card flat forge-body" id="forgeBody"></div>
@@ -3016,7 +3093,7 @@ function renderShopScreen() {
   setTimeout(gearCoach);
   if (S.tutoSeen.sacBoutique && !S.tutoSeen.sacAcheter) startCoach('sacAcheter', [
     { text: TX.sacAcheter, scroll: true, target: () => document.querySelector('button[data-bagup]'), done: () => S.bagLvl > 0 || $('scr-shop').hidden },
-    { text: TX.retourVillage, target: () => document.querySelector('#scr-shop .back'), done: () => $('scr-shop').hidden },
+    { text: TX.retourVillage, target: () => document.querySelector('.nav-tab[data-nav="village"]'), done: () => $('scr-shop').hidden },
   ]);
   if (!has('sac') && !cons.length) $('conList').innerHTML = `<p class="eq-soon">${tr('Les articles arrivent plus profond dans la mine.')}</p>`;
   else $('conList').innerHTML = (has('sac') ? bagRow : '') + cons.map(([k, c]) =>
@@ -3468,7 +3545,7 @@ function renderHero() {
 /* ---------- Forge: level up, merge, and (until the Mountain altar) the old upgrades ---------- */
 let forgeTab = 'gear';
 function renderForge() {
-  $('forgeWallet').innerHTML = moneyHTML() + walletHTML(Object.keys(ORES));
+  $('forgeWallet').innerHTML = walletHTML(Object.keys(ORES));
   const tools = upgradesShown().length > 0, canMerge = G().items.some(it => mergeFodder(it));
   if (forgeTab === 'tools' && !tools) forgeTab = 'gear';
   const tab = (k, label, dot) => `<button data-ftab="${k}" id="ftab-${k}" aria-pressed="${forgeTab === k}">${label}${dot ? '<span class="badge">!</span>' : ''}</button>`;
@@ -4114,7 +4191,7 @@ document.addEventListener('click', e => {
 function museumCoach() {
   const claim = () => document.querySelector('#scr-museum [data-claimset]');
   if (!S.tutoSeen.prime && claim()) startCoach('prime', [{ text: TX.prime, target: claim, done: () => !claim() }]);
-  if (!S.tutoSeen.museeRetour) startCoach('museeRetour', [{ text: TX.museeRetour, target: () => document.querySelector('#scr-museum [data-go="village"]'), done: () => $('scr-museum').hidden }]);
+  if (!S.tutoSeen.museeRetour) startCoach('museeRetour', [{ text: TX.museeRetour, target: () => document.querySelector('.nav-tab[data-nav="village"]'), done: () => $('scr-museum').hidden }]);
 }
 // Museum = display shelves: one shelf per collection (found treasures on pedestals, missing ones as silhouettes),
 // with a glass dome on the right holding the next star prime. Gems and artefacts on the same screen.
