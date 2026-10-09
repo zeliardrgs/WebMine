@@ -601,18 +601,18 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .coin img{width:28px; height:28px; object-fit:contain}
 .shop-list{display:grid; gap:8px}
 /* Bottom navigation bar, mobile-game style: 5 tabs, the World tab in the middle is bigger */
-:root{--nav-h:74px}
+:root{--nav-h:80px}
 .navbar{position:fixed; left:50%; bottom:0; z-index:40; transform:translateX(-50%); width:min(480px, 100%); box-sizing:border-box; display:grid; grid-template-columns:repeat(5, 1fr); align-items:end;
   padding:6px 6px calc(env(safe-area-inset-bottom, 0px) + 6px); border-radius:22px 22px 0 0; background:linear-gradient(#4a2a63, #2e1840); box-shadow:0 -4px 0 #6d4590, 0 -8px 22px rgba(0,0,0,.35)}
-.nav-tab{position:relative; min-height:62px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:3px; padding:4px 2px 2px; border:0; border-radius:16px; background:none; cursor:pointer; color:#e9d9ff}
-.nav-ic{display:grid; place-items:center; width:40px; height:40px; transition:transform .15s}
+.nav-tab{position:relative; min-height:68px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:4px 2px 2px; border:0; border-radius:16px; background:none; cursor:pointer; color:#e9d9ff}
+.nav-ic{display:grid; place-items:center; width:54px; height:54px; transition:transform .15s}
 .nav-ic img,.nav-ic svg{width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}
-.hero-ic{overflow:hidden; border-radius:50%; background:#ffe2a8; box-shadow:inset 0 0 0 3px #3b2245}
-.hero-ic img{width:150%; height:150%; object-fit:cover; object-position:30% 8%; filter:none}
-.nav-lb{font-family:var(--font-display); font-size:10px; line-height:1; white-space:nowrap; letter-spacing:-.2px}
+.nav-lb{display:none; font-family:var(--font-display); font-size:10px; line-height:1; white-space:nowrap; letter-spacing:-.2px}
+/* The name shows only under the selected tab */
+.nav-tab.on .nav-lb{display:block}
 .nav-tab.on{background:rgba(255,194,61,.18)}
 .nav-tab.on .nav-lb{color:var(--sun)}
-.nav-tab.on .nav-ic{transform:translateY(-2px) scale(1.08)}
+.nav-tab.on .nav-ic{transform:translateY(-1px) scale(1.06)}
 .nav-tab:active .nav-ic{transform:scale(.92)}
 .nav-tab.soon .nav-ic{filter:grayscale(.75) brightness(.8)}
 .nav-tab.soon .nav-lb{opacity:.6}
@@ -620,8 +620,8 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .nav-tab.locked .nav-ic{filter:grayscale(1) brightness(.7)}
 .nav-tab .badge{top:0; right:10%}
 /* The World tab: a big round button sticking out of the bar */
-.nav-tab.main .nav-ic{width:62px; height:62px; margin-top:-26px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #ffe27a, var(--sun) 60%, var(--sun-edge)); box-shadow:0 4px 0 #8a5a0a, 0 0 0 4px #2e1840}
-.nav-tab.main .nav-ic svg{width:46px; height:46px}
+.nav-tab.main .nav-ic{width:66px; height:66px; margin-top:-26px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #ffe27a, var(--sun) 60%, var(--sun-edge)); box-shadow:0 4px 0 #8a5a0a, 0 0 0 4px #2e1840}
+.nav-tab.main .nav-ic img{width:52px; height:52px}
 .nav-tab.main.on{background:none}
 /* Room for the bar under the screens that show it */
 body.nav-on .screen{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 18px)}
@@ -1014,7 +1014,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   </header>
   <div class="v-hint" id="vHint">Fais glisser pour te déplacer dans le village</div>
   <div class="v-bottom">
-    <div class="v-quest"><button class="quest-btn" id="questBtn" aria-label="Objectifs"><img src="Assets/Quest.png" alt="" draggable="false">Objectifs<span class="badge" id="questBadge" hidden>!</span></button></div>
+    <div class="v-quest"><button class="quest-btn" id="questBtn" aria-label="Objectifs"><img src="Assets/UI/Quest.png" alt="" draggable="false">Objectifs<span class="badge" id="questBadge" hidden>!</span></button></div>
     <section class="mine-door" aria-label="Entrée de la mine">
       <div class="md-info">
         <b>La mine</b>
@@ -1085,7 +1085,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <header class="hud">
     <div class="chip depth" id="depthChip"><span id="depthLbl">Niveau</span><b id="depth">1</b><span class="depth-band" id="depthBand" hidden>Niveau spécial</span></div>
     <div class="chip energy" id="energyChip" title="Énergie">
-      <img src="Assets/Energy_Yellow.png" alt="" draggable="false">
+      <img src="Assets/UI/Energy_Yellow.png" alt="" draggable="false">
       <div class="col">
         <div class="bar"><i id="energyFill" style="width:100%"></i><span id="energyTxt">50 / 50</span></div>
         <small id="regenTxt">Énergie pleine</small>
@@ -1100,7 +1100,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <section class="goals" aria-label="Trésors à trouver">
     <div class="goals-label">Trésors<small id="goalCount">0 / 0 trouvés</small></div>
     <div class="slots" id="slots"></div>
-    <button class="bag-pill" id="bagPill" aria-label="Ouvrir le sac"><img src="Assets/Bag.png" alt="" draggable="false"><span id="bagTxt">Sac 0/4</span></button>
+    <button class="bag-pill" id="bagPill" aria-label="Ouvrir le sac"><img src="Assets/UI/Bag.png" alt="" draggable="false"><span id="bagTxt">Sac 0/4</span></button>
   </section>
 
   <main class="stage">
@@ -1130,15 +1130,15 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 
 <!-- Bottom navigation bar (village, museum, character screens) -->
 <nav class="navbar" id="navBar" aria-label="Navigation" hidden>
-  <button class="nav-tab" data-nav="premium"><span class="nav-ic"><img src="Assets/Treasures/Rubis.png" alt="" draggable="false"></span><span class="nav-lb">Premium</span></button>
-  <button class="nav-tab" data-nav="museum"><span class="nav-ic"><img src="Assets/Overworld/Museum.png" alt="" draggable="false"></span><span class="nav-lb">Musée</span><span class="badge" id="navMuseumBadge" hidden>!</span></button>
-  <button class="nav-tab main" data-nav="village"><span class="nav-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="#3db5ff" stroke="#1b4f7a" stroke-width="3"/><path d="M11 15 C15 12 20 13 21 17 C22 21 17 22 18 26 C19 30 14 32 11 29 C8 25 8 18 11 15Z M27 9 C31 10 36 13 38 18 C35 19 33 17 30 18 C27 19 25 15 27 9Z M29 26 C33 24 38 26 39 30 C37 35 33 39 29 40 C27 36 31 33 28 30 C27 29 27 27 29 26Z" fill="#35d49a" stroke="#1b6e4f" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 11 C17 9 21 8 24 8" stroke="#fff" stroke-opacity=".7" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span><span class="nav-lb">Monde</span></button>
-  <button class="nav-tab" data-nav="hero"><span class="nav-ic hero-ic"><img src="Assets/Characters/Miner.png" alt="" draggable="false"></span><span class="nav-lb">Personnage</span><span class="badge" id="navHeroBadge" hidden>!</span></button>
-  <button class="nav-tab" data-nav="events"><span class="nav-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="10" width="36" height="32" rx="7" fill="#fff3d6" stroke="#3b2245" stroke-width="3"/><path d="M6 17 C6 13 9 10 13 10 H35 C39 10 42 13 42 17 V20 H6Z" fill="#ff5b6e" stroke="#3b2245" stroke-width="3" stroke-linejoin="round"/><path d="M16 6 V14 M32 6 V14" stroke="#3b2245" stroke-width="3.4" stroke-linecap="round"/><path d="M24 24.5 L26.6 29.6 L32.2 30.3 L28.1 34.1 L29.2 39.6 L24 37 L18.8 39.6 L19.9 34.1 L15.8 30.3 L21.4 29.6Z" fill="#ffc23d" stroke="#c98a12" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="nav-lb">Événements</span></button>
+  <button class="nav-tab" data-nav="premium"><span class="nav-ic"><img src="Assets/UI/Icon_Shop_Big.png" alt="" draggable="false"></span><span class="nav-lb">Premium</span></button>
+  <button class="nav-tab" data-nav="museum"><span class="nav-ic"><img src="Assets/UI/Icon_Museum.png" alt="" draggable="false"></span><span class="nav-lb">Musée</span><span class="badge" id="navMuseumBadge" hidden>!</span></button>
+  <button class="nav-tab main" data-nav="village"><span class="nav-ic"><img src="Assets/Tools/Icn_Pickaxe.png" alt="" draggable="false"></span><span class="nav-lb">Monde</span></button>
+  <button class="nav-tab" data-nav="hero"><span class="nav-ic"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"></span><span class="nav-lb">Personnage</span><span class="badge" id="navHeroBadge" hidden>!</span></button>
+  <button class="nav-tab" data-nav="events"><span class="nav-ic"><img src="Assets/UI/Event.png" alt="" draggable="false"></span><span class="nav-lb">Événements</span></button>
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="coachDim" hidden></div>
-<div id="coachHand" hidden aria-hidden="true"><img src="Assets/TutoHand.png" alt="" draggable="false"></div>
+<div id="coachHand" hidden aria-hidden="true"><img src="Assets/UI/TutoHand.png" alt="" draggable="false"></div>
 <div id="coachTxt" hidden role="status" aria-live="polite"></div>
 <div class="ghost" id="ghost" hidden><div class="g" id="ghostG"></div></div>
 
@@ -1258,7 +1258,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       <h2 class="dw-title" id="descendTitle"></h2>
       <p id="descendText"></p>
       <div class="dw-stats" id="descendStats"></div>
-      <button class="btn big dw-up" id="descendUp"><img src="Assets/Arrow_Up.png" alt="" draggable="false">Remonter</button>
+      <button class="btn big dw-up" id="descendUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false">Remonter</button>
       <div class="dw-more">
         <button class="btn ghosty" id="descendYes">Descendre quand même</button>
         <button class="btn ghosty" id="descendNo">Rester ici</button>
@@ -1426,15 +1426,15 @@ const artArt = k => itemArt(ARTS[k]);
 // Resale value of duplicates, by rarity (in coins)
 const SALE = CFG.economie.venteDoublons;
 const OPEN_VAL = { o11: 30, o12: 30, o13: 30, o14: 40, o15: 40 };
-const COIN = img('Assets/Icon_Coin.png', tr('pièces'));
-const RES_ICON = { coin: 'Assets/Icon_Coin.png', iron: 'Assets/Icon_Iron.png', copper: 'Assets/Icon_Cooper.png', gold: 'Assets/Icon_Gold.png', mithril: 'Assets/Icon_Iron.png', crystal: 'Assets/Icon_Cooper.png' };
+const COIN = img('Assets/UI/Icon_Coin.png', tr('pièces'));
+const RES_ICON = { coin: 'Assets/UI/Icon_Coin.png', iron: 'Assets/UI/Icon_Iron.png', copper: 'Assets/UI/Icon_Cooper.png', gold: 'Assets/UI/Icon_Gold.png', mithril: 'Assets/UI/Icon_Iron.png', crystal: 'Assets/UI/Icon_Cooper.png' };
 // Mithril and raw crystal: recoloured iron/copper icons until their own art exists
 const RES_FILTER = { mithril: 'hue-rotate(140deg) saturate(1.6)', crystal: 'hue-rotate(250deg) saturate(1.4)' };
 const resArt = k => RES_FILTER[k] ? `<img src="${RES_ICON[k]}" alt="${ORES[k].name}" draggable="false" style="filter:${RES_FILTER[k]}">` : img(RES_ICON[k], k === 'coin' ? tr('pièces') : ORES[k].name);
 const POTION = img(TL + 'Energy%20Potion.png', 'potion');
-const UP_ICON = img('Assets/Arrow_Up.png');   // green arrow (mine button, help)
+const UP_ICON = img('Assets/UI/Arrow_Up.png');   // green arrow (mine button, help)
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 C5 15 2 12 2 8 A5 5 0 0 1 12 6 A5 5 0 0 1 22 8 C22 12 19 15 12 21Z" fill="#ff5b6e" stroke="#9b1d33" stroke-width="2" stroke-linejoin="round"/></svg>';
-const BOLT = `<img src="Assets/Energy_Yellow.png" alt="${tr('énergie')}" draggable="false">`;
+const BOLT = `<img src="Assets/UI/Energy_Yellow.png" alt="${tr('énergie')}" draggable="false">`;
 const RADAR = '<img src="Assets/Tools/Radar.png" alt="radar" draggable="false">';
 const TOOLS = {
   shovel: img(TL + 'Shovel.png'),
@@ -2853,7 +2853,7 @@ function renderShopScreen() {
   const nextTxt = !next || later ? nowTxt : next.geodes != null
     ? (next.geodes > 1 ? tr('Poche à géodes : {a} → {b} géodes sans prendre de case', { a: geoPocket(), b: next.geodes }) : tr('Poche à géodes : 1 géode sans prendre de case'))
     : tr('{a} → {b} cases', { a: bagCap(), b: next.cases });
-  const bagRow = `<div class="srow"><div class="sic">${img('Assets/Bag.png')}<i>${bagCap()}</i></div>
+  const bagRow = `<div class="srow"><div class="sic">${img('Assets/UI/Bag.png')}<i>${bagCap()}</i></div>
       <div class="stxt"><b>${next && !later ? tr(next.nom || 'Agrandir le sac') : tr('Sac')}</b><span>${nextTxt}</span><span class="pips">${pipsHTML(lvl, BAG_UP.map(b => ({ biome: b.biome || 1 })))}</span></div>
       <div class="sbuy">${later ? LATER : next ? priceHTML({ coin: next.pieces }) + `<button class="btn sm" data-bagup="1" ${canPay({ coin: next.pieces }) ? '' : 'disabled'}>${tr('Acheter')}</button>` : '<span class="maxed">Max</span>'}</div></div>`;
   const cons = Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k]));
@@ -3244,7 +3244,7 @@ function renderHero() {
   $('eqLeft').innerHTML = GSLOTS.slice(0, 3).map(slot).join('');
   $('eqRight').innerHTML = GSLOTS.slice(3).map(slot).join('');
   const chip = (icon, v, label) => `<span class="eq-chip" title="${label}">${icon}<b>${v}</b><small>${label}</small></span>`;
-  $('eqStats').innerHTML = (has('pioche') ? chip(BOLT, maxE(), tr('Énergie')) : '') + chip(img('Assets/Bag.png'), bagCap(), tr('Sac'))
+  $('eqStats').innerHTML = (has('pioche') ? chip(BOLT, maxE(), tr('Énergie')) : '') + chip(img('Assets/UI/Bag.png'), bagCap(), tr('Sac'))
     + (has('pioche') ? chip(TOOLS.pickaxe, nfG(Math.round(pickPower() * 100) / 100), tr('Dégâts')) : '')
     + (open ? `<button class="eq-info" data-gstats aria-label="${tr('Tous les bonus')}">i</button>` : '');
   $('eqActions').innerHTML = open
@@ -3373,7 +3373,7 @@ $('navBar').addEventListener('click', e => {
 /* ---------- Premium shop and Events pages ----------
    Nothing can be bought or played there yet: every button says "Bientôt" and only shows a message. */
 const SOON_BTN = cls => `<button class="btn ${cls || ''} soon" data-soon="1">${tr('Bientôt')}</button>`;
-const coinPile = n => '<span class="pm-pile">' + [[0, 18], [17, 18], [34, 18], [8, 4], [26, 4], [17, -9]].slice(0, n).map(([x, y]) => `<img src="Assets/Icon_Coin.png" alt="" draggable="false" style="left:${x}px; top:${y + 12}px">`).join('') + '</span>';
+const coinPile = n => '<span class="pm-pile">' + [[0, 18], [17, 18], [34, 18], [8, 4], [26, 4], [17, -9]].slice(0, n).map(([x, y]) => `<img src="Assets/UI/Icon_Coin.png" alt="" draggable="false" style="left:${x}px; top:${y + 12}px">`).join('') + '</span>';
 function renderPremium() {
   const pack = (n, title, sub) => `<div class="pm-card">${coinPile(n)}<b>${title}</b><small>${sub}</small>${SOON_BTN('sm')}</div>`;
   $('premiumBody').innerHTML = `<p class="pm-note">${tr('Les achats arrivent bientôt. Voici un aperçu de ce qui t\'attend !')}</p>
@@ -3385,7 +3385,7 @@ function renderPremium() {
     <h2 class="pm-h">${tr('Pièces')}</h2>
     <div class="pm-grid">${pack(3, tr('Poignée de pièces'), '500')}${pack(5, tr('Bourse de pièces'), '1 500')}${pack(6, tr('Coffre de pièces'), '5 000')}</div>
     <h2 class="pm-h">${tr('Avantages')}</h2>
-    <div class="pm-row"><div class="sic">${img('Assets/Bag.png')}</div><div class="stxt"><b>${tr('Pass du mineur')}</b><span>${tr('Des récompenses en plus à chaque palier de niveaux.')}</span></div>${SOON_BTN('sm')}</div>`;
+    <div class="pm-row"><div class="sic">${img('Assets/UI/Bag.png')}</div><div class="stxt"><b>${tr('Pass du mineur')}</b><span>${tr('Des récompenses en plus à chaque palier de niveaux.')}</span></div>${SOON_BTN('sm')}</div>`;
 }
 function renderEvents() {
   const ev = (icon, title, text) => `<div class="pm-row"><div class="sic">${icon}</div><div class="stxt"><b>${title}</b><span>${text}</span></div>${SOON_BTN('sm')}</div>`;
@@ -4044,11 +4044,11 @@ const renderHelp = () => $('help').innerHTML = [
   ['magma', TOOLS.bucket, tr('<b>Arrosoir</b> : refroidit le magma. Il lui faut quelques secondes pour se remplir.')],
   ['bombes', TOOLS.bomb, tr('<b>Bombe</b> : dans ton sac, onglet Consommables. Elle fait sauter les 9 cases autour de la cible, sauf le magma chaud.')],
   ['radar', RADAR, tr('<b>Radar</b> : dans ton sac, onglet Consommables. Il entoure l\'emplacement d\'un trésor caché.')],
-  [() => S.bagSeen, img('Assets/Bag.png'), tr('<b>Sac</b> : chaque trésor et chaque géode prend une case (les minerais ne comptent pas). Agrandis-le à la boutique.')],
+  [() => S.bagSeen, img('Assets/UI/Bag.png'), tr('<b>Sac</b> : chaque trésor et chaque géode prend une case (les minerais ne comptent pas). Agrandis-le à la boutique.')],
   [() => S.reached >= CHECKPOINTS[0], UP_ICON, tr('<b>Ascenseur</b> : au village, « Descendre » te propose les checkpoints débloqués (niveau 10, 20, 30…), rangés par biome. C\'est gratuit.')],
   [null, UP_ICON, tr('<b>Remonter</b> : quitte la mine quand tu veux. Ton sac se vide : les nouveaux trésors vont au musée, les doublons sont vendus.')],
   [() => S.buildings.museum, artArt('lion'), tr('<b>Musée</b> : chaque nouveau trésor rapporte une prime. Complète une collection pour gagner une étoile (jusqu\'à {n}) : ses doublons se vendent plus cher, et la prime se récupère au Musée.', { n: MAX_STARS })],
-  [() => S.buildings.shop, img('Assets/Bag.png'), tr('<b>Boutique</b> : agrandis ton sac. D\'autres articles arrivent plus profond.')],
+  [() => S.buildings.shop, img('Assets/UI/Bag.png'), tr('<b>Boutique</b> : agrandis ton sac. D\'autres articles arrivent plus profond.')],
   [() => S.buildings.forge, resArt('iron'), tr('<b>Forge</b> : améliore tes outils avec du fer, du cuivre, de l\'or et des pièces.')],
   ['pierreDure', TOOLS.pickaxe, tr('<b>Pierre dure</b> : il faut deux fois plus de coups de pioche.')],
   ['source', TOOLS.shovel, tr('<b>Source</b> : creuse-la à la pelle, son eau refroidit le magma collé à elle.')],
@@ -4120,7 +4120,7 @@ function tryDescend() {
     : CFG.energie.rechargeAuVillage ? tr('Attention, il te reste peu d\'énergie : remonte au village pour recharger.') : tr('Attention, il te reste peu d\'énergie.');
   const stat = (icon, txt) => `<div class="dw-stat">${img(icon)}<span>${txt}</span></div>`;
   $('descendStats').className = 'dw-stats' + (full && low ? ' two' : '');
-  $('descendStats').innerHTML = (full ? stat('Assets/Bag.png', `${bagUsed()} / ${bagCap()}`) : '') + (low ? stat('Assets/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
+  $('descendStats').innerHTML = (full ? stat('Assets/UI/Bag.png', `${bagUsed()} / ${bagCap()}`) : '') + (low ? stat('Assets/UI/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
   sfx('deny'); $('descendModal').hidden = false; $('descendUp').focus();
 }
 // Going down a level takes DESCEND_MS: the cleared board leaves, "Niveau N" shows, the new board arrives
