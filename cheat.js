@@ -5,7 +5,7 @@
 (() => {
   const M = window.__mine;
   if (!M) return;
-  const KEY = 'mine-tresors-v2', BACKUP = 'mine-tresors-backup', INF = 'mine-cheat-energie';
+  const KEY = 'mine-tresors-v3', BACKUP = 'mine-tresors-backup', INF = 'mine-cheat-energie';
 
   /* ---------- Style ---------- */
   const css = document.createElement('style');
@@ -79,7 +79,33 @@
     upgrades() {
       const s = S();
       for (const k of Object.keys(M.UPGRADES)) s.up[k] = M.UPGRADES[k].cost.length;
-      s.bagLvl = M.BAG_UP.length; s.energy = M.maxE(); refresh(); msg('Forge et sac au maximum');
+      s.bagLvl = M.BAG_UP.length; s.energy = M.maxE(); refresh(); msg('Outils de la Forge et sac au maximum');
+    },
+    // Equipment (the gear opens with the Forge: "Débloquer jusqu'au niveau 11" then go back to the village)
+    gems() { const g = S().gear; g.gems += 500; M.refreshGear(); refresh(); msg('+500 gemmes'); },
+    keys() { const k = S().gear.keys; for (const c in k) k[c] += 5; M.refreshGear(); refresh(); msg('+5 clés de chaque coffre'); },
+    gearItem(rar) {
+      const s = S(), open = Object.keys(M.ARCH).filter(M.archOpen), list = open.length ? open : Object.keys(M.ARCH);
+      s.buildings.forge = s.buildings.shop = true;
+      s.gear.items.push(M.newItem(randomOf(list), rar)); M.refreshGear(); refresh(); msg('+1 objet ' + M.EQC.raretes[rar].nom);
+    },
+    gearTrio() {
+      const s = S(), open = Object.keys(M.ARCH).filter(M.archOpen), ak = randomOf(open.length ? open : Object.keys(M.ARCH));
+      s.buildings.forge = s.buildings.shop = true;
+      for (let n = 0; n < 3; n++) s.gear.items.push(M.newItem(ak, 'commun'));
+      M.refreshGear(); refresh(); msg('+3 objets Commun identiques (à fusionner)');
+    },
+    gearAll() {
+      const s = S(); s.buildings.forge = s.buildings.shop = true;
+      for (const ak of Object.keys(M.ARCH)) s.gear.items.push(M.newItem(ak, 'commun'));
+      M.refreshGear(); refresh(); msg('+1 objet de chaque modèle');
+    },
+    gearReset() {
+      if (!confirm('Effacer tout l\'équipement, les clés et les gemmes ?')) return;
+      const s = S(); s.gear = Object.assign(s.gear, { items: [], eq: {}, gems: 0, pity: {}, firstFree: false, firstUp: false, merges: 0 });
+      for (const k in s.gear.keys) s.gear.keys[k] = 0;
+      delete s.tutoSeen['eq-premier']; delete s.tutoSeen['eq-fusion'];
+      M.refreshGear(); refresh(); msg('Équipement remis à zéro (tutoriel compris)');
     },
     // Geodes
     geode(g) { S().bag.geodes.push(g); refresh(); msg('+1 ' + M.GEODES[g].name); },
@@ -139,7 +165,17 @@
       <button data-c="energy">Énergie pleine</button>
       <button data-c="infinite" id="cheatInf">Énergie infinie</button>
       <button data-c="items">+5 bombes, radars, potions</button>
-      <button data-c="upgrades">Forge et sac au max</button>
+      <button data-c="upgrades">Outils de la Forge et sac au max</button>
+    </div>
+
+    <h3>Équipement</h3>
+    <div class="row">
+      <button data-c="gems">+500 gemmes</button>
+      <button data-c="keys">+5 clés de chaque</button>
+      <button data-c="gearTrio">+3 identiques (fusion)</button>
+      <button data-c="gearAll">+1 de chaque modèle</button>
+      ${M.RAR_KEYS.map(r => `<button data-c="gearItem" data-g="${r}">+1 ${M.EQC.raretes[r].nom}</button>`).join('')}
+      <button data-c="gearReset" class="warn">Remettre l'équipement à zéro</button>
     </div>
 
     <h3>Géodes</h3>

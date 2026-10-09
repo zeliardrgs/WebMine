@@ -20,6 +20,15 @@ const page = `<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mine aux Trésors">
+<script>
+// Wide screens (desktop, landscape window): play inside a portrait phone frame instead of stretching across the window.
+// The page loads itself at ?app in an iframe; <plaintext> swallows the rest of this copy so its game never starts.
+if (top === self && !/[?&]app\\b/.test(location.search) && innerWidth > innerHeight && !matchMedia('(pointer:coarse)').matches) {
+  document.write('<style>html,body{margin:0;height:100%;background:radial-gradient(90% 70% at 50% 0%,#3b2552,#160d22)}body{display:grid;place-items:center}'
+    + 'iframe{display:block;height:min(100vh - 32px,932px);aspect-ratio:430/932;border:0;border-radius:32px;background:#2a1b3d;box-shadow:0 0 0 10px #0c0712,0 24px 60px rgba(0,0,0,.6)}</style>'
+    + '<iframe src="?app' + location.search.replace(/^\\?/, '&') + '" title="Mine aux Trésors" onload="this.focus()"></iframe><plaintext hidden>');
+}
+</script>
 <style>
 :root{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
 img{max-width:100%}

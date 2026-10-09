@@ -25,7 +25,7 @@
   --panel:#fff3d6; --panel-edge:#e2b77a; --ink:#3b2245; --ink-soft:#7a5a74;
   --sun:#ffc23d; --sun-edge:#c98a12; --mint:#35d49a; --lava:#ff5b2e; --water:#3db5ff;
   --wood:#a86a34; --wood-dark:#5b3214; --ground:#3b2416;
-  --rar-common:#1f9a4a; --rar-rare:#2670d6; --rar-epic:#8d42cc; --rar-legendary:#e27a0c;
+  --rar-common:#1f9a4a; --rar-rare:#2670d6; --rar-epic:#8d42cc; --rar-legendary:#d99400; --rar-mythic:#e0303a;
   --font-display:'Montserrat','Arial Black',system-ui,sans-serif;   /* Montserrat Black (900) only: every text uses it */
   --font-body:var(--font-display);   /* one typeface everywhere (Montserrat Black) */
   --tile:min(calc((100vw - 52px) / 7), calc((100vh - 352px) / 10), 58px); /* fallback, refined by fitBoard() */
@@ -279,7 +279,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .puff{position:absolute; border-radius:50%; background:rgba(255,255,255,.75)}
 /* Rarity colours the name itself (darker shades on light cards, lighter ones on dark bubbles) */
 .rar[class*="rar-"]{color:var(--rc)}
-.rar-common{--rc:var(--rar-common)} .rar-rare{--rc:var(--rar-rare)} .rar-epic{--rc:var(--rar-epic)} .rar-legendary{--rc:var(--rar-legendary)}
+.rar-common{--rc:var(--rar-common)} .rar-rare{--rc:var(--rar-rare)} .rar-epic{--rc:var(--rar-epic)} .rar-legendary{--rc:var(--rar-legendary)} .rar-mythic{--rc:var(--rar-mythic)}
 .find-label .rar-common, .ws-info .rar-common{--rc:#6ee893} .find-label .rar-rare, .ws-info .rar-rare{--rc:#7db5ff}
 .find-label .rar-epic, .ws-info .rar-epic{--rc:#cf9bff} .find-label .rar-legendary, .ws-info .rar-legendary{--rc:#ffb35c}
 .geo-btn.on[class*="rar-"]{box-shadow:0 0 0 .9cqw var(--rc), 0 0 0 1.9cqw #ffd94d, 0 1.4cqw 0 rgba(0,0,0,.25)}
@@ -681,6 +681,133 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .eq-detail .btn{width:100%; margin-top:12px}
 .eq-detail .eq-max{margin-top:12px; text-align:center; font-family:var(--font-display); color:var(--mint)}
 @media (max-width:360px){ .eq-stage{grid-template-columns:76px 1fr 76px} .eq-slot{width:76px} }
+/* ---------- Equipment (Archero-style): rarity frames, inventory, item sheet, chests ---------- */
+.r-common{--g1:#6fdc95; --g2:#1f9a4a} .r-rare{--g1:#7ab8ff; --g2:#2670d6} .r-epic{--g1:#cf9bff; --g2:#8d42cc}
+.r-legendary{--g1:#ffe07a; --g2:#d99400} .r-mythic{--g1:#ff8a8a; --g2:#c01c2a}
+.eq-slot[class*="r-"]{background:linear-gradient(var(--g1), var(--g2)); box-shadow:0 0 0 3px #fff, 0 4px 0 rgba(0,0,0,.25), 0 8px 14px rgba(0,0,0,.25)}
+.eq-slot[class*="r-"] .eq-nm{color:#fff; text-shadow:0 1px 0 rgba(0,0,0,.45)}
+.eq-slot.empty .eq-ic{filter:grayscale(1) opacity(.35)}
+.eq-slot.empty .eq-lv{background:#c9b49a}
+.eq-slot.locked .eq-ic b{font-size:26px}
+.eq-slot.r-mythic, .gi.r-mythic{animation:mythic 2.2s ease-in-out infinite}
+@keyframes mythic{50%{filter:drop-shadow(0 0 8px #ff3b3b) brightness(1.08)}}
+.eq-stats{display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; flex:none}
+.eq-chip{display:flex; align-items:center; gap:5px; padding:4px 10px 4px 5px; border-radius:14px; background:var(--panel); color:var(--ink); box-shadow:0 3px 0 var(--panel-edge)}
+.eq-chip img{width:26px; height:26px; object-fit:contain}
+.eq-chip b{font-family:var(--font-display); font-weight:400; font-size:17px; font-variant-numeric:tabular-nums}
+.eq-chip small{font-size:11px; color:var(--ink-soft)}
+.eq-info{width:34px; height:34px; border:0; border-radius:50%; background:var(--ink); color:#fff; font-family:var(--font-display); font-size:17px; cursor:pointer; box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.eq-actions{display:flex; gap:10px; flex:none}
+.eq-actions .btn{position:relative; flex:1; display:flex; align-items:center; justify-content:center; gap:6px; min-height:52px}
+.eq-actions .btn img{width:30px; height:30px; object-fit:contain}
+.eq-soon{margin:0; text-align:center; font-size:14px; color:var(--ink-soft)}
+.eq-actions .eq-soon{flex:1; color:#ffe7b0}
+.eq-inv h3{margin:0 0 10px; font-family:var(--font-display); font-weight:400; font-size:19px; color:var(--ink)}
+.eq-inv h3 small{font-size:14px; color:var(--ink-soft)}
+.gi-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(64px, 1fr)); gap:10px; margin-top:10px}
+.gi{position:relative; display:grid; place-items:center; aspect-ratio:1; padding:6px; border:0; border-radius:14px; cursor:pointer; box-sizing:border-box;
+  background:linear-gradient(var(--g1, #eee), var(--g2, #ccc)); box-shadow:inset 0 0 0 3px rgba(255,255,255,.55), 0 3px 0 rgba(0,0,0,.25)}
+.gi:active{transform:translateY(2px)}
+.gi img,.gi-art img{width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
+.gi-art{width:78%; height:78%; display:grid; place-items:center}
+.gi-lv{position:absolute; left:50%; bottom:-6px; transform:translateX(-50%); padding:0 6px; border-radius:8px; background:var(--ink); color:#fff; font-family:var(--font-display); font-size:10.5px; line-height:16px; white-space:nowrap}
+.gi-new{position:absolute; top:-6px; left:-4px; padding:0 5px; border-radius:7px; background:var(--lava); color:#fff; font-family:var(--font-display); font-size:9.5px; line-height:15px; transform:rotate(-8deg)}
+.gi-on{position:absolute; top:-6px; right:-5px; width:20px; height:20px; border-radius:50%; background:var(--mint); color:#fff; font-size:12px; display:grid; place-items:center; box-shadow:0 2px 0 #1fae7a}
+.gi.better::after,.gi.can::after{content:"▲"; position:absolute; top:-7px; right:-6px; width:20px; height:20px; border-radius:50%; background:var(--mint); color:#fff; font-size:10px; display:grid; place-items:center; box-shadow:0 2px 0 #1fae7a}
+.gi.can::after{content:"+"; background:var(--sun); color:var(--ink); font-size:15px; box-shadow:0 2px 0 var(--sun-edge)}
+.gi.can{animation:canMerge 1.4s ease-in-out infinite}
+@keyframes canMerge{50%{box-shadow:inset 0 0 0 3px rgba(255,255,255,.55), 0 0 0 4px var(--sun), 0 3px 0 rgba(0,0,0,.25)}}
+.gi.big{width:96px; flex:none; border-radius:20px}
+.srow .sic.gi{width:52px; height:52px; padding:4px}
+/* Item sheet */
+.gear-card{color:var(--ink)}
+.gear-card .x{position:absolute; top:10px; right:10px; width:40px; height:40px; border:0; border-radius:50%; background:#f3dcb0; color:var(--ink); font-size:22px; cursor:pointer}
+.gear-card h2{margin:0; font-family:var(--font-display); font-weight:400; font-size:22px; line-height:1.1}
+.gs-head{display:flex; align-items:center; gap:14px; padding-right:40px}
+.gs-head p{margin:4px 0 0; font-size:13px; color:var(--ink-soft)}
+.gs-head .rar{font-family:var(--font-display)}
+.gs-lv{font-family:var(--font-display); color:var(--ink)!important}
+.gs-stat{margin-top:14px; padding:10px 12px; border-radius:14px; background:#fff; box-shadow:0 2px 0 #ecd3a8; display:grid; gap:3px}
+.gs-stat b{font-family:var(--font-display); font-weight:400; font-size:16px}
+.gs-stat span{font-size:12px; color:#2e9c6a}
+.gs-h{margin:14px 0 6px; font-family:var(--font-display); font-size:14px; color:var(--ink)}
+.gs-pas,.gs-list{margin:0; padding:0; list-style:none; display:grid; gap:6px}
+.gs-pas li{display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:12px; background:#fff; font-size:13px; box-shadow:0 2px 0 #ecd3a8}
+.gs-pas li .rar{flex:none; font-family:var(--font-display); font-size:12px}
+.gs-pas li.off{opacity:.45; filter:grayscale(.6)}
+.gs-list li{display:flex; align-items:center; gap:10px; padding:6px 10px; border-radius:12px; background:#fff; font-size:13px; box-shadow:0 2px 0 #ecd3a8}
+.gs-list li span:last-child{display:grid; gap:1px}
+.gs-ic{width:34px; height:34px; flex:none}
+.gs-ic img{width:100%; height:100%; object-fit:contain}
+.gs-btns{display:flex; align-items:center; gap:10px; margin-top:16px}
+.gs-btns > .btn{flex:1}
+.gs-up{flex:1.3; display:flex; align-items:center; justify-content:flex-end; gap:8px}
+.gs-up .btn{flex:none}
+.gs-free{font-family:var(--font-display); font-size:14px; color:#2e9c6a}
+.gs-merge{margin-top:16px; padding-top:12px; border-top:2px dashed #e6d2b0}
+.gs-fod{display:flex; gap:10px}
+.gs-fod .gi{width:64px}
+.gs-merge .btn.big{margin-top:12px; display:flex; align-items:center; justify-content:center; gap:8px}
+.gs-merge .btn .rar{background:#fff; padding:2px 8px; border-radius:9px; font-size:14px}
+.gs-hint{margin:8px 0 0; font-size:13px; color:var(--ink-soft)}
+/* Forge tabs */
+.forge-tabs{flex:none}
+.forge-tabs button{position:relative; flex:1}
+.forge-tabs .badge{top:-6px; right:-4px}
+.forge-body > p:first-child{margin-top:0}
+.forge-body #autoMerge{width:100%; margin-bottom:4px}
+/* Shop: chests */
+.ch-list{display:flex; flex-direction:column; gap:12px; flex:none}
+.ch-list .srow{color:var(--ink)}
+.sh-h{margin:0; font-family:var(--font-display); font-weight:400; font-size:20px; color:var(--sun); text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.sh-note{margin:0; font-size:11px; color:#ffe7b0; text-align:center}
+.ch-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.ch-card{display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 8px 12px; border-radius:18px; background:var(--panel); color:var(--ink); text-align:center; box-shadow:0 4px 0 var(--panel-edge), 0 8px 14px rgba(0,0,0,.25)}
+.ch-card.ch-argent{background:linear-gradient(#f4f6ff, #dfe4f5)} .ch-card.ch-or{background:linear-gradient(#fff6d0, #ffe28a)} .ch-card.ch-etoile{background:linear-gradient(#e6e2ff, #c8bdff)}
+.ch-art{width:76px; height:76px} .ch-art img{width:100%; height:100%; object-fit:contain}
+.ch-card b{font-family:var(--font-display); font-weight:400; font-size:15px; line-height:1.1}
+.ch-key{display:flex; align-items:center; gap:2px; font-family:var(--font-display); font-size:14px}
+.ch-key img{width:24px; height:24px}
+.ch-odds{display:flex; flex-wrap:wrap; justify-content:center; gap:2px 6px; font-family:var(--font-display); font-size:11px; line-height:1.3}
+.ch-odds small{width:100%; font-family:var(--font-body); font-size:10.5px; color:var(--ink-soft)}
+.ch-card .btn{margin-top:4px; min-width:96px; display:flex; align-items:center; justify-content:center; gap:4px}
+.ch-none{margin-top:6px; font-size:12px; color:var(--ink-soft)}
+.btn.gem img,.res img[alt="gemmes"]{width:20px; height:20px}
+.sic i{font-style:normal}
+/* Chest opening */
+.modal.chest-modal{background:radial-gradient(circle at 50% 40%, rgba(90,50,120,.92), rgba(16,8,26,.94))}
+.cm{position:relative; width:min(380px, 100%); display:flex; flex-direction:column; align-items:center; gap:12px; text-align:center}
+.cm-title{margin:0; font-family:var(--font-display); font-size:26px; color:var(--sun); text-shadow:0 3px 0 rgba(0,0,0,.4)}
+.cm-chest{display:flex; flex-direction:column; align-items:center; gap:6px; border:0; background:none; cursor:pointer; color:#fff; font-family:var(--font-display); font-size:15px}
+.cm-chest img{width:190px; height:190px; animation:chestIdle 1.6s ease-in-out infinite}
+.cm-chest.opened img{width:150px; height:150px; animation:none}
+.cm-chest.shake img{animation:chestShake .3s linear 3}
+@keyframes chestIdle{50%{transform:translateY(-6px) scale(1.03)}}
+@keyframes chestShake{25%{transform:rotate(-8deg) scale(1.05)} 75%{transform:rotate(8deg) scale(1.05)}}
+.cm-item{position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; color:#fff; animation:cmPop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes cmPop{from{transform:scale(.3) rotateY(90deg); opacity:0}}
+.cm-card{width:120px; z-index:1}
+.cm-name{z-index:1; font-family:var(--font-display); font-size:24px; --rc:#fff}
+.chest-modal.r-common .cm-name{--rc:#7ff0a3} .chest-modal.r-rare .cm-name{--rc:#8cc4ff} .chest-modal.r-epic .cm-name{--rc:#d9adff} .chest-modal.r-legendary .cm-name{--rc:#ffd24a} .chest-modal.r-mythic .cm-name{--rc:#ff6b6b}
+.cm-sub{z-index:1; display:flex; gap:6px; align-items:center; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,.92); color:var(--ink); font-size:13px}
+.cm-stat{z-index:1; font-size:14px; color:#ffe7b0}
+.cm-rays{position:absolute; left:50%; top:60px; width:320px; height:320px; margin:-160px 0 0 -160px; border-radius:50%; pointer-events:none; opacity:.75;
+  background:repeating-conic-gradient(from 0deg, var(--g1, #fff) 0 10deg, transparent 10deg 30deg); -webkit-mask:radial-gradient(circle, #000 20%, transparent 70%); mask:radial-gradient(circle, #000 20%, transparent 70%); animation:rays 8s linear infinite}
+.chest-modal.r-common .cm-rays{opacity:.35}
+@keyframes rays{to{transform:rotate(360deg)}}
+.cm-bolts{position:absolute; inset:-40px -60px; pointer-events:none; animation:bolts 1.2s steps(1) infinite;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M40 10 L28 60 L44 60 L30 110' stroke='%23ff4040' stroke-width='5' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M165 30 L150 75 L168 76 L152 125' stroke='%23ffb0b0' stroke-width='4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+@keyframes bolts{0%{opacity:1} 12%{opacity:0} 40%{opacity:.8; transform:scaleX(-1)} 52%{opacity:0} 100%{opacity:0}}
+.cm-btns{display:flex; flex-direction:column; gap:10px; width:min(280px, 100%)}
+.cm-btns .btn{width:100%}
+.ad-modal .card{text-align:center; color:var(--ink)}
+.ad-modal b{display:block; font-family:var(--font-display); font-size:56px; color:var(--lava)}
+.ad-tag{margin:0; font-family:var(--font-display); color:var(--ink-soft)}
+/* Mine: a chest key on the ground */
+.t-gkey{background-image:url(Assets/Ground/Ground_Dirt_01.png)}
+.t-gkey::before{animation:twinkle 1.8s ease-in-out infinite; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='30' cy='50' r='18' fill='%23b0662f' stroke='%233b2245' stroke-width='5'/%3E%3Ccircle cx='30' cy='50' r='7' fill='%233b2245'/%3E%3Cpath d='M46 44 H88 V56 H80 V68 H70 V56 H62 V64 H52 V56 H46Z' fill='%23b0662f' stroke='%233b2245' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E")}
+@media (prefers-reduced-motion: reduce){ .cm-rays,.cm-bolts,.gi.can,.eq-slot.r-mythic,.gi.r-mythic,.cm-chest img{animation:none} }
+
 .srow{display:flex; align-items:center; gap:10px; padding:10px; border-radius:16px; background:#fff; box-shadow:0 3px 0 #ecd3a8}
 .sic{position:relative; width:46px; height:46px; flex:none}
 .sic img,.sic svg{width:100%; height:100%; object-fit:contain}
@@ -876,8 +1003,8 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       <button class="shaft" id="shaftBtn" style="left:500px; top:640px" aria-label="Descendre dans la mine"></button>
       <span class="shaft-sign" style="left:500px; top:688px">Mine</span>
       <button class="bld" data-go="museum" style="left:680px; top:450px; width:480px; z-index:1" aria-label="Musée"><span class="plate" style="--roof:#2f55c8"><b>Musée</b><small id="subMuseum"></small><span class="badge" id="badgeMuseum" hidden>!</span></span><span class="bimg" id="icMuseum"></span></button>
-      <button class="bld" data-go="forge" style="left:270px; top:560px; width:173px; z-index:2" aria-label="Forge"><span class="plate" style="--roof:#d0402e"><b>Forge</b><small>Améliorations</small><span class="badge" id="badgeForge" hidden>!</span></span><span class="bimg" id="icForge"></span></button>
-      <button class="bld" data-go="shop" style="left:720px; top:860px; width:290px; z-index:3" aria-label="Boutique"><span class="plate" style="--roof:#f2c21b"><b>Boutique</b><small>Articles</small><span class="badge new" id="badgeShop" hidden>Nouveau</span></span><span class="bimg" id="icShop"></span></button>
+      <button class="bld" data-go="forge" style="left:270px; top:560px; width:173px; z-index:2" aria-label="Forge"><span class="plate" style="--roof:#d0402e"><b>Forge</b><small>Équipement</small><span class="badge" id="badgeForge" hidden>!</span></span><span class="bimg" id="icForge"></span></button>
+      <button class="bld" data-go="shop" style="left:720px; top:860px; width:290px; z-index:3" aria-label="Boutique"><span class="plate" style="--roof:#f2c21b"><b>Boutique</b><small>Coffres</small><span class="badge new" id="badgeShop" hidden>Nouveau</span></span><span class="bimg" id="icShop"></span></button>
       <button class="bld" data-go="atelier" style="left:300px; top:930px; width:200px; z-index:4" aria-label="Atelier"><span class="plate" style="--roof:#3a6be0"><b>Atelier</b><small id="subAtelier"></small><span class="badge" id="badgeAtelier" hidden>0</span></span><span class="bimg" id="icAtelier"></span></button>
     </div>
   </div>
@@ -911,7 +1038,9 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <div class="eq-hero"><img src="Assets/Characters/Miner.png" alt="" draggable="false"></div>
     <div class="eq-col" id="eqRight"></div>
   </div>
-  <div class="card flat eq-detail" id="eqDetail"></div>
+  <div class="eq-stats" id="eqStats"></div>
+  <div class="eq-actions" id="eqActions"></div>
+  <div class="card flat eq-inv" id="eqInv"></div>
 </div>
 
 <div class="screen" id="scr-premium" hidden>
@@ -926,13 +1055,15 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 
 <div class="screen" id="scr-shop" hidden>
   <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Boutique</h1><div class="wallet-bar" id="shopWallet"></div></header>
-  <div class="card flat"><p>De l'équipement et des consommables pour tes descentes, payés en pièces.</p><div class="shop-list" id="conList"></div></div>
+  <div id="chestList" class="ch-list"></div>
+  <div class="card flat" id="conCard"><p>Des articles pour tes descentes, payés en pièces.</p><div class="shop-list" id="conList"></div></div>
 </div>
 
 <div class="screen" id="scr-forge" hidden>
   <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Forge</h1></header>
   <div class="wallet-bar" id="forgeWallet"></div>
-  <div class="card flat"><p>Améliore tes outils avec tes minerais et quelques pièces. Les améliorations sont permanentes.</p><div class="shop-list" id="upList"></div></div>
+  <div class="seg forge-tabs" id="forgeTabs"></div>
+  <div class="card flat forge-body" id="forgeBody"></div>
 </div>
 
 <div class="screen" id="scr-atelier" hidden>
@@ -1002,7 +1133,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <button class="nav-tab" data-nav="premium"><span class="nav-ic"><img src="Assets/Treasures/Rubis.png" alt="" draggable="false"></span><span class="nav-lb">Premium</span></button>
   <button class="nav-tab" data-nav="museum"><span class="nav-ic"><img src="Assets/Overworld/Museum.png" alt="" draggable="false"></span><span class="nav-lb">Musée</span><span class="badge" id="navMuseumBadge" hidden>!</span></button>
   <button class="nav-tab main" data-nav="village"><span class="nav-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="#3db5ff" stroke="#1b4f7a" stroke-width="3"/><path d="M11 15 C15 12 20 13 21 17 C22 21 17 22 18 26 C19 30 14 32 11 29 C8 25 8 18 11 15Z M27 9 C31 10 36 13 38 18 C35 19 33 17 30 18 C27 19 25 15 27 9Z M29 26 C33 24 38 26 39 30 C37 35 33 39 29 40 C27 36 31 33 28 30 C27 29 27 27 29 26Z" fill="#35d49a" stroke="#1b6e4f" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 11 C17 9 21 8 24 8" stroke="#fff" stroke-opacity=".7" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span><span class="nav-lb">Monde</span></button>
-  <button class="nav-tab" data-nav="hero"><span class="nav-ic hero-ic"><img src="Assets/Characters/Miner.png" alt="" draggable="false"></span><span class="nav-lb">Personnage</span></button>
+  <button class="nav-tab" data-nav="hero"><span class="nav-ic hero-ic"><img src="Assets/Characters/Miner.png" alt="" draggable="false"></span><span class="nav-lb">Personnage</span><span class="badge" id="navHeroBadge" hidden>!</span></button>
   <button class="nav-tab" data-nav="events"><span class="nav-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="10" width="36" height="32" rx="7" fill="#fff3d6" stroke="#3b2245" stroke-width="3"/><path d="M6 17 C6 13 9 10 13 10 H35 C39 10 42 13 42 17 V20 H6Z" fill="#ff5b6e" stroke="#3b2245" stroke-width="3" stroke-linejoin="round"/><path d="M16 6 V14 M32 6 V14" stroke="#3b2245" stroke-width="3.4" stroke-linecap="round"/><path d="M24 24.5 L26.6 29.6 L32.2 30.3 L28.1 34.1 L29.2 39.6 L24 37 L18.8 39.6 L19.9 34.1 L15.8 30.3 L21.4 29.6Z" fill="#ffc23d" stroke="#c98a12" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="nav-lb">Événements</span></button>
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1101,6 +1232,17 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   </div>
 </div>
 
+<!-- Equipment: item sheet, chest opening, fake ad -->
+<div class="modal" id="gearModal" hidden><div class="card gear-card" id="gearCard" role="dialog" aria-label="Objet"></div></div>
+<div class="modal chest-modal" id="chestModal" hidden>
+  <div class="cm" role="dialog" aria-label="Coffre">
+    <p class="cm-title" id="chestTitle"></p>
+    <button class="cm-chest" id="chestBtn"></button>
+    <div class="cm-item" id="chestItem" hidden></div>
+    <div class="cm-btns" id="chestBtns" hidden></div>
+  </div>
+</div>
+<div class="modal ad-modal" id="adModal" hidden><div class="card"><p class="ad-tag">Publicité (simulée)</p><b id="adCount">3</b><p>Ton coffre arrive…</p></div></div>
 <div class="modal" id="goalsModal" hidden>
   <div class="card goals-modal" role="dialog" aria-labelledby="goalsTitle" style="text-align:center">
     <button class="close" id="goalsClose" aria-label="Fermer">×</button>
@@ -1139,7 +1281,7 @@ const costFromFr = c => Object.fromEntries(Object.entries(c).map(([k, n]) => [RE
 // A level of an upgrade in config.js: { biome, (energie), price… }
 const stepOf = o => { const { biome = 1, energie, cases, ...price } = o; return { biome, energie, cost: costFromFr(price) }; };
 let COLS = 7, ROWS = 10, N = COLS * ROWS;
-const KEY = 'mine-tresors-v2';
+const KEY = 'mine-tresors-v3';   // v3: equipment prototype (older saves start over)
 /* Language (Paramètres > Langue). Texts are written in French in the code and in config.js;
    tr('texte français') gives the English version from textes-en.js when the game is in English.
    {n}, {a}… in a text are replaced by the values given: tr('Niveau {n}', { n: 5 }). */
@@ -1185,7 +1327,6 @@ const E_STEPS = CFG.forge.reserveEnergie.map(stepOf);
 const HP = { stone: CFG.mine.coupsPierre, ore: CFG.mine.coupsPierreMinerai, cool: CFG.mine.coupsMagmaRefroidi,
   hard: CFG.mine.coupsPierreDure, ice: CFG.mine.coupsGlace, root: CFG.mine.coupsRacine, stump: CFG.mine.coupsSouche };
 const ORE_YIELD = fromFr(FR_ORE, CFG.mine.quantiteMinerais);
-const SPLASH = CFG.forge.chanceEclats;
 const BUCKET_CD = CFG.forge.rechargeArrosoirMs;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1199,7 +1340,7 @@ const ORES = {
 const TR = 'Assets/Treasures/', TL = 'Assets/Tools/';
 const img = (src, alt = '') => `<img src="${src}" alt="${alt}" draggable="false">`;
 // Rarity colours (same as the CSS --rar-* tokens), used by the temporary drawings
-const RAR_HEX = { common: '#1f9a4a', rare: '#2670d6', epic: '#8d42cc', legendary: '#e27a0c' };
+const RAR_HEX = { common: '#1f9a4a', rare: '#2670d6', epic: '#8d42cc', legendary: '#d99400', mythic: '#e0303a' };
 // Temporary drawings (a simple shape in the rarity colour) for treasures that don't have their image yet
 const PH_SHAPES = {
   gem: '<path d="M50 8 L88 34 L72 90 H28 L12 34Z" fill="C" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><path d="M12 34 H88 M34 34 L50 90 L66 34 M34 34 L50 8 L66 34" stroke="#fff" stroke-opacity=".55" stroke-width="3" fill="none"/>',
@@ -1308,11 +1449,60 @@ function rwSVG(rw) { return rw.kind === 'gem' ? gemArt(rw.key) : rw.kind === 'ge
 function rwName(rw) { return rw.kind === 'gem' ? GEMS[rw.key].name : rw.kind === 'geode' ? GEODES[rw.key].name : ARTS[rw.key].name; }
 function rwLabel(rw) { return rw.kind === 'gem' ? tr('Gemme') : rw.kind === 'geode' ? tr('Géode') : tr('Artefact'); }
 
+/* ---------- Equipment: data (config.js > equipement) ----------
+   6 slots, each with a few models ("archétypes"). An item = { id, slot, arch, rar, lv, spent }.
+   Items come from the Shop's chests and are levelled up and merged at the Forge. */
+const EQC = CFG.equipement;
+const RAR_KEYS = Object.keys(EQC.raretes);                       // commun, rare, epique, legendaire, mythique
+const RAR_CSS = { commun: 'common', rare: 'rare', epique: 'epic', legendaire: 'legendary', mythique: 'mythic' };
+const GSLOTS = ['pioche', 'pelle', 'gants', 'casque', 'lanterne', 'bottes'];   // left column, then right column
+const SLOT_STAT = { pioche: 'dmg', pelle: 'coin', gants: 'ore', casque: 'free', lanterne: 'geode', bottes: 'pile' };
+const CHESTS = Object.keys(EQC.coffres);                         // bois, argent, or, etoile
+const ARCH = {};
+for (const [sk, sl] of Object.entries(EQC.emplacements)) for (const [ak, a] of Object.entries(sl.modeles)) ARCH[ak] = { ...a, key: ak, slot: sk };
+const newGear = () => ({ items: [], eq: {}, keys: Object.fromEntries(CHESTS.map(k => [k, 0])), gems: EQC.gemmesDepart || 0, pity: {},
+  day: '', free: 0, ad: 0, buys: 0, nextId: 1, goals: 0, merges: 0, firstFree: false, firstUp: false });
+const G = () => S.gear;
+const rarIdx = r => RAR_KEYS.indexOf(r);
+const gearItem = id => G().items.find(it => it.id === id);
+const equipped = sk => gearItem(G().eq[sk]);
+const isEquipped = it => G().eq[it.slot] === it.id;
+// Equipment opens with the Forge (level 11, on the next return to the village)
+const gearOpen = () => !!(S.buildings && S.buildings.forge);
+const slotOpen = sk => { const d = EQC.emplacements[sk].deblocage; return !d || has(d); };
+const archOpen = ak => slotOpen(ARCH[ak].slot) && (ARCH[ak].biome || 1) <= biomeOf(Math.max(S.reached || 1, S.level || 1));
+// Main stat of an item: (start + per level × (level − 1)) × rarity multiplier, capped
+function statOf(it) {
+  const st = EQC.emplacements[it.slot].stat, v = (st.depart + st.parNiveau * (it.lv - 1)) * EQC.raretes[it.rar].multiplicateur;
+  return st.max != null ? Math.min(st.max, v) : v;
+}
+// Passive of the item's model: from Epic on, stronger at Legendary and Mythic
+const passiveOf = it => { const i = rarIdx(it.rar) - 2; return i >= 0 ? ARCH[it.arch].valeurs[Math.min(i, ARCH[it.arch].valeurs.length - 1)] : 0; };
+// What the equipped items give, all together: { dmg, coin, ore, free, geode, pile, pas: { model: value } }
+function gearTotals() {
+  const t = { dmg: 0, coin: 0, ore: 0, free: 0, geode: 0, pile: 0, pas: {} };
+  if (!S || !S.gear) return t;
+  for (const sk of GSLOTS) {
+    const it = equipped(sk); if (!it) continue;
+    t[SLOT_STAT[sk]] = statOf(it);
+    const p = passiveOf(it); if (p) t.pas[it.arch] = p;
+  }
+  return t;
+}
+// Rare geodes are more frequent with the Lantern; the Lanterne de prospecteur sometimes upgrades a geode
+const geodeWeight = (o, T) => o.w * (o.rarity === 'common' ? 1 : 1 + (T.geode || 0));
+function luckyGeode(key, geodes, T) {
+  if (!(Math.random() < (T.pas.lanterneProspecteur || 0))) return key;
+  const order = ['white', 'pink', 'gold', 'crystal'].filter(k => geodes.some(([g]) => g === k)), i = order.indexOf(key);
+  return i >= 0 && i < order.length - 1 ? order[i + 1] : key;
+}
+
 /* ---------- State ---------- */
 // Max energy = the value of the last "Réserve d'énergie" level bought (config.js > forge > reserveEnergie)
 const maxE = () => S.up.energy > 0 ? E_STEPS[Math.min(S.up.energy, E_STEPS.length) - 1].energie : MAX_E;
 const energyAt = l => l > 0 ? E_STEPS[Math.min(l, E_STEPS.length) - 1].energie : MAX_E;
-const pickPower = () => 1 + S.up.pick;
+// Pickaxe damage: 1, plus the equipped Pickaxe's bonus (see Equipment)
+const pickPower = () => 1 + gearTotals().dmg;
 const bucketCd = () => BUCKET_CD[S.up.fast];
 const maxCharges = () => 1 + S.up.charges;
 
@@ -1322,7 +1512,7 @@ const newTrip = () => ({ finds: [], dupes: [], coins: 0, ores: zeroOres() });
 
 function freshState() {
   return {
-    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, up: { energy: 0, pick: 0, splash: 0, fast: 0, charges: 0 }, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false,
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, up: { energy: 0, fast: 0, charges: 0 }, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false,
     bag: {
       ores: zeroOres(),
       gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
@@ -1331,7 +1521,7 @@ function freshState() {
       arts: Object.fromEntries(Object.keys(ARTS).map(k => [k, 0])),
     },
     coins: CFG.depart.pieces, bagLvl: 0, reached: 1, trip: newTrip(), screen: 'village', roll: null,
-    grid: null, rewards: null,
+    grid: null, rewards: null, gear: newGear(),
   };
 }
 let S = freshState();
@@ -1444,7 +1634,9 @@ function genLevelOnce(level, kindArg) {
   const free = () => g.map((c, i) => c.t !== 'magma' && c.t !== 'stump' && c.t !== 'root' && c.t !== 'coins' ? i : -1).filter(i => i >= 0);
   // Treasure level: many piles; bigger grids also hold a few (config.js > progression > grilles > tasDePieces)
   const piles = kind === 'treasure' ? RY.niveauTresor.tasDePieces : gridRow(level).tasDePieces;
-  if (piles) for (let n = randInt(...piles), list = free(); n > 0 && list.length; n--) g[list.splice(randInt(0, list.length - 1), 1)[0]] = tileOf('coins');
+  // Pelle de prospecteur: more piles on treasure levels
+  const morePiles = kind === 'treasure' ? gearTotals().pas.pelleProspecteur || 0 : 0;
+  if (piles) for (let n = randInt(...piles) + morePiles, list = free(); n > 0 && list.length; n--) g[list.splice(randInt(0, list.length - 1), 1)[0]] = tileOf('coins');
   // Level 1000: the King's chest in the middle (until it has been opened)
   const reserved = [];
   if (kind === 'king' && !S.kingOpened) { const mid = (ROWS >> 1) * COLS + (COLS >> 1); g[mid] = tileOf('king'); reserved.push(mid); }
@@ -1458,7 +1650,9 @@ function genLevelOnce(level, kindArg) {
   let budget = area * (area < 30 ? .7 : .45);
   const pool = (entries, size, weight) => Object.fromEntries(entries.filter(([, o]) => { const [w, h] = size(o); return w <= COLS && h <= ROWS && w * h <= budget; }).map(([k, o]) => [k, weight(o)]));
   const known = k => !!S.bag.arts[k] || S.trip.finds.some(f => f.kind === 'art' && f.key === k);
-  const SRC = { geode: [geodes, o => o.sz, o => o.w], art: [arts, o => [o.w, o.h], o => (ART_FREQ[o.rarity] || 1) * (known(o.key) ? 1 : COL.chanceNonDecouvert || 1)] };
+  // Equipment: the Lantern makes rare geodes more frequent, the Lanterne ancienne undiscovered artefacts
+  const GT = gearTotals();
+  const SRC = { geode: [geodes, o => o.sz, o => geodeWeight(o, GT)], art: [arts, o => [o.w, o.h], o => (ART_FREQ[o.rarity] || 1) * (known(o.key) ? 1 : (COL.chanceNonDecouvert || 1) * (GT.pas.lanterneAncienne || 1))] };
   const picks = [];
   for (const kind of kinds) {
     // If nothing of this kind fits, try the other kind
@@ -1469,7 +1663,10 @@ function genLevelOnce(level, kindArg) {
     if (!Object.keys(options).length) { use = kind === 'art' ? 'geode' : 'art'; options = fresh(use); }
     if (!Object.keys(options).length) { use = 'art'; options = fresh('art', true); }
     if (!Object.keys(options).length) continue;
-    const key = pick(options), table = use === 'geode' ? GEODES : ARTS, [w, h] = SRC[use][1](table[key]);
+    let key = pick(options);
+    // Lanterne de prospecteur: a geode can go up one rarity
+    if (use === 'geode') key = luckyGeode(key, geodes, GT);
+    const table = use === 'geode' ? GEODES : ARTS, [w, h] = SRC[use][1](table[key]);
     budget -= w * h; picks.push({ kind: use, key, w, h });
   }
   // The guaranteed treasure of this level takes the place of the first pick
@@ -1497,6 +1694,13 @@ function genLevelOnce(level, kindArg) {
   // Some series lie only in dirt, under stone or under magma: cover them accordingly
   for (const { p, cells } of best) coverSoil(g, cells, p.kind === 'art' ? ARTS[p.key].soil : 'tout', level);
   trimCost(g, best, level, kind);
+  // A chest key: on every treasure level (the first time), sometimes on a normal level (once the equipment is open)
+  const KC = EQC.cles;
+  if (gearOpen() && (kind === 'treasure' ? KC.niveauTresor : Math.random() < KC.chanceEtage)) {
+    const taken = new Set([...reserved, ...best.flatMap(b => b.cells)]);
+    const list = free().filter(i => !taken.has(i));
+    if (list.length) g[list[randInt(0, list.length - 1)]] = { t: 'gkey', k: kind === 'treasure' ? KC.niveauTresor : 'bois' };
+  }
   S.grid = g; S.rewards = best.map(({ p, r, c }) => ({ ...p, r, c, found: false }));
 }
 /* Energy a level asks for = pickaxe hits (at base strength) on the tiles covering its treasures.
@@ -1591,7 +1795,7 @@ const $ = id => document.getElementById(id);
 const board = $('board'), tilesEl = $('tiles'), underEl = $('under'), fx = $('fx'), slotsEl = $('slots');
 let tileEls = [], rwEls = [], slotEls = [];
 
-const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'coins', 'king'];
+const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'coins', 'king', 'gkey'];
 function tileClass(c, i) {
   let cls = 'tile t-' + c.t;
   if (c.t === 'dirt') { const v = c.v ?? i % 3; if (v) cls += ' v' + v; }
@@ -2074,7 +2278,7 @@ function deny(i, msg, kind = 'warn') { shake(i); sfx('deny'); toast(msg, kind); 
 
 let digLock = false;
 // Tiles a simple tap removes for free, with the shovel or the pickaxe
-const SOFT = ['spring', 'mystery', 'gas', 'chest', 'coins'];
+const SOFT = ['spring', 'mystery', 'gas', 'chest', 'coins', 'gkey'];
 function nb4(i) {
   const r = i / COLS | 0, c = i % COLS;
   return [[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dr, dc]) => [r + dr, c + dc]).filter(([y, x]) => y >= 0 && x >= 0 && y < ROWS && x < COLS).map(([y, x]) => y * COLS + x);
@@ -2100,6 +2304,7 @@ function act(p, isTap) {
     if (c.t === 'dirt') {
       clearCell(i); sfx('dirt'); stat('terre');
       burst(x, y, ['#c0713f', '#9a5228', '#6e3519', '#d98a52'], 7, { spread: 26 });
+      digExtras(i);
     } else if (freeTap(i)) breakCell(i);
     else if (isTap) {
       if (c.t === 'magma') deny(i, tr('Attention, c\'est brûlant ! Refroidis le magma avec l\'arrosoir.'));
@@ -2116,10 +2321,15 @@ function act(p, isTap) {
     if (freeTap(i)) return breakCell(i);
     if (c.t === 'magma') { burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, tr('Trop chaud ! Arrose le magma pour le refroidir d\'abord.')); }
     if (S.energy <= 0) return deny(i, REGEN_MS > 0 ? tr('Plus d\'énergie ! +1 dans {s} s, ou bois une potion.', { s: Math.ceil((S.nextRegen - Date.now()) / 1000) }) : tr('Plus d\'énergie ! Bois une potion ou remonte au village pour recharger.'));
-    if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS;
-    S.energy--; updateEnergy(true);
-    // The pickaxe does half damage on ice
-    c.hp -= pickPower() * (c.t === 'ice' ? .5 : 1);
+    // Equipment: the Helmet gives free hits, the Pickaxe its damage and its model's passive
+    const T = gearTotals(), free = Math.random() < T.free + (c.t === 'ore' ? T.pas.casqueVeine || 0 : 0);
+    if (free) floatText(i, tr('Coup gratuit !'), '#8ff5e8');
+    else { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); }
+    // The pickaxe does half damage on ice (full damage, or more, with the Pic de givre)
+    let dmg = pickPower() * (c.t === 'ice' ? T.pas.picGivre || .5 : 1);
+    if (Math.random() < (T.pas.picLourd || 0)) { dmg *= 2; floatText(i, tr('Coup puissant !'), '#ffd23d'); }
+    if (free && Math.random() < (T.pas.casqueChantier || 0)) dmg = c.hp;
+    c.hp -= dmg;
     const chips = chipsOf(c);
     if (c.hp <= 0) {
       const ore = c.t === 'ore' ? c.ore : null;
@@ -2134,13 +2344,14 @@ function act(p, isTap) {
       sfx('hit'); paintTile(i); wobble(i);
       burst(x, y, chips, 6, { spread: 22, size: [3, 7] });
     }
-    if (Math.random() < SPLASH[S.up.splash]) setTimeout(() => splashFrom(i), 140);
+    if (Math.random() < (T.pas.picEclats || 0)) setTimeout(() => splashFrom(i), 140);
     save();
     return;
   }
   if (S.tool === 'bomb') {
     if (S.bombs <= 0) return deny(i, tr('Plus de bombes ! Achètes-en à la boutique du village.'), '');
-    S.bombs--; updateBombs(); stat('bombes'); explode(i); disarm();
+    if (Math.random() < (gearTotals().pas.gantsDynamiteur || 0)) floatText(i, tr('Bombe gratuite !'), '#ffd23d'); else S.bombs--;
+    updateBombs(); stat('bombes'); explode(i); disarm();
     return;
   }
   if (S.tool === 'bucket') {
@@ -2186,10 +2397,14 @@ function breakCell(i) {
   }
   if (t === 'coins') {
     // Coin pile (treasure levels and big grids), worth more in deeper biomes
-    const T = RY.niveauTresor, n = Math.round(randInt(...T.piecesParTas) * (1 + T.bonusParBiome * (biomeOf(S.level) - 1)));
+    const n = pileValue();
     S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
     sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 14, { spread: 34, up: 16, size: [3, 7] });
     floatText(i, tr('+{n} pièces', { n }), '#ffe14d');
+  }
+  if (t === 'gkey') {
+    sfx('reward'); burst(x, y, ['#ffe066', '#c08a50', '#fff'], 16, { spread: 36, up: 14, size: [3, 8] });
+    giveKey(c.k || 'bois', 1, i);
   }
   if (t === 'gas') burst(x, y, ['#9be37a', '#c9f7a6', '#ffffff'], 10, { spread: 30, up: 18, size: [6, 12], dur: 900 });
   if (t === 'stump') {
@@ -2200,6 +2415,27 @@ function breakCell(i) {
     });
   }
   if (t === 'magma' || t === 'cool' || t === 'ice') refreshIce();
+}
+// Value of a coin pile (worth more in deeper biomes), with the Shovel's bonus and the lucky Boots
+function pileValue() {
+  const P = RY.niveauTresor, T = gearTotals();
+  let n = Math.round(randInt(...P.piecesParTas) * (1 + P.bonusParBiome * (biomeOf(S.level) - 1)) * (1 + T.coin));
+  if (Math.random() < (T.pas.bottesPorteBonheur || 0)) n *= 2;
+  return n;
+}
+// Shovel on dirt: the Boots sometimes find a gold pile, the Pelle large digs a neighbouring dirt too
+function digExtras(i) {
+  const T = gearTotals();
+  if (Math.random() < T.pile * (1 + (T.pas.bottesProspecteur || 0))) {
+    const n = pileValue(), { x, y } = center(i);
+    S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
+    sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 12, { spread: 30, up: 14, size: [3, 7] });
+    floatText(i, tr('Tas d\'or ! +{n}', { n }), '#ffe14d');
+  }
+  if (Math.random() < (T.pas.pelleLarge || 0)) {
+    const near = nb4(i).filter(j => S.grid[j].t === 'dirt');
+    if (near.length) { const j = near[randInt(0, near.length - 1)], p = center(j); clearCell(j); stat('terre'); burst(p.x, p.y, ['#c0713f', '#9a5228', '#d98a52'], 6, { spread: 22 }); }
+  }
 }
 // The Miner King's chest (level 1000): opens with the 5 keys — a bonus, never required
 const keysOwned = () => setKeys('cles').filter(k => S.bag.arts[k] || S.trip.finds.some(f => f.kind === 'art' && f.key === k)).length;
@@ -2223,7 +2459,7 @@ function giveBonus(i, kind) {
   for (let g of gifts) {
     if (g === 'potion' && !has('potions')) g = 'pieces';
     if (g === 'geode') {
-      const geos = Object.fromEntries(geodesAt(S.level).map(([k, o]) => [k, o.w]));
+      const geos = Object.fromEntries(geodesAt(S.level).map(([k, o]) => [k, geodeWeight(o, gearTotals())]));
       if (Object.keys(geos).length && roomFor('geode')) {
         const k = pick(geos); S.trip.finds.push({ kind: 'geode', key: k }); updateBadge(); lines.push(GEODES[k].name); continue;
       }
@@ -2245,9 +2481,14 @@ function giveBonus(i, kind) {
 }
 
 function gainOre(i, ore) {
-  const n = randInt(...ORE_YIELD[ore]);
+  // Gloves: a chance of +1 ore (above 100 %: +1 for sure and a chance of +2); Gants de fer: sometimes the best ore too
+  const T = gearTotals(), n = randInt(...ORE_YIELD[ore]) + Math.floor(T.ore) + (Math.random() < T.ore % 1 ? 1 : 0);
   S.bag.ores[ore] += n; S.trip.ores[ore] += n; stat('minerais', n);
   floatText(i, `+${n} ${ORES[ore].name}`, ORES[ore].txt);
+  if (Math.random() < (T.pas.gantsFer || 0)) {
+    const best = Object.keys(ORES).filter(k => at(S.level, ORE_UNLOCK[k])).pop();
+    if (best) { S.bag.ores[best]++; S.trip.ores[best]++; setTimeout(() => floatText(i, `+1 ${ORES[best].name}`, ORES[best].txt), 350); }
+  }
 }
 // "Coup en éclats" upgrade: a random neighbouring rock shatters too
 function splashFrom(i) {
@@ -2566,10 +2807,6 @@ const pct = v => Math.round(v * 100) + (LANG === 'en' ? '%' : ' %');
 const UPGRADES = {
   energy:  { name: tr('Réserve d\'énergie'), icon: () => BOLT, steps: E_STEPS,
              desc: l => l < UPGRADES.energy.max ? tr('Énergie max {a} → {b}', { a: energyAt(l), b: energyAt(l + 1) }) : tr('Énergie max {a}', { a: energyAt(l) }) },
-  pick:    { name: tr('Pioche renforcée'), icon: () => TOOLS.pickaxe, steps: CFG.forge.piocheRenforcee.map(stepOf),
-             desc: l => l < UPGRADES.pick.max ? tr('{a} → {b} dégâts par coup', { a: l + 1, b: l + 2 }) : tr('{a} dégâts par coup', { a: l + 1 }) },
-  splash:  { name: tr('Coup en éclats'), icon: () => img('Assets/Ground/Ground_Stone_03.png'), steps: CFG.forge.coupEnEclats.map(stepOf),
-             desc: l => l < UPGRADES.splash.max ? tr('Chance de casser aussi une roche voisine : {a} → {b}', { a: pct(SPLASH[l]), b: pct(SPLASH[l + 1]) }) : tr('{a} de chance de casser une roche voisine', { a: pct(SPLASH[l]) }) },
   fast:    { name: tr('Arrosoir rapide'), icon: () => TOOLS.bucket, steps: CFG.forge.arrosoirRapide.map(stepOf),
              desc: l => l < UPGRADES.fast.max ? tr('Recharge {a} s → {b} s', { a: BUCKET_CD[l] / 1000, b: BUCKET_CD[l + 1] / 1000 }) : tr('Recharge en {a} s', { a: BUCKET_CD[l] / 1000 }) },
   charges: { name: tr('Grand arrosoir'), icon: () => TOOLS.bucket, badge: l => '×' + (l + 1), steps: CFG.forge.grandArrosoir.map(stepOf),
@@ -2598,26 +2835,18 @@ const priceHTML = cost => '<div class="price">' + Object.entries(cost).map(([k, 
   `<span class="${haveRes(k) < n ? 'short' : ''}">${n}${resArt(k)}</span>`).join('') + '</div>';
 const walletHTML = keys => keys.filter(k => k === 'coin' || has(ORE_UNLOCK[k]) || haveRes(k) > 0).map(k => `<span class="res" title="${k === 'coin' ? tr('Pièces') : ORES[k].name}">${resArt(k)}${haveRes(k)}</span>`).join('');
 // Some upgrades only show from their level on (config.js > progression > deblocages)
-const UP_UNLOCK = { fast: 'magma', charges: 'grandArrosoir', splash: 'coupEnEclats' };
+const UP_UNLOCK = { fast: 'magma', charges: 'grandArrosoir' };
 const upgradesShown = () => Object.entries(UPGRADES).filter(([k]) => !UP_UNLOCK[k] || has(UP_UNLOCK[k]));
 const anyUpgradeAffordable = () => upgradesShown().some(([k, u]) => upOpen(k) && canPay(u.cost[S.up[k]]));
-function renderForge() {
-  $('forgeWallet').innerHTML = walletHTML(['coin', ...Object.keys(ORES)]);
-  $('upList').innerHTML = upgradesShown().map(([k, u]) => {
-    const l = S.up[k], done = l >= u.max, later = !done && !upOpen(k), cost = u.cost[l];
-    return `<div class="srow"><div class="sic">${u.icon()}${u.badge ? '<i>' + u.badge(Math.min(l + 1, u.max)) + '</i>' : ''}</div>
-      <div class="stxt"><b>${u.name}</b><span>${later ? u.desc(l).replace(/ → [\d.,]+( ?%| s)?/, '') : u.desc(l)}</span><span class="pips">${pipsHTML(l, u.steps)}</span></div>
-      <div class="sbuy">${done ? '<span class="maxed">Max</span>' : later ? LATER : priceHTML(cost) + `<button class="btn sm" data-up="${k}" ${canPay(cost) ? '' : 'disabled'}>${tr('Forger')}</button>`}</div></div>`;
-  }).join('');
-}
 // Each shop article appears at its own level (config.js > progression > deblocages)
 const CONS_UNLOCK = { bomb: 'bombes', potion: 'potions', radar: 'radar' };
-const SHOP_ITEMS = ['boutique', 'bombes', 'potions', 'radar'];   // 'boutique' = "Agrandir le sac"
+const SHOP_ITEMS = ['sac', 'bombes', 'potions', 'radar'];   // 'sac' = "Agrandir le sac"
 const shopNew = () => SHOP_ITEMS.some(k => has(k) && !(S.shopSeen || {})[k]);
 function renderShopScreen() {
   // Visiting the shop marks its new articles as seen
   S.shopSeen = S.shopSeen || {}; SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; });
-  $('shopWallet').innerHTML = walletHTML(['coin']);
+  $('shopWallet').innerHTML = walletHTML(['coin']) + gemsWallet();
+  $('chestList').innerHTML = chestsHTML();
   const lvl = S.bagLvl, next = BAG_UP[lvl], later = next && (next.biome || 1) > curBiome();
   // The next upgrade shows its own name: more slots, or a bigger geode pocket
   const nowTxt = tr('{a} cases', { a: bagCap() }) + (geoPocket() ? ' · ' + tr('poche à géodes {b}', { b: geoPocket() }) : '');
@@ -2627,7 +2856,10 @@ function renderShopScreen() {
   const bagRow = `<div class="srow"><div class="sic">${img('Assets/Bag.png')}<i>${bagCap()}</i></div>
       <div class="stxt"><b>${next && !later ? tr(next.nom || 'Agrandir le sac') : tr('Sac')}</b><span>${nextTxt}</span><span class="pips">${pipsHTML(lvl, BAG_UP.map(b => ({ biome: b.biome || 1 })))}</span></div>
       <div class="sbuy">${later ? LATER : next ? priceHTML({ coin: next.pieces }) + `<button class="btn sm" data-bagup="1" ${canPay({ coin: next.pieces }) ? '' : 'disabled'}>${tr('Acheter')}</button>` : '<span class="maxed">Max</span>'}</div></div>`;
-  $('conList').innerHTML = bagRow + Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k])).map(([k, c]) =>
+  const cons = Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k]));
+  $('conCard').hidden = !has('sac') && !cons.length;
+  setTimeout(gearCoach);
+  $('conList').innerHTML = (has('sac') ? bagRow : '') + cons.map(([k, c]) =>
     `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
       <div class="stxt"><b>${c.name}</b><span>${c.desc}</span></div>
       <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) ? '' : 'disabled'}>${tr('Acheter')}</button></div></div>`).join('');
@@ -2684,6 +2916,426 @@ function usePotion() {
   sfx('reward'); toast(tr('Énergie rechargée !'), 'good');
 }
 
+/* ---------- Equipment: pictures ----------
+   Temporary drawings until the real images exist. A real image goes in Assets/Gear/ and its path in
+   config.js > equipement > images (see Assets/Gear/LISEZMOI.md): it then replaces the drawing everywhere. */
+const GIMG = EQC.images || {};
+const svgImg = (body, alt) => img('data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' + body + '</svg>'), alt);
+const G_OUT = 'stroke="#3b2245" stroke-width="5" stroke-linejoin="round"';
+// Pickaxe and shovel: the tool pictures, recoloured per model; the other slots: a drawing in the model's colour
+const ARCH_TINT = { picEclats: 'hue-rotate(150deg) saturate(1.4)', picGivre: 'hue-rotate(185deg) saturate(1.8) brightness(1.15)', pelleLarge: 'hue-rotate(120deg) saturate(1.5)' };
+const ARCH_COL = { gantsFer: '#9aa6c8', gantsDynamiteur: '#e0553a', casqueChantier: '#ffc23d', casqueVeine: '#3fc2a8', lanterneProspecteur: '#ffb13b', lanterneAncienne: '#7ab36a', bottesProspecteur: '#a8693a', bottesPorteBonheur: '#3a9a5a' };
+const GEAR_SVG = {
+  gants: c => `<path d="M30 86 V46 C30 30 40 20 54 20 C68 20 76 30 76 46 V86 Z" fill="${c}" ${G_OUT}/><path d="M30 58 C18 56 12 44 20 36 C26 31 33 36 34 46" fill="${c}" ${G_OUT}/><rect x="25" y="74" width="56" height="16" rx="4" fill="#fff3d6" ${G_OUT}/><path d="M44 30 V48 M56 28 V48 M66 32 V48" stroke="#3b2245" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/>`,
+  casque: c => `<path d="M14 66 C14 34 30 18 50 18 C70 18 86 34 86 66 Z" fill="${c}" ${G_OUT}/><rect x="6" y="64" width="88" height="13" rx="6" fill="${c}" ${G_OUT}/><circle cx="50" cy="44" r="12" fill="#fff7b0" ${G_OUT}/><path d="M28 40 C30 30 36 26 42 24" stroke="#fff" stroke-opacity=".7" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+  lanterne: c => `<path d="M38 18 C38 6 62 6 62 18" fill="none" ${G_OUT}/><rect x="28" y="18" width="44" height="12" rx="4" fill="${c}" ${G_OUT}/><rect x="31" y="30" width="38" height="46" rx="6" fill="#fff1a8" ${G_OUT}/><path d="M50 40 C58 50 56 62 50 64 C44 62 42 50 50 40Z" fill="#ff9a3d" stroke="#b5590a" stroke-width="3"/><path d="M40 30 V76 M60 30 V76" stroke="#3b2245" stroke-width="4"/><rect x="25" y="76" width="50" height="12" rx="4" fill="${c}" ${G_OUT}/>`,
+  bottes: c => `<path d="M26 14 H54 V56 C70 58 86 62 88 74 V84 H26 Z" fill="${c}" ${G_OUT}/><rect x="22" y="80" width="70" height="10" rx="4" fill="#5b3214" ${G_OUT}/><rect x="22" y="12" width="36" height="12" rx="4" fill="#fff3d6" ${G_OUT}/><path d="M34 34 H48 M34 46 H48" stroke="#3b2245" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/>`,
+};
+function gearArt(ak) {
+  const a = ARCH[ak]; if (!a) return '';
+  if (GIMG[ak]) return img(GIMG[ak], tr(a.nom));
+  if (a.slot === 'pioche' || a.slot === 'pelle') return `<img src="${TL}${a.slot === 'pioche' ? 'Icn_Pickaxe.png' : 'Shovel.png'}" alt="${tr(a.nom)}" draggable="false"${ARCH_TINT[ak] ? ` style="filter:${ARCH_TINT[ak]}"` : ''}>`;
+  return svgImg(GEAR_SVG[a.slot](ARCH_COL[ak] || '#c0c0c0'), tr(a.nom));
+}
+// An empty slot shows its first model, greyed
+const slotArt = sk => gearArt(Object.keys(EQC.emplacements[sk].modeles)[0]);
+const CHEST_COL = { bois: ['#b0662f', '#d9893f', '#ffc23d'], argent: ['#8a96b8', '#c4cde6', '#ffffff'], or: ['#e0a30f', '#ffd23d', '#fff7b0'], etoile: ['#3a3f9e', '#6a5fd6', '#ffe36b'] };
+function gStar(x, y, r, f) {
+  const p = [];
+  for (let k = 0; k < 10; k++) { const a = Math.PI / 5 * k - Math.PI / 2, rr = k % 2 ? r * .45 : r; p.push((x + Math.cos(a) * rr).toFixed(1) + ',' + (y + Math.sin(a) * rr).toFixed(1)); }
+  return `<polygon points="${p.join(' ')}" fill="${f}" stroke="#3b2245" stroke-width="2.5" stroke-linejoin="round"/>`;
+}
+const gCap = t => t.charAt(0).toUpperCase() + t.slice(1);
+function chestArt(k, open) {
+  const n = 'coffre' + gCap(k);
+  if (GIMG[n] && !open) return img(GIMG[n], tr(EQC.coffres[k].nom));
+  const [body, lid, band] = CHEST_COL[k];
+  const top = open ? `<path d="M16 34 C18 10 84 4 88 26 L84 30 C78 14 22 18 20 38Z" fill="${lid}" ${G_OUT}/><ellipse cx="50" cy="42" rx="32" ry="7" fill="#fff7b0"/>` : `<path d="M14 44 C14 20 86 20 86 44Z" fill="${lid}" ${G_OUT}/>`;
+  return svgImg(`<rect x="14" y="40" width="72" height="44" rx="6" fill="${body}" ${G_OUT}/>${top}<rect x="14" y="41" width="72" height="9" fill="${band}" stroke="#3b2245" stroke-width="3"/><rect x="43" y="46" width="14" height="19" rx="3" fill="${band}" stroke="#3b2245" stroke-width="3"/>${k === 'etoile' ? gStar(28, 68, 8, '#ffe36b') + gStar(72, 68, 8, '#ffe36b') : ''}`, tr(EQC.coffres[k].nom));
+}
+function keyArt(k) {
+  const n = 'cle' + gCap(k);
+  if (GIMG[n]) return img(GIMG[n], tr(EQC.coffres[k].cle));
+  const [c, , hi] = CHEST_COL[k];
+  return svgImg(`<circle cx="30" cy="50" r="18" fill="${c}" ${G_OUT}/><circle cx="30" cy="50" r="7" fill="#3b2245"/><path d="M46 44 H88 V56 H80 V68 H70 V56 H62 V64 H52 V56 H46Z" fill="${c}" ${G_OUT}/><path d="M18 40 C22 34 28 32 34 33" stroke="${hi}" stroke-opacity=".8" stroke-width="4" fill="none" stroke-linecap="round"/>${k === 'etoile' ? gStar(30, 50, 9, '#ffe36b') : ''}`, tr(EQC.coffres[k].cle));
+}
+const GEM_ICON = GIMG.gemmes ? img(GIMG.gemmes, tr('gemmes')) : svgImg(`<path d="M50 10 L86 36 L50 92 L14 36Z" fill="#ff4d7a" ${G_OUT}/><path d="M14 36 H86 M32 36 L50 92 L68 36 M32 36 L50 10 L68 36" stroke="#fff" stroke-opacity=".6" stroke-width="3" fill="none"/>`, tr('gemmes'));
+
+/* ---------- Equipment: texts ---------- */
+const keyName = k => tr(EQC.coffres[k].cle);
+const nfG = v => v.toLocaleString(LANG === 'en' ? 'en-US' : 'fr-FR', { maximumFractionDigits: 2 });
+const pctG = v => { const p = Math.round(v * 1000) / 10; return nfG(p >= 10 ? Math.round(p) : p) + (LANG === 'en' ? '%' : ' %'); };
+const statTxt = (sk, v) => { const st = EQC.emplacements[sk].stat; return tr(st.texte, { v: st.nombre ? nfG(Math.round(v * 100) / 100) : pctG(v) }); };
+const passiveTxt = (ak, v) => tr(ARCH[ak].passif, { v: ARCH[ak].nombre ? nfG(v) : pctG(v) });
+const rarLabel = r => tr(EQC.raretes[r].nom);
+const rarTagG = r => `<span class="rar rar-${RAR_CSS[r]}">${rarLabel(r)}</span>`;
+const slotName = sk => tr(EQC.emplacements[sk].nom);
+const itemName = it => tr(ARCH[it.arch].nom);
+const capOf = it => EQC.raretes[it.rar].niveauMax;
+const score = it => rarIdx(it.rar) * 100 + it.lv;
+// Better than what the slot holds now (or the slot is empty)
+const better = it => { const cur = equipped(it.slot); return !isEquipped(it) && (!cur || score(it) > score(cur)); };
+
+/* ---------- Equipment: level up (Forge) ----------
+   Coins (× a rise per level) + the ore of the level band (copper, iron, gold, mithril, raw crystal) */
+function levelCost(it) {
+  const A = EQC.ameliorer, L = it.lv;
+  const coin = Math.max(5, Math.round(A.pieces.depart * Math.pow(A.pieces.hausse, L - 1) / 5) * 5);
+  let prev = 0, band = A.minerai[A.minerai.length - 1];
+  for (const b of A.minerai) { if (L < b.jusqua) { band = b; break; } prev = b.jusqua; }
+  return { coin, [RES_FR[band.minerai]]: band.depart + band.parNiveau * (L - Math.max(1, prev)) };
+}
+const upFree = () => !G().firstUp;   // the very first level-up is offered by the tutorial
+const canLevel = it => !!it && it.lv < capOf(it) && (upFree() || canPay(levelCost(it)));
+function levelUp(it) {
+  if (!canLevel(it)) return;
+  if (!upFree()) { const cost = levelCost(it); pay(cost); for (const [k, n] of Object.entries(cost)) it.spent[k] = (it.spent[k] || 0) + n; }
+  G().firstUp = true; it.lv++; stat('forge'); unlockAudio(); sfx('reward');
+  toast(tr('{x} : niveau {n} !', { x: itemName(it), n: it.lv }), 'good');
+  refreshGear(); save();
+}
+function equip(it) {
+  if (!it) return;
+  G().eq[it.slot] = it.id; it.isNew = false; unlockAudio(); sfx('pick');
+  toast(tr('{x} équipé !', { x: itemName(it) }), 'good');
+  refreshGear(); save();
+}
+
+/* ---------- Equipment: merge (Forge) ----------
+   3 → 1 of the next rarity: 3 identical items up to Epic, then the item + 2 of the same slot (any model).
+   The chosen item keeps its level; what was spent levelling the two others is given back. */
+const bySlot = r => rarIdx(r) >= rarIdx(EQC.fusion.emplacementDepuis);
+const nextRar = r => RAR_KEYS[rarIdx(r) + 1];
+// The other items a merge would use (unequipped, lowest level first), or null
+function mergeFodder(it) {
+  if (!it || !nextRar(it.rar)) return null;
+  const need = EQC.fusion.nombre - 1;
+  const pool = G().items.filter(x => x.id !== it.id && !isEquipped(x) && x.rar === it.rar && x.slot === it.slot).sort((a, b) => a.lv - b.lv);
+  const same = pool.filter(x => x.arch === it.arch);
+  const use = bySlot(it.rar) ? pool : same;
+  return use.length >= need ? use.slice(0, need) : null;
+}
+function mergeHint(it) {
+  if (!nextRar(it.rar)) return tr('Rareté maximale : cet objet ne peut plus fusionner.');
+  const need = EQC.fusion.nombre - 1, others = G().items.filter(x => x.id !== it.id && !isEquipped(x) && x.rar === it.rar && x.slot === it.slot);
+  const same = others.filter(x => x.arch === it.arch).length;
+  if (!bySlot(it.rar)) return tr('Fusion : il faut {n} autres {x} {r} (tu en as {h}).', { n: need, x: itemName(it), r: rarLabel(it.rar), h: same });
+  return tr('Fusion : il faut {n} autres objets {s} {r} (tu en as {h}).', { n: need, s: slotName(it.slot), r: rarLabel(it.rar), h: others.length });
+}
+function mergeCore(it, fod) {
+  for (const f of fod) for (const [k, n] of Object.entries(f.spent || {})) { if (k === 'coin') S.coins += n; else S.bag.ores[k] += n; }
+  G().items = G().items.filter(x => !fod.includes(x));
+  it.rar = nextRar(it.rar); it.isNew = false; G().merges++; stat('fusions');
+}
+function merge(it) {
+  const fod = mergeFodder(it); if (!fod) return;
+  mergeCore(it, fod); $('gearModal').hidden = true;
+  save(); refreshGear(); showReveal(it, null);
+}
+// Auto-merge: every identical Common and Rare trio (the highest level of each trio is kept)
+function autoMerge() {
+  let n = 0, best = null;
+  for (let again = true; again;) {
+    again = false;
+    for (const it of [...G().items].sort((a, b) => b.lv - a.lv)) {
+      if (bySlot(it.rar)) continue;
+      const fod = mergeFodder(it); if (!fod) continue;
+      mergeCore(it, fod); n++; again = true;
+      if (!best || score(it) > score(best)) best = it;
+      break;
+    }
+  }
+  save(); refreshGear();
+  if (!n) return toast(tr('Rien à fusionner automatiquement.'), '');
+  if (n === 1) return showReveal(best, null);
+  unlockAudio(); sfx('win'); toast(tr('{n} fusions réussies !', { n }), 'good');
+}
+
+/* ---------- Equipment: chests and keys ---------- */
+const newItem = (ak, rar) => ({ id: G().nextId++, slot: ARCH[ak].slot, arch: ak, rar, lv: 1, spent: {}, isNew: true });
+// A random item: the chest's rarity odds (with its pity), then a slot and a model already unlocked
+function rollItem(chest) {
+  const C = EQC.coffres[chest], g = G();
+  let rar = pick(C.chances);
+  if (C.pitie) {
+    g.pity[chest] = (g.pity[chest] || 0) + 1;
+    if (rar === C.pitieRarete) g.pity[chest] = 0;
+    else if (g.pity[chest] >= C.pitie) { rar = C.pitieRarete; g.pity[chest] = 0; }
+  }
+  const archsOf = sk => Object.keys(EQC.emplacements[sk].modeles).filter(archOpen);
+  const slots = GSLOTS.filter(sk => archsOf(sk).length);
+  const sk = slots.length ? slots[randInt(0, slots.length - 1)] : 'pelle', archs = archsOf(sk);
+  return newItem(archs.length ? archs[randInt(0, archs.length - 1)] : Object.keys(EQC.emplacements[sk].modeles)[0], rar);
+}
+const today = () => new Date().toDateString();
+function dailyReset() { const g = G(); if (g.day !== today()) { g.day = today(); g.free = 0; g.ad = 0; g.buys = 0; } }
+const freeChestReady = () => { dailyReset(); return !!EQC.cles.coffreDuJour && G().free < 1; };
+const adReady = () => { dailyReset(); return !!EQC.cles.coffrePub && G().ad < 1; };
+const keyPrice = () => Math.round(EQC.cles.achatPieces.prix * Math.pow(EQC.cles.achatPieces.hausse, G().buys) / 10) * 10;
+const keyBuyOpen = () => { dailyReset(); return G().buys < EQC.cles.achatPieces.maxParJour; };
+const chestReady = () => gearOpen() && (freeChestReady() || adReady() || CHESTS.some(k => G().keys[k] > 0));
+const untilTomorrow = () => { const d = new Date(), m = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1) - d, h = Math.floor(m / 36e5); return h ? tr('{h} h', { h }) : tr('{m} min', { m: Math.ceil(m / 6e4) }); };
+function giveKey(k, n = 1, cell = null, why = '') {
+  G().keys[k] += n;
+  const txt = tr('+{n} {x}', { n, x: keyName(k) });
+  if (cell != null && !$('scr-mine').hidden) floatText(cell, txt, '#ffe14d');
+  toast((why ? why + ' ' : '') + txt, 'good');
+  save(); refreshGear();
+}
+function openChest(chest, how) {
+  const g = G(), C = EQC.coffres[chest];
+  if (how === 'key') { if (!(g.keys[chest] > 0)) return; g.keys[chest]--; }
+  else if (how === 'gems') { if (!C.gemmes || g.gems < C.gemmes) return toast(tr('Pas assez de gemmes.'), ''); g.gems -= C.gemmes; }
+  else if (how === 'free') { if (!freeChestReady()) return; g.free++; }
+  else if (how === 'ad') g.ad++;
+  else return;
+  // The very first chest always holds a Common Pickaxe (tutorial)
+  const it = g.firstFree ? rollItem(chest) : newItem(Object.keys(EQC.emplacements.pioche.modeles)[0], RAR_KEYS[0]);
+  g.firstFree = true; g.items.push(it); stat('coffres');
+  save(); refreshGear(); showChest(chest, it);
+}
+// Fake rewarded ad (prototype): 3 seconds, then a wooden chest
+function watchAd() {
+  if (!adReady()) return;
+  unlockAudio(); sfx('pick');
+  const m = $('adModal'); m.hidden = false;
+  let s = 3; $('adCount').textContent = s;
+  const t = setInterval(() => { s--; $('adCount').textContent = s; if (s <= 0) { clearInterval(t); m.hidden = true; openChest('bois', 'ad'); } }, 1000);
+}
+
+/* ---------- Equipment: chest opening and reveal ---------- */
+let cmItem = null, cmChest = null, cmState = 'closed';
+function showChest(chest, it) {
+  cmItem = it; cmChest = chest; cmState = 'closed';
+  $('chestTitle').textContent = tr(EQC.coffres[chest].nom);
+  $('chestBtn').hidden = false; $('chestBtn').className = 'cm-chest ch-' + chest;
+  $('chestBtn').innerHTML = chestArt(chest) + `<span>${tr('Touche pour ouvrir')}</span>`;
+  $('chestItem').hidden = true; $('chestBtns').hidden = true;
+  $('chestModal').className = 'modal chest-modal'; $('chestModal').hidden = false;
+  unlockAudio(); sfx('pick');
+}
+function crackChest() {
+  if (cmState !== 'closed') return;
+  cmState = 'opening'; sfx('hit');
+  const b = $('chestBtn'); b.classList.add('shake');
+  setTimeout(() => {
+    b.classList.remove('shake'); b.classList.add('opened'); b.innerHTML = chestArt(cmChest, true);
+    sfx('win'); revealItem(cmItem);
+  }, reduced ? 0 : 900);
+}
+function revealItem(it) {
+  cmState = 'open';
+  const r = RAR_CSS[it.rar];
+  $('chestModal').classList.add('r-' + r);
+  $('chestItem').innerHTML = `<div class="cm-rays"></div>${it.rar === 'mythique' ? '<div class="cm-bolts"></div>' : ''}
+    <div class="gi big r-${r} cm-card">${gearArt(it.arch)}</div>
+    <b class="cm-name rar rar-${r}">${itemName(it)}</b><span class="cm-sub">${rarTagG(it.rar)} · ${slotName(it.slot)} · ${tr('Niv. {n}', { n: it.lv })}</span>
+    <span class="cm-stat">${statTxt(it.slot, statOf(it))}</span>`;
+  $('chestItem').hidden = false;
+  const more = cmChest && G().keys[cmChest] > 0;
+  $('chestBtns').innerHTML = (better(it) ? `<button class="btn" data-cm="equip" id="cmEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>` : '')
+    + (more ? `<button class="btn ghosty" data-cm="again">${tr('Ouvrir encore ({n})', { n: G().keys[cmChest] })}</button>` : '')
+    + `<button class="btn ghosty" data-cm="close">${tr('Continuer')}</button>`;
+  $('chestBtns').hidden = false;
+}
+// After a merge: the new item, without a chest
+function showReveal(it, chest) {
+  cmItem = it; cmChest = chest;
+  $('chestTitle').textContent = tr('Fusion réussie !');
+  $('chestBtn').hidden = true; $('chestModal').className = 'modal chest-modal'; $('chestModal').hidden = false;
+  unlockAudio(); sfx('win'); revealItem(it);
+}
+$('chestBtn').addEventListener('click', crackChest);
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-cm]'); if (!b) return;
+  const k = b.dataset.cm;
+  if (k === 'equip') equip(cmItem);
+  $('chestModal').hidden = true;
+  if (k === 'again' && cmChest) openChest(cmChest, 'key');
+});
+
+/* ---------- Equipment: item sheet (tap an item anywhere) ---------- */
+let sheetId = null;
+function openSheet(id) {
+  sheetId = id; const it = gearItem(id);
+  if (it && it.isNew) { it.isNew = false; save(); }
+  renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick');
+}
+const gcard = (it, cls = '') => `<button class="gi r-${RAR_CSS[it.rar]} ${cls}" data-gi="${it.id}" aria-label="${itemName(it)} ${rarLabel(it.rar)}"><span class="gi-art">${gearArt(it.arch)}</span><span class="gi-lv">${tr('Niv. {n}', { n: it.lv })}</span>${it.isNew ? `<span class="gi-new">${tr('Nouveau')}</span>` : ''}${isEquipped(it) ? '<span class="gi-on">✓</span>' : ''}</button>`;
+function renderSheet() {
+  if (sheetId === 'stats') return renderStatsSheet();
+  const it = gearItem(sheetId); if (!it) { $('gearModal').hidden = true; return; }
+  const a = ARCH[it.arch], r = RAR_CSS[it.rar], cap = capOf(it), maxed = it.lv >= cap, cost = levelCost(it), free = upFree();
+  const next = maxed ? null : statOf({ ...it, lv: it.lv + 1 });
+  const tiers = ['epique', 'legendaire', 'mythique'].map((rr, i) => `<li class="${rarIdx(it.rar) >= i + 2 ? 'on' : 'off'}">${rarTagG(rr)}<span>${passiveTxt(it.arch, a.valeurs[i])}</span></li>`).join('');
+  const fod = mergeFodder(it), nr = nextRar(it.rar);
+  $('gearCard').innerHTML = `<button class="x" data-gclose aria-label="${tr('Fermer')}">×</button>
+    <div class="gs-head"><div class="gi big r-${r}">${gearArt(it.arch)}</div>
+      <div><h2 class="rar rar-${r}">${itemName(it)}</h2><p>${rarTagG(it.rar)} · ${slotName(it.slot)}</p><p class="gs-lv">${tr('Niveau {n} / {m}', { n: it.lv, m: cap })}</p></div></div>
+    <div class="gs-stat"><b>${statTxt(it.slot, statOf(it))}</b>${next != null ? `<span>${tr('Niveau suivant : {x}', { x: statTxt(it.slot, next) })}</span>` : ''}</div>
+    <p class="gs-h">${tr('Passif du modèle (dès Épique)')}</p><ul class="gs-pas">${tiers}</ul>
+    <div class="gs-btns">
+      ${isEquipped(it) ? `<button class="btn ghosty" data-gunequip>${tr('Retirer')}</button>` : `<button class="btn" data-gequip id="gEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>`}
+      ${maxed ? `<span class="maxed">${tr('Niveau max')}</span>` : `<div class="gs-up">${free ? `<span class="gs-free">${tr('Offert')}</span>` : priceHTML(cost)}<button class="btn" data-gup id="gUp" ${canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button></div>`}
+    </div>
+    <div class="gs-merge">${fod ? `<p class="gs-h">${tr('Fusionner avec')}</p><div class="gs-fod">${fod.map(f => gcard(f)).join('')}</div>
+      <button class="btn big" data-gmerge>${tr('Fusionner')} → ${rarTagG(nr)}</button>` : `<p class="gs-hint">${mergeHint(it)}</p>`}</div>`;
+}
+// Every bonus of the equipped items, in one list
+function renderStatsSheet() {
+  const T = gearTotals();
+  const rows = GSLOTS.filter(sk => slotOpen(sk)).map(sk => { const it = equipped(sk); return `<li><span class="gs-ic">${it ? gearArt(it.arch) : slotArt(sk)}</span><span><b>${slotName(sk)}</b>${it ? statTxt(sk, statOf(it)) : tr('Rien d\'équipé')}</span></li>`; }).join('');
+  const pas = Object.entries(T.pas).map(([ak, v]) => `<li><span class="gs-ic">${gearArt(ak)}</span><span><b>${tr(ARCH[ak].nom)}</b>${passiveTxt(ak, v)}</span></li>`).join('');
+  $('gearCard').innerHTML = `<button class="x" data-gclose aria-label="${tr('Fermer')}">×</button><h2>${tr('Tes bonus')}</h2>
+    <ul class="gs-list">${rows}</ul>${pas ? `<p class="gs-h">${tr('Passifs actifs')}</p><ul class="gs-list">${pas}</ul>` : ''}
+    <p class="gs-hint">${tr('Énergie max {e} · Sac {b} cases · Dégâts de la pioche {d}', { e: maxE(), b: bagCap(), d: nfG(Math.round(pickPower() * 100) / 100) })}</p>`;
+}
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.closest('[data-gclose]') || t.id === 'gearModal') { $('gearModal').hidden = true; return; }
+  const gi = t.closest('[data-gi]'); if (gi) return openSheet(+gi.dataset.gi);
+  const it = gearItem(sheetId);
+  if (t.closest('[data-gequip]')) { equip(it); return; }
+  if (t.closest('[data-gunequip]') && it) { delete G().eq[it.slot]; sfx('pick'); refreshGear(); save(); return; }
+  if (t.closest('[data-gup]')) return levelUp(it);
+  if (t.closest('[data-gmerge]')) return merge(it);
+  const up = t.closest('[data-gupid]'); if (up && !up.disabled) return levelUp(gearItem(+up.dataset.gupid));
+  if (t.closest('[data-gstats]')) { sheetId = 'stats'; renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick'); return; }
+  const sl = t.closest('[data-eqslot]');
+  if (sl) {
+    unlockAudio(); sfx('deny');
+    const sk = sl.dataset.eqslot, d = EQC.emplacements[sk].deblocage;
+    if (!gearOpen()) return toast(tr('L\'équipement arrive avec la Forge (niveau {n}).', { n: UNLOCK.forge }), '');
+    if (!slotOpen(sk)) return toast(tr('Se débloque au niveau {n}.', { n: UNLOCK[d] }), '');
+    return toast(tr('Trouve un objet {s} dans les coffres de la Boutique.', { s: slotName(sk) }), '');
+  }
+  const ch = t.closest('[data-chest]'); if (ch && !ch.disabled) return openChest(ch.dataset.chest, ch.dataset.how);
+  if (t.closest('[data-ad]')) return watchAd();
+  if (t.closest('[data-buykey]')) {
+    const price = keyPrice(); if (!keyBuyOpen() || !canPay({ coin: price })) return;
+    pay({ coin: price }); G().buys++; giveKey('bois', 1); sfx('reward'); return;
+  }
+  const ft = t.closest('[data-ftab]'); if (ft) { forgeTab = ft.dataset.ftab; sfx('pick'); renderForge(); return; }
+  if (t.closest('#autoMerge')) return autoMerge();
+});
+
+/* ---------- Equipment: badges and refresh ---------- */
+const heroBadge = () => G().items.some(it => it.isNew || better(it));
+const gearForgeReady = () => gearOpen() && (G().items.some(it => mergeFodder(it)) || GSLOTS.some(sk => canLevel(equipped(sk))));
+function refreshGear() {
+  if (!$('scr-hero').hidden) renderHero();
+  if (!$('scr-forge').hidden) renderForge();
+  if (!$('scr-shop').hidden) renderShopScreen();
+  if (!$('gearModal').hidden) renderSheet();
+  $('navHeroBadge').hidden = !gearOpen() || !heroBadge();
+}
+
+/* ---------- Character screen: the miner with her 6 pieces of equipment, her stats and her items ---------- */
+function renderHero() {
+  $('heroSub').textContent = tr('Record : niveau {n}', { n: S.reached });
+  const open = gearOpen();
+  const slot = sk => {
+    const it = equipped(sk), d = EQC.emplacements[sk].deblocage;
+    if (!open || !slotOpen(sk)) return `<button class="eq-slot locked" data-eqslot="${sk}"><span class="eq-ic"><b>?</b></span><span class="eq-lv">${open && d ? tr('Niv. {n}', { n: UNLOCK[d] }) : '–'}</span><span class="eq-nm">???</span></button>`;
+    const up = G().items.some(x => x.slot === sk && better(x));
+    if (!it) return `<button class="eq-slot empty" data-eqslot="${sk}" id="eqs-${sk}"><span class="eq-ic">${slotArt(sk)}</span><span class="eq-lv">+</span><span class="eq-nm">${slotName(sk)}</span>${up ? '<span class="badge">!</span>' : ''}</button>`;
+    return `<button class="eq-slot r-${RAR_CSS[it.rar]}" data-gi="${it.id}" id="eqs-${sk}"><span class="eq-ic">${gearArt(it.arch)}</span><span class="eq-lv">${tr('Niv. {n}', { n: it.lv })}</span><span class="eq-nm">${slotName(sk)}</span>${up ? '<span class="badge">!</span>' : ''}</button>`;
+  };
+  $('eqLeft').innerHTML = GSLOTS.slice(0, 3).map(slot).join('');
+  $('eqRight').innerHTML = GSLOTS.slice(3).map(slot).join('');
+  const chip = (icon, v, label) => `<span class="eq-chip" title="${label}">${icon}<b>${v}</b><small>${label}</small></span>`;
+  $('eqStats').innerHTML = (has('pioche') ? chip(BOLT, maxE(), tr('Énergie')) : '') + chip(img('Assets/Bag.png'), bagCap(), tr('Sac'))
+    + (has('pioche') ? chip(TOOLS.pickaxe, nfG(Math.round(pickPower() * 100) / 100), tr('Dégâts')) : '')
+    + (open ? `<button class="eq-info" data-gstats aria-label="${tr('Tous les bonus')}">i</button>` : '');
+  $('eqActions').innerHTML = open
+    ? `<button class="btn" data-go="forge">${img(OW + 'Forge.png' + OW_V)}${tr('Forge')}${gearForgeReady() ? '<span class="badge">!</span>' : ''}</button><button class="btn" data-go="shop">${chestArt('bois')}${tr('Coffres')}${chestReady() ? '<span class="badge">!</span>' : ''}</button>`
+    : `<p class="eq-soon">${tr('L\'équipement arrive avec la Forge, au niveau {n}.', { n: UNLOCK.forge })}</p>`;
+  const list = G().items.filter(it => !isEquipped(it)).sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot) || b.lv - a.lv);
+  $('eqInv').innerHTML = !open ? '' : `<h3>${tr('Objets')} <small>${list.length}</small></h3>` + (list.length ? `<div class="gi-grid">${list.map(it => gcard(it, better(it) ? 'better' : '')).join('')}</div>`
+    : `<p class="eq-soon">${tr('Les objets que tu trouves dans les coffres arrivent ici.')}</p>`);
+  $('navHeroBadge').hidden = !open || !heroBadge();
+}
+
+/* ---------- Forge: level up, merge, and (until the Mountain altar) the old upgrades ---------- */
+let forgeTab = 'gear';
+function renderForge() {
+  $('forgeWallet').innerHTML = walletHTML(['coin', ...Object.keys(ORES)]);
+  const tools = upgradesShown().length > 0, canMerge = G().items.some(it => mergeFodder(it));
+  if (forgeTab === 'tools' && !tools) forgeTab = 'gear';
+  const tab = (k, label, dot) => `<button data-ftab="${k}" id="ftab-${k}" aria-pressed="${forgeTab === k}">${label}${dot ? '<span class="badge">!</span>' : ''}</button>`;
+  $('forgeTabs').innerHTML = tab('gear', tr('Améliorer'), GSLOTS.some(sk => canLevel(equipped(sk)))) + tab('merge', tr('Fusion'), canMerge) + (tools ? tab('tools', tr('Outils'), anyUpgradeAffordable()) : '');
+  let html = '';
+  if (forgeTab === 'gear') {
+    const eqd = GSLOTS.map(equipped).filter(Boolean);
+    html = !eqd.length ? `<p>${tr('Ouvre des coffres à la Boutique pour trouver ton premier équipement. Tu l\'amélioreras ici avec des pièces et des minerais.')}</p><button class="btn" data-go="shop">${tr('Aller à la Boutique')}</button>`
+      : `<p>${tr('Améliore ton équipement avec des pièces et des minerais. Les autres objets s\'améliorent depuis leur fiche.')}</p><div class="shop-list">` + eqd.map(it => {
+        const maxed = it.lv >= capOf(it), cost = levelCost(it);
+        return `<div class="srow"><button class="sic gi r-${RAR_CSS[it.rar]}" data-gi="${it.id}">${gearArt(it.arch)}</button>
+          <div class="stxt"><b class="rar rar-${RAR_CSS[it.rar]}">${itemName(it)}</b><span>${tr('Niv. {n} / {m}', { n: it.lv, m: capOf(it) })} · ${statTxt(it.slot, statOf(it))}</span></div>
+          <div class="sbuy">${maxed ? `<span class="maxed">${tr('Max')}</span>` : (upFree() ? `<span class="gs-free">${tr('Offert')}</span>` : priceHTML(cost)) + `<button class="btn sm" data-gupid="${it.id}" ${canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button>`}</div></div>`;
+      }).join('') + '</div>';
+  } else if (forgeTab === 'merge') {
+    const all = [...G().items].sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot) || b.lv - a.lv);
+    const auto = G().items.some(it => !bySlot(it.rar) && mergeFodder(it));
+    html = `<p>${tr('3 objets identiques donnent 1 objet de la rareté au-dessus. À partir d\'Épique, l\'objet + 2 objets du même emplacement suffisent. Ce que tu as dépensé pour les objets fusionnés t\'est rendu.')}</p>
+      <button class="btn" id="autoMerge" ${auto ? '' : 'disabled'}>${tr('Fusion auto (Commun et Rare)')}</button>
+      ${all.length ? `<div class="gi-grid">${all.map(it => gcard(it, mergeFodder(it) ? 'can' : '')).join('')}</div>` : `<p class="eq-soon">${tr('Aucun objet pour l\'instant.')}</p>`}`;
+  } else {
+    html = `<p>${tr('En attendant l\'Autel de la montagne, ces améliorations restent à la Forge.')}</p><div class="shop-list">` + upgradesShown().map(([k, u]) => {
+      const l = S.up[k], done = l >= u.max, later = !done && !upOpen(k), cost = u.cost[l];
+      return `<div class="srow"><div class="sic">${u.icon()}${u.badge ? '<i>' + u.badge(Math.min(l + 1, u.max)) + '</i>' : ''}</div>
+        <div class="stxt"><b>${u.name}</b><span>${later ? u.desc(l).replace(/ → [\d.,]+( ?%| s)?/, '') : u.desc(l)}</span><span class="pips">${pipsHTML(l, u.steps)}</span></div>
+        <div class="sbuy">${done ? '<span class="maxed">Max</span>' : later ? LATER : priceHTML(cost) + `<button class="btn sm" data-up="${k}" ${canPay(cost) ? '' : 'disabled'}>${tr('Forger')}</button>`}</div></div>`;
+    }).join('') + '</div>';
+  }
+  $('forgeBody').innerHTML = html;
+  // First merge possible: show where it happens
+  if (canMerge && !S.tutoSeen['eq-fusion']) startCoach('eq-fusion', [
+    { text: TXE.fusionner, target: () => $('ftab-merge'), done: () => forgeTab === 'merge' || G().merges > 0 },
+    { text: TXE.fusionner, target: () => { const a = $('autoMerge'); return a && !a.disabled ? a : document.querySelector('#forgeBody .gi.can'); }, done: () => G().merges > 0 || !$('gearModal').hidden },
+    { text: TXE.fusionner, target: () => document.querySelector('[data-gmerge]'), done: () => G().merges > 0 },
+  ]);
+}
+
+/* ---------- Shop: equipment chests ---------- */
+const TXE = TX.equipement || {};
+function chestsHTML() {
+  if (!gearOpen()) return '';
+  dailyReset();
+  const g = G(), AP = EQC.cles.achatPieces;
+  const card = k => {
+    const c = EQC.coffres[k], n = g.keys[k];
+    const odds = Object.entries(c.chances).map(([r, p]) => `<span class="rar rar-${RAR_CSS[r]}">${rarLabel(r)} ${p} %</span>`).join('');
+    const pity = c.pitie ? `<small>${tr('{r} garanti dans {n}', { r: rarLabel(c.pitieRarete), n: c.pitie - (g.pity[k] || 0) })}</small>` : '';
+    const btn = n > 0 ? `<button class="btn sm" data-chest="${k}" data-how="key">${tr('Ouvrir')}</button>`
+      : c.gemmes ? `<button class="btn sm gem" data-chest="${k}" data-how="gems" ${g.gems >= c.gemmes ? '' : 'disabled'}>${c.gemmes}${GEM_ICON}</button>`
+      : `<span class="ch-none">${tr('Il faut une clé')}</span>`;
+    return `<div class="ch-card ch-${k}"><div class="ch-art">${chestArt(k)}</div><b>${tr(c.nom)}</b>
+      <span class="ch-key">${keyArt(k)}×${n}</span><span class="ch-odds">${odds}${pity}</span>${btn}</div>`;
+  };
+  const free = `<div class="srow"><div class="sic">${chestArt('bois')}</div><div class="stxt"><b>${tr('Coffre du jour')}</b><span>${tr('Un coffre en bois gratuit chaque jour.')}</span></div>
+    <div class="sbuy">${freeChestReady() ? `<button class="btn sm" data-chest="bois" data-how="free" id="chestFree">${g.firstFree ? tr('Gratuit') : tr('Offert !')}</button>` : `<span class="maxed">${tr('Revient dans')}<small>${untilTomorrow()}</small></span>`}</div></div>`;
+  const ad = EQC.cles.coffrePub ? `<div class="srow"><div class="sic">${chestArt('bois')}<i>▶</i></div><div class="stxt"><b>${tr('Coffre publicité')}</b><span>${tr('Regarde une publicité pour un coffre en bois (simulée dans le prototype).')}</span></div>
+    <div class="sbuy">${adReady() ? `<button class="btn sm" data-ad>${tr('Regarder')}</button>` : `<span class="maxed">${tr('Revient dans')}<small>${untilTomorrow()}</small></span>`}</div></div>` : '';
+  const buy = `<div class="srow"><div class="sic">${keyArt('bois')}</div><div class="stxt"><b>${keyName('bois')}</b><span>${tr('Le prix monte à chaque achat ({n}/{m} aujourd\'hui).', { n: g.buys, m: AP.maxParJour })}</span></div>
+    <div class="sbuy">${keyBuyOpen() ? priceHTML({ coin: keyPrice() }) + `<button class="btn sm" data-buykey ${canPay({ coin: keyPrice() }) ? '' : 'disabled'}>${tr('Acheter')}</button>` : `<span class="maxed">${tr('Revient dans')}<small>${untilTomorrow()}</small></span>`}</div></div>`;
+  return `<h2 class="sh-h">${tr('Coffres d\'équipement')}</h2><div class="ch-grid">${CHESTS.map(card).join('')}</div>
+    <div class="shop-list">${free}${ad}${buy}</div><p class="sh-note">${tr('Les chances de chaque rareté sont affichées sur chaque coffre.')}</p>`;
+}
+const gemsWallet = () => gearOpen() ? `<span class="res" title="${tr('Gemmes')}">${GEM_ICON}${G().gems}</span>` + CHESTS.filter(k => G().keys[k] > 0).map(k => `<span class="res" title="${keyName(k)}">${keyArt(k)}${G().keys[k]}</span>`).join('') : '';
+// Tutorial of the first chest: open it, equip the pickaxe, look at it on the miner, level it up
+function gearCoach() {
+  if (!gearOpen() || G().firstUp || S.tutoSeen['eq-premier']) return;
+  startCoach('eq-premier', [
+    { text: TXE.ouvrirCoffre, target: () => $('chestFree'), done: () => G().firstFree },
+    { text: TXE.toucherCoffre, target: () => $('chestBtn'), done: () => cmState !== 'closed' || $('chestModal').hidden },
+    { text: TXE.equiper, target: () => $('cmEquip'), done: () => !!G().eq.pioche },
+    { text: TXE.personnage, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden || !$('gearModal').hidden },
+    { text: TXE.toucherObjet, target: () => $('eqs-pioche'), done: () => !$('gearModal').hidden },
+    { text: TXE.ameliorer, target: () => $('gUp'), done: () => G().firstUp },
+  ]);
+}
+
 /* ---------- Screens ---------- */
 const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier', 'hero', 'premium', 'events'];
 function go(name) {
@@ -2708,6 +3360,7 @@ function updateNav(name) {
   const museumOpen = !!S.buildings.museum;
   document.querySelector('.nav-tab[data-nav="museum"]').classList.toggle('locked', !museumOpen);
   $('navMuseumBadge').hidden = !museumOpen || !museumPrimeWaiting();
+  $('navHeroBadge').hidden = !gearOpen() || !heroBadge();
 }
 $('navBar').addEventListener('click', e => {
   const b = e.target.closest('.nav-tab'); if (!b) return;
@@ -2748,58 +3401,6 @@ function renderEvents() {
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-soon]')) return;
   unlockAudio(); sfx('deny'); toast(tr('Bientôt disponible !'), '');
-});
-/* ---------- Equipment screen ----------
-   Shows what the miner carries, with the level of each piece (= upgrades bought + 1).
-   Tapping a piece shows its effects and leads to the Forge or the Shop to improve it. */
-let eqSel = 'pick';
-// Forge upgrades that improve each piece
-const EQ_UP = { pick: ['pick', 'splash'], bucket: ['fast', 'charges'], energy: ['energy'] };
-const upReady = keys => keys.some(k => UPGRADES[k] && upOpen(k) && canPay(UPGRADES[k].cost[S.up[k]]));
-const upMaxed = keys => keys.every(k => S.up[k] >= UPGRADES[k].max);
-const bagNext = () => { const n = BAG_UP[S.bagLvl]; return n && (n.biome || 1) <= curBiome() ? n : null; };
-function equipment() {
-  const bagStep = BAG_UP[S.bagLvl - 1];
-  return {
-    pick: { side: 'L', name: tr('Pioche'), icon: TOOLS.pickaxe, lv: 1 + S.up.pick + S.up.splash, open: has('pioche'),
-      lines: [tr('{a} dégâts par coup', { a: pickPower() }), ...(S.up.splash ? [tr('{a} de chance de casser une roche voisine', { a: pct(SPLASH[S.up.splash]) })] : [])],
-      where: 'forge', ready: upReady(EQ_UP.pick), maxed: upMaxed(EQ_UP.pick) },
-    shovel: { side: 'L', name: tr('Pelle'), icon: TOOLS.shovel, lv: 1, open: true,
-      lines: [tr('Retire la terre d\'un simple glissement'), tr('Toujours gratuite : aucune énergie dépensée')], where: null },
-    bucket: { side: 'L', name: tr('Arrosoir'), icon: TOOLS.bucket, lv: 1 + S.up.fast + S.up.charges, open: has('magma'),
-      lines: [tr('Recharge en {a} s', { a: bucketCd() / 1000 }), tr('{a} arrosages avant de recharger', { a: maxCharges() })],
-      where: 'forge', ready: upReady(EQ_UP.bucket), maxed: upMaxed(EQ_UP.bucket) },
-    bag: { side: 'R', name: bagStep && bagStep.nom ? tr(bagStep.nom) : tr('Sac de départ'), short: tr('Sac'), icon: img('Assets/Bag.png'), lv: 1 + S.bagLvl, open: true,
-      lines: [tr('{a} cases', { a: bagCap() }), ...(geoPocket() ? [tr('poche à géodes {b}', { b: geoPocket() })] : [])],
-      where: 'shop', ready: !!(bagNext() && canPay({ coin: bagNext().pieces })), maxed: S.bagLvl >= BAG_UP.length },
-    energy: { side: 'R', name: tr('Réserve d\'énergie'), short: tr('Énergie'), icon: BOLT, lv: 1 + S.up.energy, open: has('pioche'),
-      lines: [tr('Énergie max {a}', { a: maxE() }), tr('Rechargée à chaque retour au village')],
-      where: 'forge', ready: upReady(EQ_UP.energy), maxed: upMaxed(EQ_UP.energy) },
-  };
-}
-function renderHero() {
-  $('heroSub').textContent = tr('Record : niveau {n}', { n: S.reached });
-  const EQ = equipment();
-  if (!EQ[eqSel] || !EQ[eqSel].open) eqSel = 'shovel';
-  const slot = ([k, e]) => `<button class="eq-slot${k === eqSel ? ' on' : ''}${e.open ? '' : ' locked'}" data-eq="${k}" aria-pressed="${k === eqSel}">
-    <span class="eq-ic">${e.open ? e.icon : '<b style="font-size:26px">?</b>'}</span><span class="eq-lv">${e.open ? tr('Niv. {n}', { n: e.lv }) : '–'}</span>
-    <span class="eq-nm">${e.open ? e.short || e.name : '???'}</span>${e.open && e.ready ? '<span class="badge">!</span>' : ''}</button>`;
-  const list = Object.entries(EQ);
-  $('eqLeft').innerHTML = list.filter(([, e]) => e.side === 'L').map(slot).join('');
-  $('eqRight').innerHTML = list.filter(([, e]) => e.side === 'R').map(slot).join('');
-  const e = EQ[eqSel];
-  const bld = e.where === 'shop' ? 'shop' : 'forge', bldOpen = e.where && !!S.buildings[bld];
-  const action = !e.where ? ''
-    : e.maxed ? `<p class="eq-max">${tr('Niveau maximum atteint')}</p>`
-    : bldOpen ? `<button class="btn" data-go="${bld}">${e.where === 'shop' ? tr('Agrandir à la Boutique') : tr('Améliorer à la Forge')}</button>`
-    : `<p class="eq-sub" style="margin-top:12px">${e.where === 'shop' ? tr('La Boutique arrive bientôt au village.') : tr('La Forge arrive bientôt au village.')}</p>`;
-  $('eqDetail').innerHTML = `<h2>${e.name}</h2><p class="eq-sub">${tr('Niveau {n}', { n: e.lv })}</p><ul>${e.lines.map(l => `<li>${l}</li>`).join('')}</ul>${action}`;
-}
-document.addEventListener('click', e => {
-  const b = e.target.closest('[data-eq]'); if (!b) return;
-  unlockAudio();
-  if (b.classList.contains('locked')) { sfx('deny'); return toast(tr('Pas encore découvert : continue de descendre !'), ''); }
-  sfx('pick'); eqSel = b.dataset.eq; renderHero();
 });
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-go]'); if (!b) return;
@@ -2889,7 +3490,7 @@ const GOAL_ICON = {
   terre: () => img('Assets/Ground/Ground_Dirt_01.png'), pierres: () => img('Assets/Ground/Ground_Stone_01.png'),
   minerais: () => resArt('copper'), tresors: () => artArt('coquillage'), niveaux: () => TOOLS.pickaxe, niveau: () => LEVEL_ICON,
   forge: () => img('Assets/Overworld/Forge.png'), geodes: () => geodeArt('white'), magma: () => TOOLS.bucket,
-  bombes: () => TOOLS.bomb, collection: () => img('Assets/Overworld/Museum.png'),
+  bombes: () => TOOLS.bomb, collection: () => img('Assets/Overworld/Museum.png'), coffres: () => chestArt('bois'),
 };
 function renderGoals() {
   fillGoals();
@@ -2912,6 +3513,8 @@ document.addEventListener('click', e => {
   const i = +b.dataset.claim, g = S.goals[i]; if (!g || !goalDone(g)) return;
   unlockAudio(); sfx('reward');
   S.coins += g.reward;
+  const GO = EQC.cles.objectifs;
+  if (gearOpen() && GO && ++G().goals % GO.tousLes === 0) setTimeout(() => giveKey(GO.cle, 1), 700);
   // A new goal takes its place (not the same kind)
   const next = newGoal([...S.goals.map(x => x.type)]);
   S.goals.splice(i, 1, ...(next ? [next] : []));
@@ -2966,9 +3569,9 @@ function renderVillage() {
   const g = S.bag.geodes.length;
   $('subAtelier').textContent = g ? tr(plural(g, '{n} géode', '{n} géodes'), { n: g }) : tr('Aucune géode');
   $('badgeAtelier').hidden = !g; $('badgeAtelier').textContent = g;
-  $('badgeForge').hidden = !anyUpgradeAffordable();
+  $('badgeForge').hidden = !anyUpgradeAffordable() && !gearForgeReady();
   $('badgeMuseum').hidden = !museumPrimeWaiting() || !!(S.bldNew || {}).museum;
-  $('badgeShop').hidden = !S.buildings.shop || !shopNew() || !!(S.bldNew || {}).shop;
+  $('badgeShop').hidden = !S.buildings.shop || (!shopNew() && !chestReady()) || !!(S.bldNew || {}).shop;
   const cps = CHECKPOINTS.filter(l => l <= S.reached).length;
   $('mineDepth').textContent = tr('Record : niveau {n}', { n: S.reached }) + (cps ? ' · ' + tr(plural(cps, '{n} checkpoint', '{n} checkpoints'), { n: cps }) : '');
   applyCam();
@@ -3166,9 +3769,9 @@ function oreLootHTML(ores, title) {
 }
 const BUILDINGS = {
   museum:  { name: 'le Musée',    key: null,       text: 'Tes trésors y sont exposés.' },
-  forge:   { name: 'la Forge',    key: 'forge',    text: 'Améliore tes outils avec tes minerais.' },
+  forge:   { name: 'la Forge',    key: 'forge',    text: 'Améliore et fusionne ton équipement.' },
   atelier: { name: "l'Atelier",   key: 'atelier',  text: 'Ouvre tes géodes pour trouver des gemmes.' },
-  shop:    { name: 'la Boutique', key: 'boutique', text: 'Agrandis ton sac pour rapporter plus de trésors.' },
+  shop:    { name: 'la Boutique', key: 'boutique', text: 'Ouvre des coffres pour trouver de l\'équipement.' },
 };
 const OW_IMG = { museum: 'Museum', forge: 'Forge', atelier: 'Workshop', shop: 'Shop' };
 function openRecap() {
@@ -3229,7 +3832,7 @@ function villageCoach() {
   if (S.reached <= 1 && !S.tutoSeen.descendre)
     return startCoach('descendre', [{ text: TX.descendre, target: () => $('descendBtn'), done: () => $('scr-village').hidden || !$('liftModal').hidden }]);
   // A building that just appeared: the camera goes to it, then the player enters it
-  const k = ['museum', 'forge', 'atelier', 'shop'].find(k => S.buildings[k] && (S.bldNew || {})[k] && !S.tutoSeen['bld-' + k]);
+  const k = ['museum', 'shop', 'forge', 'atelier'].find(k => S.buildings[k] && (S.bldNew || {})[k] && !S.tutoSeen['bld-' + k]);
   if (k) {
     const b = document.querySelector(`.bld[data-go="${k}"]`);
     villageCoachBusy = true;
@@ -3490,6 +4093,7 @@ function levelDone() {
       const best = geodesAt(S.level).map(([k]) => k).sort((a, b) => RARITIES.indexOf(GEODES[b].rarity) - RARITIES.indexOf(GEODES[a].rarity))[0];
       if (best) { S.bag.geodes.push(best); parts.push(rarName(GEODES[best].name, GEODES[best].rarity) + ' ' + tr('(à l\'Atelier)')); }
     }
+    if (gearOpen() && EQC.cles.gardien) { const k = EQC.cles.gardien; G().keys[k]++; parts.push(tr('+1 {x}', { x: keyName(k) })); }
     S.guardDone[S.level] = true;
     S.rewardMsg = { level: S.level, html: `<b>${tr('Gardien vaincu !')}</b> ${parts.join(' · ')}` };
     showTuto();
@@ -3546,6 +4150,7 @@ function arriveNext() {
   const dc = $('depthChip'); dc.classList.remove('bump'); void dc.offsetWidth; dc.classList.add('bump');
   const newRecord = S.level > S.reached;
   if (newRecord) S.reached = S.level;
+  if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (S.level % r.tousLes === 0) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: S.level })), 900);
   if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: S.level }) : tr('Checkpoint niveau {n} débloqué !', { n: S.level }), 'good'); }
   save();
 }
@@ -3595,6 +4200,7 @@ function start(data) {
     S = freshState(); genLevel(1);
   }
   S.up = Object.assign(freshState().up, S.up || {});
+  S.gear = Object.assign(newGear(), S.gear || {}); S.gear.keys = Object.assign(newGear().keys, S.gear.keys);
   if (!S.tutoSeen) S.tutoSeen = {};
   // Saves from before the first-steps tutorial: players already past it don't see it again
   if (saved && S.reached > 5) for (const k of ['toucher', 'creuser', 'tresor', 'sacPlein', 'surface', 'descendre', 'bld-museum', 'prime', 'museeRetour', 'redescendre', 'ascenseur']) S.tutoSeen[k] = true;
@@ -3659,6 +4265,7 @@ function loadCheats() {
     get S() { return S; }, CFG, GEODES, GEMS, ARTS, SETS, UPGRADES, SCREENS, CHECKPOINTS,
     genLevel, buildBoard, go, save, toast, paintTile, checkRewards, maxE, bagCap, BAG_UP,
     updateBombs, updateQuick, updateBadge, updateEnergy,
+    EQC, ARCH, RAR_KEYS, newItem, refreshGear, archOpen, gearTotals,
     // Texts still missing an English version (shown in the console with __mine.missingEN())
     missingEN: () => [...MISSING_EN],
     cheatsOn,

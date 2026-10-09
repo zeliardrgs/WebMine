@@ -150,16 +150,18 @@ window.CONFIG = {
     deblocages: {
       pioche: 6,         // pioche, pierre et énergie (le sac est présenté la 1re fois qu'il est plein)
       cuivre: 11,        // minerai de cuivre
-      forge: 11,         // la Forge apparaît au village (au retour suivant)
+      forge: 11,         // la Forge apparaît au village (au retour suivant) : c'est aussi l'ouverture de l'équipement
+      boutique: 11,      // la Boutique apparaît en même temps, avec les coffres d'équipement
       geodes: 16,        // géodes blanches
       atelier: 16,       // l'Atelier apparaît au village (au retour suivant)
       magma: 26,         // magma et arrosoir (et Arrosoir rapide à la Forge)
       fer: 36,           // minerai de fer (niveaux 3 et 4 de la Réserve d'énergie)
-      boutique: 46,      // la Boutique, avec seulement "Agrandir le sac"
+      casque: 21,        // le Casque peut sortir des coffres
+      bottes: 31,        // les Bottes peuvent sortir des coffres
+      sac: 46,           // "Agrandir le sac" arrive à la Boutique
       bombes: 56,        // les bombes arrivent à la Boutique (tutoriel avec une bombe offerte)
       geodeRose: 66,     // géodes roses
       potions: 81,       // les potions d'énergie arrivent à la Boutique
-      coupEnEclats: 96,  // Coup en éclats à la Forge
       // Biomes suivants
       pierreDure: 101,   // biome 2 : pierre dure
       or: 116,           // minerai d'or
@@ -278,6 +280,16 @@ window.CONFIG = {
       redescendre: "Redescends dans la mine",         // après la 1re visite du Musée
       checkpoints: "Un checkpoint tous les {n} niveaux",  // 1re fois dans l'ascenseur, avant « Reprends au niveau »
       ascenseur: "Reprends au niveau {n}",            // 1re fois que l'ascenseur propose un checkpoint
+      // Premier coffre d'équipement (à la 1re visite de la Boutique, niveau 11)
+      equipement: {
+        ouvrirCoffre: "Ouvre ton coffre offert",      // sur le coffre en bois de la Boutique
+        toucherCoffre: "Touche le coffre !",           // dans la fenêtre d'ouverture
+        equiper: "Équipe ta nouvelle pioche",          // bouton Équiper
+        personnage: "Va voir ton équipement",          // onglet Personnage
+        toucherObjet: "Touche ta pioche",              // la pioche sur le mineur
+        ameliorer: "Améliore-la, c'est offert !",      // bouton Améliorer de la fiche
+        fusionner: "Fusionne 3 objets identiques",     // 1re fusion possible, à la Forge
+      },
       ouvrirSac: "Ouvre ton sac",                     // tutoriels de la bombe
       utiliserBombe: "Utilise la bombe",
       // Quand il faut d'abord changer d'outil
@@ -536,7 +548,165 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
-     FORGE : AMÉLIORATIONS
+     ÉQUIPEMENT ET COFFRES (style Archero 2 / Dicero)
+     Le mineur porte 6 pièces d'équipement, gagnées dans les coffres de la Boutique.
+     Elles s'améliorent et se fusionnent à la Forge.
+     L'équipement s'ouvre avec la Forge (progression > deblocages > forge).
+     --------------------------------------------------------------- */
+  equipement: {
+    // Les 5 raretés, de la plus courante à la plus rare.
+    // "niveauMax" = niveau maximum d'un objet de cette rareté ;
+    // "multiplicateur" = la stat principale de l'objet est multipliée par ce nombre.
+    raretes: {
+      commun:     { nom: 'Commun',     niveauMax: 10, multiplicateur: 1 },
+      rare:       { nom: 'Rare',       niveauMax: 20, multiplicateur: 1.4 },
+      epique:     { nom: 'Épique',     niveauMax: 30, multiplicateur: 2 },
+      legendaire: { nom: 'Légendaire', niveauMax: 40, multiplicateur: 2.8 },
+      mythique:   { nom: 'Mythique',   niveauMax: 50, multiplicateur: 4 },
+    },
+
+    // Fusion à la Forge : 3 objets donnent 1 objet de la rareté au-dessus.
+    // Jusqu'à Épique : 3 objets IDENTIQUES (même modèle, même rareté).
+    // À partir d'Épique ("emplacementDepuis") : l'objet + 2 objets du même emplacement et de la même rareté (n'importe quel modèle).
+    // L'objet choisi garde son niveau (la fusion auto garde celui qui a le plus haut niveau) ;
+    // tout ce qui a été dépensé pour améliorer les deux autres est rendu.
+    fusion: { nombre: 3, emplacementDepuis: 'epique' },
+
+    // Les 6 emplacements. "deblocage" = la nouveauté qui le fait apparaître dans les coffres
+    // (mêmes noms que progression > deblocages ; null = dès l'ouverture de l'équipement).
+    // Stat principale = (depart + parNiveau × (niveau − 1)) × multiplicateur de la rareté, sans dépasser "max".
+    // Les pourcentages sont écrits en décimal : 0.1 = 10 % ("nombre: true" = un nombre, pas un pourcentage).
+    // "modeles" = les archétypes de l'emplacement. "biome" = biome à partir duquel il sort des coffres.
+    // Chaque modèle a un passif qui s'active à Épique et grandit à Légendaire puis Mythique :
+    // "valeurs" = [Épique, Légendaire, Mythique].
+    emplacements: {
+      pioche: {
+        nom: 'Pioche', deblocage: 'pioche',
+        stat: { texte: '+{v} dégâts par coup', depart: 0.3, parNiveau: 0.05, nombre: true },
+        modeles: {
+          picLourd:  { nom: 'Pic lourd',  biome: 1, passif: '{v} de chance de frapper deux fois plus fort', valeurs: [0.12, 0.2, 0.3] },
+          picEclats: { nom: 'Pic à éclats', biome: 2, passif: '{v} de chance de casser aussi une roche voisine', valeurs: [0.12, 0.22, 0.33] },
+          picGivre:  { nom: 'Pic de givre', biome: 3, passif: 'Dégâts sur la glace × {v} (au lieu de moitié)', valeurs: [1, 1.25, 1.5], nombre: true },
+        },
+      },
+      pelle: {
+        nom: 'Pelle', deblocage: null,
+        stat: { texte: '+{v} de pièces par tas', depart: 0.1, parNiveau: 0.02 },
+        modeles: {
+          pelleProspecteur: { nom: 'Pelle de prospecteur', biome: 1, passif: '+{v} tas de pièces sur les niveaux trésor', valeurs: [1, 2, 3], nombre: true },
+          pelleLarge:       { nom: 'Pelle large', biome: 2, passif: '{v} de chance de creuser aussi une terre voisine', valeurs: [0.15, 0.25, 0.4] },
+        },
+      },
+      gants: {
+        nom: 'Gants', deblocage: 'cuivre',
+        stat: { texte: '{v} de chance de +1 minerai par bloc', depart: 0.1, parNiveau: 0.03, max: 2 },
+        modeles: {
+          gantsFer:        { nom: 'Gants de fer', biome: 1, passif: '{v} de chance de trouver aussi le meilleur minerai', valeurs: [0.05, 0.1, 0.2] },
+          gantsDynamiteur: { nom: 'Gants de dynamiteur', biome: 2, passif: '{v} de chance qu\'une bombe ne soit pas utilisée', valeurs: [0.2, 0.25, 0.33] },
+        },
+      },
+      casque: {
+        nom: 'Casque', deblocage: 'casque',
+        stat: { texte: '{v} de chance de coup gratuit (sans énergie)', depart: 0.02, parNiveau: 0.0025, max: 0.4 },
+        modeles: {
+          casqueChantier: { nom: 'Casque de chantier', biome: 1, passif: 'Un coup gratuit casse le bloc d\'un coup : {v} de chance', valeurs: [0.25, 0.5, 1] },
+          casqueVeine:    { nom: 'Casque de veine', biome: 2, passif: '+{v} de chance de coup gratuit sur le minerai', valeurs: [0.1, 0.2, 0.3] },
+        },
+      },
+      lanterne: {
+        nom: 'Lanterne', deblocage: 'geodes',
+        stat: { texte: 'Géodes rares {v} plus fréquentes', depart: 0.1, parNiveau: 0.03 },
+        modeles: {
+          lanterneProspecteur: { nom: 'Lanterne de prospecteur', biome: 1, passif: '{v} de chance qu\'une géode monte d\'une rareté', valeurs: [0.1, 0.2, 0.35] },
+          lanterneAncienne:    { nom: 'Lanterne ancienne', biome: 2, passif: 'Artefacts jamais trouvés × {v} plus fréquents', valeurs: [1.5, 2, 3], nombre: true },
+        },
+      },
+      bottes: {
+        nom: 'Bottes', deblocage: 'bottes',
+        stat: { texte: '{v} de chance qu\'une case de terre cache un tas d\'or', depart: 0.02, parNiveau: 0.003, max: 0.5 },
+        modeles: {
+          bottesProspecteur:  { nom: 'Bottes de prospecteur', biome: 1, passif: '+{v} de tas d\'or en plus', valeurs: [0.25, 0.5, 1] },
+          bottesPorteBonheur: { nom: 'Bottes porte-bonheur', biome: 2, passif: '{v} de chance qu\'un tas de pièces soit doublé', valeurs: [0.15, 0.25, 0.4] },
+        },
+      },
+    },
+
+    // Améliorer un objet d'un niveau (à la Forge, ou depuis sa fiche).
+    // Pièces : "depart" pour passer du niveau 1 au 2, puis × "hausse" à chaque niveau.
+    // Minerai : selon la tranche de niveaux, "depart" + "parNiveau" × (niveaux déjà faits dans la tranche).
+    // Le tout premier niveau est offert pendant le tutoriel.
+    ameliorer: {
+      pieces: { depart: 20, hausse: 1.15 },
+      minerai: [
+        { jusqua: 10, minerai: 'cuivre',      depart: 2, parNiveau: 1 },
+        { jusqua: 20, minerai: 'fer',         depart: 4, parNiveau: 1 },
+        { jusqua: 30, minerai: 'or',          depart: 3, parNiveau: 1 },
+        { jusqua: 40, minerai: 'mithril',     depart: 3, parNiveau: 1 },
+        { jusqua: 50, minerai: 'cristalBrut', depart: 3, parNiveau: 1 },
+      ],
+    },
+
+    // Les 4 coffres de la Boutique. Chaque coffre s'ouvre avec sa clé, ou avec des gemmes ("gemmes" : 0 = impossible).
+    // "chances" = chance de chaque rareté (le total fait 100).
+    // "pitie" = au bout de ce nombre de coffres sans la rareté "pitieRarete", elle est garantie (0 = pas de pitié).
+    // L'objet est tiré au hasard parmi les emplacements et les modèles déjà débloqués.
+    coffres: {
+      bois:   { nom: 'Coffre en bois',   cle: 'Clé en bois',   gemmes: 0,   chances: { commun: 85, rare: 15 } },
+      argent: { nom: 'Coffre d\'argent', cle: 'Clé d\'argent', gemmes: 80,  chances: { rare: 75, epique: 25 } },
+      or:     { nom: 'Coffre d\'or',     cle: 'Clé d\'or',     gemmes: 300, chances: { epique: 85, legendaire: 15 }, pitie: 10, pitieRarete: 'legendaire' },
+      etoile: { nom: 'Coffre étoilé',    cle: 'Clé étoilée',   gemmes: 0,   chances: { legendaire: 100 } },
+    },
+
+    // D'où viennent les clés (en plus des gemmes)
+    cles: {
+      // Coffre du jour : un coffre en bois gratuit par jour, et un autre en regardant une publicité (simulée)
+      coffreDuJour: true,
+      coffrePub: true,
+      // Clés en bois achetées en pièces à la Boutique : le prix monte à chaque achat de la journée
+      achatPieces: { prix: 150, hausse: 1.5, maxParJour: 5 },
+      // Dans la mine : une clé en bois posée sur chaque niveau trésor (la première fois),
+      // et une petite chance d'en trouver une sur un niveau normal
+      niveauTresor: 'bois',
+      chanceEtage: 0.04,
+      // Niveau gardien vaincu : une clé en plus de sa récompense
+      gardien: 'argent',
+      // Nouveau record : une clé tous les X niveaux (plusieurs peuvent tomber en même temps)
+      records: [
+        { tousLes: 50,  cle: 'argent' },
+        { tousLes: 100, cle: 'or' },
+        { tousLes: 250, cle: 'etoile' },
+      ],
+      // Objectifs du village : une clé en bois tous les X objectifs réussis
+      objectifs: { tousLes: 2, cle: 'bois' },
+    },
+
+    // Gemmes (monnaie premium) au début d'une partie. Dans le prototype, le menu cheat en ajoute.
+    gemmesDepart: 0,
+
+    // IMAGES : laisser '' pour garder le dessin temporaire.
+    // Pour une vraie image : la poser dans Assets/Gear/ et écrire son chemin ici,
+    // par exemple picLourd: 'Assets/Gear/PicLourd.png'. Voir Assets/Gear/LISEZMOI.md.
+    images: {
+      // Modèles d'équipement (un par archétype)
+      picLourd: '', picEclats: '', picGivre: '',
+      pelleProspecteur: '', pelleLarge: '',
+      gantsFer: '', gantsDynamiteur: '',
+      casqueChantier: '', casqueVeine: '',
+      lanterneProspecteur: '', lanterneAncienne: '',
+      bottesProspecteur: '', bottesPorteBonheur: '',
+      // Coffres (fermés) et clés
+      coffreBois: '', coffreArgent: '', coffreOr: '', coffreEtoile: '',
+      cleBois: '', cleArgent: '', cleOr: '', cleEtoile: '',
+      // Monnaie premium
+      gemmes: '',
+    },
+  },
+
+  /* ---------------------------------------------------------------
+     FORGE : AMÉLIORATIONS (TEMPORAIRES)
+     La Forge sert maintenant à l'équipement (voir EQUIPEMENT plus bas).
+     Ces améliorations y restent en attendant l'Autel de la montagne (phase 2).
+     "Pioche renforcée" et "Coup en éclats" ont disparu : c'est l'objet Pioche qui les donne.
      Chaque ligne = le prix d'un niveau, dans l'ordre (niveau 1, niveau 2, …).
      fer / cuivre / or = minerais, pieces = pièces.
      --------------------------------------------------------------- */
@@ -569,17 +739,6 @@ window.CONFIG = {
       { biome: 9,  energie: 310, pieces: 6000, mithril: 34, cristalBrut: 8 },
       { biome: 10, energie: 340, pieces: 7000, mithril: 40, cristalBrut: 14 },
     ],
-    // Pioche renforcée : +1 dégât par coup à chaque niveau
-    piocheRenforcee: [
-      { biome: 1, pieces: 80, cuivre: 5 },       // achetable dès que la Forge apparaît
-      { biome: 2, pieces: 900, fer: 30, or: 10 },
-      { biome: 6, pieces: 3000, or: 30, mithril: 10 },
-    ],
-    coupEnEclats: [
-      { biome: 1, pieces: 120, cuivre: 5 },
-      { biome: 2, pieces: 400, cuivre: 9, or: 2 },
-      { biome: 4, pieces: 1200, cuivre: 14, or: 8 },
-    ],
     arrosoirRapide: [
       { biome: 1, pieces: 150, fer: 5, cuivre: 2 },
       { biome: 2, pieces: 400, fer: 9, cuivre: 5, or: 2 },
@@ -590,10 +749,6 @@ window.CONFIG = {
       { biome: 3, pieces: 800, cuivre: 10, or: 4 },
       { biome: 4, pieces: 1500, or: 12 },
     ],
-
-    // Chance de casser une roche voisine, pour chaque niveau de "Coup en éclats"
-    // (le premier nombre = sans amélioration)
-    chanceEclats: [0, 0.12, 0.22, 0.33],
 
     // Temps de recharge de l'arrosoir pour chaque niveau d'"Arrosoir rapide" (en millisecondes)
     rechargeArrosoirMs: [5000, 4000, 3000, 2000],
@@ -625,7 +780,8 @@ window.CONFIG = {
       { type: 'niveau',     texte: 'Atteins le niveau {n}',              choix: [5, 10],          pieces: 60 },
       { type: 'pierres',    texte: 'Casse {n} pierres',                  choix: [10, 20, 25],     pieces: 40, deblocage: 'pioche' },
       { type: 'minerais',   texte: 'Récolte {n} minerais',               choix: [10, 20, 25],     pieces: 50, deblocage: 'cuivre' },
-      { type: 'forge',      texte: 'Achète une amélioration à la Forge', choix: [1],              pieces: 50, deblocage: 'forge' },
+      { type: 'forge',      texte: 'Améliore un objet à la Forge', choix: [1],              pieces: 50, deblocage: 'forge' },
+      { type: 'coffres',    texte: 'Ouvre {n} coffres',                  choix: [1, 2, 3],        pieces: 50, deblocage: 'forge' },
       { type: 'geodes',     texte: 'Ouvre {n} géodes',                   choix: [3, 5],           pieces: 60, deblocage: 'atelier' },
       { type: 'magma',      texte: 'Refroidis {n} cases de magma',       choix: [5, 10],          pieces: 40, deblocage: 'magma' },
       { type: 'bombes',     texte: 'Utilise {n} bombes',                 choix: [3, 5],           pieces: 50, deblocage: 'bombes' },
