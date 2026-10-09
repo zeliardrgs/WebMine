@@ -757,6 +757,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .gs-hint{margin:8px 0 0; font-size:13px; color:var(--ink-soft)}
 /* Forge tabs */
 .forge-tabs{flex:none}
+.shop-tabs{flex:none} .shop-tabs button{position:relative; flex:1} .shop-tabs .badge{top:-6px; right:-4px}
 .forge-tabs button{position:relative; flex:1}
 .forge-tabs .badge{top:-6px; right:-4px}
 .forge-body > p:first-child{margin-top:0}
@@ -1066,7 +1067,6 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 
 <div class="screen" id="scr-premium" hidden>
   <header class="scr-head"><h1>Boutique premium</h1></header>
-  <div id="premiumBody" class="pm-body"></div>
 </div>
 
 <div class="screen" id="scr-events" hidden>
@@ -1076,8 +1076,10 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 
 <div class="screen" id="scr-shop" hidden>
   <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Boutique</h1><div class="wallet-bar" id="shopWallet"></div></header>
+  <div class="seg shop-tabs" id="shopTabs"></div>
   <div id="chestList" class="ch-list"></div>
   <div class="card flat" id="conCard"><p>Des articles pour tes descentes, payés en pièces.</p><div class="shop-list" id="conList"></div></div>
+  <div id="premiumBody" class="pm-body"></div>
 </div>
 
 <div class="screen" id="scr-forge" hidden>
@@ -1151,7 +1153,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 
 <!-- Bottom navigation bar (village, museum, character screens) -->
 <nav class="navbar" id="navBar" aria-label="Navigation" hidden>
-  <button class="nav-tab" data-nav="premium"><span class="nav-ic"><img src="Assets/UI/Icon_Shop_Big.png" alt="" draggable="false"></span><span class="nav-lb">Premium</span></button>
+  <button class="nav-tab" data-nav="premium"><span class="nav-ic"><img src="Assets/UI/Icon_Shop_Big.png" alt="" draggable="false"></span><span class="nav-lb">Boutique</span><span class="badge" id="navShopBadge" hidden>!</span></button>
   <button class="nav-tab" data-nav="museum"><span class="nav-ic"><img src="Assets/UI/Icon_Museum.png" alt="" draggable="false"></span><span class="nav-lb">Musée</span><span class="badge" id="navMuseumBadge" hidden>!</span></button>
   <button class="nav-tab main" data-nav="village"><span class="nav-ic"><img src="Assets/Tools/Icn_Pickaxe.png" alt="" draggable="false"></span><span class="nav-lb">Monde</span></button>
   <button class="nav-tab" data-nav="hero"><span class="nav-ic"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"></span><span class="nav-lb">Personnage</span><span class="badge" id="navHeroBadge" hidden>!</span></button>
@@ -2940,11 +2942,19 @@ const anyUpgradeAffordable = () => upgradesShown().some(([k, u]) => upOpen(k) &&
 const CONS_UNLOCK = { bomb: 'bombes', potion: 'potions', radar: 'radar' };
 const SHOP_ITEMS = ['sac', 'bombes', 'potions', 'radar'];   // 'sac' = "Agrandir le sac"
 const shopNew = () => SHOP_ITEMS.some(k => has(k) && !(S.shopSeen || {})[k]);
+let shopTab = 'articles';
 function renderShopScreen() {
-  // Visiting the shop marks its new articles as seen
-  S.shopSeen = S.shopSeen || {}; SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; });
+  // Sub-tabs like Dicero: equipment chests (once the Forge is open), articles in coins, premium packs
+  if (shopTab === 'coffres' && !gearOpen()) shopTab = 'articles';
+  const stab = (k, label, dot) => `<button data-stab="${k}" id="stab-${k}" aria-pressed="${shopTab === k}">${label}${dot ? '<span class="badge">!</span>' : ''}</button>`;
+  $('shopTabs').innerHTML = (gearOpen() ? stab('coffres', tr('Coffres'), chestReady()) : '') + stab('articles', tr('Articles'), shopNew()) + stab('premium', tr('Premium'));
+  $('chestList').hidden = shopTab !== 'coffres'; $('conCard').hidden = shopTab !== 'articles'; $('premiumBody').hidden = shopTab !== 'premium';
+  if (shopTab === 'premium') renderPremium();
+  // Visiting the articles marks the new ones as seen
+  S.shopSeen = S.shopSeen || {};
+  if (shopTab === 'articles') SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; });
   $('shopWallet').innerHTML = walletHTML(['coin']) + gemsWallet();
-  $('chestList').innerHTML = chestsHTML();
+  $('chestList').innerHTML = shopTab === 'coffres' ? chestsHTML() : '';
   const lvl = S.bagLvl, next = BAG_UP[lvl], later = next && (next.biome || 1) > curBiome();
   // The next upgrade shows its own name: more slots, or a bigger geode pocket
   const nowTxt = tr('{a} cases', { a: bagCap() }) + (geoPocket() ? ' · ' + tr('poche à géodes {b}', { b: geoPocket() }) : '');
@@ -2955,13 +2965,13 @@ function renderShopScreen() {
       <div class="stxt"><b>${next && !later ? tr(next.nom || 'Agrandir le sac') : tr('Sac')}</b><span>${nextTxt}</span><span class="pips">${pipsHTML(lvl, BAG_UP.map(b => ({ biome: b.biome || 1 })))}</span></div>
       <div class="sbuy">${later ? LATER : next ? priceHTML({ coin: next.pieces }) + `<button class="btn sm" data-bagup="1" ${canPay({ coin: next.pieces }) ? '' : 'disabled'}>${tr('Acheter')}</button>` : '<span class="maxed">Max</span>'}</div></div>`;
   const cons = Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k]));
-  $('conCard').hidden = !has('sac') && !cons.length;
   setTimeout(gearCoach);
   if (S.tutoSeen.sacBoutique && !S.tutoSeen.sacAcheter) startCoach('sacAcheter', [
     { text: TX.sacAcheter, scroll: true, target: () => document.querySelector('button[data-bagup]'), done: () => S.bagLvl > 0 || $('scr-shop').hidden },
     { text: TX.retourVillage, target: () => document.querySelector('#scr-shop .back'), done: () => $('scr-shop').hidden },
   ]);
-  $('conList').innerHTML = (has('sac') ? bagRow : '') + cons.map(([k, c]) =>
+  if (!has('sac') && !cons.length) $('conList').innerHTML = `<p class="eq-soon">${tr('Les articles arrivent plus profond dans la mine.')}</p>`;
+  else $('conList').innerHTML = (has('sac') ? bagRow : '') + cons.map(([k, c]) =>
     `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
       <div class="stxt"><b>${c.name}</b><span>${c.desc}</span></div>
       <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) ? '' : 'disabled'}>${tr('Acheter')}</button></div></div>`).join('');
@@ -3358,6 +3368,7 @@ document.addEventListener('click', e => {
   }
   const op = t.closest('[data-open]'); if (op) return askOpen(op.dataset.open, +op.dataset.n);
   const ad = t.closest('[data-ad]'); if (ad && !ad.disabled) return watchAd(ad.dataset.ad);
+  const st = t.closest('[data-stab]'); if (st) { shopTab = st.dataset.stab; sfx('pick'); renderShopScreen(); return; }
   const ft = t.closest('[data-ftab]'); if (ft) { forgeTab = ft.dataset.ftab; sfx('pick'); renderForge(); return; }
   if (t.closest('#autoMerge')) return autoMerge();
 });
@@ -3370,6 +3381,7 @@ function refreshGear() {
   if (!$('scr-forge').hidden) renderForge();
   if (!$('scr-shop').hidden) renderShopScreen();
   if (!$('gearModal').hidden) renderSheet();
+  $('navShopBadge').hidden = !chestReady();
   $('navHeroBadge').hidden = !gearOpen() || !heroBadge();
 }
 
@@ -3391,7 +3403,7 @@ function renderHero() {
     + (has('pioche') ? chip(TOOLS.pickaxe, nfG(Math.round(pickPower() * 100) / 100), tr('Dégâts')) : '')
     + (open ? `<button class="eq-info" data-gstats aria-label="${tr('Tous les bonus')}">i</button>` : '');
   $('eqActions').innerHTML = open
-    ? `<button class="btn" data-go="forge">${img(OW + 'Forge.png' + OW_V)}${tr('Forge')}${gearForgeReady() ? '<span class="badge">!</span>' : ''}</button><button class="btn" data-go="shop">${chestArt('bois')}${tr('Coffres')}${chestReady() ? '<span class="badge">!</span>' : ''}</button>`
+    ? `<button class="btn" data-go="forge">${img(OW + 'Forge.png' + OW_V)}${tr('Forge')}${gearForgeReady() ? '<span class="badge">!</span>' : ''}</button>`
     : `<p class="eq-soon">${tr('L\'équipement arrive avec la Forge, au niveau {n}.', { n: UNLOCK.forge })}</p>`;
   const list = G().items.filter(it => !isEquipped(it)).sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot) || b.lv - a.lv);
   $('eqInv').innerHTML = !open ? '' : `<h3>${tr('Objets')} <small>${list.length}</small></h3>` + (list.length ? `<div class="gi-grid">${list.map(it => gcard(it, better(it) ? 'better' : '')).join('')}</div>`
@@ -3410,7 +3422,7 @@ function renderForge() {
   let html = '';
   if (forgeTab === 'gear') {
     const eqd = GSLOTS.map(equipped).filter(Boolean);
-    html = !eqd.length ? `<p>${tr('Ouvre des coffres à la Boutique pour trouver ton premier équipement. Tu l\'amélioreras ici avec des pièces et des minerais.')}</p><button class="btn" data-go="shop">${tr('Aller à la Boutique')}</button>`
+    html = !eqd.length ? `<p>${tr('Ouvre des coffres à la Boutique pour trouver ton premier équipement. Tu l\'amélioreras ici avec des pièces et des minerais.')}</p><button class="btn" data-go="premium">${tr('Aller à la Boutique')}</button>`
       : `<p>${tr('Améliore ton équipement avec des pièces et des minerais. Les autres objets s\'améliorent depuis leur fiche.')}</p><div class="shop-list">` + eqd.map(it => {
         const maxed = it.lv >= capOf(it), cost = levelCost(it);
         return `<div class="srow"><button class="sic gi r-${RAR_CSS[it.rar]}" data-gi="${it.id}">${gearArt(it.arch)}</button>
@@ -3469,6 +3481,7 @@ const gemsWallet = () => gearOpen() ? `<span class="res" title="${tr('Gemmes')}"
 function gearCoach() {
   if (!gearOpen() || G().firstUp || S.tutoSeen['eq-premier']) return;
   startCoach('eq-premier', [
+    { text: TXE.ouvrirCoffre, target: () => $('stab-coffres'), done: () => shopTab === 'coffres' || G().firstFree },
     { text: TXE.ouvrirCoffre, target: () => $('chestOpen1'), done: () => G().firstFree },
     { text: TXE.toucherCoffre, target: () => $('chestBtn'), done: () => cmState !== 'closed' || $('chestModal').hidden },
     { text: TXE.equiper, target: () => $('cmEquip'), done: () => !!G().eq.pioche },
@@ -3483,6 +3496,10 @@ function gearCoach() {
 /* ---------- Screens ---------- */
 const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier', 'hero', 'premium', 'events'];
 function go(name) {
+  // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
+  // (or on the chests while the tutorial's free chest waits)
+  if (name === 'premium') { shopTab = gearOpen() ? 'coffres' : 'premium'; name = 'shop'; }
+  else if (name === 'shop' && $('scr-shop').hidden) shopTab = gearOpen() && !G().firstFree ? 'coffres' : 'articles';
   SCREENS.forEach(n => $('scr-' + n).hidden = n !== name);
   if (name !== 'mine') dropBoardCoaches();
   if (name === 'village' || name === 'mine') S.screen = name;
@@ -3496,7 +3513,7 @@ function go(name) {
 /* ---------- Bottom navigation bar ----------
    Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
    Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
-const NAV_OF = { village: 'village', shop: 'village', forge: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events' };
+const NAV_OF = { village: 'village', shop: 'premium', forge: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events' };
 function updateNav(name) {
   const tab = NAV_OF[name];
   $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
@@ -3508,6 +3525,7 @@ function updateNav(name) {
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('nav-off', !!off[b.dataset.nav]));
   $('navMuseumBadge').hidden = !museumOpen || !museumPrimeWaiting();
   $('navHeroBadge').hidden = !gearOpen() || !heroBadge();
+  $('navShopBadge').hidden = !chestReady();
 }
 $('navBar').addEventListener('click', e => {
   const b = e.target.closest('.nav-tab'); if (!b) return;

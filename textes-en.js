@@ -707,4 +707,5 @@ window.TEXTES_EN = {
   "Ouvrir encore 10": "Open 10 more",
   "Confirmer": "Confirm",
   "Ouvrir des coffres": "Open chests",
+  "Les articles arrivent plus profond dans la mine.": "Items arrive deeper in the mine.",
 };
