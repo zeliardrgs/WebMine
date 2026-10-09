@@ -859,6 +859,8 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .tool.on .tl{visibility:visible}
 .tool.on{background:var(--sun); box-shadow:0 5px 0 var(--sun-edge), 0 12px 20px rgba(255,194,61,.35); transform:translateY(-5px)}
 .tool:active{transform:translateY(0)}
+/* Menus dragged with the mouse (see "Mouse drag to scroll"): no text selection, closed-hand cursor */
+body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !important}
 .key{position:absolute; top:6px; left:8px; font-family:var(--font-body); font-size:10px; color:var(--ink-soft); opacity:.6}
 @media (pointer:coarse){.key{display:none}}
 
@@ -4394,6 +4396,57 @@ try { new ResizeObserver(fitBoard).observe(document.querySelector('.stage')); } 
 addEventListener('resize', fitBoard);
 addEventListener('orientationchange', () => setTimeout(fitBoard, 200));
 fitBoard();
+
+/* ---------- Mouse drag to scroll the menus, like a finger on a phone ----------
+   Press and drag anywhere in a scrolling screen or popup; it glides a little when let go.
+   A drag of more than a few pixels is not a click. The mine board, the village map and the workshop
+   mini-game keep their own controls. */
+const DRAG_SKIP = '#board, #world, #mgGeode, input, textarea, select, [contenteditable]';
+function scrollerOf(el) {
+  for (; el && el !== document.body; el = el.parentElement) {
+    const cs = getComputedStyle(el);
+    if ((/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 1)
+      || (/(auto|scroll)/.test(cs.overflowX) && el.scrollWidth > el.clientWidth + 1)) return el;
+  }
+  return null;
+}
+let drag = null, dragClickUntil = 0;
+addEventListener('click', e => { if (performance.now() < dragClickUntil) { e.stopPropagation(); e.preventDefault(); } }, true);
+addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest(DRAG_SKIP)) return;
+  const sc = scrollerOf(e.target); if (!sc) return;
+  cancelAnimationFrame(drag && drag.raf);
+  drag = { sc, x: e.clientX, y: e.clientY, l: sc.scrollLeft, t: sc.scrollTop, moved: false, vx: 0, vy: 0, at: performance.now(), lx: e.clientX, ly: e.clientY };
+});
+addEventListener('pointermove', e => {
+  if (!drag || drag.done) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+  if (!drag.moved) { drag.moved = true; document.body.classList.add('drag-scroll'); }
+  drag.sc.scrollLeft = drag.l - dx; drag.sc.scrollTop = drag.t - dy;
+  const now = performance.now(), dt = Math.max(1, now - drag.at);
+  drag.vx = (e.clientX - drag.lx) / dt; drag.vy = (e.clientY - drag.ly) / dt;
+  drag.at = now; drag.lx = e.clientX; drag.ly = e.clientY;
+});
+addEventListener('pointerup', () => {
+  if (!drag || drag.done) return;
+  const d = drag; d.done = true;
+  if (!d.moved) { drag = null; return; }
+  document.body.classList.remove('drag-scroll');
+  // The click that ends a drag does nothing
+  dragClickUntil = performance.now() + 60;
+  // Glide, slowing down (none if the mouse stopped before letting go)
+  if (reduced || performance.now() - d.at > 80) return;
+  let vx = d.vx * 16, vy = d.vy * 16;
+  const glide = () => {
+    vx *= .94; vy *= .94;
+    if (Math.abs(vx) < .4 && Math.abs(vy) < .4) return;
+    d.sc.scrollLeft -= vx; d.sc.scrollTop -= vy;
+    d.raf = requestAnimationFrame(glide);
+  };
+  d.raf = requestAnimationFrame(glide);
+});
+addEventListener('pointercancel', () => { if (drag) document.body.classList.remove('drag-scroll'); drag = null; });
 
 /* ---------- Persistence ---------- */
 let saveT;
