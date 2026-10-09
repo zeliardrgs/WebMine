@@ -588,6 +588,9 @@ window.CONFIG = {
      L'équipement s'ouvre avec la Forge (progression > deblocages > forge).
      --------------------------------------------------------------- */
   equipement: {
+    // Nom du personnage, affiché au-dessus du mineur sur l'écran Personnage
+    nomPersonnage: 'Bidule',
+
     // Les 7 raretés (échelle Habby), de la plus courante à la plus rare.
     // "niveauMax" = niveau maximum d'un objet de cette rareté ;
     // "multiplicateur" = la stat principale de l'objet est multipliée par ce nombre ;
