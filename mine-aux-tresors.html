@@ -181,8 +181,10 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .slot img,.rw img,.flyer img,.ghost .g img{width:100%; height:100%; object-fit:contain; display:block; -webkit-user-drag:none}
 .slot img{filter:brightness(0) invert(1) opacity(.22)}
 .slot.found img{filter:none}
-.tool .ic img{position:relative; width:38px; height:38px; object-fit:contain}
-.tool.charging .ic img{opacity:.4; filter:grayscale(.6)}
+.tool .ic img{position:relative; width:100%; height:100%; object-fit:contain}
+/* Watering can refilling: the faded can fills up from the bottom (--p = 0 to 1) */
+.tool .ic .fill{position:absolute; inset:0; display:grid; place-items:center; clip-path:inset(calc((1 - var(--p, 1)) * 100%) 0 0 0)}
+.tool.charging .ic > img{opacity:.3; filter:grayscale(.7)}
 .item img{width:46px; height:46px; object-fit:contain}
 .geode-row img{width:56px; height:56px; object-fit:contain; flex:none}
 .geode-row img.empty{filter:grayscale(1) opacity(.35)}
@@ -847,19 +849,15 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 
 /* Tools */
 .tools{display:grid; grid-template-columns:repeat(var(--ntools, 3), calc((100% - 16px) / 3)); justify-content:center; gap:8px; padding-bottom:4px}
-.tool{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 4px 9px; border:0; border-radius:20px; cursor:pointer;
+.tool{position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:8px 4px 9px; border:0; border-radius:20px; cursor:pointer;
   background:var(--panel); color:var(--ink); box-shadow:0 5px 0 var(--panel-edge), 0 10px 16px rgba(0,0,0,.3);
   font-family:var(--font-display); font-size:15px; transition:transform .12s, background .12s}
-.tool .ic{position:relative; width:48px; height:48px; border-radius:50%; display:grid; place-items:center;
-  background:conic-gradient(var(--ring, transparent) calc(var(--p,1) * 1turn), rgba(59,34,69,.15) 0)}
-.tool .ic::before{content:""; position:absolute; inset:4px; border-radius:50%; background:rgba(255,255,255,.75)}
-.tool .ic svg{position:relative; width:34px; height:34px}
-.tool small{font-family:var(--font-body); font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:2px; white-space:nowrap}
-.tool small svg,.tool small img{width:13px; height:13px; object-fit:contain}
+.tool .ic{position:relative; width:80px; height:80px; display:grid; place-items:center}
+.tool .ic svg{position:relative; width:100%; height:100%}
+/* The tool's name shows only when it is selected; its line is always kept so the buttons (and the board) never move */
+.tool .tl{visibility:hidden; line-height:1.1; white-space:nowrap}
+.tool.on .tl{visibility:visible}
 .tool.on{background:var(--sun); box-shadow:0 5px 0 var(--sun-edge), 0 12px 20px rgba(255,194,61,.35); transform:translateY(-5px)}
-.tool.on small{color:var(--ink)}
-.tool[data-tool="bucket"]{--ring:var(--water)}
-.tool.charging .ic svg{opacity:.45}
 .tool:active{transform:translateY(0)}
 .key{position:absolute; top:6px; left:8px; font-family:var(--font-body); font-size:10px; color:var(--ink-soft); opacity:.6}
 @media (pointer:coarse){.key{display:none}}
@@ -953,9 +951,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   .pill img,.pill svg{width:22px; height:22px}
   .tools{gap:6px}
   .tool{font-size:14px; border-radius:16px; padding:6px 2px 7px}
-  .tool .ic{width:42px; height:42px}
-  .tool .ic img{width:32px; height:32px}
-  .tool small{font-size:10px}
+  .tool .ic{width:70px; height:70px}
   .key{display:none}
   .card{padding:18px 14px 14px; border-radius:22px}
   .card h2{font-size:26px}
@@ -966,8 +962,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   .goals-label small{display:none}
   .slot{width:30px; height:30px}
   .tool{padding:4px 2px 5px; gap:0}
-  .tool .ic{width:36px; height:36px}
-  .tool .ic img{width:28px; height:28px}
+  .tool .ic{width:58px; height:58px}
   .tool.on{transform:translateY(-3px)}
 }
 /* Landscape phones: board on the left, controls on the right */
@@ -1142,9 +1137,9 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   </div>
 
   <nav class="tools" aria-label="Outils">
-    <button class="tool on" data-tool="shovel" id="tool-shovel"><span class="key">1</span><span class="ic"></span>Pelle<small>Gratuite</small></button>
-    <button class="tool" data-tool="pickaxe" id="tool-pickaxe"><span class="key">2</span><span class="ic"></span>Pioche<small id="pickSub"></small></button>
-    <button class="tool" data-tool="bucket" id="tool-bucket"><span class="key">3</span><span class="ic"></span>Arrosoir<small id="bucketSub">Prêt</small></button>
+    <button class="tool on" data-tool="shovel" id="tool-shovel"><span class="key">1</span><span class="ic"></span><span class="tl">Pelle</span></button>
+    <button class="tool" data-tool="pickaxe" id="tool-pickaxe"><span class="key">2</span><span class="ic"></span><span class="tl">Pioche</span></button>
+    <button class="tool" data-tool="bucket" id="tool-bucket"><span class="key">3</span><span class="ic"></span><span class="tl">Arrosoir</span></button>
   </nav>
 </div>
 
@@ -2098,10 +2093,9 @@ function levelCoach() {
 
 /* ---------- Tools UI ---------- */
 document.querySelectorAll('.tool').forEach(b => {
-  b.querySelector('.ic').innerHTML = TOOLS[b.dataset.tool];
+  b.querySelector('.ic').innerHTML = toolHTML(b.dataset.tool, TOOLS[b.dataset.tool]);
   b.addEventListener('click', () => { if (S.tool === 'bomb') disarm(); setTool(b.dataset.tool, true); });
 });
-$('pickSub').innerHTML = '-1 ' + BOLT + ' ' + tr('/ coup');
 $('upIcon').innerHTML = UP_ICON;
 function setTool(t, user) {
   S.tool = t;
@@ -2117,8 +2111,10 @@ function toolIcon(t) {
   const it = TOOL_SLOT[t] && equipped(TOOL_SLOT[t]);
   return it && GIMG[it.arch] ? img(GIMG[it.arch], tr(ARCH[it.arch].nom)) : TOOLS[t];
 }
+// The watering can gets a second, full-colour copy on top, cut to its refill level (CSS .fill)
+function toolHTML(t, ic) { return t === 'bucket' ? ic + `<span class="fill">${ic}</span>` : ic; }
 function paintTools() {
-  document.querySelectorAll('.tool').forEach(b => { b.querySelector('.ic').innerHTML = toolIcon(b.dataset.tool); });
+  document.querySelectorAll('.tool').forEach(b => { b.querySelector('.ic').innerHTML = toolHTML(b.dataset.tool, toolIcon(b.dataset.tool)); });
   $('ghostG').innerHTML = toolIcon(S.tool);
 }
 addEventListener('keydown', e => {
@@ -2868,7 +2864,7 @@ function fly(el, target, done) {
 }
 
 /* ---------- Energy & bucket ---------- */
-let lastE = '', lastR = '', lastB = '', lastVE = '';
+let lastE = '', lastR = '', lastVE = '';
 function updateEnergy(force) {
   const now = Date.now();
   // Optional slow refill over time (config.js: energie.rechargeAutoMs, 0 = off)
@@ -2888,8 +2884,7 @@ function updateBucket() {
   if (S.bucketCharges < max && now >= S.bucketReady) S.bucketCharges = max;
   const left = S.bucketReady - now, empty = S.bucketCharges <= 0;
   btn.style.setProperty('--p', empty ? Math.min(1, Math.max(0, 1 - left / bucketCd())) : 1);
-  const t = empty ? tr('Remplissage {s} s', { s: Math.ceil(left / 1000) }) : max > 1 ? tr('Prêt ×{n}', { n: S.bucketCharges }) : tr('Prêt');
-  if (t !== lastB) { lastB = t; $('bucketSub').textContent = t; btn.classList.toggle('charging', empty); if (left <= 0 && lastB) {} }
+  btn.classList.toggle('charging', empty);
 }
 /* Forced return: no energy, no bomb, no potion and nothing left to dig for free on this level
    (dirt, bonus tiles, ice melting next to magma, a treasure to pick up) → back to the village with the loot */
