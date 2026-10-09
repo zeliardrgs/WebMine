@@ -1342,7 +1342,9 @@ const inGuide = () => (S.guideBack || 0) < GUIDE.fin;
 const nextReturn = () => GUIDE.retours.find(r => r > (S.guideBack || 0)) ?? Infinity;
 // "Remonter" only shows from the next planned return on. Guided levels never ask for more energy than is left
 // (and tutorial levels give what they need), so the player can always go on; if ever stuck, the forced return still applies.
-const upAllowed = () => !inGuide() || S.level >= nextReturn();
+// Levels already played (back down from a checkpoint) are not part of the tutorial: "Remonter" is always there.
+const guided = () => inGuide() && S.level >= (S.reached || 1) && S.level < nextReturn();
+const upAllowed = () => !guided();
 // Treasure levels (10, 20, 30…) are one size bigger than the levels around them, the first time
 const levelDims = (level, kind) => { const n = isTuto(level) ? 3 : Math.min(MAX_COLS, gridRow(level).taille + (kind === 'treasure' ? RY.niveauTresor.tailleEnPlus || 0 : 0)); return [n, n]; };
 function setDims(cols, rows) {
@@ -1638,7 +1640,7 @@ function genLevel(level) {
   // The kind of this visit (shown in the HUD and the bubble); a treasure level is used up once generated
   S.floor = S.tuto ? 'easy' : kind;
   if (kind === 'treasure') (S.treasureDone = S.treasureDone || {})[level] = true;
-  if (S.tuto) tutoEnergy(); else if (inGuide() && level < nextReturn()) guideStone();
+  if (S.tuto) tutoEnergy(); else if (inGuide() && level < nextReturn() && level >= (S.reached || 1)) guideStone();
 }
 // Energy needed to break every rock of the board with the pickaxe (cooled magma included)
 const hitsOf = c => Math.ceil((c.t === 'magma' ? HP.cool : c.hp || 0) / pickPower());
@@ -3950,8 +3952,9 @@ const BUILDINGS = {
 };
 const OW_IMG = { museum: 'Museum', forge: 'Forge', atelier: 'Workshop', shop: 'Shop' };
 function openRecap() {
-  // First steps: the planned returns reached so far
-  if (inGuide()) S.guideBack = Math.max(S.guideBack || 0, ...GUIDE.retours.filter(r => r <= S.level));
+  // First steps: the planned returns reached so far. Back home before the planned return (0 energy, stuck),
+  // that stretch of the tutorial is over too: it never comes back when the player goes down again.
+  if (inGuide()) S.guideBack = Math.max(S.guideBack || 0, nextReturn(), ...GUIDE.retours.filter(r => r <= S.level));
   if (!S.tutoSeen.surface) startCoach('surface', [{ text: TX.surface, target: () => $('recapVillage'), done: () => $('recapModal').hidden }]);
   const T = S.trip; let coins = 0;
   // New buildings appear in the village itself (not on this screen)
@@ -4325,6 +4328,8 @@ function tryDescend() {
   const guide = !upAllowed();
   const full = S.bagSeen && bagFull(), low = !guide && has('pioche') && S.energy <= CFG.energie.alerteDescente;
   if (!full && !low) return descend();
+  // First steps: the "full bag, keep going" popup is shown once, then just a reminder
+  if (guide && full && !low && S.tutoSeen.continuer) { toast(tr('Sac plein')); return descend(); }
   // Warning laid out like the mockup: the miner (loaded down or worn out), a short title and sentence, then the bag / energy count
   $('descendArt').innerHTML = img(full ? 'Assets/Characters/Miner_BagFull.png' : 'Assets/Characters/Miner_Tired.png');
   $('descendTitle').textContent = full && low ? tr('Sac plein, peu d\'énergie') : full ? tr('Sac plein') : tr('Peu d\'énergie');
@@ -4479,6 +4484,9 @@ function start(data) {
   if (saved && S.reached > 5) for (const k of ['toucher', 'creuser', 'tresor', 'sacPlein', 'surface', 'descendre', 'bld-museum', 'prime', 'museeRetour', 'redescendre-5', 'ascenseur', 'sac', 'suivant', 'retour-5']) S.tutoSeen[k] = true;
   // Saves from before the guided first steps: the planned returns already passed count as done
   if (saved && saved.guideBack === undefined) S.guideBack = S.reached > GUIDE.fin ? GUIDE.fin : GUIDE.retours.filter(r => r < S.reached && S.buildings.museum).pop() || 0;
+  // Saves where the player came home early in a guided stretch (before this fix): that stretch is over
+  if (saved && inGuide() && !saved.guideFix && S.buildings.museum && S.screen !== 'mine' && S.reached > (S.guideBack || 0) && !GUIDE.retours.includes(S.reached)) S.guideBack = nextReturn();
+  S.guideFix = true;
   if (saved && S.reached > GUIDE.fin) for (const k of ['energie', 'continuer', 'echanger', 'forge', 'atelier', 'objectifs', 'guideFin', 'redescendre-11', 'redescendre-16', 'retour-11', 'retour-16']) S.tutoSeen[k] = true;
   if (saved && !saved.bagV2) {
     // Before: 4 slots, then 6, 8, 10, 12, 14… Keep at least the size the player had

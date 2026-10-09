@@ -249,6 +249,9 @@ window.CONFIG = {
     // - le bouton Remonter n'apparaît qu'à partir du prochain retour prévu (ou à 0 énergie) ;
     // - sac plein avant ce retour : le jeu montre "Descendre quand même" (les pièces et minerais ne prennent pas de place) ;
     // - la pierre est limitée pour que l'énergie suffise jusqu'au prochain retour, même en cassant tout.
+    // - le popup "Sac plein" n'apparaît qu'une fois, ensuite un simple rappel ;
+    // - c'est un tutoriel à usage unique : rentré plus tôt (0 énergie), l'étape est terminée,
+    //   et les niveaux déjà joués (redescente depuis un checkpoint) se jouent normalement, avec Remonter.
     // Partout dans le jeu, un niveau tutoriel donne l'énergie qu'il faut pour le finir,
     // et son trésor (toujours une nouvelle découverte) ne prend pas de place dans le sac.
     guide: {
