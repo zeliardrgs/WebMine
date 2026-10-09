@@ -61,6 +61,20 @@
     unlock() {
       const n = level(); S().reached = n; refresh(); msg(`Record : niveau ${n} (checkpoints débloqués)`);
     },
+    // Skips the first steps (levels 1 to 5, first return to the village, first Museum visit), like a save past
+    // level 5: same tutorial list as in start(). Reloads the page so no tutorial hand stays on screen.
+    skipFtue() {
+      const s = S();
+      for (const k of ['toucher', 'creuser', 'tresor', 'sacPlein', 'surface', 'descendre', 'bld-museum', 'prime', 'museeRetour', 'redescendre', 'ascenseur']) s.tutoSeen[k] = true;
+      for (const l of [1, 2, 3, 4, 5]) { s.tutoSeen[l] = true; s.guarDone[l] = true; }
+      s.introDone = true; s.bagSeen = true; s.buildings.museum = true;
+      if (s.bldNew) delete s.bldNew.museum;
+      s.newBuildings = (s.newBuildings || []).filter(k => k !== 'museum');
+      s.reached = Math.max(s.reached, 6);
+      if (s.level < 6) { s.level = 6; s.stayLevel = 0; M.genLevel(6); }
+      s.screen = 'village';
+      localStorage.setItem(KEY, JSON.stringify(s)); location.reload();
+    },
     finishFloor() {
       if (visibleScreen() !== 'mine') return msg('Va d\'abord dans la mine');
       const s = S();
@@ -156,6 +170,7 @@
       <button data-c="goLevel">Aller à ce niveau</button>
       <button data-c="unlock">Débloquer jusqu'à ce niveau</button>
       <button data-c="finishFloor">Dégager tout l'étage</button>
+      <button data-c="skipFtue">Passer la FTUE</button>
     </div>
 
     <h3>Ressources</h3>
