@@ -42,8 +42,8 @@ Si le jeu tourne en local, faire un rechargement forcé (Cmd+Maj+R) pour éviter
 Un coffre **ouvert** reste dessiné par le jeu pour l'instant (animation d'ouverture). Pour une vraie
 animation, prévoir une planche d'images ou un Spine plus tard, côté Unity.
 
-La clé posée dans la mine (case `gkey`) est dessinée dans le CSS du jeu (`.t-gkey::before`) :
-à remplacer en même temps que `cleBois`.
+La clé posée dans la mine (case `gkey`) utilise la même image que la clé (`cleBois`, `cleArgent`…).
+Sans image, elle reste dessinée dans le CSS du jeu (`.t-gkey::before`).
 
 Pour ajouter un nouveau modèle d'équipement, l'ajouter dans `config.js > equipement > emplacements`,
 puis ajouter son nom dans `images`.

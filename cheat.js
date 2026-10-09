@@ -61,17 +61,20 @@
     unlock() {
       const n = level(); S().reached = n; refresh(); msg(`Record : niveau ${n} (checkpoints débloqués)`);
     },
-    // Skips the first steps (levels 1 to 5, first return to the village, first Museum visit), like a save past
-    // level 5: same tutorial list as in start(). Reloads the page so no tutorial hand stays on screen.
+    // Skips the guided first steps (config.js > progression > guide, levels 1 to 16): every first-steps tutorial
+    // is marked as seen, the buildings of the planned returns are open, and the player starts just after the guide.
+    // Reloads the page so no tutorial hand stays on screen.
     skipFtue() {
-      const s = S();
-      for (const k of ['toucher', 'creuser', 'tresor', 'sacPlein', 'surface', 'descendre', 'bld-museum', 'prime', 'museeRetour', 'redescendre', 'ascenseur']) s.tutoSeen[k] = true;
-      for (const l of [1, 2, 3, 4, 5]) { s.tutoSeen[l] = true; s.guarDone[l] = true; }
-      s.introDone = true; s.bagSeen = true; s.buildings.museum = true;
-      if (s.bldNew) delete s.bldNew.museum;
-      s.newBuildings = (s.newBuildings || []).filter(k => k !== 'museum');
-      s.reached = Math.max(s.reached, 6);
-      if (s.level < 6) { s.level = 6; s.stayLevel = 0; M.genLevel(6); }
+      const s = S(), guide = M.CFG.progression.guide, after = guide.fin + 1;
+      for (const k of ['toucher', 'creuser', 'tresor', 'sac', 'suivant', 'energie', 'sacPlein', 'continuer', 'echanger', 'surface', 'descendre',
+        'prime', 'museeRetour', 'ascenseur', 'forge', 'atelier', 'eq-premier', 'sacBoutique', 'sacAcheter', 'objectifs', 'guideFin']) s.tutoSeen[k] = true;
+      for (const r of guide.retours) s.tutoSeen['retour-' + r] = s.tutoSeen['redescendre-' + r] = true;
+      for (let l = 1; l <= guide.fin; l++) s.tutoSeen[l] = s.guarDone[l] = true;
+      for (const k of ['museum', 'forge', 'atelier', 'shop']) s.buildings[k] = s.tutoSeen['bld-' + k] = true;
+      s.bldNew = {}; s.newBuildings = [];
+      s.introDone = true; s.bagSeen = true; s.guideBack = guide.fin;
+      s.reached = Math.max(s.reached, after);
+      if (s.level < after) { s.level = after; s.stayLevel = 0; M.genLevel(after); }
       s.screen = 'village';
       localStorage.setItem(KEY, JSON.stringify(s)); location.reload();
     },

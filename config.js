@@ -732,18 +732,23 @@ window.CONFIG = {
     // Pour une vraie image : la poser dans Assets/Gear/ et écrire son chemin ici,
     // par exemple picLourd: 'Assets/Gear/PicLourd.png'. Voir Assets/Gear/LISEZMOI.md.
     images: {
+      // Pelle et pioche de base, dans la mine, avant le premier coffre
+      pelleDeBase: 'Assets/Equipements/Shovel_01.png', piocheDeBase: 'Assets/Equipements/Pickaxe_01.png',
       // Modèles d'équipement (un par archétype)
-      picLourd: '', picEclats: '', picGivre: '',
-      pelleProspecteur: '', pelleLarge: '',
+      picLourd: 'Assets/Equipements/Pickaxe_03.png', picEclats: 'Assets/Equipements/Pickaxe_13.png',
+      picGivre: 'Assets/Equipements/Pickaxe_12.png',
+      pelleProspecteur: 'Assets/Equipements/Shovel_09.png', pelleLarge: 'Assets/Equipements/Shovel_02.png',
       gantsFer: '', gantsDynamiteur: '',
       casqueChantier: '', casqueVeine: '',
       lanterneProspecteur: '', lanterneAncienne: '',
       bottesProspecteur: '', bottesPorteBonheur: '',
       // Coffres (fermés) et clés
-      coffreBois: '', coffreArgent: '', coffreOr: '', coffreEtoile: '',
-      cleBois: '', cleArgent: '', cleOr: '', cleEtoile: '',
+      coffreBois: 'Assets/UI/Chest_Wood.png', coffreArgent: 'Assets/UI/Chest_Silver.png',
+      coffreOr: 'Assets/UI/Chest_Gold.png', coffreEtoile: 'Assets/UI/Chest_Star.png',
+      cleBois: 'Assets/UI/Key_Wood.png', cleArgent: 'Assets/UI/Key_Silver.png',
+      cleOr: 'Assets/UI/Key_Gold.png', cleEtoile: 'Assets/UI/Key_Star.png',
       // Monnaie premium
-      gemmes: '',
+      gemmes: 'Assets/UI/Icon_Pearl.png',
     },
   },
 

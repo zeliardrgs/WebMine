@@ -26,7 +26,6 @@ window.TEXTES_EN = {
   "Articles": "Items",
   "Nouveau": "New",
   "Nouveau !": "New!",
-  "Fais glisser pour te déplacer dans le village": "Drag to move around the village",
   "Objectifs": "Goals",
   "La mine": "The mine",
   "Descendre": "Go down",
