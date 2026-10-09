@@ -321,20 +321,11 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .v-title p{margin:6px 0 0; font-size:13px; opacity:.85}
 /* Village: a painted grass map larger than the screen. The player drags it around (#world is the viewport,
    #map the 1000×1150 px world moved with a translate). Buildings are anchored by the middle of their base; each name plate floats above its building. */
-#scr-village{position:fixed; inset:0; height:auto; max-width:none; padding:0; overflow:hidden; background:#8fd146}   /* fills the whole phone screen, under the status bar and home indicator; the HUD keeps clear of them */
+#scr-village{position:fixed; inset:0; height:auto; max-width:none; padding:0; overflow:hidden; background:#7ad94a url('Assets/Ground/Grass_Tile_HD.jpg') 0 0 / 730px 215px repeat}   /* fills the whole phone screen, under the status bar and home indicator; the HUD keeps clear of them */
 .world{position:absolute; inset:0; overflow:hidden; touch-action:none; cursor:grab}
 .world.dragging{cursor:grabbing}
 .map{position:absolute; left:0; top:0; width:1000px; height:1150px; will-change:transform;
-  background-color:#8fd146;
-  background-image:
-    radial-gradient(ellipse 150px 70px at 160px 120px, rgba(196,240,120,.55), transparent 70%),
-    radial-gradient(ellipse 120px 55px at 470px 330px, rgba(196,240,120,.45), transparent 70%),
-    radial-gradient(ellipse 200px 90px at 380px 520px, rgba(110,180,50,.35), transparent 70%),
-    radial-gradient(ellipse 90px 40px at 90px 430px, rgba(110,180,50,.3), transparent 70%),
-    radial-gradient(circle at 250px 260px, #fff6a8 0 3px, transparent 3.5px),
-    radial-gradient(circle at 520px 90px, #ffd1e6 0 3px, transparent 3.5px),
-    radial-gradient(circle at 60px 560px, #fff6a8 0 3px, transparent 3.5px);
-  background-size:600px 620px}
+  background:#7ad94a url('Assets/Ground/Grass_Tile_HD.jpg') 0 0 / 730px 215px repeat}   /* seamless painted grass tile, 3× resolution (2190×645) shown at 730×215 */
 .world::after{content:""; position:absolute; inset:0; pointer-events:none; box-shadow:inset 0 0 120px rgba(60,110,20,.35)}
 .bld{position:absolute; transform:translate(-50%, -100%); border:0; padding:0; background:none; cursor:pointer}
 .bimg{display:block}
