@@ -297,7 +297,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .find-label .rar-epic, .ws-info .rar-epic{--rc:#cf9bff} .find-label .rar-legendary, .ws-info .rar-legendary{--rc:#ffb35c}
 .geo-btn.on[class*="rar-"]{box-shadow:0 0 0 .9cqw var(--rc), 0 0 0 1.9cqw #ffd94d, 0 1.4cqw 0 rgba(0,0,0,.25)}
 .geo-btn.rar-common, .geo-btn.rar-rare, .geo-btn.rar-epic, .geo-btn.rar-legendary{box-shadow:0 0 0 .9cqw var(--rc), 0 1.4cqw 0 rgba(0,0,0,.25)}
-.find-label{position:absolute; z-index:6; transform:translate(-50%, -100%); padding:4px 12px 6px; border-radius:12px; white-space:nowrap; pointer-events:none;
+.find-label{position:absolute; z-index:20; transform:translate(-50%, -100%); padding:4px 12px 6px; border-radius:12px; white-space:nowrap; pointer-events:none;
   background:rgba(35,18,45,.9); color:#ffe36b; font-family:var(--font-display); font-size:16px; box-shadow:0 3px 0 rgba(0,0,0,.35)}
 .find-label small{display:block; font-family:var(--font-body); font-size:10px; color:#fff3d6; text-align:center; opacity:.85}
 .float{position:absolute; font-family:var(--font-display); font-size:18px; white-space:nowrap;
@@ -3098,10 +3098,11 @@ function findLabel(rw, note) {
   const t = ts(), d = document.createElement('div'); d.className = 'find-label';
   // Just the name, in its rarity colour (plus a short note for an auto-sold duplicate)
   d.innerHTML = rarName(rwName(rw), rarityOfFind(rw.kind, rw.key)) + (note ? `<small>${note}</small>` : '');
-  fx.append(d);
-  const half = d.offsetWidth / 2 + 4, bl = board.getBoundingClientRect().left;
-  const x = Math.min(Math.max((rw.c + rw.w / 2) * t, half - bl + 8), innerWidth - bl - half - 8);
-  Object.assign(d.style, { left: x + 'px', top: Math.max(rw.r * t - 4, d.offsetHeight + 4) + 'px' });
+  // Lives in the stage (not the board, which clips) so a long name can overhang a small grid
+  const stage = board.closest('.stage'); stage.append(d);
+  const sr = stage.getBoundingClientRect(), br = board.getBoundingClientRect(), half = d.offsetWidth / 2;
+  const x = Math.min(Math.max(br.left - sr.left + (rw.c + rw.w / 2) * t, half + 8), sr.width - half - 8);
+  Object.assign(d.style, { left: x + 'px', top: Math.max(br.top - sr.top + rw.r * t - 4, d.offsetHeight + 4) + 'px' });
   d.animate([
     { opacity: 0, transform: 'translate(-50%, -80%) scale(.6)' },
     { opacity: 1, transform: 'translate(-50%, -100%) scale(1.08)', offset: .12 },
