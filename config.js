@@ -12,6 +12,9 @@
    ===================================================================== */
 
 window.CONFIG = {
+  // Version affichée en bas des Paramètres (avec la date de mise en ligne). À changer à chaque envoi aux testeurs.
+  version: 'V1 test interne 0.1',
+
 
   /* ---------------------------------------------------------------
      SON ET MUSIQUE
@@ -30,7 +33,7 @@ window.CONFIG = {
     // Énergie maximum au début du jeu (l'énergie arrive avec la pioche, au niveau 6)
     maxDepart: 30,
 
-    // (l'énergie max après chaque amélioration est dans forge > reserveEnergie)
+    // L'énergie max grandit avec le niveau du joueur (progressionJoueur > niveaux : "energie")
 
     // Énergie moyenne qu'il faut pour dégager les trésors d'un niveau, pour chaque biome (1 à 10).
     // Si un niveau coûte plus, le jeu remplace de la roche au-dessus des trésors par de la terre.
@@ -89,28 +92,8 @@ window.CONFIG = {
     // Le sac apparaît avec le premier trésor ramassé. La première fois qu'il est plein,
     // un petit tutoriel montre le bouton Remonter (texte : progression > textesTuto > sacPlein)
 
-    // Améliorations du sac à la Boutique, achetées dans l'ordre. Deux sortes :
-    // - "cases" = taille du sac après l'achat ;
-    // - "geodes" = poche à géodes : ce nombre de géodes ne prend pas de case dans le sac.
-    // "nom" = nom affiché à la Boutique, "pieces" = prix,
-    // "biome" = à partir de quel biome atteint cette amélioration est proposée.
-    agrandissements: [
-      { biome: 1,  cases: 5,  pieces: 150,  nom: "Poche cousue" },
-      { biome: 1,  geodes: 1, pieces: 250,  nom: "Poche à géodes" },
-      { biome: 1,  cases: 6,  pieces: 400,  nom: "Sac renforcé" },
-      { biome: 2,  cases: 8,  pieces: 700,  nom: "Sac en cuir" },
-      { biome: 2,  geodes: 2, pieces: 900,  nom: "Grande poche à géodes" },
-      { biome: 3,  cases: 10, pieces: 1300, nom: "Sac de mineur" },
-      { biome: 4,  cases: 12, pieces: 1800, nom: "Sac à soufflets" },
-      { biome: 4,  geodes: 3, pieces: 2000, nom: "Poche à géodes doublée" },
-      { biome: 5,  cases: 14, pieces: 2400, nom: "Sac d'explorateur" },
-      { biome: 6,  cases: 16, pieces: 3000, nom: "Sac d'expédition" },
-      { biome: 7,  cases: 18, pieces: 3800, nom: "Sac des profondeurs" },
-      { biome: 7,  geodes: 4, pieces: 4000, nom: "Coffret à géodes" },
-      { biome: 8,  cases: 20, pieces: 4600, nom: "Sac de cristal" },
-      { biome: 9,  cases: 22, pieces: 5500, nom: "Sac royal" },
-      { biome: 10, cases: 24, pieces: 6500, nom: "Sac du Roi Mineur" },
-    ],
+    // Le sac grandit avec le niveau du joueur (progressionJoueur > niveaux : "sac" et "poche"),
+    // plus à la Boutique.
   },
 
   /* ---------------------------------------------------------------
@@ -152,27 +135,27 @@ window.CONFIG = {
       cuivre: 11,        // minerai de cuivre
       forge: 11,         // la Forge apparaît au village (au retour suivant) : c'est aussi l'ouverture de l'équipement
       boutique: 11,      // la Boutique apparaît en même temps, avec les coffres d'équipement
-      geodes: 16,        // géodes blanches
+      geodes: 16,        // géodes vertes (Communes)
       atelier: 16,       // l'Atelier apparaît au village (au retour suivant)
-      magma: 26,         // magma et arrosoir (et Arrosoir rapide à la Forge)
-      fer: 36,           // minerai de fer (niveaux 3 et 4 de la Réserve d'énergie)
+      magma: 26,         // magma et arrosoir
+      fer: 36,           // minerai de fer
       casque: 21,        // le Casque peut sortir des coffres
       bottes: 31,        // les Bottes peuvent sortir des coffres
-      sac: 16,           // "Agrandir le sac" arrive à la Boutique (fin des premiers pas : un tutoriel le montre)
+      sac: 16,           // fin des premiers pas : un tutoriel montre la récompense « sac » du niveau du joueur
+      autel: 51,         // l'Autel de la montagne apparaît au village (au retour suivant)
       bombes: 56,        // les bombes arrivent à la Boutique (tutoriel avec une bombe offerte)
-      geodeRose: 66,     // géodes roses
+      geodeRose: 66,     // géodes bleues (Rares)
       potions: 81,       // les potions d'énergie arrivent à la Boutique
       // Biomes suivants
       pierreDure: 101,   // biome 2 : pierre dure
       or: 116,           // minerai d'or
-      geodeDoree: 131,   // géodes dorées
-      grandArrosoir: 146, // Grand arrosoir à la Forge
+      geodeDoree: 131,   // géodes violettes (Épiques)
       // (161, 176, 191 : nouveautés à créer)
       source: 201,       // biome 3 : source
       radar: 216,        // le radar arrive en boutique
       magmaChaine: 301,  // biome 4 : magma en chaîne
       mystere: 401,      // biome 5 : case mystère
-      geodeCristal: 451, // géodes de cristal
+      geodeCristal: 451, // géodes dorées (Légendaires)
       racines: 501,      // biome 6 : racines et souches
       mithril: 551,      // minerai de mithril
       glace: 601,        // biome 7 : glace
@@ -292,6 +275,7 @@ window.CONFIG = {
         forge: "Entre dans la Forge",
         atelier: "Entre dans l'Atelier",
         shop: "Entre dans la Boutique",
+        autel: "Entre dans l'Autel de la montagne",
       },
       prime: "Récupère ta récompense",                // 1re prime de collection au Musée
       museeRetour: "Retourne au village",             // fin de la 1re visite du Musée
@@ -318,8 +302,9 @@ window.CONFIG = {
       forge: "Le cuivre sert à améliorer ta pioche",  // 1re visite de la Forge (touche pour continuer)
       retourVillage: "Retourne au village",           // fin des tutoriels de la Boutique, de la Forge et de l'Atelier
       atelier: "Tape quand le curseur est dans la zone", // 1re géode à l'Atelier (elle ne peut pas rater)
-      sacBoutique: "Agrandis ton sac à la Boutique",  // fin des premiers pas, si le joueur a assez de pièces
-      sacAcheter: "Une case de plus dans ton sac !",
+      sacBoutique: "Ton niveau de mineur agrandit ton sac !",  // fin des premiers pas : l'encart du niveau du joueur
+      sacAcheter: "Récupère ta case de sac en plus",           // puis la récompense dans Progression
+      priere: "Prie pour graver ta première rune",            // 1re visite de l'Autel
       objectifs: "Tes objectifs rapportent des pièces", // fin des premiers pas : le bouton Objectifs apparaît
       fin: "Bravo, tu connais la mine ! Bonne chance !", // message de fin des premiers pas
       energieOfferte: "Énergie offerte pour ce tutoriel", // un niveau tutoriel remet l'énergie qu'il faut
@@ -418,13 +403,15 @@ window.CONFIG = {
 
   /* ---------------------------------------------------------------
      GÉODES
-     4 géodes, une par rareté. Les gemmes ne se trouvent plus dans la mine :
+     4 géodes, une par rareté, de la couleur de leur rareté : verte, bleue, violette, dorée.
+     Les pierres précieuses ne se trouvent plus dans la mine :
      elles sortent uniquement des géodes, ouvertes à l'Atelier.
-     Une géode donne une gemme tirée au hasard parmi TOUTES les gemmes de sa rareté.
+     Une géode donne une pierre précieuse tirée au hasard parmi TOUTES celles de sa rareté.
      --------------------------------------------------------------- */
   geodes: {
     // Fréquence d'apparition de chaque géode dans la mine
     // (plus le nombre est grand, plus elle apparaît souvent)
+    // (les noms gardent les anciennes couleurs : blanche = verte, rose = bleue, doree = violette, cristal = dorée)
     frequence: { blanche: 60, rose: 25, doree: 12, cristal: 3 },
 
     // Sur un étage à un seul trésor : chance que ce trésor soit une géode plutôt qu'un artefact
@@ -472,27 +459,27 @@ window.CONFIG = {
     // Un artefact pas encore découvert (ni au Musée, ni déjà dans le sac) a X fois plus de chances d'apparaître
     chanceNonDecouvert: 3,
 
-    // GEMMES : elles sortent uniquement des géodes (une géode donne une gemme de sa rareté)
+    // PIERRES PRÉCIEUSES (clé "gemmes") : elles sortent uniquement des géodes (une géode en donne une de sa rareté)
     gemmes: {
-      claires: { nom: 'Gemmes claires', prime: 100, objets: {
+      claires: { nom: 'Pierres claires', prime: 100, objets: {
         quartz:      { nom: 'Quartz',       rarete: 'common' },
         aigueMarine: { nom: 'Aigue-marine', rarete: 'common' },
         topazeBleue: { nom: 'Topaze bleue', rarete: 'common' },
         diamantBrut: { nom: 'Diamant brut', rarete: 'rare' },
       } },
-      roses: { nom: 'Gemmes roses', prime: 200, objets: {
+      roses: { nom: 'Pierres roses', prime: 200, objets: {
         quartzRose:    { nom: 'Quartz rose',   rarete: 'common' },
         rhodochrosite: { nom: 'Rhodochrosite', rarete: 'common' },
         kunzite:       { nom: 'Kunzite',       rarete: 'rare' },
         saphirRose:    { nom: 'Saphir rose',   rarete: 'epic' },
       } },
-      dorees: { nom: 'Gemmes dorées', prime: 400, objets: {
+      dorees: { nom: 'Pierres dorées', prime: 400, objets: {
         citrine:         { nom: 'Citrine',          rarete: 'rare' },
         ambre:           { nom: 'Ambre',            rarete: 'rare' },
         topazeImperiale: { nom: 'Topaze impériale', rarete: 'epic' },
         heliodore:       { nom: 'Héliodore',        rarete: 'legendary' },
       } },
-      royales: { nom: 'Gemmes royales', prime: 400, objets: {
+      royales: { nom: 'Pierres royales', prime: 400, objets: {
         rubis:        { nom: 'Rubis',         rarete: 'rare' },
         emeraude:     { nom: 'Émeraude',      rarete: 'epic' },
         saphirEtoile: { nom: 'Saphir étoilé', rarete: 'epic' },
@@ -689,8 +676,8 @@ window.CONFIG = {
     },
 
     // Les 4 coffres de la Boutique, comme dans Dicero : chaque coffre a ses boutons « Ouvrir 1 » et « Ouvrir 10 ».
-    // Les clés sont utilisées d'abord ; s'il en manque, une fenêtre propose de payer le reste en gemmes
-    // ("gemmes" = prix d'une ouverture en gemmes ; 0 = impossible sans clé).
+    // Les clés sont utilisées d'abord ; s'il en manque, une fenêtre propose de payer le reste en perles
+    // ("gemmes" = prix d'une ouverture en perles ; 0 = impossible sans clé).
     // "pub" = nombre de publicités par jour qui ouvrent ce coffre gratuitement (0 ou absent = pas de bouton pub).
     // "chances" = chance de chaque rareté (le total fait 100). Les paliers S ne sortent jamais d'un coffre.
     // "pitie" = au bout de ce nombre de coffres sans la rareté "pitieRarete", elle est garantie (0 = pas de pitié).
@@ -727,11 +714,10 @@ window.CONFIG = {
         { tousLes: 250, cle: 'or' },
         { tousLes: 250, cle: 'etoile' },
       ],
-      // Objectifs du village : une clé en bois tous les X objectifs réussis
-      objectifs: { tousLes: 3, cle: 'bois' },
+      // (les clés des missions sont maintenant dans la récompense des chapitres : voir chapitres)
     },
 
-    // Gemmes (monnaie premium) au début d'une partie. Dans le prototype, le menu cheat en ajoute.
+    // Perles (monnaie premium, clé "gemmes") au début d'une partie. Dans le prototype, le menu cheat en ajoute.
     gemmesDepart: 0,
 
     // IMAGES : laisser '' pour garder le dessin temporaire.
@@ -759,82 +745,59 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
-     FORGE : AMÉLIORATIONS (TEMPORAIRES)
-     La Forge sert maintenant à l'équipement (voir EQUIPEMENT plus bas).
-     Ces améliorations y restent en attendant l'Autel de la montagne (phase 2).
-     "Pioche renforcée" et "Coup en éclats" ont disparu : c'est l'objet Pioche qui les donne.
-     Chaque ligne = le prix d'un niveau, dans l'ordre (niveau 1, niveau 2, …).
-     fer / cuivre / or = minerais, pieces = pièces.
+     CHAPITRES (missions principales)
+     Un seul chapitre à la fois, en haut de la fenêtre Objectifs :
+     atteindre un niveau de la mine. Sa récompense (clés, perles, XP)
+     se récupère dans la fenêtre, puis le chapitre suivant commence et
+     de nouvelles missions (voir objectifs ci-dessous) arrivent.
      --------------------------------------------------------------- */
-  forge: {
-    // Chaque ligne = un niveau d'amélioration, dans l'ordre.
-    // "biome" = à partir de quel biome atteint ce niveau est proposé (les niveaux max se débloquent biome par biome).
-    // Le reste est le prix : pieces, fer, cuivre, or, mithril, cristalBrut.
-
-    // Réserve d'énergie : "energie" = énergie max après l'achat
-    reserveEnergie: [
-      { biome: 1,  energie: 40,  pieces: 100 },
-      { biome: 1,  energie: 50,  pieces: 150, cuivre: 6 },
-      { biome: 1,  energie: 60,  pieces: 220, cuivre: 10, fer: 6 },
-      { biome: 1,  energie: 70,  pieces: 300, cuivre: 14, fer: 12 },
-      { biome: 2,  energie: 85,  pieces: 450, fer: 20, or: 3 },
-      { biome: 2,  energie: 100, pieces: 600, fer: 26, or: 6 },
-      { biome: 3,  energie: 115, pieces: 800, fer: 32, or: 10 },
-      { biome: 3,  energie: 130, pieces: 1000, fer: 38, or: 14 },
-      { biome: 4,  energie: 145, pieces: 1250, cuivre: 40, or: 18 },
-      { biome: 4,  energie: 160, pieces: 1500, cuivre: 50, or: 24 },
-      { biome: 5,  energie: 175, pieces: 1800, fer: 60, or: 30 },
-      { biome: 5,  energie: 190, pieces: 2100, fer: 70, or: 36 },
-      { biome: 6,  energie: 205, pieces: 2500, or: 40, mithril: 4 },
-      { biome: 6,  energie: 220, pieces: 2900, or: 46, mithril: 8 },
-      { biome: 7,  energie: 235, pieces: 3300, mithril: 12 },
-      { biome: 7,  energie: 250, pieces: 3800, mithril: 16 },
-      { biome: 8,  energie: 265, pieces: 4300, mithril: 20 },
-      { biome: 8,  energie: 280, pieces: 4800, mithril: 26 },
-      { biome: 9,  energie: 295, pieces: 5400, mithril: 30, cristalBrut: 4 },
-      { biome: 9,  energie: 310, pieces: 6000, mithril: 34, cristalBrut: 8 },
-      { biome: 10, energie: 340, pieces: 7000, mithril: 40, cristalBrut: 14 },
-    ],
-    arrosoirRapide: [
-      { biome: 1, pieces: 150, fer: 5, cuivre: 2 },
-      { biome: 2, pieces: 400, fer: 9, cuivre: 5, or: 2 },
-      { biome: 4, pieces: 1200, or: 10 },
-    ],
-    grandArrosoir: [
-      { biome: 1, pieces: 200, cuivre: 6 },
-      { biome: 3, pieces: 800, cuivre: 10, or: 4 },
-      { biome: 4, pieces: 1500, or: 12 },
+  chapitres: {
+    // Les premiers chapitres de la mine 1, plus courts.
+    // "niveau" = le niveau à atteindre. "recompense" : pieces, gemmes (perles), xp,
+    // et cles = { bois, argent, or, etoile : combien }.
+    debut: [
+      { niveau: 16, recompense: { cles: { argent: 1, bois: 1 }, gemmes: 10, xp: 40 } },
+      { niveau: 30, recompense: { cles: { argent: 1, bois: 1 }, gemmes: 10, xp: 40 } },
+      { niveau: 50, recompense: { cles: { argent: 1, bois: 1 }, gemmes: 15, xp: 50 } },
     ],
 
-    // Temps de recharge de l'arrosoir pour chaque niveau d'"Arrosoir rapide" (en millisecondes)
-    rechargeArrosoirMs: [5000, 4000, 3000, 2000],
+    // Ensuite, un chapitre tous les X niveaux, selon la mine : [mine 1, mine 2, mine 3 et suivantes].
+    // Mine 1 = un chapitre par biome (100 niveaux). Les mines suivantes vont moins vite (voir
+    // equipement > cles > facteurParMine), donc leurs chapitres sont plus courts : environ 1 par jour partout.
+    tousLes: [100, 50, 25],
+
+    // Récompense de ces chapitres
+    recompense: { cles: { or: 1, bois: 1 }, gemmes: 20, xp: 60 },
   },
 
   /* ---------------------------------------------------------------
-     OBJECTIFS AU VILLAGE
-     3 objectifs simples sont affichés à la fois. Quand l'un est réussi,
-     le joueur touche "Récupérer" pour gagner ses pièces, et un nouvel
-     objectif le remplace.
+     OBJECTIFS AU VILLAGE (missions secondaires)
+     3 missions simples sont affichées à la fois. Quand l'une est réussie,
+     le joueur touche "Récupérer" pour gagner ses pièces et ses minerais,
+     et une nouvelle mission la remplace, tant que le chapitre en a encore.
      --------------------------------------------------------------- */
   objectifs: {
-    nombre: 3,                   // objectifs affichés en même temps
+    nombre: 3,                   // missions affichées en même temps
+    parChapitre: 10,             // missions proposées par chapitre ; ensuite il faut finir le chapitre
 
-    // La récompense grandit avec la profondeur : +50 % par biome atteint
-    bonusParBiome: 0.5,
+    // Chaque chapitre, les récompenses grandissent de 15 % et les quantités de 10 % (arrondies à 5)
+    bonusParChapitre: 0.15,
+    quantiteParChapitre: 0.1,
 
-    // Liste des objectifs possibles.
+    // Minerais gagnés en plus des pièces : le meilleur minerai déjà débloqué, en cette quantité (au chapitre 1)
+    minerais: { cuivre: 5, fer: 4, or: 2, mithril: 1, cristalBrut: 1 },
+
+    // Liste des missions possibles.
     // "texte" : {n} est remplacé par la quantité.
-    // "choix" : la quantité est tirée au hasard parmi ces nombres ronds.
-    // "pieces" : récompense (au biome 1).
+    // "choix" : la quantité est tirée au hasard parmi ces nombres ronds (les quantités de 5 et plus grandissent avec le chapitre).
+    // "pieces" : récompense (au chapitre 1).
     // "xp" (facultatif) : XP du joueur gagnée, à la place de progressionJoueur > xpParMission.
-    // "deblocage" : l'objectif n'est proposé qu'une fois cette nouveauté débloquée
+    // "deblocage" : la mission n'est proposée qu'une fois cette nouveauté débloquée
     //   (mêmes noms que progression > deblocages, ou 'musee').
-    // Pour "Atteins le niveau {n}", c'est l'écart avec ton record (le niveau visé est arrondi à 5).
     liste: [
       { type: 'terre',      texte: 'Creuse {n} cases de terre',          choix: [20, 25, 30, 50], pieces: 25 },
       { type: 'tresors',    texte: 'Trouve {n} trésors',                 choix: [5, 10],          pieces: 40 },
       { type: 'niveaux',    texte: 'Termine {n} niveaux',                choix: [5, 10],          pieces: 40 },
-      { type: 'niveau',     texte: 'Atteins le niveau {n}',              choix: [5, 10],          pieces: 60 },
       { type: 'pierres',    texte: 'Casse {n} pierres',                  choix: [10, 20, 25],     pieces: 40, deblocage: 'pioche' },
       { type: 'minerais',   texte: 'Récolte {n} minerais',               choix: [10, 20, 25],     pieces: 50, deblocage: 'cuivre' },
       { type: 'forge',      texte: 'Améliore un objet à la Forge', choix: [1],              pieces: 50, deblocage: 'forge' },
@@ -853,23 +816,81 @@ window.CONFIG = {
      (en touchant l'encart en haut à gauche du village). Certains niveaux débloquent une fonctionnalité.
      --------------------------------------------------------------- */
   progressionJoueur: {
-    // XP gagnée par mission réussie (une mission peut avoir sa propre valeur : "xp" dans objectifs > liste)
-    xpParMission: 20,
+    // ---- D'où vient l'XP ----
+    xpParMission: 20,                 // par mission réussie ("xp" dans objectifs > liste pour une valeur à part)
+    xpRecord: 12,                     // par nouveau niveau atteint dans la mine (record)…
+    xpRecordParBiome: 2,              // … + ça par biome au-delà du 1er (biome 2 : 14, biome 10 : 30)
+    xpNouveauTresor: 15,              // par trésor jamais vu ramené au Musée
+    xpEtoileCollection: 30,           // par nouvelle étoile de collection au Musée
+    xpEquipement: { nouveau: 5, amelioration: 2, fusion: 10 },  // l'équipement compte, mais moins
+    xpParPriere: 5,                   // par prière à l'Autel
 
-    // Les niveaux, à partir du niveau 2 : "xp" = XP à gagner depuis le niveau précédent.
-    // "recompense" : pieces, gemmes (perles), potions, bombes, ou cle ('bois', 'argent', 'or', 'etoile') avec "cles" = combien.
+    // ---- XP à gagner pour passer chaque niveau ----
+    // Niveau 2 : "depart" ; chaque niveau suivant demande "enPlus" de plus (niveau 3 : 60, niveau 10 : 200…).
+    // Une ligne de "niveaux" peut avoir son propre "xp".
+    xp: { depart: 40, enPlus: 20 },
+
+    // ---- Les niveaux, à partir du niveau 2 ----
+    // "recompense" : pieces, gemmes (perles), potions, bombes, cle ('bois', 'argent', 'or', 'etoile') avec "cles" = combien,
+    //   et les BÉNÉDICTIONS GARANTIES (paliers) :
+    //   energie = énergie max (remplace l'ancienne Réserve d'énergie de la Forge),
+    //   sac = nombre de cases du sac, poche = géodes qui ne prennent pas de case.
     // "deblocage" : la fonctionnalité qui s'ouvre à ce niveau (voir "fonctionnalites" ci-dessous).
-    // Après le dernier niveau de la liste, chaque niveau demande l'XP du dernier, sans récompense.
+    // Repères (à vérifier en test) : niveau 13 vers la fin du biome 1, 19 au biome 2, 35 au biome 5, 53 à la fin de la mine 1.
+    // Après le dernier niveau de la liste, l'XP continue de grandir, sans récompense.
     niveaux: [
-      { xp: 40,  recompense: { pieces: 100 } },                        // niveau 2
-      { xp: 60,  recompense: { gemmes: 10 } },                         // niveau 3
-      { xp: 80,  recompense: { cle: 'bois', cles: 1 } },                   // niveau 4
-      { xp: 100, recompense: { pieces: 300 }, deblocage: 'evenements' },  // niveau 5
-      { xp: 120, recompense: { potions: 2 } },                         // niveau 6
-      { xp: 140, recompense: { gemmes: 20 } },                         // niveau 7
-      { xp: 160, recompense: { cle: 'argent', cles: 1 } },                 // niveau 8
-      { xp: 180, recompense: { pieces: 600 } },                        // niveau 9
-      { xp: 200, recompense: { gemmes: 50, cle: 'or', cles: 1 } },         // niveau 10
+      { recompense: { pieces: 100 } },                              // 2
+      { recompense: { sac: 5 } },                                   // 3  (montré à la fin des premiers pas)
+      { recompense: { energie: 40 } },                              // 4
+      { recompense: { pieces: 300 }, deblocage: 'evenements' },     // 5
+      { recompense: { poche: 1 } },                                 // 6
+      { recompense: { energie: 50 } },                              // 7
+      { recompense: { gemmes: 10, cle: 'bois', cles: 1 } },         // 8
+      { recompense: { sac: 6 } },                                   // 9
+      { recompense: { energie: 60, gemmes: 50, cle: 'or', cles: 1 } }, // 10
+      { recompense: { pieces: 600 } },                              // 11
+      { recompense: { energie: 70 } },                              // 12
+      { recompense: { cle: 'argent', cles: 1 } },                   // 13
+      { recompense: { sac: 8 } },                                   // 14
+      { recompense: { gemmes: 20, potions: 2 } },                   // 15
+      { recompense: { energie: 85 } },                              // 16
+      { recompense: { poche: 2 } },                                 // 17
+      { recompense: { pieces: 1000 } },                             // 18
+      { recompense: { energie: 100 } },                             // 19
+      { recompense: { sac: 10, cle: 'or', cles: 1 } },              // 20
+      { recompense: { bombes: 3 } },                                // 21
+      { recompense: { energie: 115 } },                             // 22
+      { recompense: { gemmes: 30 } },                               // 23
+      { recompense: { sac: 12 } },                                  // 24
+      { recompense: { energie: 130, cle: 'or', cles: 1 } },         // 25
+      { recompense: { poche: 3 } },                                 // 26
+      { recompense: { energie: 145 } },                             // 27
+      { recompense: { pieces: 2000 } },                             // 28
+      { recompense: { sac: 14 } },                                  // 29
+      { recompense: { energie: 160, gemmes: 50 } },                 // 30
+      { recompense: { potions: 3 } },                               // 31
+      { recompense: { energie: 175 } },                             // 32
+      { recompense: { sac: 16 } },                                  // 33
+      { recompense: { cle: 'argent', cles: 2 } },                   // 34
+      { recompense: { energie: 190, gemmes: 50 } },                 // 35
+      { recompense: { poche: 4 } },                                 // 36
+      { recompense: { energie: 205 } },                             // 37
+      { recompense: { sac: 18 } },                                  // 38
+      { recompense: { pieces: 4000 } },                             // 39
+      { recompense: { energie: 220, gemmes: 100, cle: 'or', cles: 1 } }, // 40
+      { recompense: { sac: 20 } },                                  // 41
+      { recompense: { energie: 235 } },                             // 42
+      { recompense: { bombes: 5 } },                                // 43
+      { recompense: { energie: 250 } },                             // 44
+      { recompense: { sac: 22, gemmes: 50 } },                      // 45
+      { recompense: { energie: 265 } },                             // 46
+      { recompense: { cle: 'or', cles: 1 } },                       // 47
+      { recompense: { energie: 280 } },                             // 48
+      { recompense: { sac: 24 } },                                  // 49
+      { recompense: { energie: 295, gemmes: 100 } },                // 50
+      { recompense: { energie: 310 } },                             // 51
+      { recompense: { pieces: 8000 } },                             // 52
+      { recompense: { energie: 340 } },                             // 53
     ],
 
     // Les fonctionnalités débloquées par le niveau du joueur : nom affiché dans le menu Progression
@@ -879,9 +900,53 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
+     AUTEL DE LA MONTAGNE : LES RUNES (façon cartes de talent d'Archero 2)
+     L'Autel apparaît au village au retour qui suit le niveau progression > deblocages > autel.
+     Chaque prière coûte des pièces (de plus en plus cher) et tire une rune au hasard :
+     une nouvelle rune (1 étoile) ou une étoile de plus sur une rune déjà gravée (5 étoiles max).
+     Les runes plus rares entrent dans le tirage au fil des prières. Pas d'autre limite que le prix.
+     La Rune du Roi Mineur n'a pas de limite d'étoiles : une fois les autres au maximum, chaque prière va sur elle.
+     --------------------------------------------------------------- */
+  autel: {
+    nom: "Autel de la montagne",
+    image: '',                        // image du bâtiment (vide = dessin provisoire)
+
+    // Prix de la prière n° n (en commençant à 0) = depart + parPriere × n  →  150, 210, 270… 3 690 à la 60e
+    prix: { depart: 150, parPriere: 60 },
+
+    // Chances de tirer chaque rareté (parmi les runes qui peuvent encore gagner une étoile)
+    chances: { commun: 55, rare: 28, epique: 13, legendaire: 4 },
+    // Nombre de prières déjà faites pour que la rareté entre dans le tirage
+    ouverture: { commun: 0, rare: 8, epique: 25, legendaire: 50 },
+    etoilesMax: 5,
+
+    // "valeurs" = l'effet à 1, 2, 3, 4 et 5 étoiles ; {v} dans "texte" est remplacé par la valeur.
+    // "pourcent" : la valeur s'affiche en %. "deblocage" : la rune n'entre dans le tirage qu'une fois la nouveauté débloquée.
+    // Certaines doublent un bonus d'équipement (Pelle, Gants, Casque, Lanterne, Bottes) : ils s'additionnent.
+    runes: {
+      source:       { nom: 'Rune de la Source',     rarete: 'commun',     texte: 'L\'arrosoir se recharge en {v} s (5 s sans rune)', valeurs: [4.5, 4, 3.5, 3, 2.5], deblocage: 'magma' },
+      torrent:      { nom: 'Rune du Torrent',       rarete: 'commun',     texte: '{v} arrosages avant de recharger (1 sans rune)', valeurs: [2, 2, 3, 3, 4], deblocage: 'magma' },
+      fortune:      { nom: 'Rune de Fortune',       rarete: 'commun',     texte: '+{v} de pièces par tas', valeurs: [0.05, 0.1, 0.15, 0.2, 0.3], pourcent: true },
+      filon:        { nom: 'Rune du Filon',         rarete: 'commun',     texte: '+{v} de chance d\'un minerai en plus', valeurs: [0.05, 0.1, 0.15, 0.2, 0.3], pourcent: true },
+      artificier:   { nom: 'Rune de l\'Artificier', rarete: 'rare',       texte: '{v} de chance qu\'une bombe ne soit pas utilisée', valeurs: [0.05, 0.1, 0.15, 0.2, 0.25], pourcent: true, deblocage: 'bombes' },
+      herboriste:   { nom: 'Rune de l\'Herboriste', rarete: 'rare',       texte: '{v} de chance de recevoir une potion en remontant', valeurs: [0.1, 0.2, 0.3, 0.4, 0.5], pourcent: true, deblocage: 'potions' },
+      conservateur: { nom: 'Rune du Conservateur',  rarete: 'rare',       texte: '+{v} sur les primes de collection du Musée', valeurs: [0.05, 0.1, 0.15, 0.2, 0.25], pourcent: true },
+      savoir:       { nom: 'Rune du Savoir',        rarete: 'rare',       texte: '+{v} d\'XP de mineur', valeurs: [0.05, 0.1, 0.15, 0.2, 0.3], pourcent: true },
+      souffle:      { nom: 'Rune du Souffle',       rarete: 'epique',     texte: '+{v} de chance de coup gratuit', valeurs: [0.02, 0.04, 0.06, 0.08, 0.1], pourcent: true },
+      lueur:        { nom: 'Rune de la Lueur',      rarete: 'epique',     texte: '+{v} de géodes rares', valeurs: [0.05, 0.1, 0.15, 0.2, 0.25], pourcent: true },
+      orpailleur:   { nom: 'Rune de l\'Orpailleur', rarete: 'epique',     texte: '{v} de chance de trouver un tas d\'or en creusant la terre', valeurs: [0.01, 0.02, 0.03, 0.04, 0.05], pourcent: true },
+      arcEnCiel:    { nom: 'Rune Arc-en-ciel',      rarete: 'legendaire', texte: '{v} de chance par niveau d\'une case arc-en-ciel', valeurs: [0.005, 0.0075, 0.01, 0.0125, 0.015], pourcent: true },
+      roi:          { nom: 'Rune du Roi Mineur',    rarete: 'legendaire', texte: '+{v} de pièces par tas (sans limite d\'étoiles)', parEtoile: 0.01, pourcent: true, sansLimite: true },
+    },
+
+    // Case arc-en-ciel (Rune Arc-en-ciel) : se creuse à la pelle, vaut ce nombre de tas de pièces d'un coup
+    arcEnCiel: { tas: 60 },
+  },
+
+  /* ---------------------------------------------------------------
      ATELIER : MINI-JEU D'OUVERTURE DES GÉODES
      Chaque liste a 4 valeurs, une par géode :
-     [Blanche (Common), Rose (Rare), Dorée (Epic), Cristal (Legendary)]
+     [Verte (Commune), Bleue (Rare), Violette (Épique), Dorée (Légendaire)]
      --------------------------------------------------------------- */
   atelier: {
     coupsNecessaires: [2, 3, 4, 5],              // coups réussis pour ouvrir
@@ -891,7 +956,7 @@ window.CONFIG = {
     accelerationParCoup: 0.08,                   // le curseur accélère de 8 % après chaque coup réussi
 
     // Si le joueur perd tous ses cœurs, la géode s'ouvre quand même mais donne une gemme
-    // d'une rareté en dessous. Une géode blanche ratée donne ce nombre de pièces à la place :
+    // d'une rareté en dessous. Une géode verte ratée donne ce nombre de pièces à la place :
     piecesGeodeBlancheRatee: 15,
   },
 };

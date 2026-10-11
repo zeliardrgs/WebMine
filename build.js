@@ -21,6 +21,7 @@ const page = `<!doctype html>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mine aux Trésors">
 <script>
+window.BUILD_DATE = ${JSON.stringify(new Date().toISOString().slice(0, 16).replace('T', ' '))};
 // Wide screens (desktop, landscape window): play inside a portrait phone frame instead of stretching across the window.
 // The page loads itself at ?app in an iframe; <plaintext> swallows the rest of this copy so its game never starts.
 if (top === self && !/[?&]app\\b/.test(location.search) && innerWidth > innerHeight && !matchMedia('(pointer:coarse)').matches) {

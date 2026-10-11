@@ -93,13 +93,24 @@
       localStorage.setItem(INF, on ? '1' : '0'); paintToggles(); msg(on ? 'Énergie infinie activée' : 'Énergie infinie désactivée');
     },
     items() { const s = S(); s.bombs += 5; s.radars += 5; s.potions += 5; refresh(); msg('+5 bombes, radars et potions'); },
-    upgrades() {
-      const s = S();
-      for (const k of Object.keys(M.UPGRADES)) s.up[k] = M.UPGRADES[k].cost.length;
-      s.bagLvl = M.BAG_UP.length; s.energy = M.maxE(); refresh(); msg('Outils de la Forge et sac au maximum');
+    // Miner level (energy and bag come from its rewards, to claim in Progression)
+    xp() { M.gainXP(500); refresh(); msg('+500 XP de mineur'); },
+    minerMax() {
+      const s = S(), n = M.CFG.progressionJoueur.niveaux.length + 1;
+      while (M.plInfo().lv < n) s.pxp = (s.pxp || 0) + 1000;
+      for (let l = 2; l <= n; l++) (s.pclaim = s.pclaim || {})[l] = true;
+      s.energy = M.maxE(); refresh(); msg('Niveau ' + n + ' : toutes les récompenses récupérées (énergie et sac au max)');
     },
+    // Mountain altar
+    altarOpen() { S().buildings.altar = true; refresh(); msg('Autel ouvert au village'); },
+    altarRunes() {
+      const s = S(); s.buildings.altar = true;
+      for (const k of Object.keys(M.RUNES)) s.altar.runes[k] = 5;
+      s.altar.n = Math.max(s.altar.n, 60); refresh(); msg('Toutes les runes à 5 étoiles');
+    },
+    altarReset() { const s = S(); s.altar = { n: 0, runes: {} }; delete s.tutoSeen.priere; refresh(); msg('Autel remis à zéro'); },
     // Equipment (the gear opens with the Forge: "Débloquer jusqu'au niveau 11" then go back to the village)
-    gems() { const g = S().gear; g.gems += 500; M.refreshGear(); refresh(); msg('+500 gemmes'); },
+    gems() { const g = S().gear; g.gems += 500; M.refreshGear(); refresh(); msg('+500 perles'); },
     keys() { const k = S().gear.keys; for (const c in k) k[c] += 5; M.refreshGear(); refresh(); msg('+5 clés de chaque coffre'); },
     gearItem(rar) {
       const s = S(), open = Object.keys(M.ARCH).filter(M.archOpen), list = open.length ? open : Object.keys(M.ARCH);
@@ -118,7 +129,7 @@
       M.refreshGear(); refresh(); msg('+1 objet de chaque modèle');
     },
     gearReset() {
-      if (!confirm('Effacer tout l\'équipement, les clés et les gemmes ?')) return;
+      if (!confirm('Effacer tout l\'équipement, les clés et les perles ?')) return;
       const s = S(); s.gear = Object.assign(s.gear, { items: [], eq: {}, gems: 0, pity: {}, firstFree: false, firstUp: false, merges: 0 });
       for (const k in s.gear.keys) s.gear.keys[k] = 0;
       delete s.tutoSeen['eq-premier']; delete s.tutoSeen['eq-fusion'];
@@ -183,12 +194,20 @@
       <button data-c="energy">Énergie pleine</button>
       <button data-c="infinite" id="cheatInf">Énergie infinie</button>
       <button data-c="items">+5 bombes, radars, potions</button>
-      <button data-c="upgrades">Outils de la Forge et sac au max</button>
+    </div>
+
+    <h3>Niveau du mineur et Autel</h3>
+    <div class="row">
+      <button data-c="xp">+500 XP de mineur</button>
+      <button data-c="minerMax">Niveau du mineur au max (énergie, sac)</button>
+      <button data-c="altarOpen">Ouvrir l'Autel</button>
+      <button data-c="altarRunes">Toutes les runes à 5★</button>
+      <button data-c="altarReset" class="warn">Remettre l'Autel à zéro</button>
     </div>
 
     <h3>Équipement</h3>
     <div class="row">
-      <button data-c="gems">+500 gemmes</button>
+      <button data-c="gems">+500 perles</button>
       <button data-c="keys">+5 clés de chaque</button>
       <button data-c="gearTrio">+3 identiques (fusion)</button>
       <button data-c="gearAll">+1 de chaque modèle</button>
