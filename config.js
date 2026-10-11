@@ -820,15 +820,16 @@ window.CONFIG = {
     xpParMission: 20,                 // par mission réussie ("xp" dans objectifs > liste pour une valeur à part)
     xpRecord: 12,                     // par nouveau niveau atteint dans la mine (record)…
     xpRecordParBiome: 2,              // … + ça par biome au-delà du 1er (biome 2 : 14, biome 10 : 30)
-    xpNouveauTresor: 15,              // par trésor jamais vu ramené au Musée
-    xpEtoileCollection: 30,           // par nouvelle étoile de collection au Musée
+    xpNouveauTresor: 5,               // par trésor jamais vu ramené au Musée (peu : au début, presque tout est nouveau)
+    xpEtoileCollection: 15,           // par nouvelle étoile de collection au Musée
     xpEquipement: { nouveau: 5, amelioration: 2, fusion: 10 },  // l'équipement compte, mais moins
     xpParPriere: 5,                   // par prière à l'Autel
 
     // ---- XP à gagner pour passer chaque niveau ----
-    // Niveau 2 : "depart" ; chaque niveau suivant demande "enPlus" de plus (niveau 3 : 60, niveau 10 : 200…).
+    // Niveau 2 : "depart" ; chaque niveau suivant demande "enPlus" de plus (niveau 3 : 120, niveau 10 : 260…).
+    // Repère : fin des premiers pas (niveau 16 de la mine) ≈ niveau 3 (sac 5 cases), niveau 4 avec les premières missions.
     // Une ligne de "niveaux" peut avoir son propre "xp".
-    xp: { depart: 40, enPlus: 20 },
+    xp: { depart: 100, enPlus: 20 },
 
     // ---- Les niveaux, à partir du niveau 2 ----
     // "recompense" : pieces, gemmes (perles), potions, bombes, cle ('bois', 'argent', 'or', 'etoile') avec "cles" = combien,
