@@ -153,9 +153,19 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .dw-up{display:flex; align-items:center; justify-content:center; gap:4cqw; min-height:18cqw; margin-top:9cqw; border-radius:5cqw; font-size:6cqw; box-shadow:0 1.8cqw 0 var(--sun-edge)}
 .dw-up:active{box-shadow:0 .6cqw 0 var(--sun-edge)}
 .dw-up img{width:9.5cqw; height:9.5cqw; object-fit:contain; flex:none}
-.dw-more{display:flex; gap:2.5cqw; margin-top:4.5cqw}
-.dw-more .btn{flex:1; min-height:15cqw; padding:1cqw 2cqw; border-radius:5cqw; font-size:4.5cqw; line-height:1.05; box-shadow:0 1.6cqw 0 #d9b77f}
-.dw-more .btn:active{box-shadow:0 .5cqw 0 #d9b77f}
+.dw-lbl{display:flex; flex-direction:column; align-items:center; gap:.6cqw; line-height:1.05}
+.dw-lbl small{font-family:var(--font-display); font-weight:400; font-size:3.3cqw; opacity:.75}
+.dw-lbl small:empty{display:none}
+.dw-down{position:relative; display:flex; align-items:center; justify-content:center; width:100%; min-height:15cqw; margin-top:4.5cqw; padding:1.5cqw 10cqw; border-radius:5cqw; font-size:4.8cqw; box-shadow:0 1.6cqw 0 #d9b77f}
+.dw-down:active{box-shadow:0 .5cqw 0 #d9b77f}
+.dw-arrow{position:absolute; right:4cqw; top:50%; transform:translateY(-50%); font-size:6cqw; opacity:.6}
+.dw-skip{display:flex; align-items:center; justify-content:center; gap:2cqw; margin-top:5cqw; font-family:var(--font-display); font-size:3.6cqw; color:var(--ink-soft); cursor:pointer; user-select:none}
+.dw-skip[hidden]{display:none}
+.dw-skip input{appearance:none; -webkit-appearance:none; flex:none; width:5.5cqw; height:5.5cqw; margin:0; border-radius:1.4cqw; border:.6cqw solid #c99a5b; background:#fff7e6; display:grid; place-items:center; cursor:pointer}
+.dw-skip input:checked{background:#7d3c98; border-color:#7d3c98}
+.dw-skip input:checked::after{content:''; width:1.4cqw; height:2.8cqw; margin-top:-.6cqw; border:solid #fff; border-width:0 .7cqw .7cqw 0; transform:rotate(45deg)}
+.dw-skip input:focus-visible{outline:2px solid #7d3c98; outline-offset:2px}
+.dw-stay{display:block; margin:2.5cqw auto 0; padding:2cqw 4cqw; border:0; background:none; font-family:var(--font-display); font-size:3.8cqw; color:var(--ink-soft); text-decoration:underline; text-underline-offset:.8cqw; cursor:pointer}
 .bf-new{display:flex; align-items:center; gap:12px; margin:10px 0 4px; padding:10px; border-radius:16px; background:#fff; box-shadow:0 3px 0 #ecd3a8; text-align:left}
 .bf-new img{width:56px; height:56px; object-fit:contain; flex:none}
 .bf-new b{font-family:var(--font-display); font-weight:400; font-size:18px; display:block}
@@ -1534,11 +1544,10 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
       <p id="descendText"></p>
       <p class="dw-cp" id="descendCp" hidden></p>
       <div class="dw-stats" id="descendStats"></div>
-      <button class="btn big dw-up" id="descendUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false">Remonter</button>
-      <div class="dw-more">
-        <button class="btn ghosty" id="descendYes">Descendre quand même</button>
-        <button class="btn ghosty" id="descendNo">Rester ici</button>
-      </div>
+      <button class="btn big dw-up" id="descendUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false"><span class="dw-lbl"><b id="descendUpTxt">Remonter au village</b><small id="descendUpSub"></small></span></button>
+      <button class="btn ghosty dw-down" id="descendYes"><span class="dw-lbl"><b id="descendYesTxt">Descendre quand même</b><small id="descendYesSub"></small></span><span class="dw-arrow" aria-hidden="true">↓</span></button>
+      <label class="dw-skip" id="descendSkipRow"><input type="checkbox" id="descendSkip"><span id="descendSkipTxt">Ne plus demander pendant cette session</span></label>
+      <button class="dw-stay" id="descendNo">Rester ici</button>
     </div>
   </div>
 </div>
@@ -2054,6 +2063,12 @@ function trimCost(g, placed, level, kind) {
   const mult = { easy: M.facile, hard: M.niveau9, treasure: M.tresor, guardian: M.gardien, king: M.gardien }[kind] ?? 1;
   const budget = E.coutNiveau[Math.min(E.coutNiveau.length, biomeOf(level)) - 1] * mult;
   const shuffle = a => a.sort(() => Math.random() - .5);
+  // Every treasure keeps at least one cell in the dirt: digging the free dirt always shows where to break
+  // (config.js > energie > indiceTresor; relics inside bonus chests excepted)
+  if (E.indiceTresor) for (const { p, cells } of placed) {
+    if (p.kind === 'art' && ARTS[p.key].soil === 'coffre') continue;
+    if (!cells.some(i => g[i].t === 'dirt')) { const i = cells[randInt(0, cells.length - 1)]; g[i] = { t: 'dirt', v: randInt(0, 2) }; }
+  }
   const loose = [], bound = [];
   for (const { p, cells } of placed) {
     const soil = p.kind === 'art' ? ARTS[p.key].soil : 'tout';
@@ -2063,6 +2078,17 @@ function trimCost(g, placed, level, kind) {
   for (const i of [...shuffle(loose), ...shuffle(bound)]) {
     if (total <= budget) break;
     total -= tileCost(g[i]); g[i] = { t: 'dirt', v: randInt(0, 2) };
+  }
+  // Too cheap: dirt over the treasures turns into stone until the level costs about its budget
+  // (config.js > energie > coutMinimum = the lowest fraction of the budget; treasures that lie in dirt stay in dirt)
+  const floor = budget * rand(E.coutMinimum ?? 0, 1);
+  if (total < floor && at(level, 'pioche')) {
+    // (with indiceTresor, each treasure keeps one dirt cell)
+    const soft = placed.filter(({ p }) => p.kind !== 'art' || ARTS[p.key].soil !== 'terre').flatMap(({ cells }) => cells.filter(i => g[i].t === 'dirt').slice(E.indiceTresor ? 1 : 0));
+    for (const i of shuffle(soft)) {
+      if (total >= floor) break;
+      g[i] = tileOf('stone'); total += tileCost(g[i]);
+    }
   }
   S.levelCost = total;
 }
@@ -2724,6 +2750,7 @@ function act(p, isTap) {
     swing();
     if (c.t === 'cool') return deny(i, tr('Déjà refroidi : casse-le à la pioche.'), '');
     if (c.t !== 'magma') return deny(i, tr('L\'arrosoir sert à refroidir le magma.'), '');
+    updateBucket();   // refill check right now (the display loop may be paused)
     if (S.bucketCharges <= 0) return deny(i, tr('L\'arrosoir se remplit… encore {s} s', { s: Math.ceil((S.bucketReady - Date.now()) / 1000) }), '');
     S.bucketCharges--; S.bucketReady = Date.now() + bucketCd();
     burst(x, y - 10, ['#3db5ff', '#a6e6ff', '#ffffff'], 10, { spread: 30, size: [3, 7] });
@@ -3017,7 +3044,7 @@ function resolveBagFull(dropIndex) {
     updateGoals(); save();
   } else {
     const old = S.trip.finds.splice(dropIndex, 1)[0];
-    toast(tr('{x} laissé dans la mine', { x: findName(old.kind, old.key) }), '');
+    toast(tr('Laissé dans la mine : {x}', { x: findName(old.kind, old.key) }), '');
     pickUp(rw, ri);
   }
   if (bagQueue.length) setTimeout(askBagFull, 300);
@@ -3191,13 +3218,18 @@ function loop() {
 const pct = v => Math.round(v * 100) + (LANG === 'en' ? '%' : ' %');
 // The max levels unlock biome by biome: a level is offered once its biome has been reached
 const curBiome = () => biomeOf(Math.max(S.reached || 1, S.level || 1));
+// Shop prices grow with the biome reached; potions cost a share of the max energy and are limited per day (config.js > boutique)
+const SHOP = CFG.boutique;
+const biomePrice = o => Math.round(o.prix * (1 + (o.parBiome || 0) * (curBiome() - 1)) / 5) * 5;
+const potionsToday = () => (S.potBuy && S.potBuy.day === new Date().toDateString()) ? S.potBuy.n : 0;
 const CONSUMABLES = {
-  bomb:   { name: tr('Bombe'), icon: () => TOOLS.bomb, desc: tr('Fait sauter les 9 cases autour de la cible.'), cost: { coin: CFG.boutique.bombe },
+  bomb:   { name: tr('Bombe'), icon: () => TOOLS.bomb, desc: () => tr('Fait sauter les 9 cases autour de la cible.'), get cost() { return { coin: biomePrice(SHOP.bombe) }; },
             have: () => S.bombs, give: () => { S.bombs++; updateBombs(); } },
-  radar:  { name: tr('Radar'), icon: () => RADAR, desc: tr('Entoure l\'emplacement d\'un trésor caché.'), cost: { coin: CFG.boutique.radar },
+  radar:  { name: tr('Radar'), icon: () => RADAR, desc: () => tr('Entoure l\'emplacement d\'un trésor caché.'), get cost() { return { coin: biomePrice(SHOP.radar) }; },
             have: () => S.radars, give: () => { S.radars++; } },
-  potion: { name: tr('Potion d\'énergie'), icon: () => POTION, desc: tr('Remplit ton énergie au maximum.'), cost: { coin: CFG.boutique.potion },
-            have: () => S.potions, give: () => { S.potions++; } },
+  potion: { name: tr('Potion d\'énergie'), icon: () => POTION, desc: () => tr('Remplit ton énergie au maximum.') + ' ' + tr('{a} / {b} aujourd\'hui', { a: potionsToday(), b: SHOP.potion.parJour }),
+            get cost() { return { coin: Math.round(SHOP.potion.prixParEnergie * maxE() / 5) * 5 }; }, limit: () => potionsToday() >= SHOP.potion.parJour,
+            have: () => S.potions, give: () => { const d = new Date().toDateString(); S.potBuy = { day: d, n: potionsToday() + 1 }; S.potions++; } },
 };
 const haveRes = k => k === 'coin' ? S.coins : S.bag.ores[k];
 const canPay = cost => Object.entries(cost).every(([k, n]) => haveRes(k) >= n);
@@ -3227,13 +3259,13 @@ function renderShopScreen() {
   if (!cons.length) $('conList').innerHTML = `<p class="eq-soon">${tr('Les articles arrivent plus profond dans la mine.')}</p>`;
   else $('conList').innerHTML = cons.map(([k, c]) =>
     `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
-      <div class="stxt"><b>${c.name}</b><span>${c.desc}</span></div>
-      <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) ? '' : 'disabled'}>${tr('Acheter')}</button></div></div>`).join('');
+      <div class="stxt"><b>${c.name}</b><span>${c.desc()}</span></div>
+      <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) && !(c.limit && c.limit()) ? '' : 'disabled'}>${tr('Acheter')}</button></div></div>`).join('');
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('button[data-con]'); if (!b || b.disabled) return;
   const c = CONSUMABLES[b.dataset.con];
-  if (!canPay(c.cost)) return;
+  if (!canPay(c.cost) || (c.limit && c.limit())) return;
   pay(c.cost); c.give();
   toast(`+1 ${c.name}`, 'good');
   renderShopScreen();
@@ -4391,7 +4423,13 @@ $('liftList').addEventListener('click', e => {
 $('liftBack').addEventListener('click', () => { sfx('pick'); openLift(); });
 $('liftClose').addEventListener('click', () => $('liftModal').hidden = true);
 $('liftModal').addEventListener('click', e => { if (e.target.id === 'liftModal') $('liftModal').hidden = true; });
-for (const b of [$('descendBtn'), $('shaftBtn')]) b.addEventListener('click', () => { unlockAudio(); sfx('pick'); openLift(); });
+// First steps: a building that just appeared is visited before going down again (its reward and tutorial come first)
+const unvisited = () => inGuide() && ['museum', 'shop', 'forge', 'atelier'].find(k => S.buildings[k] && (S.bldNew || {})[k] && !S.tutoSeen['bld-' + k]);
+for (const b of [$('descendBtn'), $('shaftBtn')]) b.addEventListener('click', () => {
+  unlockAudio();
+  if (unvisited() || revealing) { sfx('deny'); return; }
+  sfx('pick'); openLift();
+});
 function enterMine() {
   paintTools();
   fitBoard();
@@ -4856,6 +4894,11 @@ function tryDescend() {
   if (!full && !low) return descend();
   // First steps: the "full bag, keep going" popup is shown once, then just a reminder
   if (guide && full && !low && S.tutoSeen.continuer) { toast(tr('Sac plein')); return descend(); }
+  // "Ne plus demander pendant cette session": each warning (full bag / low energy) can be muted until the game is reloaded
+  // The full-bag warning is asked once per expedition (the player already chose to go on with a full bag)
+  if (!guide && (!full || skipAsk.full || S.trip.askedFull) && (!low || skipAsk.low)) { toast(full && low ? tr('Sac plein, peu d\'énergie') : full ? tr('Sac plein') : tr('Peu d\'énergie')); return descend(); }
+  descendAsk = { full, low };
+  if (full) S.trip.askedFull = true;
   // Warning laid out like the mockup: the miner (loaded down or worn out), a short title and sentence, then the bag / energy count
   $('descendArt').innerHTML = img(full ? 'Assets/Characters/Miner_BagFull.png' : 'Assets/Characters/Miner_Tired.png');
   $('descendTitle').textContent = full && low ? tr('Sac plein, peu d\'énergie') : full ? tr('Sac plein') : tr('Peu d\'énergie');
@@ -4873,6 +4916,15 @@ function tryDescend() {
   $('descendCp').hidden = !cp;
   // First steps, before a planned return: no "Remonter" here, the player is shown how to keep going
   $('descendUp').hidden = guide;
+  // Options say what each choice does: up = empty the bag / recharge, down = which level and what it costs
+  const recharge = low && CFG.energie.rechargeAuVillage;
+  $('descendUpTxt').textContent = tr('Remonter au village');
+  $('descendUpSub').textContent = full && recharge ? tr('Vider le sac et recharger l\'énergie') : full ? tr('Vendre et vider le sac') : recharge ? tr('Recharger l\'énergie') : '';
+  $('descendYesTxt').textContent = guide ? tr('Continuer') : tr('Descendre au niveau {n}', { n: S.level + 1 });
+  $('descendYesSub').textContent = full ? tr('Les trésors resteront au sol') : tr('{n} énergie restante', { n: S.energy });
+  $('descendNo').textContent = tr('Rester ici');
+  $('descendSkipTxt').textContent = tr('Ne plus demander pendant cette session');
+  $('descendSkip').checked = false; $('descendSkipRow').hidden = guide;
   sfx('deny'); $('descendModal').hidden = false; (guide ? $('descendYes') : $('descendUp')).focus();
   if (guide && full) startCoach('continuer', [{ text: TX.continuer, above: true, target: () => $('descendYes'), done: () => $('descendModal').hidden }]);
 }
@@ -4902,16 +4954,23 @@ function arriveNext() {
   S.rewardMsg = null; genLevel(S.level); buildBoard(!DESCEND_MS); updateEnergy(true); save();
   const dc = $('depthChip'); dc.classList.remove('bump'); void dc.offsetWidth; dc.classList.add('bump');
   const newRecord = S.level > S.reached;
-  if (newRecord) { S.reached = S.level; gainXP(recordXP(S.level)); }
+  if (newRecord) S.reached = S.level;
+  // Miner XP: every level finished (replays too, after the first steps), plus the new record bonus
+  gainXP((inGuide() ? 0 : PJ.xpNiveau || 0) + (newRecord ? recordXP(S.level) : 0));
   if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (keyEvery(S.level, r.tousLes)) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: S.level })), 900);
   if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: S.level }) : tr('Checkpoint niveau {n} débloqué !', { n: S.level }), 'good'); }
   save();
 }
 $('nextPill').addEventListener('click', () => { unlockAudio(); sfx('pick'); tryDescend(); });
-$('descendYes').addEventListener('click', () => { unlockAudio(); descend(); });
-$('descendNo').addEventListener('click', () => { $('descendModal').hidden = true; });
-$('descendUp').addEventListener('click', () => { $('descendModal').hidden = true; openRecap(); });
-$('descendModal').addEventListener('click', e => { if (e.target.id === 'descendModal') $('descendModal').hidden = true; });
+// Session only (not saved): reloading the game asks again
+const skipAsk = { full: false, low: false };
+let descendAsk = { full: false, low: false };
+// Whatever the choice, a ticked box mutes the warnings shown this time
+function noteSkip() { if ($('descendSkip').checked) { if (descendAsk.full) skipAsk.full = true; if (descendAsk.low) skipAsk.low = true; } }
+$('descendYes').addEventListener('click', () => { unlockAudio(); noteSkip(); descend(); });
+$('descendNo').addEventListener('click', () => { noteSkip(); $('descendModal').hidden = true; });
+$('descendUp').addEventListener('click', () => { noteSkip(); $('descendModal').hidden = true; openRecap(); });
+$('descendModal').addEventListener('click', e => { if (e.target.id === 'descendModal') { noteSkip(); $('descendModal').hidden = true; } });
 
 /* ---------- Responsive board ---------- */
 const LAND = matchMedia('(orientation: landscape) and (max-height: 520px)');

@@ -35,14 +35,24 @@ window.CONFIG = {
 
     // L'énergie max grandit avec le niveau du joueur (progressionJoueur > niveaux : "energie")
 
-    // Énergie moyenne qu'il faut pour dégager les trésors d'un niveau, pour chaque biome (1 à 10).
-    // Si un niveau coûte plus, le jeu remplace de la roche au-dessus des trésors par de la terre.
-    // Avec 30 d'énergie au départ et 7 par niveau, une expédition fait environ 4 à 5 niveaux au biome 1
-    // (10 avec la réserve à 70) ; avec 340 d'énergie et 16 par niveau, environ 20 niveaux au biome 10.
-    coutNiveau: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    // Énergie qu'il faut pour dégager les trésors d'un niveau, pour chaque biome (1 à 10) : c'est le maximum.
+    // Plus cher : de la roche au-dessus des trésors devient de la terre. Moins cher que coutMinimum × ce coût :
+    // de la terre au-dessus des trésors devient de la roche.
+    // Réglé (simulation du 11 octobre 2026) pour des expéditions d'environ 15 niveaux au début de la mine
+    // et 25 à la fin, avec l'énergie du niveau de mineur : la mine 1 dure environ 2 semaines à 3 × 10 min par jour.
+    // Un checkpoint tous les 10 niveaux : une expédition doit en faire au moins 10 pour avancer.
+    coutNiveau: [3.4, 5, 6.3, 7.8, 9.2, 10.6, 12, 13.4, 14.8, 16],
 
     // Ce coût moyen est multiplié selon le type de niveau (voir aussi "rythme")
     multiplicateurCout: { facile: 0.8, niveau9: 1.3, tresor: 0.6, gardien: 2 },
+
+    // Un niveau trop facile reçoit de la pierre au-dessus de ses trésors : son coût tombe au hasard
+    // entre coutMinimum × le coût du biome et ce coût (0 = jamais de pierre ajoutée)
+    coutMinimum: 0.7,
+
+    // true = chaque trésor garde au moins une case dans la terre : en creusant la terre (gratuite),
+    // le joueur voit toujours où casser, au lieu de chercher au hasard sous la roche
+    indiceTresor: true,
 
     // Recharge automatique avec le temps : +1 point toutes les X millisecondes.
     // 0 = pas de recharge automatique (l'énergie ne revient qu'au village ou avec une potion).
@@ -275,7 +285,7 @@ window.CONFIG = {
         forge: "Entre dans la Forge",
         atelier: "Entre dans l'Atelier",
         shop: "Entre dans la Boutique",
-        autel: "Entre dans l'Autel de la montagne",
+        altar: "Entre dans l'Autel de la montagne",
       },
       prime: "Récupère ta récompense",                // 1re prime de collection au Musée
       museeRetour: "Retourne au village",             // fin de la 1re visite du Musée
@@ -563,9 +573,13 @@ window.CONFIG = {
      BOUTIQUE : PRIX DES CONSOMMABLES (en pièces)
      --------------------------------------------------------------- */
   boutique: {
-    bombe: 25,
-    radar: 30,
-    potion: 50,
+    // Prix au biome 1 ; "parBiome" = la part du prix ajoutée à chaque biome atteint (1 = +100 % : 25, 50, 75…).
+    // Les pièces gagnées grandissent avec la profondeur : des prix fixes deviendraient vite gratuits.
+    bombe: { prix: 25, parBiome: 1 },
+    radar: { prix: 30, parBiome: 1 },
+    // Potion : prix = prixParEnergie × l'énergie max ; "parJour" = achats possibles par jour.
+    // Une potion vaut une expédition de plus sans remonter : elle doit rester rare pour que l'énergie compte.
+    potion: { prixParEnergie: 4, parJour: 3 },
   },
 
   /* ---------------------------------------------------------------
@@ -820,6 +834,7 @@ window.CONFIG = {
     xpParMission: 20,                 // par mission réussie ("xp" dans objectifs > liste pour une valeur à part)
     xpRecord: 12,                     // par nouveau niveau atteint dans la mine (record)…
     xpRecordParBiome: 2,              // … + ça par biome au-delà du 1er (biome 2 : 14, biome 10 : 30)
+    xpNiveau: 6,                      // par niveau terminé, même déjà joué (hors premiers pas) : un joueur bloqué progresse quand même
     xpNouveauTresor: 5,               // par trésor jamais vu ramené au Musée (peu : au début, presque tout est nouveau)
     xpEtoileCollection: 15,           // par nouvelle étoile de collection au Musée
     xpEquipement: { nouveau: 5, amelioration: 2, fusion: 10 },  // l'équipement compte, mais moins
@@ -918,7 +933,8 @@ window.CONFIG = {
     // Chances de tirer chaque rareté (parmi les runes qui peuvent encore gagner une étoile)
     chances: { commun: 55, rare: 28, epique: 13, legendaire: 4 },
     // Nombre de prières déjà faites pour que la rareté entre dans le tirage
-    ouverture: { commun: 0, rare: 8, epique: 25, legendaire: 50 },
+    // (simulation : ~10 prières le 2e jour, ~20 vers le 6e, ~35 vers le 11e, ~42 à la fin de la mine 1)
+    ouverture: { commun: 0, rare: 8, epique: 20, legendaire: 35 },
     etoilesMax: 5,
 
     // "valeurs" = l'effet à 1, 2, 3, 4 et 5 étoiles ; {v} dans "texte" est remplacé par la valeur.

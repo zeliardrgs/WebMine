@@ -130,6 +130,14 @@ window.TEXTES_EN = {
   "Remonter": "Go back up",
   "Descendre quand même": "Go down anyway",
   "Rester ici": "Stay here",
+  "Remonter au village": "Back to the village",
+  "Vider le sac et recharger l'énergie": "Empty your bag and recharge",
+  "Vendre et vider le sac": "Sell and empty your bag",
+  "Recharger l'énergie": "Recharge your energy",
+  "Descendre au niveau {n}": "Go down to level {n}",
+  "Les trésors resteront au sol": "Treasures will be left behind",
+  "{n} énergie restante": "{n} energy left",
+  "Ne plus demander pendant cette session": "Don't ask again this session",
 
   /* ---------- Sac ---------- */
   "Mon sac": "My bag",
@@ -151,7 +159,7 @@ window.TEXTES_EN = {
   "doublon · et prendre le nouveau": "duplicate · and take the new one",
   "objet le moins précieux · et prendre le nouveau": "least valuable item · and take the new one",
   "Laisser la découverte": "Leave the discovery",
-  "{x} laissé dans la mine": "{x} left in the mine",
+  "Laissé dans la mine : {x}": "Left in the mine: {x}",
 
   /* ---------- Consommables (sac et boutique) ---------- */
   "Bombe": "Bomb",
@@ -782,4 +790,5 @@ window.TEXTES_EN = {
   "{v} de chance par niveau d'une case arc-en-ciel": "{v} chance per level of a rainbow tile",
   "+{v} de pièces par tas (sans limite d'étoiles)": "+{v} coins per pile (no star limit)",
   "Ouvre tes géodes pour trouver des pierres précieuses.": "Open your geodes to find gemstones.",
+  "{a} / {b} aujourd'hui": "{a} / {b} today",
 };
