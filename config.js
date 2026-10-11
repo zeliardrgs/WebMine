@@ -693,15 +693,15 @@ window.CONFIG = {
     // Les clés sont utilisées d'abord ; s'il en manque, une fenêtre propose de payer le reste en perles
     // ("gemmes" = prix d'une ouverture en perles ; 0 = impossible sans clé).
     // "pub" = nombre de publicités par jour qui ouvrent ce coffre gratuitement (0 ou absent = pas de bouton pub).
-    // "chances" = chance de chaque rareté (le total fait 100). Les paliers S ne sortent jamais d'un coffre.
-    // "pitie" = au bout de ce nombre de coffres sans la rareté "pitieRarete", elle est garantie (0 = pas de pitié).
-    // Comme Dicero : le coffre étoilé donne rarement un Légendaire, mais toujours au 50e coffre sans Légendaire.
+    // "chances" = chance de chaque rareté (le total fait 100).
+    // Aucun Légendaire dans les coffres : ils ne s'obtiennent que par la fusion, les événements et les offres.
+    // "pitie" = au bout de ce nombre de coffres sans la rareté "pitieRarete", elle est garantie (absent = pas de pitié).
     // L'objet est tiré au hasard parmi les emplacements et les modèles déjà débloqués.
     coffres: {
-      bois:   { nom: 'Coffre en bois',   cle: 'Clé en bois',   gemmes: 30,  pub: 2, chances: { commun: 85, rare: 15 } },
-      argent: { nom: 'Coffre d\'argent', cle: 'Clé d\'argent', gemmes: 80,  chances: { rare: 75, epique: 25 } },
-      or:     { nom: 'Coffre d\'or',     cle: 'Clé d\'or',     gemmes: 300, chances: { rare: 40, epique: 60 } },
-      etoile: { nom: 'Coffre étoilé',    cle: 'Clé étoilée',   gemmes: 500, chances: { epique: 97, legendaire: 3 }, pitie: 50, pitieRarete: 'legendaire' },
+      bois:   { nom: 'Coffre en bois',   cle: 'Clé en bois',   gemmes: 30,  pub: 2, chances: { commun: 90, rare: 10 } },
+      argent: { nom: 'Coffre d\'argent', cle: 'Clé d\'argent', gemmes: 80,  chances: { commun: 50, rare: 45, epique: 5 } },
+      or:     { nom: 'Coffre d\'or',     cle: 'Clé d\'or',     gemmes: 300, chances: { commun: 20, rare: 70, epique: 10 } },
+      etoile: { nom: 'Coffre étoilé',    cle: 'Clé étoilée',   gemmes: 500, chances: { epique: 99, epiqueS: 1 } },
     },
 
     // D'où viennent les clés (en plus des gemmes)
