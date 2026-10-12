@@ -329,7 +329,8 @@ window.CONFIG = {
       echanger: "Garde ta nouvelle découverte",       // 1re fenêtre « Nouvelle découverte » (sac plein)
       remonter: "Remonte : du nouveau au village !",  // à chaque retour prévu (niveaux 11 et 16)
       forge: "Le cuivre sert à améliorer ta pioche",  // 1re visite de la Forge (touche pour continuer)
-      retourVillage: "Retourne au village",           // fin des tutoriels de la Boutique, de la Forge et de l'Atelier
+      retourVillage: "Retourne au village",           // fin des tutoriels de la Boutique et de l'Atelier
+      retourPersonnage: "Retourne à ton personnage",  // fin du tutoriel de la Forge (bouton retour rouge)
       atelier: "Tape quand le curseur est dans la zone", // 1re géode à l'Atelier (elle ne peut pas rater)
       sacBoutique: "Ton niveau de mineur agrandit ton sac !",  // fin des premiers pas : l'encart du niveau du joueur
       sacAcheter: "Récupère ta case de sac en plus",           // puis la récompense dans Progression

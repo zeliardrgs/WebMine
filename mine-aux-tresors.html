@@ -1355,6 +1355,31 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .lf-go{width:min(52vw, 240px); min-height:72px; margin-top:16px; border:3px solid var(--outline); border-radius:18px; background-clip:padding-box; font-size:26px;
   box-shadow:inset 0 -6px 0 var(--sun-edge)}
 .lf-go:active{transform:translateY(2px); box-shadow:inset 0 -2px 0 var(--sun-edge)}
+
+/* Character screen: the top part (scene, miner, slots) about 30% lower, so the inventory has more room to scroll */
+.eq-top{padding-top:calc(env(safe-area-inset-top, 0px) + var(--u) * 2); padding-bottom:calc(var(--u) * 2.5)}
+.eq-stage{grid-template-columns:calc(var(--u) * 13.3) 1fr calc(var(--u) * 13.3); margin-top:calc(var(--u) * 2)}
+.eq-col{gap:calc(var(--u) * 1.75)}
+.eq-slot{width:calc(var(--u) * 13.3); height:calc(var(--u) * 16.1); padding-top:calc(var(--u) * 1.7); border-radius:calc(var(--u) * 2)}
+.eq-ic{width:calc(var(--u) * 10.2); height:calc(var(--u) * 10.2)}
+.eq-lv{bottom:calc(var(--u) * 1.5); font-size:calc(var(--u) * 2.6); -webkit-text-stroke:calc(var(--u) * .6) #1d1a2b}
+.eq-slot.locked .eq-ic b{font-size:calc(var(--u) * 5)}
+.eq-slot.locked .eq-lv{font-size:calc(var(--u) * 2)}
+.eq-hero img{height:calc(var(--u) * 43)}
+.eq-name{font-size:calc(var(--u) * 4.4)}
+.eq-stats{margin-top:calc(var(--u) * .6)}
+.eq-dmg{height:calc(var(--u) * 7); font-size:calc(var(--u) * 4); gap:calc(var(--u) * 3.5)}
+.eq-dmg img{width:calc(var(--u) * 5); height:calc(var(--u) * 5)}
+#scr-hero .eq-slot .badge{min-width:calc(var(--u) * 3.8); height:calc(var(--u) * 3.8); font-size:calc(var(--u) * 2.4)}
+/* The Forge button: same look as the other buttons (black outline, solid inner bottom edge), still stuck to the left edge */
+.eq-forge{border:calc(var(--u) * .7) solid var(--outline); border-left:0; background:var(--sun); background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 var(--sun-edge)}
+.eq-forge:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 var(--sun-edge)}
+
+/* Red back arrow (Forge → Character), stuck to the left edge like the menus' back buttons */
+.menu .scr-head .back.back-red{display:grid; place-items:center; width:calc(var(--u) * 17); min-height:calc(var(--u) * 13); padding:0; border:calc(var(--u) * .7) solid var(--outline); border-left:0;
+  background:#f04a4a; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 #b8282f}
+.menu .scr-head .back.back-red svg{width:calc(var(--u) * 8); height:calc(var(--u) * 8)}
+.menu .scr-head .back.back-red:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 #b8282f}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -1371,10 +1396,9 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     </div>
   </div>
   <div class="home-hero" aria-hidden="true"><img src="Assets/Characters/Miner_Home.png" alt="" draggable="false"></div>
-  <!-- Buildings that have no tab in the bottom bar (the Shop only until its tab shows) -->
+  <!-- Buildings that have no tab in the bottom bar (the Shop only until its tab shows); the Forge is reached from the Character screen -->
   <div class="home-side">
     <button class="home-sc" data-go="shop" id="scShop" aria-label="Boutique"><span id="scShopIc"></span><b>Boutique</b><span class="badge" id="badgeShop" hidden>!</span></button>
-    <button class="home-sc" data-go="forge" aria-label="Forge"><img src="Assets/UI/Icon_Forge.png" alt="" draggable="false"><b>Forge</b><span class="badge" id="badgeForge" hidden>!</span></button>
     <button class="home-sc" data-go="atelier" aria-label="Atelier"><span id="scAtelierIc"></span><b>Atelier</b><span class="badge" id="badgeAtelier" hidden>0</span></button>
     <button class="home-sc" data-go="altar" aria-label="Autel"><span id="scAltarIc"></span><b>Autel</b><span class="badge" id="badgeAltar" hidden>!</span></button>
   </div>
@@ -1456,7 +1480,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 </div>
 
 <div class="screen menu" id="scr-forge" hidden>
-  <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Forge</h1><div class="wallet-bar" data-money></div></header>
+  <header class="scr-head"><button class="back back-red" data-go="hero" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button><h1>Forge</h1><div class="wallet-bar" data-money></div></header>
   <div class="wallet-bar" id="forgeWallet"></div>
   <div class="seg forge-tabs" id="forgeTabs"></div>
   <div class="card flat forge-body" id="forgeBody"></div>
@@ -3886,7 +3910,7 @@ function renderForge() {
   // First visit after the first chest: what the ores are for, then back to the village
   if (S.tutoSeen['eq-premier'] && !S.tutoSeen.forge && document.querySelector('#forgeBody .srow')) startCoach('forge', [
     { text: TX.forge, info: true, target: () => document.querySelector('#forgeBody .srow'), done() { return this.tapped || $('scr-forge').hidden; } },
-    { text: TX.retourVillage, target: () => document.querySelector('#scr-forge .back'), done: () => $('scr-forge').hidden },
+    { text: TX.retourPersonnage || TX.retourVillage, target: () => document.querySelector('#scr-forge .back'), done: () => $('scr-forge').hidden },
   ]);
   // First merge possible: show where it happens
   if (canMerge && !S.tutoSeen['eq-fusion']) startCoach('eq-fusion', [
@@ -4088,7 +4112,7 @@ function go(name) {
 /* ---------- Bottom navigation bar ----------
    Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
    Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
-const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', forge: 'village', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village' };
+const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', forge: 'hero', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village' };
 function updateNav(name) {
   const tab = NAV_OF[name];
   $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
@@ -4109,7 +4133,9 @@ $('navBar').addEventListener('click', e => {
   const k = b.dataset.nav;
   if (k === 'museum' && !S.buildings.museum) { sfx('deny'); return toast(tr('Le Musée s\'ouvre à ton premier retour de la mine.'), ''); }
   if (k === 'events' && !eventsOpen()) { sfx('deny'); return toast(tr('Les Événements se débloquent au niveau {n} du joueur.', { n: plUnlockAt('evenements') }), ''); }
-  if (b.classList.contains('on') && k !== 'village') return;
+  // An active tab does nothing, unless one of its inner screens is open (the Forge under Personnage): it then goes back to the tab's screen
+  const cur = SCREENS.find(n => !$('scr-' + n).hidden);
+  if (b.classList.contains('on') && k !== 'village' && (cur === k || (k === 'premium' && cur === 'shop'))) return;
   sfx('pick'); go(k);
 });
 /* ---------- Premium shop and Events pages ----------
@@ -4600,7 +4626,6 @@ function renderVillage() {
   const g = S.bag.geodes.length;
   $('subAtelier').textContent = g ? tr(plural(g, '{n} géode', '{n} géodes'), { n: g }) : tr('Aucune géode');
   $('badgeAtelier').hidden = !g; $('badgeAtelier').textContent = g;
-  $('badgeForge').hidden = !gearForgeReady();
   $('badgeAltar').hidden = !canPray() || !!(S.bldNew || {}).altar;
   $('badgeMuseum').hidden = !museumPrimeWaiting() || !!(S.bldNew || {}).museum;
   $('badgeShop').hidden = !S.buildings.shop || (!shopNew() && !chestReady()) || !!(S.bldNew || {}).shop;
@@ -4930,6 +4955,11 @@ function villageCoach() {
   // A building that just appeared: the camera goes to it, then the player enters it
   const k = ['museum', 'shop', 'forge', 'atelier', 'altar'].find(k => S.buildings[k] && (S.bldNew || {})[k] && !S.tutoSeen['bld-' + k]);
   if (k) {
+    // The Forge is in the Character screen: the hand shows that tab, then the Forge button
+    if (k === 'forge') return startCoach('bld-forge', [
+      { text: TX.batiments.forge, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden || !$('scr-forge').hidden },
+      { text: TX.batiments.forge, target: () => document.querySelector('#scr-hero .eq-forge'), done: () => !$('scr-forge').hidden },
+    ]);
     const entry = () => { const sc = document.querySelector(`.home-sc[data-go="${k}"]`); return sc && !sc.hidden ? sc : document.querySelector(`.nav-tab[data-nav="${k === 'shop' ? 'premium' : k}"]`); };
     return startCoach('bld-' + k, [{ text: TX.batiments[k], target: entry, done: () => !$('scr-' + k).hidden }]);
   }

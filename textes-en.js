@@ -514,6 +514,7 @@ window.TEXTES_EN = {
   "Entre dans la Boutique": "Enter the Shop",
   "Récupère ta récompense": "Claim your reward",
   "Retourne au village": "Back to the village",
+  "Retourne à ton personnage": "Go back to your miner",
   "Redescends dans la mine": "Go back down the mine",
   "Reprends au niveau {n}": "Continue from level {n}",
   "Poche à géodes : 1 géode sans prendre de case": "Geode pocket: 1 geode takes no slot",
