@@ -273,8 +273,9 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 /* Coins earned during the expedition, shown in the bag block; coins fly into it */
 #bagTxt{display:flex; align-items:center; gap:3px; white-space:nowrap}
 #bagTxt img{width:16px; height:16px; object-fit:contain}
-.coin-fly{position:fixed; z-index:45; width:22px; height:22px; pointer-events:none}
-.coin-fly img{width:100%; height:100%; object-fit:contain}
+.coin-fly{position:fixed; z-index:65; width:22px; height:22px; pointer-events:none}
+.coin-fly img,.coin-fly svg{width:100%; height:100%; object-fit:contain}
+.res.bump{animation:bagBump .35s ease-out}
 .bag-pill.bump{animation:bagBump .35s ease-out}
 @keyframes bagBump{40%{transform:scale(1.15)}}
 .win-bonus{margin:10px 0 0; padding:10px 12px; border-radius:14px; background:linear-gradient(135deg, #ffe9a3, #fff8dc); box-shadow:0 3px 0 #e8b923; font-weight:800; color:var(--ink)}
@@ -645,7 +646,7 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .nav-tab.locked .nav-ic{filter:grayscale(1) brightness(.7)}
 /* Badges: a red dot with a black outline, on the bar's top edge */
 .nav-tab .badge{top:calc(var(--nu) * -1.6); right:calc(var(--nu) * 1.2); min-width:0; width:calc(var(--nu) * 4.8); height:calc(var(--nu) * 4.8); padding:0; border-radius:50%;
-  border:calc(var(--nu) * .45) solid #1d1a2b; background:#f04a4a; font-size:calc(var(--nu) * 2.6)}
+  border:0; background:#f04a4a; font-size:calc(var(--nu) * 2.6)}   /* outline = the ring shared by every badge */
 /* Room for the bar under the screens that show it */
 body.nav-on .screen{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 18px)}
 body.nav-on #scr-village{padding-bottom:0}
@@ -816,7 +817,7 @@ button.eq-dmg{cursor:pointer}
 .sh-h{margin:0; font-family:var(--font-display); font-weight:400; font-size:20px; color:var(--sun); text-shadow:0 2px 0 rgba(0,0,0,.35)}
 .sh-note{margin:0; font-size:11px; color:#ffe7b0; text-align:center}
 .ch-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-.ch-card{display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 8px 12px; border-radius:18px; background:var(--panel); color:var(--ink); text-align:center; box-shadow:0 4px 0 var(--panel-edge), 0 8px 14px rgba(0,0,0,.25)}
+.ch-card{position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 8px 12px; border-radius:18px; background:var(--panel); color:var(--ink); text-align:center; box-shadow:0 4px 0 var(--panel-edge), 0 8px 14px rgba(0,0,0,.25)}
 .ch-card.ch-argent{background:linear-gradient(#f4f6ff, #dfe4f5)} .ch-card.ch-or{background:linear-gradient(#fff6d0, #ffe28a)} .ch-card.ch-etoile{background:linear-gradient(#e6e2ff, #c8bdff)}
 .ch-art{width:76px; height:76px} .ch-art img{width:100%; height:100%; object-fit:contain}
 .ch-card b{font-family:var(--font-display); font-weight:400; font-size:15px; line-height:1.1}
@@ -1033,7 +1034,7 @@ body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !importan
 .cheats-off #cheatBtn,.cheats-off #cheatPanel{display:none!important}
 
 /* ---------- Museum: shelves in the game's style — pedestals on a wooden plank, name and progress below, prime dome on the right ---------- */
-.mu-shelf{margin-top:12px; padding:14px 10px 10px; border-radius:18px; background:#f6e2bd; box-shadow:inset 0 3px 0 rgba(0,0,0,.06)}
+.mu-shelf{position:relative; margin-top:12px; padding:14px 10px 10px; border-radius:18px; background:#f6e2bd; box-shadow:inset 0 3px 0 rgba(0,0,0,.06)}
 .mu-peds{display:flex; justify-content:center; gap:6px}
 .mu-ped{position:relative; width:72px; height:70px; padding:0; border:0; background:none; cursor:pointer; display:flex; align-items:flex-end; justify-content:center}
 .mu-shelf.many .mu-ped{width:52px; height:58px}
@@ -1199,6 +1200,7 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .prog-who .pl-bar span{font-size:12px}
 .set-version{margin:10px 0 0; text-align:center; font-size:11px; opacity:.6}
 .prog-note{margin:0; font-size:13px; color:var(--ink-soft); text-align:center}
+.prog-all{flex:none; margin-top:0}
 /* The track scrolls sideways, edge to edge; it starts and ends in line with the page's content */
 .prog-list{display:flex; flex:none; margin:auto calc(-1 * var(--side)); padding:6px var(--side) 12px; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none}
 .prog-list::-webkit-scrollbar{display:none}
@@ -1312,6 +1314,7 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
     <p class="prog-note">Missions, records de profondeur, Musée, équipement et Autel : tout donne de l'XP.</p>
   </div>
   <div class="prog-list" id="progList"></div>
+  <button class="btn big prog-all" id="progAll" hidden>Tout récupérer</button>
 </div>
 
 <div class="screen menu" id="scr-events" hidden>
@@ -3870,19 +3873,23 @@ function chestsHTML() {
     const open = num => `<button class="btn sm ch-open${num > 1 ? ' x10' : ''}" data-open="${k}" data-n="${num}"${num === 1 && k === 'bois' ? ' id="chestOpen1"' : ''}>
       <b>${num === 1 && gift ? tr('Offert !') : tr('Ouvrir {n}', { n: num })}</b>${num === 1 && gift ? '' : `<span class="${n < num ? 'short' : ''}">${keyArt(k)}${n}/${num}</span>`}</button>`;
     const ad = c.pub ? `<button class="btn sm ch-ad" data-ad="${k}" ${ads ? '' : 'disabled'}><b>▶ ${tr('Pub')}</b><span>${ads ? `${ads}/${c.pub}` : untilTomorrow()}</span></button>` : '';
-    return `<div class="ch-card ch-${k}"><div class="ch-art">${chestArt(k)}</div><b>${tr(c.nom)}</b>
+    const ready = gift || n > 0 || ads > 0;
+    return `<div class="ch-card ch-${k}">${ready ? '<span class="badge">!</span>' : ''}<div class="ch-art">${chestArt(k)}</div><b>${tr(c.nom)}</b>
       <span class="ch-odds">${odds}${pity}</span><div class="ch-btns">${ad}${open(1)}${open(10)}</div></div>`;
   };
   return `<h2 class="sh-h">${tr('Coffres d\'équipement')}</h2><div class="ch-grid">${CHESTS.map(card).join('')}</div>
     <p class="sh-note">${tr('Les chances de chaque rareté sont affichées sur chaque coffre.')}</p>`;
 }
 // Pearls (premium currency) and coins are shown on every menu screen; the ores only at the Forge, the keys at the Shop
-const moneyHTML = () => `<span class="res" title="${tr('Perles')}">${GEM_ICON}${G().gems}</span>` + walletHTML(['coin']);
+// While coins or pearls fly to the wallet (flyMoney), the amount still in the air is held back, so the wallet counts up as they land
+const moneyHold = { coins: 0, gems: 0 };
+const moneyHTML = () => `<span class="res" data-cur="gems" title="${tr('Perles')}">${GEM_ICON}${Math.max(0, G().gems - moneyHold.gems)}</span>`
+  + `<span class="res" data-cur="coins" title="${tr('Pièces')}">${COIN}${Math.max(0, S.coins - moneyHold.coins)}</span>`;
 const keysWallet = () => gearOpen() ? CHESTS.filter(k => G().keys[k] > 0).map(k => `<span class="res" title="${keyName(k)}">${keyArt(k)}${G().keys[k]}</span>`).join('') : '';
 // The [data-money] bars follow the coins and pearls as they change
 let lastMoney = '';
 function paintMoney() {
-  const k = S.coins + '|' + G().gems;
+  const k = S.coins + '|' + G().gems + '|' + moneyHold.coins + '|' + moneyHold.gems;
   if (k === lastMoney) return;
   lastMoney = k; const h = moneyHTML();
   document.querySelectorAll('[data-money]').forEach(el => { el.innerHTML = h; });
@@ -3993,6 +4000,41 @@ const geodesInBag = () => S.trip.finds.filter(f => f.kind === 'geode').length;
 const bagUsed = () => S.trip.finds.length - Math.min(geodesInBag(), geoPocket());
 const bagFull = () => bagUsed() >= bagCap();
 const roomFor = kind => !bagFull() || (kind === 'geode' && geodesInBag() < geoPocket());
+/* Coins and pearls just won (Progression, Museum) fly from where they were won to the wallet at the top of the screen.
+   from = the rect of the button or dome tapped; the amounts are already added to the save. */
+function flyMoney(from, coins, gems) {
+  const fly = (cur, n, icon) => {
+    if (!n) return;
+    const dst = [...document.querySelectorAll(`[data-money] [data-cur="${cur}"]`)].find(e => e.getClientRects().length);
+    if (reduced || !dst || !from) return;
+    const d = dst.getBoundingClientRect(), x0 = from.left + from.width / 2, y0 = from.top + from.height / 2;
+    const count = Math.min(8, Math.max(3, Math.round(Math.sqrt(n))));
+    moneyHold[cur] += n; paintMoney();
+    let left = n;
+    const done = () => { moneyHold[cur] = Math.max(0, moneyHold[cur] - left); left = 0; paintMoney(); };
+    setTimeout(done, 1600 + count * 60);   // in case the animation does not finish (hidden tab…)
+    for (let k = 0; k < count; k++) {
+      const c = document.createElement('div'); c.className = 'coin-fly'; c.innerHTML = icon;
+      Object.assign(c.style, { left: x0 - 11 + 'px', top: y0 - 11 + 'px' });
+      document.body.append(c);
+      const dx = d.left + 14 - x0, dy = d.top + d.height / 2 - y0, sx = rand(-40, 40), sy = rand(-60, -20);
+      c.animate([
+        { transform: 'translate(0,0) scale(.6)', opacity: 0 },
+        { transform: `translate(${sx}px, ${sy}px) scale(1.15)`, opacity: 1, offset: .3 },
+        { transform: `translate(${dx}px, ${dy}px) scale(.8)`, opacity: 1 },
+      ], { duration: 700 + k * 70, easing: 'cubic-bezier(.5,0,.5,1)' }).onfinish = () => {
+        c.remove();
+        // Each landing adds its share to the wallet, the last one the rest
+        const part = k === count - 1 ? left : Math.min(left, Math.round(n / count));
+        left -= part; moneyHold[cur] = Math.max(0, moneyHold[cur] - part); paintMoney();
+        const t = [...document.querySelectorAll(`[data-money] [data-cur="${cur}"]`)].find(e => e.getClientRects().length);
+        if (t) { t.classList.remove('bump'); void t.offsetWidth; t.classList.add('bump'); }
+        if (k === 0 || k === count - 1) sfx('pick');
+      };
+    }
+  };
+  fly('coins', coins, COIN); fly('gems', gems, GEM_ICON);
+}
 // Coins picked up in the mine fly from the cell to the bag block
 function flyCoins(i, n) {
   const b = board.getBoundingClientRect(), t = ts(), dst = $('bagPill').getBoundingClientRect();
@@ -4128,7 +4170,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-claim]'); if (!b) return;
   const i = +b.dataset.claim, g = S.goals[i]; if (!g || !goalDone(g)) return;
   unlockAudio(); sfx('reward');
-  S.coins += g.reward;
+  S.coins += g.reward; flyMoney(b.getBoundingClientRect(), g.reward, 0);
   if (g.ore) S.bag.ores[g.ore] += g.oreN;
   const xp = goalXP(g);
   gainXP(xp);
@@ -4141,10 +4183,12 @@ document.addEventListener('click', e => {
 });
 // Chapter done: its reward, then the next chapter starts with new goals (the unfinished ones stay)
 document.addEventListener('click', e => {
-  if (!e.target.closest('[data-chap]') || !chapDone()) return;
+  const cb = e.target.closest('[data-chap]');
+  if (!cb || !chapDone()) return;
   const c = S.chap.n, r = chapReward(c);
   unlockAudio(); sfx('win');
   S.coins += r.pieces || 0; G().gems += r.gemmes || 0;
+  flyMoney(cb.getBoundingClientRect(), r.pieces || 0, r.gemmes || 0);
   for (const [k, n] of Object.entries(r.cles || {})) G().keys[k] = (G().keys[k] || 0) + n;
   S.chap = { n: c + 1, spawned: 0 };
   gainXP(r.xp || 0);
@@ -4248,6 +4292,10 @@ function renderProg() {
       <div class="prog-box"><div class="prog-rw">${rw}</div>${act}</div></div>`;
   }
   $('progList').innerHTML = html;
+  // "Tout récupérer" at the bottom, while at least one level reward waits
+  const n = plWaiting();
+  $('progAll').hidden = !n;
+  $('progAll').textContent = n > 1 ? tr('Tout récupérer ({n})', { n }) : tr('Tout récupérer');
 }
 function openProg() {
   unlockAudio(); sfx('pick'); go('progress');
@@ -4256,10 +4304,22 @@ function openProg() {
   if (row) row.scrollIntoView({ block: 'nearest', inline: 'center' });
 }
 $('plCard').addEventListener('click', openProg);
+$('progAll').addEventListener('click', () => {
+  let n = 0;
+  const from = $('progAll').getBoundingClientRect(), c0 = S.coins, g0 = G().gems;
+  for (let l = 2; l <= plLevel(); l++) if (plReady(l)) { plGive(l); n++; }
+  if (!n) return;
+  flyMoney(from, S.coins - c0, G().gems - g0);
+  unlockAudio(); sfx('reward');
+  toast(n > 1 ? tr('{n} récompenses récupérées !', { n }) : tr('Récompense récupérée !'), 'good');
+  renderProg(); renderPlCard(); refreshNav(); save();
+});
 $('scr-progress').addEventListener('click', e => {
   const b = e.target.closest('[data-plclaim]'); if (!b) return;
   const l = +b.dataset.plclaim; if (!plReady(l)) return;
+  const from = b.getBoundingClientRect(), c0 = S.coins, g0 = G().gems;
   plGive(l); unlockAudio(); sfx('reward');
+  flyMoney(from, S.coins - c0, G().gems - g0);
   toast(tr('Récompense du niveau {n} récupérée !', { n: l }), 'good');
   renderProg(); renderPlCard(); refreshNav(); save();
 });
@@ -4631,7 +4691,7 @@ document.addEventListener('click', e => {
   if (!list.length) return;
   const due = list.reduce((a, p) => a + starPrime(sk, p.tier), 0);
   S.coins += due; S.pendingPrimes = S.pendingPrimes.filter(p => p.set !== sk);
-  unlockAudio(); sfx('reward');
+  unlockAudio(); sfx('reward'); flyMoney(b.getBoundingClientRect(), due, 0);
   toast(tr('{x} : +{n} pièces !', { x: SETS[sk].name, n: due }), 'good');
   renderMuseum(); save();
 });
@@ -4667,7 +4727,7 @@ function renderMuseum() {
       : next ? `<button class="mu-dome" data-mudome="${sk}" aria-label="${tr('prime {n} pièces', { n: next })}">${COIN}<i>${next}</i></button>`
       : tier >= MAX_STARS ? `<button class="mu-dome star" data-mudome="${sk}" aria-label="${tr('Toutes les étoiles obtenues !')}"><b>★</b></button>` : '';
     const legend = tier && (set.message || set.legend) ? `<p class="set-legend">${[set.message, set.legend].filter(Boolean).join(' ')}</p>` : '';
-    return `<div class="mu-shelf${keys.length > 4 ? ' many' : ''}"><div class="mu-peds">${peds}</div><div class="mu-plank"></div>
+    return `<div class="mu-shelf${keys.length > 4 ? ' many' : ''}">${w.length ? '<span class="badge">!</span>' : ''}<div class="mu-peds">${peds}</div><div class="mu-plank"></div>
       <div class="mu-label"><div><b>${set.name}${starsHTML(tier)}</b><span>${sub}</span></div>${dome}</div>${legend}</div>`;
   };
   // Only series with at least one treasure found are shown (no spoilers)
