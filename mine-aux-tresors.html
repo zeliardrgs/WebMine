@@ -221,7 +221,8 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
   box-shadow:inset 0 6px 18px rgba(0,0,0,.6)}
 .rw{position:absolute; box-sizing:border-box; filter:drop-shadow(0 3px 0 rgba(0,0,0,.4))}   /* the small margin is on .rw-art (a % padding here would follow the whole board's width) */
 .rw svg{width:100%; height:100%; display:block}
-.rw-art{position:absolute; inset:5%}
+.rw-art{position:absolute; inset:9.5%}   /* the picture's visible part fills about 81% of its cells */
+.over{position:absolute; inset:0; z-index:2; pointer-events:none}
 .rw.done{animation:shine .6s ease-out}
 @keyframes shine{0%{transform:scale(1)} 40%{transform:scale(1.18); filter:drop-shadow(0 0 14px #fff6a8)} 100%{transform:scale(1.05); filter:drop-shadow(0 0 10px #fff6a8)}}
 
@@ -1504,6 +1505,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       <div class="board" id="board">
         <div class="under" id="under"></div>
         <div class="tiles" id="tiles"></div>
+        <div class="over" id="overRw"></div>
         <div class="fx" id="fx"></div>
       </div>
     </div>
@@ -2316,7 +2318,7 @@ function fitRwArt(d, rw) {
 
 /* ---------- DOM ---------- */
 const $ = id => document.getElementById(id);
-const board = $('board'), tilesEl = $('tiles'), underEl = $('under'), fx = $('fx'), slotsEl = $('slots');
+const board = $('board'), tilesEl = $('tiles'), underEl = $('under'), overEl = $('overRw'), fx = $('fx'), slotsEl = $('slots');
 let tileEls = [], rwEls = [], slotEls = [];
 
 const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'coins', 'king', 'gkey', 'rainbow'];
@@ -2344,7 +2346,7 @@ function buildBoard(animate) {
   fitBoard();
   digLock = false;
   setTimeout(updateNextPill);
-  tilesEl.textContent = ''; underEl.textContent = ''; slotsEl.textContent = '';
+  tilesEl.textContent = ''; underEl.textContent = ''; overEl.textContent = ''; slotsEl.textContent = '';
   tileEls = S.grid.map((c, i) => { const d = document.createElement('div'); d.style.zIndex = (i / COLS | 0) + 1; tilesEl.append(d); return d; });
   tileEls.forEach((_, i) => paintTile(i));
   rwEls = S.rewards.map(rw => {
@@ -2353,7 +2355,7 @@ function buildBoard(animate) {
     d.innerHTML = `<div class="rw-art">${rwSVG(rw)}</div>`; fitRwArt(d, rw);
     if (rw.found && rw.taken === true) d.style.opacity = 0;
     else if (rw.found) d.classList.add('ready', ...(rw.taken === 'left' ? ['left'] : []));
-    underEl.append(d); return d;
+    (rw.found ? overEl : underEl).append(d); return d;   // an uncovered treasure sits over the edge of the tiles above it
   });
   slotEls = S.rewards.map(rw => {
     const d = document.createElement('div'); d.className = 'slot' + (rw.taken === true ? ' found' : rw.taken === 'left' ? ' left' : '');
@@ -3140,7 +3142,7 @@ function checkRewards() {
     if (rw.found || rwCells(rw).some(i => S.grid[i].t !== 'empty')) return;
     // Uncovered: it glows until the player taps it (the level is done once every treasure is uncovered)
     rw.found = true; paintRadar();
-    rwEls[ri].classList.add('ready'); findLabel(rw); sfx('ore');
+    rwEls[ri].classList.add('ready'); overEl.append(rwEls[ri]); findLabel(rw); sfx('ore');
     if (!$('tuto').hidden) closeTuto();
     startCoach('tresor', [{ text: TX.tresor, target: () => rwEls[ri], done: () => !!rw.taken }], true);
     if (S.rewards.every(r => r.found)) levelDone();
