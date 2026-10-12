@@ -2329,11 +2329,21 @@ function renderCoach(st) {
   dim.hidden = txt.hidden = false; hand.hidden = !!st.info;
 }
 // Touches outside the tutorial's target are ignored (the cheat menu stays usable for testing)
-for (const type of ['pointerdown', 'mousedown', 'touchstart', 'click']) addEventListener(type, e => {
+// An info step goes on as soon as the finger or mouse is lifted, anywhere on the screen. Not on "click": on a phone,
+// blocking the touch also cancels the click, so the step never ended. The click that may follow is swallowed,
+// so the same tap doesn't also press what was under it.
+let coachSwallowClick = 0;
+for (const type of ['pointerdown', 'mousedown', 'touchstart', 'pointerup', 'touchend', 'click']) addEventListener(type, e => {
+  if (type === 'click' && Date.now() < coachSwallowClick) { e.preventDefault(); e.stopImmediatePropagation(); return; }
   if (!coachArea || (e.target.closest && e.target.closest('#cheatBtn, #cheatPanel'))) return;
   // Info step: any tap goes on to the next step, and does nothing else
   const st = coachStep();
-  if (st && st.info) { e.preventDefault(); e.stopImmediatePropagation(); if (type === 'click') st.tapped = true; return; }
+  if (st && st.info) {
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (type === 'pointerup' || type === 'touchend') { st.tapped = true; coachSwallowClick = Date.now() + 500; setTimeout(coachTick, 30); }
+    return;
+  }
+  if (type === 'pointerup' || type === 'touchend') return;
   const p = e.touches ? e.touches[0] : e;
   if (p && p.clientX >= coachArea.l && p.clientX <= coachArea.r && p.clientY >= coachArea.t && p.clientY <= coachArea.b) return;
   e.preventDefault(); e.stopImmediatePropagation();
