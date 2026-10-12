@@ -219,8 +219,9 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
     radial-gradient(circle at 70% 80%, rgba(0,0,0,.25) 0 3px, transparent 4px);
   background-size:var(--tile) var(--tile);
   box-shadow:inset 0 6px 18px rgba(0,0,0,.6)}
-.rw{position:absolute; box-sizing:border-box; padding:4%; filter:drop-shadow(0 3px 0 rgba(0,0,0,.4))}
+.rw{position:absolute; box-sizing:border-box; filter:drop-shadow(0 3px 0 rgba(0,0,0,.4))}   /* the small margin is on .rw-art (a % padding here would follow the whole board's width) */
 .rw svg{width:100%; height:100%; display:block}
+.rw-art{position:absolute; inset:5%}
 .rw.done{animation:shine .6s ease-out}
 @keyframes shine{0%{transform:scale(1)} 40%{transform:scale(1.18); filter:drop-shadow(0 0 14px #fff6a8)} 100%{transform:scale(1.05); filter:drop-shadow(0 0 10px #fff6a8)}}
 
@@ -1295,7 +1296,19 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 .move-btn svg{width:30px; height:30px}
 .move-btn.on{background:linear-gradient(#ffe100, #ffb400) !important; box-shadow:inset 0 -2px 0 #ff9a00 !important}
 #depthChip.wide b{font-size:15px}
+#scr-mine.wide .slots{display:none}
+#scr-mine.wide .goals-label small{font-size:18px; font-family:var(--font-display); font-weight:400}
+/* Tiles out of reach (under the interface, behind the buttons, along the screen sides) are dimmed:
+   a soft dark shadow all around the reachable area */
+.wide-veil{position:fixed; z-index:1; pointer-events:none; border-radius:28px; box-shadow:inset 0 0 26px 6px rgba(14,8,24,.42), 0 0 60px 100vmax rgba(14,8,24,.42)}   /* blurred edge */
 #scr-mine.wide .goals{padding:6px 8px; border-radius:16px; background:rgba(22,14,34,.78)}   /* readable over the board */
+
+/* Mine tools: buttons a third lower; the icon fills the button and the name sits over its bottom */
+.tool{height:80px; box-sizing:border-box}
+@media (max-width:430px){ .tool{height:73px} }
+@media (max-height:700px){ .tool{height:59px} }
+.tool .ic{flex:1 1 0; min-height:0; width:auto; height:auto; aspect-ratio:1}
+.tool .tl{position:absolute; left:0; right:0; bottom:4px; margin:0; text-align:center; font-size:13px}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -1442,6 +1455,7 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
         <div class="fx" id="fx"></div>
       </div>
     </div>
+    <div class="wide-veil" id="wideVeil" hidden aria-hidden="true"></div>
     <!-- Bubble (tutorials, special levels, guardian reward): floats over the bottom of the grid -->
     <div class="tuto" id="tuto" hidden role="status"><span id="tutoTxt"></span></div>
   </main>
@@ -2215,6 +2229,39 @@ function genTutorial(level, tuto) {
   S.grid = g; S.rewards = [{ ...rw, found: false, bonus: true }];
 }
 
+/* Treasure pictures often have wide transparent margins: on the board, the visible part of the picture is fitted to the
+   cells the treasure covers (kept in proportion, centred). The margins are measured once per picture. */
+const ART_BOX = {};
+function artBox(src) {
+  if (!ART_BOX[src]) ART_BOX[src] = new Promise(res => {
+    const im = new Image();
+    im.onload = () => {
+      try {
+        const W = im.naturalWidth, H = im.naturalHeight, c = document.createElement('canvas'); c.width = W; c.height = H;
+        const x = c.getContext('2d'); x.drawImage(im, 0, 0);
+        const d = x.getImageData(0, 0, W, H).data;
+        let l = W, t = H, r = -1, b = -1;
+        for (let y = 0; y < H; y++) for (let X = 0; X < W; X++) if (d[(y * W + X) * 4 + 3] > 20) { if (X < l) l = X; if (X > r) r = X; if (y < t) t = y; if (y > b) b = y; }
+        res(r < 0 ? null : { W, H, l, t, bw: r - l + 1, bh: b - t + 1 });
+      } catch (e) { res(null); }
+    };
+    im.onerror = () => res(null);
+    im.src = src;
+  });
+  return ART_BOX[src];
+}
+function fitRwArt(d, rw) {
+  const im = d.querySelector('img'); if (!im) return;
+  artBox(im.getAttribute('src')).then(b => {
+    if (!b || !im.isConnected) return;
+    const br = rw.w / rw.h, cr = b.bw / b.bh;
+    const cw = cr > br ? 100 : cr / br * 100, ch = cr > br ? br / cr * 100 : 100;   // the visible part, in % of the cells
+    const iw = cw * b.W / b.bw, ih = ch * b.H / b.bh;                               // the whole picture, margins included
+    Object.assign(im.style, { position: 'absolute', maxWidth: 'none', width: iw + '%', height: ih + '%',
+      left: ((100 - cw) / 2 - b.l / b.W * iw) + '%', top: ((100 - ch) / 2 - b.t / b.H * ih) + '%' });
+  });
+}
+
 /* ---------- DOM ---------- */
 const $ = id => document.getElementById(id);
 const board = $('board'), tilesEl = $('tiles'), underEl = $('under'), fx = $('fx'), slotsEl = $('slots');
@@ -2251,7 +2298,7 @@ function buildBoard(animate) {
   rwEls = S.rewards.map(rw => {
     const d = document.createElement('div'); d.className = 'rw';
     Object.assign(d.style, { left: `calc(var(--tile) * ${rw.c})`, top: `calc(var(--tile) * ${rw.r})`, width: `calc(var(--tile) * ${rw.w})`, height: `calc(var(--tile) * ${rw.h})` });
-    d.innerHTML = rwSVG(rw);
+    d.innerHTML = `<div class="rw-art">${rwSVG(rw)}</div>`; fitRwArt(d, rw);
     if (rw.found && rw.taken === true) d.style.opacity = 0;
     else if (rw.found) d.classList.add('ready', ...(rw.taken === 'left' ? ['left'] : []));
     underEl.append(d); return d;
@@ -2273,7 +2320,7 @@ function buildBoard(animate) {
 }
 function updateGoals() {
   const f = S.rewards.filter(r => r.found).length;
-  $('goalCount').textContent = tr('{f} / {n} dégagés', { f, n: S.rewards.length });
+  $('goalCount').textContent = S.wide ? `${f} / ${S.rewards.length}` : tr('{f} / {n} dégagés', { f, n: S.rewards.length });
   updateNextPill();
 }
 
@@ -4068,13 +4115,26 @@ function endWide() {
   setMoving(false); buildBoard(false); fitBoard(); save();
 }
 // The board's position on screen; dx/dy move it, always kept partly on screen (centred the first time)
+// The reachable area: under the treasures strip, above the tools, away from the screen sides.
+// Measured while the interface is in place; tiles outside it are dimmed by the veil.
+function wideArea() {
+  if (!wideView.moving || !wideView.acc) {
+    const g = document.querySelector('#scr-mine .goals').getBoundingClientRect(), tl = document.querySelector('#scr-mine .tools').getBoundingClientRect();
+    const side = 12, top = g.bottom + 8, bottom = (tl.height ? tl.top : innerHeight * .85) - 8;
+    wideView.acc = { l: side, t: top, r: innerWidth - side, b: Math.max(top + 100, bottom) };
+  }
+  return wideView.acc;
+}
 function panWide(dx, dy) {
   const fr = document.querySelector('#scr-mine .frame'); if (!S.wide || !fr) return;
-  const W = fr.offsetWidth, H = fr.offsetHeight, vw = innerWidth, vh = innerHeight, m = 60;
-  if (wideView.x == null) { wideView.x = (vw - W) / 2; wideView.y = (vh - H) / 2; }
-  const clamp = (v, size, view) => size + 2 * m <= view ? (view - size) / 2 : Math.min(m, Math.max(view - size - m, v));
-  wideView.x = clamp(wideView.x + dx, W, vw); wideView.y = clamp(wideView.y + dy, H, vh);
+  const W = fr.offsetWidth, H = fr.offsetHeight, a = wideArea(), aw = a.r - a.l, ah = a.b - a.t;
+  if (wideView.x == null) { wideView.x = a.l + (aw - W) / 2; wideView.y = a.t + (ah - H) / 2; }
+  // Any edge of the mine can be brought inside the reachable area; a mine smaller than the area stays centred in it
+  const clamp = (v, size, lo, len) => size <= len ? lo + (len - size) / 2 : Math.min(lo, Math.max(lo + len - size, v));
+  wideView.x = clamp(wideView.x + dx, W, a.l, aw); wideView.y = clamp(wideView.y + dy, H, a.t, ah);
   fr.style.transform = `translate(${Math.round(wideView.x)}px, ${Math.round(wideView.y)}px)`;
+  const v = $('wideVeil');
+  Object.assign(v.style, { left: a.l + 'px', top: a.t + 'px', width: aw + 'px', height: ah + 'px' });
 }
 function setMoving(on) {
   wideView.moving = !!on;
@@ -4084,7 +4144,7 @@ function setMoving(on) {
 function paintWide() {
   const on = !!S.wide && !$('scr-mine').hidden;
   $('scr-mine').classList.toggle('wide', !!S.wide);
-  $('moveBtn').hidden = !on;
+  $('moveBtn').hidden = !on; $('wideVeil').hidden = !on; wideView.acc = null;
   if (!S.wide) { setMoving(false); const fr = document.querySelector('#scr-mine .frame'); if (fr) fr.style.transform = ''; }
   // The button sits just above the tools
   $('scr-mine').style.setProperty('--tools-h', document.querySelector('#scr-mine .tools').offsetHeight + 'px');
