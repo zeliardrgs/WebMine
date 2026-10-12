@@ -976,4 +976,18 @@ window.CONFIG = {
     // d'une rareté en dessous. Une géode verte ratée donne ce nombre de pièces à la place :
     piecesGeodeBlancheRatee: 15,
   },
+
+  /* ---------------------------------------------------------------
+     ÉVÉNEMENTS
+     --------------------------------------------------------------- */
+  evenements: {
+    // « Wide Mine » : une seule très grande mine, à la profondeur du record du joueur.
+    // Un bouton « Déplacer » (au-dessus des outils) écarte l'interface pour faire glisser la mine.
+    mineLarge: {
+      nom: "Wide Mine",
+      taille: 20,              // cases de côté (20 = 20 × 20)
+      tresors: [8, 12],        // nombre de trésors cachés (au hasard entre les deux)
+      largeurCase: 65,         // largeur d'une case en pixels, sur un écran de téléphone de 430 de large (s'adapte aux autres écrans)
+    },
+  },
 };

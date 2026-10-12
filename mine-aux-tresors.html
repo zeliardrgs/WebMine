@@ -1280,6 +1280,22 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 #scr-village .mine-door::before,#scr-village .mine-door::after{display:none}
 #scr-village #descendBtn{width:100%; min-height:76px; border:3px solid var(--outline); border-radius:18px; background-clip:padding-box; font-size:26px; box-shadow:inset 0 -6px 0 var(--sun-edge)}
 #scr-village #descendBtn:active{transform:translateY(2px); box-shadow:inset 0 -2px 0 var(--sun-edge)}
+
+/* ---------- Event "Wide Mine": the board fills the screen behind the interface and can be dragged ---------- */
+#scr-mine.wide .stage{position:fixed; inset:0; z-index:0; overflow:hidden; display:block}
+#scr-mine.wide .stage .frame{position:absolute; left:0; top:0; will-change:transform}
+#scr-mine.wide > :not(.stage){position:relative; z-index:2}
+#scr-mine.wide .quick{margin-top:auto}
+#scr-mine.wide .hud,#scr-mine.wide .goals,#scr-mine.wide .quick,#scr-mine.wide .tools{transition:transform .3s ease, opacity .3s ease}
+#scr-mine.moving .hud,#scr-mine.moving .goals{transform:translateY(calc(-100% - 140px)); opacity:0; pointer-events:none}
+#scr-mine.moving .quick,#scr-mine.moving .tools{transform:translateY(calc(100% + 140px)); opacity:0; pointer-events:none}
+#scr-mine.moving .stage{cursor:grab}
+#scr-mine.moving .board{cursor:grab}
+.move-btn{position:fixed !important; z-index:5 !important; right:max(16px, calc(50% - 224px)); bottom:calc(var(--tools-h, 90px) + env(safe-area-inset-bottom, 0px) + 22px); width:52px; height:52px}
+.move-btn svg{width:30px; height:30px}
+.move-btn.on{background:linear-gradient(#ffe100, #ffb400) !important; box-shadow:inset 0 -2px 0 #ff9a00 !important}
+#depthChip.wide b{font-size:15px}
+#scr-mine.wide .goals{padding:6px 8px; border-radius:16px; background:rgba(22,14,34,.78)}   /* readable over the board */
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -1434,6 +1450,7 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
     <div class="arm-bar" id="armBar" hidden><span id="armIcon"></span><span>Touche une case pour poser la bombe</span><button class="btn sm ghosty" id="armCancel">Annuler</button></div>
     <button class="pill next" id="nextPill" hidden>Niveau suivant ↓</button>
   </div>
+  <button class="iconbtn move-btn" id="moveBtn" hidden aria-label="Déplacer" aria-pressed="false"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 L21 8 H18 V14 H24 V11 L30 16 L24 21 V18 H18 V24 H21 L16 30 L11 24 H14 V18 H8 V21 L2 16 L8 11 V14 H14 V8 H11Z" fill="#fff" stroke="#1d1a2b" stroke-width="2" stroke-linejoin="round"/></svg></button>
 
   <nav class="tools" aria-label="Outils">
     <button class="tool on" data-tool="shovel" id="tool-shovel"><span class="key">1</span><span class="ic"></span><span class="tl">Pelle</span></button>
@@ -1639,7 +1656,7 @@ const baseKind = level => level >= 1000 ? 'king' : level % 100 === 0 || GUARD_EX
 const floorKind = level => { const k = baseKind(level); return k === 'treasure' && (S.treasureDone || {})[level] ? 'easy' : k; };
 // A tutorial level is a tutorial only until the player has gone past it: replayed later (starting again from the top
 // of the mine or from a checkpoint), it is a normal level
-const isTuto = level => !!TUTO[level] && level >= (S.reached || 1);
+const isTuto = level => !S.wide && !!TUTO[level] && level >= (S.reached || 1);
 /* First steps (config.js > progression > guide): until the player is back from the last planned return,
    every expedition ends at a planned return (5: Museum, 11: Shop and Forge, 16: Atelier) */
 const GUIDE = PROG.guide || { fin: 0, retours: [] };
@@ -1651,7 +1668,7 @@ const nextReturn = () => GUIDE.retours.find(r => r > (S.guideBack || 0)) ?? Infi
 const guided = () => inGuide() && S.level >= (S.reached || 1) && S.level < nextReturn();
 const upAllowed = () => !guided();
 // Treasure levels (10, 20, 30…) are one size bigger than the levels around them, the first time
-const levelDims = (level, kind) => { const n = isTuto(level) ? 3 : Math.min(MAX_COLS, gridRow(level).taille + (kind === 'treasure' ? RY.niveauTresor.tailleEnPlus || 0 : 0)); return [n, n]; };
+const levelDims = (level, kind) => { if (S.wide) return [WIDE.taille, WIDE.taille]; const n = isTuto(level) ? 3 : Math.min(MAX_COLS, gridRow(level).taille + (kind === 'treasure' ? RY.niveauTresor.tailleEnPlus || 0 : 0)); return [n, n]; };
 function setDims(cols, rows) {
   COLS = cols; ROWS = rows; N = cols * rows;
   document.documentElement.style.setProperty('--cols', cols);
@@ -2022,7 +2039,7 @@ function genLevelOnce(level, kindArg) {
   const reserved = [];
   if (kind === 'king' && !S.kingOpened) { const mid = (ROWS >> 1) * COLS + (COLS >> 1); g[mid] = tileOf('king'); reserved.push(mid); }
   // Treasures: count from config.js > progression > grilles; artefacts of this level's series, geodes once unlocked
-  const [tmin, tmax] = gridRow(level).tresors, count = randInt(tmin, tmax);
+  const [tmin, tmax] = S.wide ? WIDE.tresors : gridRow(level).tresors, count = randInt(tmin, tmax);
   const geodes = geodesAt(level), arts = artsAt(level);
   const kinds = [];
   // One treasure: sometimes a geode; several: every other one is a geode
@@ -2051,7 +2068,7 @@ function genLevelOnce(level, kindArg) {
     budget -= w * h; picks.push({ kind: use, key, w, h });
   }
   // The guaranteed treasure of this level takes the place of the first pick
-  const gt = guaranteeFor(level);
+  const gt = !S.wide && guaranteeFor(level);
   if (gt) { const [w, h] = sizeOfFind(gt.kind, gt.key); picks.splice(0, 1, { kind: gt.kind, key: gt.key, w, h, guaranteed: true }); }
   picks.sort((a, b) => b.w * b.h - a.w * a.h);
   // Place them all; if one has no room left, start the placement over (keeps the best attempt)
@@ -2244,10 +2261,11 @@ function buildBoard(animate) {
     d.title = rw.found ? rwName(rw) : tr('{x} cachée', { x: rwLabel(rw) });
     d.innerHTML = rwSVG(rw); slotsEl.append(d); return d;
   });
-  $('depth').textContent = S.level;
+  $('depth').textContent = S.wide ? tr(WIDE.nom) : S.level;
   const fk = S.tuto ? 'easy' : S.floor || floorKind(S.level);
-  $('depthLbl').textContent = tr('Niveau');
-  const special = ['treasure', 'guardian', 'king'].includes(fk);
+  $('depthLbl').textContent = S.wide ? tr('Événement') : tr('Niveau');
+  $('depthChip').classList.toggle('wide', !!S.wide);
+  const special = !S.wide && ['treasure', 'guardian', 'king'].includes(fk);
   $('depthBand').hidden = !special; $('depthBand').className = 'depth-band k-' + fk;
   paintRadar();
   updateGoals();
@@ -2405,6 +2423,7 @@ function dropBoardCoaches() {
   if (coach && coach.gen) endCoach(false);
 }
 function levelCoach() {
+  if (S.wide) return;
   if ($('scr-mine').hidden) return;
   const lv = S.level, t = TUTO[lv];
   // Level 1 (a single tile): tap to dig; level 2 (2×2): swipe to dig
@@ -4011,7 +4030,11 @@ function renderPremium() {
 }
 function renderEvents() {
   const ev = (icon, title, text) => `<div class="pm-row"><div class="sic">${icon}</div><div class="stxt"><b>${title}</b><span>${text}</span></div>${SOON_BTN('sm')}</div>`;
-  $('eventsBody').innerHTML = `<p class="pm-note">${tr('Des événements limités dans le temps, avec des récompenses spéciales. Le premier arrive bientôt !')}</p>
+  $('eventsBody').innerHTML = `<p class="pm-note">${tr('Des événements limités dans le temps, avec des récompenses spéciales.')}</p>
+    <div class="pm-hero ev wide-ev"><span class="pm-art">${img('Assets/UI/Icon_Mine.png')}</span>
+      <span class="pm-tag">${tr('En ce moment')}</span>
+      <div class="pm-txt"><b>${tr(WIDE.nom)}</b><p>${tr('Une mine immense de {n} × {n} cases, pleine de trésors. Fais-la glisser avec le bouton Déplacer.', { n: WIDE.taille })}</p></div>
+      <button class="btn big" data-wide>${tr('Jouer')}</button></div>
     <div class="pm-hero ev"><span class="pm-art">${resArt('gold')}</span>
       <span class="pm-tag">${tr('Prochain événement')}</span>
       <div class="pm-txt"><b>${tr('Ruée vers l\'or')}</b><p>${tr('Pendant un week-end, plus d\'or et plus de tas de pièces dans la mine.')}</p></div>
@@ -4020,6 +4043,70 @@ function renderEvents() {
     ${ev(artArt('coquillage'), tr('Chasse aux fossiles'), tr('Trouve un maximum de fossiles pour gagner des récompenses.'))}
     ${ev(geodeArt('crystal'), tr('Festival des géodes'), tr('Des géodes plus rares, à ouvrir à l\'Atelier.'))}`;
 }
+/* ---------- Event "Wide Mine" (config.js > evenements > mineLarge) ----------
+   One very wide mine at the depth of the player's record. The normal mine (level, board, treasures) is put aside
+   and comes back when the player goes back up. The board is bigger than the screen: the "Déplacer" button above the
+   tools slides the interface away, and the mine can then be dragged; tapping it again brings the interface back. */
+const WIDE = (CFG.evenements || {}).mineLarge || { nom: 'Wide Mine', taille: 20, tresors: [8, 12], largeurCase: 88 };
+const WIDE_KEEP = ['level', 'grid', 'rewards', 'cols', 'rows', 'floor', 'tuto', 'lastSig', 'rewardMsg'];
+const wideView = { x: 0, y: 0, moving: false };
+function startWide() {
+  if (S.wide) return go('mine');
+  S.wideBack = Object.fromEntries(WIDE_KEEP.map(k => [k, S[k]]));
+  S.wide = true; S.level = Math.max(1, S.reached || 1); S.rewardMsg = null; bagQueue.length = 0;
+  genLevelOnce(S.level, 'easy'); S.floor = 'easy'; S.tuto = 0;
+  wideView.x = wideView.y = null;
+  buildBoard(true); go('mine'); save();
+}
+function endWide() {
+  if (!S.wide) return;
+  const b = S.wideBack || {};
+  delete S.wide; delete S.wideBack;
+  for (const k of WIDE_KEEP) if (k in b) S[k] = b[k];
+  if (!Array.isArray(S.grid) || !S.grid.length) genLevel(S.level || 1);
+  else setDims(S.cols, S.rows);
+  setMoving(false); buildBoard(false); fitBoard(); save();
+}
+// The board's position on screen; dx/dy move it, always kept partly on screen (centred the first time)
+function panWide(dx, dy) {
+  const fr = document.querySelector('#scr-mine .frame'); if (!S.wide || !fr) return;
+  const W = fr.offsetWidth, H = fr.offsetHeight, vw = innerWidth, vh = innerHeight, m = 60;
+  if (wideView.x == null) { wideView.x = (vw - W) / 2; wideView.y = (vh - H) / 2; }
+  const clamp = (v, size, view) => size + 2 * m <= view ? (view - size) / 2 : Math.min(m, Math.max(view - size - m, v));
+  wideView.x = clamp(wideView.x + dx, W, vw); wideView.y = clamp(wideView.y + dy, H, vh);
+  fr.style.transform = `translate(${Math.round(wideView.x)}px, ${Math.round(wideView.y)}px)`;
+}
+function setMoving(on) {
+  wideView.moving = !!on;
+  $('scr-mine').classList.toggle('moving', wideView.moving);
+  $('moveBtn').classList.toggle('on', wideView.moving); $('moveBtn').setAttribute('aria-pressed', wideView.moving ? 'true' : 'false');
+}
+function paintWide() {
+  const on = !!S.wide && !$('scr-mine').hidden;
+  $('scr-mine').classList.toggle('wide', !!S.wide);
+  $('moveBtn').hidden = !on;
+  if (!S.wide) { setMoving(false); const fr = document.querySelector('#scr-mine .frame'); if (fr) fr.style.transform = ''; }
+  // The button sits just above the tools
+  $('scr-mine').style.setProperty('--tools-h', document.querySelector('#scr-mine .tools').offsetHeight + 'px');
+}
+$('moveBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); setMoving(!wideView.moving); });
+// In move mode, dragging anywhere moves the mine and never digs
+let widePan = null;
+document.querySelector('#scr-mine .stage').addEventListener('pointerdown', e => {
+  if (!S.wide || !wideView.moving) return;
+  e.preventDefault(); e.stopPropagation();
+  widePan = { x: e.clientX, y: e.clientY, id: e.pointerId };
+}, true);
+addEventListener('pointermove', e => {
+  if (!widePan || e.pointerId !== widePan.id) return;
+  panWide(e.clientX - widePan.x, e.clientY - widePan.y); widePan.x = e.clientX; widePan.y = e.clientY;
+});
+addEventListener('pointerup', () => { widePan = null; });
+addEventListener('pointercancel', () => { widePan = null; });
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-wide]')) return;
+  unlockAudio(); sfx('pick'); startWide();
+});
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-soon]')) return;
   unlockAudio(); sfx('deny'); toast(tr('Bientôt disponible !'), '');
@@ -4535,6 +4622,7 @@ for (const b of [$('descendBtn'), $('shaftBtn')]) b.addEventListener('click', ()
 });
 function enterMine() {
   paintTools();
+  paintWide();
   fitBoard();
   setTimeout(levelCoach, 60);
   S.introDone = true;
@@ -4646,7 +4734,7 @@ function openRecap() {
   const body = section(tr('Minerais'), oreTiles) + (total ? section(tr('Pièces'), [tile(COIN, 0, '', false, 'recapCount')]) : '')
     + section(tr('Géodes'), loot(true)) + section(tr('Artefacts'), loot(false));
   $('recapBody').innerHTML = body || `<p class="xp-empty">${tr('Tu remontes les mains vides cette fois. Ton niveau t\'attend !')}</p>`;
-  $('recapLevel').textContent = tr('Niveau atteint : {n}', { n: S.level });
+  $('recapLevel').textContent = S.wide ? tr(WIDE.nom) : tr('Niveau atteint : {n}', { n: S.level });
   $('recapCp').hidden = !T.newCp;
   // The coin total counts up
   if (total) {
@@ -4661,6 +4749,7 @@ function openRecap() {
     setTimeout(() => { const el = $('recapCount'); if (el) el.textContent = nf(total); }, delay + dur + 200);
   }
   $('recapAtelier').hidden = !S.bag.geodes.length || !S.buildings.atelier;
+  endWide(); paintWide();
   $('descendModal').hidden = true;
   $('recapModal').hidden = false;
   if (body) sfx('reward');
@@ -4704,6 +4793,7 @@ function villageCoach() {
 }
 /* ---------- First steps in the mine: show the "next level" button once, and send the player back up at each planned return ---------- */
 function mineCoach() {
+  if (S.wide) return;
   if (coach || $('scr-mine').hidden || descending || bagQueue.length || !settled() || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
   if (inGuide() && S.level >= nextReturn())
     return startCoach('retour-' + nextReturn(), [{ text: TX.remonter, target: () => $('upBtn'), done: () => $('scr-mine').hidden }], true);
@@ -4982,7 +5072,7 @@ const settled = () => !!(S.rewards && S.rewards.length && S.rewards.every(r => r
 function updateNextPill() {
   // "Next level" only once the uncovered treasures are picked up, so none is left behind by mistake
   // (first steps: at a planned return, the only way is back up)
-  const done = settled() && !(inGuide() && S.level >= nextReturn());
+  const done = !S.wide && settled() && !(inGuide() && S.level >= nextReturn());
   $('nextPill').hidden = !done;
   $('nextPill').textContent = S.level >= 1000 ? tr('Mine suivante ↓') : tr('Niveau {n} ↓', { n: S.level + 1 });
 }
@@ -5081,8 +5171,9 @@ function fitBoard() {
   const w = (LAND.matches ? innerWidth * .55 : st.clientWidth) - frame;
   const h = st.clientHeight - frame - 8;
   if (h <= 0 || w <= 0) return;
-  const t = Math.floor(Math.max(22, Math.min(w / COLS, h / (ROWS + lip), 96)));
+  const t = S.wide ? Math.round(Math.min(innerWidth, 480) * WIDE.largeurCase / 430) : Math.floor(Math.max(22, Math.min(w / COLS, h / (ROWS + lip), 96)));
   document.documentElement.style.setProperty('--tile', t + 'px');
+  if (S.wide) requestAnimationFrame(() => panWide(0, 0));
 }
 try { new ResizeObserver(fitBoard).observe(document.querySelector('.stage')); } catch (e) {}
 addEventListener('resize', fitBoard);
