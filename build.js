@@ -96,7 +96,14 @@ self.addEventListener('fetch', e => {
       .catch(() => caches.match('./')));
     return;
   }
-  // Assets and fonts: cache first.
+  // Game scripts (config, texts, cheats): network first too, so they always match the page; cache when offline.
+  const url = new URL(req.url);
+  if (url.origin === location.origin && url.pathname.endsWith('.js') && !url.pathname.endsWith('/sw.js')) {
+    e.respondWith(fetch(req).then(r => { if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return r; })
+      .catch(() => caches.match(req)));
+    return;
+  }
+  // Pictures and fonts: cache first.
   e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
     if (r.ok || r.type === 'opaque') { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
     return r;

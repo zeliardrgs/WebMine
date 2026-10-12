@@ -114,6 +114,25 @@ window.CONFIG = {
     // Nombre de niveaux dans chaque biome
     niveauxParBiome: 100,
 
+    // La mine suivante se débloque dès ce niveau de la mine précédente : on peut alors partir de son niveau 1
+    // (sans faire la fin de la mine précédente)
+    niveauDeblocage: 80,
+
+    // Écran de choix de la mine : une carte par biome, dans l'ordre. "visuel" = le dessin de la mine au centre de la carte,
+    // "fond" = l'image de fond de la carte (fichiers dans Assets/). Sans image, la carte prend un visuel et un fond par défaut.
+    cartes: [
+      { visuel: 'Assets/Mines/Mine_Tente.png',     fond: 'Assets/Mines/Fond_Prairie.webp' },   // 1  Mine des pionniers
+      { visuel: 'Assets/Mines/Mine_Cristal.png',   fond: 'Assets/Mines/Fond_Cristal.webp' },   // 2  Cavernes de cristal
+      { visuel: 'Assets/Mines/Mine_Sousmarin.png', fond: 'Assets/Mines/Fond_Riviere.webp' },   // 3  Rivière souterraine
+      { visuel: 'Assets/Mines/Mine_Lave.png',      fond: 'Assets/Mines/Fond_Volcan.webp' },    // 4  Cœur volcanique
+      { visuel: 'Assets/Mines/Mine_Roche.png',     fond: 'Assets/Mines/Fond_Jungle.webp' },    // 5  Grottes obscures
+      { visuel: 'Assets/Mines/Mine_Foret.png',     fond: 'Assets/Mines/Fond_Foret.webp' },     // 6  Forêt pétrifiée
+      { visuel: 'Assets/Mines/Mine_Glace.png',     fond: 'Assets/Mines/Fond_Glacier.webp' },   // 7  Glacier profond
+      { visuel: 'Assets/Mines/Mine_Desert.png',    fond: 'Assets/Mines/Fond_Desert.webp' },    // 8  Abysses
+      { visuel: 'Assets/Mines/Mine_Plage.png',     fond: 'Assets/Mines/Fond_Riviere.webp' },   // 9  Cité engloutie
+      { visuel: 'Assets/Mines/Mine_Nuage.png' },                                                 // 10 Trône du Roi Mineur (fond par défaut)
+    ],
+
     // Nom de chaque biome, dans l'ordre (biome 1 = niveaux 1 à 100, etc.)
     noms: [
       'Mine des pionniers',

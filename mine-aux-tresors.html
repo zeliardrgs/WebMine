@@ -1309,6 +1309,51 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 @media (max-height:700px){ .tool{height:59px} }
 .tool .ic{flex:1 1 0; min-height:0; width:auto; height:auto; aspect-ratio:1}
 .tool .tl{position:absolute; left:0; right:0; bottom:4px; margin:0; text-align:center; font-size:13px}
+
+/* ---------- Choosing the mine: cards that swipe sideways, the starting level, "Descendre" ---------- */
+#scr-lift{max-width:none; padding:calc(env(safe-area-inset-top, 0px) + 40px) 0 0; gap:0; align-items:center; overflow:hidden;
+  background:#bfe36b url("Assets/UI/Character%20BG.png") center 30% / cover no-repeat}
+body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 24px)}
+.lf-cards{width:100%; flex:1 1 auto; min-height:0; max-height:560px; display:flex; align-items:center; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory;
+  padding:12px calc(50% - min(36vw, 172px)); box-sizing:border-box; scrollbar-width:none; overscroll-behavior-x:contain}
+.lf-cards::-webkit-scrollbar{display:none}
+.lf-cards{touch-action:pan-y; overflow-x:hidden; scroll-snap-type:none}   /* the swipe is handled by the game (same on phone and with a mouse) */
+.lf-cards.swiping .lf-card{transition:none}
+.lf-card{position:relative; flex:none; width:min(72vw, 344px); height:min(100%, 440px); box-sizing:border-box; scroll-snap-align:center; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; padding:20px 14px 18px; border:3px solid var(--outline); border-radius:28px; overflow:hidden;
+  background:var(--bg, url("Assets/UI/Character%20BG.png")) center top / cover no-repeat, #6fc3e8; box-shadow:0 6px 0 rgba(0,0,0,.25);
+  transform:scale(.9); opacity:.85; transition:transform .25s, opacity .25s}
+.lf-card.on{transform:none; opacity:1; cursor:default}
+.lf-card::after{content:""; position:absolute; inset:auto 0 0 0; height:30%; background:linear-gradient(transparent, rgba(0,0,0,.28)); pointer-events:none}
+.lf-card h3{position:relative; z-index:1; margin:0; font-family:var(--font-display); font-weight:400; font-size:26px; line-height:1.05; text-align:center; color:#fff;
+  -webkit-text-stroke:6px var(--outline); paint-order:stroke fill}
+.lf-ores{position:relative; z-index:1; display:flex; gap:8px; margin-top:8px}
+.lf-ores img{width:30px; height:30px; object-fit:contain}
+.lf-art{position:relative; z-index:1; flex:1; min-height:0; width:100%; display:grid; place-items:center; padding:6px 0}
+.lf-art img{max-width:80%; max-height:100%; object-fit:contain; filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
+.lf-reach{position:relative; z-index:2; margin:0; font-family:var(--font-display); font-size:18px; color:#fff; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
+.lf-reach b{font-weight:400; font-size:34px; margin-left:6px; vertical-align:-3px}
+.lf-card.locked .lf-art img,.lf-card.locked .lf-ores{filter:grayscale(1) brightness(.6)}
+.lf-start{display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:16px}
+.lf-start b{font-family:var(--font-display); font-weight:400; font-size:18px; color:#fff; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
+.lf-btns{position:relative; width:100%; display:flex; justify-content:center; align-items:center; margin-top:16px}   /* Descendre centred, back arrow on the left */
+.lf-btns .lf-go{margin-top:0}
+.lf-back{position:absolute; left:max(16px, calc(50% - 224px)); top:50%; transform:translateY(-50%); width:60px; height:60px; padding:0; display:grid; place-items:center; border:3px solid var(--outline); border-radius:18px; background:#fbf1dc; background-clip:padding-box; box-shadow:inset 0 -4px 0 #e2c89a;
+  color:var(--ink); font-family:var(--font-display); font-size:20px; cursor:pointer}
+.lf-back svg{width:30px; height:30px}
+.lf-back:active{transform:translateY(calc(-50% + 2px)); box-shadow:inset 0 -1px 0 #e2c89a}
+.lf-card.locked{background:#3a2c4a; justify-content:center}
+.lf-card.locked::after{display:none}
+.lf-lock{margin:0; padding:0 10px; text-align:center; font-family:var(--font-display); font-size:21px; line-height:1.3; color:#fff}
+.lf-select{position:relative; display:block}
+.lf-select select{appearance:none; -webkit-appearance:none; width:170px; height:56px; padding:0 48px 0 22px; border:3px solid var(--outline); border-radius:16px; background:#fbf1dc;
+  box-shadow:inset 0 -4px 0 #e2c89a; color:var(--ink); font-family:var(--font-display); font-size:26px; cursor:pointer}
+.lf-select::after{content:""; position:absolute; right:16px; top:50%; width:18px; height:12px; transform:translateY(-35%); pointer-events:none; background:var(--outline);
+  clip-path:polygon(0 0, 100% 0, 50% 100%)}
+.lf-select select:disabled{opacity:.5}
+.lf-go{width:min(52vw, 240px); min-height:72px; margin-top:16px; border:3px solid var(--outline); border-radius:18px; background-clip:padding-box; font-size:26px;
+  box-shadow:inset 0 -6px 0 var(--sun-edge)}
+.lf-go:active{transform:translateY(2px); box-shadow:inset 0 -2px 0 var(--sun-edge)}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -1348,6 +1393,13 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
       <button class="btn" id="descendBtn">Descendre</button>
     </section>
   </div>
+</div>
+
+<!-- Choosing the mine: one card per biome (swipe), the starting level, "Descendre" -->
+<div class="screen" id="scr-lift" hidden>
+  <div class="lf-cards" id="lfCards"></div>
+  <div class="lf-start"><b>Départ au niveau</b><label class="lf-select"><select id="lfSelect" aria-label="Départ au niveau"></select></label></div>
+  <div class="lf-btns"><button class="lf-back" data-go="village" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button><button class="btn lf-go" id="lfGo">Descendre</button></div>
 </div>
 
 <div class="screen menu" id="scr-museum" hidden>
@@ -2308,7 +2360,7 @@ function buildBoard(animate) {
     d.title = rw.found ? rwName(rw) : tr('{x} cachée', { x: rwLabel(rw) });
     d.innerHTML = rwSVG(rw); slotsEl.append(d); return d;
   });
-  $('depth').textContent = S.wide ? tr(WIDE.nom) : S.level;
+  $('depth').textContent = S.wide ? tr(WIDE.nom) : mineLv(S.level);
   const fk = S.tuto ? 'easy' : S.floor || floorKind(S.level);
   $('depthLbl').textContent = S.wide ? tr('Événement') : tr('Niveau');
   $('depthChip').classList.toggle('wide', !!S.wide);
@@ -4015,7 +4067,7 @@ function gearCoach() {
 }
 
 /* ---------- Screens ---------- */
-const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar'];
+const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift'];
 function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
@@ -4026,7 +4078,7 @@ function go(name) {
   if (name === 'village' || name === 'mine') S.screen = name;
   if (name !== 'atelier') stopMini();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, forge: renderForge, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar })[name]();
+  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, forge: renderForge, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift })[name]();
   updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -4034,7 +4086,7 @@ function go(name) {
 /* ---------- Bottom navigation bar ----------
    Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
    Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
-const NAV_OF = { village: 'village', shop: 'premium', forge: 'village', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village' };
+const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', forge: 'village', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village' };
 function updateNav(name) {
   const tab = NAV_OF[name];
   $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
@@ -4613,49 +4665,103 @@ for (const l of CP.enPlus || []) if (!CHECKPOINTS.includes(l)) CHECKPOINTS.push(
 CHECKPOINTS.sort((a, b) => a - b);
 // Biome of a level (levels 1-100 = biome 1); a "camp" is the checkpoint closing a biome (100, 200…)
 const biomeOf = level => Math.ceil(level / BIOME_LEN);
+// Each mine has its own levels 1 to 100: what the player sees (the game keeps counting from the top of the first mine)
+const mineLv = level => (level - 1) % BIOME_LEN + 1;
 const isCamp = level => level % BIOME_LEN === 0;
 const biomeName = b => BIOME_NAMES[b - 1] ? tr(BIOME_NAMES[b - 1]) : tr('Biome {n}', { n: b });
 const galleryInProgress = () => S.rewards && S.rewards.length && !S.rewards.every(r => r.found);
 // Starting points the player can use: level 1 and every checkpoint reached
 const liftStops = () => [1, ...CHECKPOINTS.filter(l => l <= S.reached)];
+/* Choosing the mine (config.js > biomes > cartes): one card per biome reached (plus the next one, locked), with its
+   ores, its picture and the deepest level reached in it; under the cards, the starting level (level 1 of the biome and
+   its checkpoints reached), then "Descendre". */
+let liftBiome = 1;
 function openLift() {
   const stops = liftStops();
   // Until a checkpoint is reached there is nothing to choose: go straight down
   if (stops.length <= 1) return descendTo(1);
-  const biomes = [...new Set(stops.map(biomeOf))];
-  $('liftModal').hidden = false;
-  // A single biome: show its checkpoints right away
-  if (biomes.length === 1) return showLiftBiome(biomes[0], false);
-  $('liftTitle').textContent = tr('Ascenseur');
-  $('liftText').textContent = tr('Choisis d\'abord un biome. Ton record : niveau {n}.', { n: S.reached });
-  $('liftList').className = 'lift-grid biomes';
-  $('liftList').innerHTML = biomes.map(b => {
-    const n = stops.filter(l => biomeOf(l) === b).length, from = (b - 1) * BIOME_LEN + 1;
-    return `<button class="lift-btn biome" data-biome="${b}"><b>${biomeName(b)}</b><span>${tr('Niveaux {a}–{b}', { a: from, b: b * BIOME_LEN })}<br>${tr(plural(n, '{n} checkpoint', '{n} checkpoints'), { n })}</span></button>`;
-  }).join('');
-  $('liftBack').hidden = true;
-  $('liftList').querySelector('button')?.focus();
+  liftBiome = biomeOf(S.reached || 1);
+  go('lift');
 }
-function showLiftBiome(b, canGoBack) {
-  const stops = liftStops().filter(l => biomeOf(l) === b);
-  $('liftTitle').textContent = biomeName(b);
-  $('liftText').textContent = tr('Choisis ton niveau de départ. Ton record : niveau {n}.', { n: S.reached });
-  $('liftList').className = 'lift-grid';
-  $('liftList').innerHTML = stops.map(l => {
-    const current = l === S.level && galleryInProgress();
-    return `<button class="lift-btn${isCamp(l) ? ' camp' : ''}" data-lift="${l}" aria-label="${tr('Descendre au niveau {n}', { n: l })}">
-      <b>${isCamp(l) ? '⛺ ' : ''}${tr('Niveau {n}', { n: l })}</b>${isCamp(l) ? `<span>${tr('Camp de biome')}</span>` : ''}${current ? `<em>${tr('En cours')}</em>` : ''}</button>`;
+const liftCard = b => (CFG.biomes.cartes || [])[b - 1] || {};
+// A mine opens once the previous one reaches config.js > biomes > niveauDeblocage (level 80 of 100)
+const MINE_UNLOCK = CFG.biomes.niveauDeblocage || BIOME_LEN;
+const mineOpen = b => b <= 1 || (S.reached || 1) >= (b - 2) * BIOME_LEN + MINE_UNLOCK;
+const biomeOres = b => Object.keys(ORES).filter(k => (UNLOCK[ORE_UNLOCK[k]] ?? 1) <= b * BIOME_LEN);
+function renderLift() {
+  // The mines open so far, then the next one (locked: only what unlocks it)
+  const total = BIOME_NAMES.length || 10;
+  let lastOpen = 1; while (lastOpen < total && mineOpen(lastOpen + 1)) lastOpen++;
+  const last = Math.min(total, lastOpen + 1);
+  $('lfCards').innerHTML = Array.from({ length: last }, (_, i) => i + 1).map(b => {
+    const from = (b - 1) * BIOME_LEN + 1, to = b * BIOME_LEN, c = liftCard(b);
+    if (!mineOpen(b)) return `<div class="lf-card locked" data-biome="${b}"><p class="lf-lock">${tr('Atteins le niveau {n} de la mine {x} pour débloquer cette mine.', { n: MINE_UNLOCK, x: biomeName(b - 1) })}</p></div>`;
+    const reach = S.reached >= from ? mineLv(Math.min(S.reached, to)) : 0;
+    return `<div class="lf-card" data-biome="${b}"${c.fond ? ` style="--bg:url('${c.fond}')"` : ''}>
+      <h3>${biomeName(b)}</h3>
+      <div class="lf-ores">${biomeOres(b).map(resArt).join('')}</div>
+      <div class="lf-art">${img(c.visuel || 'Assets/UI/Icon_Mine.png')}</div>
+      <p class="lf-reach">${tr('Niveau atteint :')} <b>${reach}</b></p></div>`;
   }).join('');
-  $('liftBack').hidden = !canGoBack;
-  $('liftList').querySelector('button')?.focus();
-  const deepest = [...$('liftList').querySelectorAll('[data-lift]')].pop();
-  if (deepest && stops.length > 1 && !S.tutoSeen.ascenseur)
+  requestAnimationFrame(() => {
+    const card = $('lfCards').querySelector(`[data-biome="${liftBiome}"]`);
+    if (card) $('lfCards').scrollLeft = card.offsetLeft - ($('lfCards').clientWidth - card.offsetWidth) / 2;
+    paintLiftStart();
+  });
+}
+// The card in the middle chooses the biome; the starting levels follow it
+function paintLiftStart() {
+  const box = $('lfCards'), mid = box.scrollLeft + box.clientWidth / 2;
+  let best = null, d = Infinity;
+  box.querySelectorAll('.lf-card').forEach(c => { const x = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid); if (x < d) { d = x; best = c; } });
+  if (!best) return;
+  box.querySelectorAll('.lf-card').forEach(c => c.classList.toggle('on', c === best));
+  liftBiome = +best.dataset.biome;
+  const open = !best.classList.contains('locked'), stops = liftStops().filter(l => biomeOf(l) === liftBiome);
+  const from = (liftBiome - 1) * BIOME_LEN + 1, list = open ? [...new Set([from, ...stops])] : [];   // level 1 of an open mine is always there
+  const deepest = list[list.length - 1];
+  $('lfSelect').innerHTML = list.map(l => `<option value="${l}"${l === deepest ? ' selected' : ''}>${mineLv(l)}${l === S.level && galleryInProgress() ? ' · ' + tr('En cours') : ''}</option>`).join('') || `<option>–</option>`;
+  $('lfSelect').disabled = !list.length; $('lfGo').disabled = !list.length;
+  if (list.length > 1 && !S.tutoSeen.ascenseur && !coach)
     startCoach('ascenseur', [
       // First, what checkpoints are (tap to continue), then where to start from
-      { text: TX.checkpoints, vars: { n: CP.tousLesNiveaux }, info: true, target: () => $('liftList'), done() { return this.tapped || $('liftModal').hidden; } },
-      { text: TX.ascenseur, vars: { n: deepest.dataset.lift }, target: () => deepest, done: () => $('liftModal').hidden },
+      { text: TX.checkpoints, vars: { n: CP.tousLesNiveaux }, info: true, target: () => $('lfSelect'), done() { return this.tapped || $('scr-lift').hidden; } },
+      { text: TX.ascenseur, vars: { n: mineLv(deepest) }, target: () => $('lfGo'), done: () => $('scr-lift').hidden },
     ]);
 }
+let liftScrollT = 0;
+$('lfCards').addEventListener('scroll', () => { clearTimeout(liftScrollT); liftScrollT = setTimeout(paintLiftStart, 80); });
+// Swipe (finger or mouse) to change mine: the cards follow the drag, then settle on the next or previous card;
+// a short tap on a side card brings it to the middle
+const liftCenter = c => c.offsetLeft - ($('lfCards').clientWidth - c.offsetWidth) / 2;
+function liftGoTo(c) { if (!c) return; $('lfCards').scrollTo({ left: liftCenter(c), behavior: reduced ? 'auto' : 'smooth' }); }
+let liftSwipe = null;
+$('lfCards').addEventListener('pointerdown', e => {
+  if (e.button > 0) return;
+  const cards = [...$('lfCards').querySelectorAll('.lf-card')];
+  liftSwipe = { x: e.clientX, y: e.clientY, l: $('lfCards').scrollLeft, t: performance.now(), id: e.pointerId, moved: false, card: e.target.closest('.lf-card'), from: cards.indexOf($('lfCards').querySelector('.lf-card.on')) };
+});
+addEventListener('pointermove', e => {
+  if (!liftSwipe || e.pointerId !== liftSwipe.id) return;
+  const dx = e.clientX - liftSwipe.x;
+  if (!liftSwipe.moved && Math.abs(dx) < 8) return;
+  if (!liftSwipe.moved) { liftSwipe.moved = true; $('lfCards').classList.add('swiping'); }
+  $('lfCards').scrollLeft = liftSwipe.l - dx;
+});
+addEventListener('pointerup', e => {
+  if (!liftSwipe || e.pointerId !== liftSwipe.id) return;
+  const sw = liftSwipe; liftSwipe = null;
+  const box = $('lfCards');
+  box.classList.remove('swiping');
+  if (!sw.moved) { if (sw.card && !sw.card.classList.contains('on')) { sfx('pick'); liftGoTo(sw.card); } return; }
+  const dx = e.clientX - sw.x, fast = Math.abs(dx) / Math.max(1, performance.now() - sw.t) > .4;
+  const cards = [...box.querySelectorAll('.lf-card')], i = Math.max(0, sw.from);
+  const to = Math.abs(dx) > box.clientWidth * .18 || fast ? Math.max(0, Math.min(cards.length - 1, i + (dx < 0 ? 1 : -1))) : i;
+  if (to !== i) sfx('pick');
+  liftGoTo(cards[to]);
+});
+addEventListener('pointercancel', () => { if (liftSwipe) { liftSwipe = null; $('lfCards').classList.remove('swiping'); liftGoTo($('lfCards').querySelector('.lf-card.on')); } });
+$('lfGo').addEventListener('click', () => { const l = +$('lfSelect').value; if (!l) return; unlockAudio(); sfx('pick'); descendTo(l); });
 function descendTo(level) {
   $('liftModal').hidden = true;
   // Same depth as the unfinished gallery: resume it; otherwise a fresh gallery at that depth
@@ -4665,12 +4771,6 @@ function descendTo(level) {
   }
   go('mine');
 }
-$('liftList').addEventListener('click', e => {
-  const b = e.target.closest('[data-lift], [data-biome]'); if (!b) return;
-  unlockAudio(); sfx('pick');
-  if (b.dataset.biome) showLiftBiome(+b.dataset.biome, true); else descendTo(+b.dataset.lift);
-});
-$('liftBack').addEventListener('click', () => { sfx('pick'); openLift(); });
 $('liftClose').addEventListener('click', () => $('liftModal').hidden = true);
 $('liftModal').addEventListener('click', e => { if (e.target.id === 'liftModal') $('liftModal').hidden = true; });
 // First steps: a building that just appeared is visited before going down again (its reward and tutorial come first)
@@ -4794,7 +4894,7 @@ function openRecap() {
   const body = section(tr('Minerais'), oreTiles) + (total ? section(tr('Pièces'), [tile(COIN, 0, '', false, 'recapCount')]) : '')
     + section(tr('Géodes'), loot(true)) + section(tr('Artefacts'), loot(false));
   $('recapBody').innerHTML = body || `<p class="xp-empty">${tr('Tu remontes les mains vides cette fois. Ton niveau t\'attend !')}</p>`;
-  $('recapLevel').textContent = S.wide ? tr(WIDE.nom) : tr('Niveau atteint : {n}', { n: S.level });
+  $('recapLevel').textContent = S.wide ? tr(WIDE.nom) : tr('Niveau atteint : {n}', { n: mineLv(S.level) });
   $('recapCp').hidden = !T.newCp;
   // The coin total counts up
   if (total) {
@@ -5134,7 +5234,7 @@ function updateNextPill() {
   // (first steps: at a planned return, the only way is back up)
   const done = !S.wide && settled() && !(inGuide() && S.level >= nextReturn());
   $('nextPill').hidden = !done;
-  $('nextPill').textContent = S.level >= 1000 ? tr('Mine suivante ↓') : tr('Niveau {n} ↓', { n: S.level + 1 });
+  $('nextPill').textContent = S.level >= 1000 ? tr('Mine suivante ↓') : tr('Niveau {n} ↓', { n: mineLv(S.level + 1) });
 }
 $('mine2Up').addEventListener('click', () => { $('mine2Modal').hidden = true; openRecap(); });
 // A full bag or little energy left: ask before going down
@@ -5172,7 +5272,7 @@ function tryDescend() {
   const recharge = low && CFG.energie.rechargeAuVillage;
   $('descendUpTxt').textContent = tr('Remonter au village');
   $('descendUpSub').textContent = full && recharge ? tr('Vider le sac et recharger l\'énergie') : full ? tr('Vendre et vider le sac') : recharge ? tr('Recharger l\'énergie') : '';
-  $('descendYesTxt').textContent = guide ? tr('Continuer') : tr('Descendre au niveau {n}', { n: S.level + 1 });
+  $('descendYesTxt').textContent = guide ? tr('Continuer') : tr('Descendre au niveau {n}', { n: mineLv(S.level + 1) });
   $('descendYesSub').textContent = full ? tr('Les trésors resteront au sol') : tr('{n} énergie restante', { n: S.energy });
   $('descendNo').textContent = tr('Rester ici');
   $('descendSkipTxt').textContent = tr('Ne plus demander pendant cette session');
@@ -5190,7 +5290,7 @@ function descend() {
   if (!DESCEND_MS) return arriveNext();
   descending = true; digLock = true; sfx('descend'); $('nextPill').hidden = true;
   const frame = document.querySelector('.frame'), fx = $('descendFx');
-  $('descendFxTxt').textContent = tr('Niveau {n}', { n: S.level + 1 });
+  $('descendFxTxt').textContent = tr('Niveau {n}', { n: mineLv(S.level + 1) });
   fx.hidden = false; fx.classList.remove('on'); void fx.offsetWidth; fx.classList.add('on');
   frame.classList.remove('arriving'); frame.classList.add('leaving');
   setTimeout(() => {
@@ -5209,8 +5309,8 @@ function arriveNext() {
   if (newRecord) S.reached = S.level;
   // Miner XP: every level finished (replays too, after the first steps), plus the new record bonus
   gainXP((inGuide() ? 0 : PJ.xpNiveau || 0) + (newRecord ? recordXP(S.level) : 0));
-  if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (keyEvery(S.level, r.tousLes)) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: S.level })), 900);
-  if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: S.level }) : tr('Checkpoint niveau {n} débloqué !', { n: S.level }), 'good'); }
+  if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (keyEvery(S.level, r.tousLes)) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: mineLv(S.level) })), 900);
+  if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: mineLv(S.level) }) : tr('Checkpoint niveau {n} débloqué !', { n: mineLv(S.level) }), 'good'); }
   save();
 }
 $('nextPill').addEventListener('click', () => { unlockAudio(); sfx('pick'); tryDescend(); });
@@ -5244,7 +5344,7 @@ fitBoard();
    Press and drag anywhere in a scrolling screen or popup; it glides a little when let go.
    A drag of more than a few pixels is not a click. The mine board, the village map and the workshop
    mini-game keep their own controls. */
-const DRAG_SKIP = '#board, #world, #mgGeode, input, textarea, select, [contenteditable]';
+const DRAG_SKIP = '#board, #world, #mgGeode, #lfCards, input, textarea, select, [contenteditable]';
 function scrollerOf(el) {
   for (; el && el !== document.body; el = el.parentElement) {
     const cs = getComputedStyle(el);
