@@ -417,6 +417,9 @@ window.CONFIG = {
      --------------------------------------------------------------- */
   mine: {
     // Nombre de coups de pioche (niveau 1) pour casser chaque type de bloc
+    // Dégâts de la pioche de base (sans équipement). Les « coups » ci-dessous sont comptés avec cette pioche :
+    // une pierre de 3 coups a donc 3 × 10 = 30 points de résistance. Les dégâts affichés sont toujours des nombres entiers.
+    degatsPioche: 10,
     coupsPierre: 3,
     coupsPierreMinerai: 3,
     coupsMagmaRefroidi: 5,
@@ -650,11 +653,11 @@ window.CONFIG = {
     emplacements: {
       pioche: {
         nom: 'Pioche', deblocage: 'pioche',
-        stat: { texte: '+{v} dégâts par coup', depart: 0.3, parNiveau: 0.05, nombre: true },
+        stat: { texte: '+{v} dégâts par coup', depart: 3, parNiveau: 0.5, nombre: true },   // arrondi à l'entier
         modeles: {
           picLourd:  { nom: 'Pic lourd',  biome: 1, passif: '{v} de chance de frapper deux fois plus fort', valeurs: [0.12, 0.16, 0.2, 0.25, 0.3] },
           picEclats: { nom: 'Pic à éclats', biome: 2, passif: '{v} de chance de casser aussi une roche voisine', valeurs: [0.12, 0.17, 0.22, 0.275, 0.33] },
-          picGivre:  { nom: 'Pic de givre', biome: 3, passif: 'Dégâts sur la glace × {v} (au lieu de moitié)', valeurs: [1, 1.125, 1.25, 1.375, 1.5], nombre: true },
+          picGivre:  { nom: 'Pic de givre', biome: 3, passif: 'Dégâts sur la glace : {v} (au lieu de 50 %)', valeurs: [1, 1.125, 1.25, 1.375, 1.5] },
         },
       },
       pelle: {

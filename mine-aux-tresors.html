@@ -1932,8 +1932,10 @@ function setDims(cols, rows) {
   document.documentElement.style.setProperty('--rows', rows);
 }
 const MAX_E = CFG.energie.maxDepart, REGEN_MS = CFG.energie.rechargeAutoMs;
-const HP = { stone: CFG.mine.coupsPierre, ore: CFG.mine.coupsPierreMinerai, cool: CFG.mine.coupsMagmaRefroidi,
-  hard: CFG.mine.coupsPierreDure, ice: CFG.mine.coupsGlace, root: CFG.mine.coupsRacine, stump: CFG.mine.coupsSouche };
+// Toughness of each rock = its hits with the base pickaxe × the base pickaxe's damage (whole numbers everywhere)
+const BASE_DMG = CFG.mine.degatsPioche || 10;
+const HP = Object.fromEntries(Object.entries({ stone: CFG.mine.coupsPierre, ore: CFG.mine.coupsPierreMinerai, cool: CFG.mine.coupsMagmaRefroidi,
+  hard: CFG.mine.coupsPierreDure, ice: CFG.mine.coupsGlace, root: CFG.mine.coupsRacine, stump: CFG.mine.coupsSouche }).map(([k, v]) => [k, v * BASE_DMG]));
 const ORE_YIELD = fromFr(FR_ORE, CFG.mine.quantiteMinerais);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -2090,7 +2092,8 @@ const slotOpen = sk => { const d = EQC.emplacements[sk].deblocage; return !d || 
 const archOpen = ak => slotOpen(ARCH[ak].slot) && (ARCH[ak].biome || 1) <= biomeOf(Math.max(S.reached || 1, S.level || 1));
 // Main stat of an item: (start + per level × (level − 1)) × rarity multiplier, capped
 function statOf(it) {
-  const st = EQC.emplacements[it.slot].stat, v = (st.depart + st.parNiveau * (it.lv - 1)) * EQC.raretes[it.rar].multiplicateur;
+  const st = EQC.emplacements[it.slot].stat, raw = (st.depart + st.parNiveau * (it.lv - 1)) * EQC.raretes[it.rar].multiplicateur;
+  const v = st.nombre ? Math.round(raw) : raw;   // damage: a whole number
   return st.max != null ? Math.min(st.max, v) : v;
 }
 // Passive of the item's model: from Epic on, stronger at Legendary and Mythic
@@ -2128,7 +2131,7 @@ function claimedBest(key) {
 }
 const maxE = () => Math.max(MAX_E, claimedBest('energie'));
 // Pickaxe damage: 1, plus the equipped Pickaxe's bonus (see Equipment)
-const pickPower = () => 1 + gearTotals().dmg;
+const pickPower = () => BASE_DMG + gearTotals().dmg;
 // Watering can: 5 s and 1 watering without runes (Rune de la Source, Rune du Torrent at the Altar)
 const bucketCd = () => (runeVal('source') || 5) * 1000;
 const maxCharges = () => runeVal('torrent') || 1;
@@ -2149,7 +2152,7 @@ function freshState() {
       arts: Object.fromEntries(Object.keys(ARTS).map(k => [k, 0])),
     },
     coins: CFG.depart.pieces, reached: 1, pxp: 0, pclaim: {}, altar: { n: 0, runes: {} }, trip: newTrip(), screen: 'village', roll: null,
-    grid: null, rewards: null, gear: newGear(), chap: { n: 1, spawned: 0 }, pets: newPets(),
+    grid: null, rewards: null, gear: newGear(), chap: { n: 1, spawned: 0 }, pets: newPets(), hpX10: true,
   };
 }
 // Pets: for now only fairies, the player starts with a few (random colours) to try the screen
@@ -2521,7 +2524,7 @@ const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'c
 function tileClass(c, i) {
   let cls = 'tile t-' + c.t;
   if (c.t === 'dirt') { const v = c.v ?? i % 3; if (v) cls += ' v' + v; }
-  if (c.t === 'stone') cls += ' s' + Math.min(3, c.max - c.hp + 1);
+  if (c.t === 'stone') cls += ' s' + Math.min(3, 1 + Math.floor((c.max - c.hp) / c.max * 3));
   if (c.t === 'gkey') cls += ' k-' + (c.k || 'bois');
   if (c.t === 'ore') cls += ' o-' + c.ore;
   if (c.t === 'magma' && c.chain) cls += ' chain';
@@ -3733,7 +3736,7 @@ const GEM_ICON = GIMG.gemmes ? img(GIMG.gemmes, tr('perles')) : svgImg(`<path d=
 const keyName = k => tr(EQC.coffres[k].cle);
 const nfG = v => v.toLocaleString(LANG === 'en' ? 'en-US' : 'fr-FR', { maximumFractionDigits: 2 });
 const pctG = v => { const p = Math.round(v * 1000) / 10; return nfG(p >= 10 ? Math.round(p) : p) + (LANG === 'en' ? '%' : ' %'); };
-const statTxt = (sk, v) => { const st = EQC.emplacements[sk].stat; return tr(st.texte, { v: st.nombre ? nfG(Math.round(v * 100) / 100) : pctG(v) }); };
+const statTxt = (sk, v) => { const st = EQC.emplacements[sk].stat; return tr(st.texte, { v: st.nombre ? nfG(Math.round(v)) : pctG(v) }); };
 const passiveTxt = (ak, v) => tr(ARCH[ak].passif, { v: ARCH[ak].nombre ? nfG(v) : pctG(v) });
 const rarLabel = r => tr(EQC.raretes[r].nom);
 const rarTagG = r => `<span class="rar rar-${RAR_CSS[r]}">${rarLabel(r)}</span>`;
@@ -4002,7 +4005,7 @@ function renderStatsSheet() {
   const pas = Object.entries(T.pas).map(([ak, v]) => `<li><span class="gs-ic">${gearArt(ak)}</span><span><b>${tr(ARCH[ak].nom)}</b>${passiveTxt(ak, v)}</span></li>`).join('');
   $('gearCard').innerHTML = `<button class="x" data-gclose aria-label="${tr('Fermer')}">×</button><h2>${tr('Tes bonus')}</h2>
     <ul class="gs-list">${rows}</ul>${pas ? `<p class="gs-h">${tr('Passifs actifs')}</p><ul class="gs-list">${pas}</ul>` : ''}
-    <p class="gs-hint">${(BAG_FREE ? tr('Énergie max {e} · Dégâts de la pioche {d}', { e: maxE(), d: nfG(Math.round(pickPower() * 100) / 100) }) : tr('Énergie max {e} · Sac {b} cases · Dégâts de la pioche {d}', { e: maxE(), b: bagCap(), d: nfG(Math.round(pickPower() * 100) / 100) }))}</p>`;
+    <p class="gs-hint">${(BAG_FREE ? tr('Énergie max {e} · Dégâts de la pioche {d}', { e: maxE(), d: nfG(Math.round(pickPower())) }) : tr('Énergie max {e} · Sac {b} cases · Dégâts de la pioche {d}', { e: maxE(), b: bagCap(), d: nfG(Math.round(pickPower())) }))}</p>`;
 }
 document.addEventListener('click', e => {
   const t = e.target;
@@ -4057,7 +4060,7 @@ function renderHero() {
   $('eqLeft').innerHTML = GSLOTS.slice(0, 3).map(slot).join('');
   $('eqRight').innerHTML = GSLOTS.slice(3).map(slot).join('');
   // One stat under the miner: the pickaxe's damage (a tap shows every bonus)
-  const dmg = nfG(Math.round(pickPower() * 100) / 100);
+  const dmg = nfG(Math.round(pickPower()));
   $('eqStats').innerHTML = !has('pioche') ? ''
     : `<${open ? 'button data-gstats' : 'span'} class="eq-dmg" title="${tr('Dégâts')}">${img('Assets/UI/Icon_Damage.png')}<b>${dmg}</b></${open ? 'button' : 'span'}>`;
   // The Forge: a floating button at the bottom left
@@ -5817,6 +5820,9 @@ function start(data) {
   // Saves where the player came home early in a guided stretch (before this fix): that stretch is over
   if (saved && inGuide() && !saved.guideFix && S.buildings.museum && S.screen !== 'mine' && S.reached > (S.guideBack || 0) && !GUIDE.retours.includes(S.reached)) S.guideBack = nextReturn();
   S.guideFix = true;
+  // Levels saved before toughness × 10: scale the rocks' hit points too
+  if (saved && !saved.hpX10) for (const g of [S.grid, S.wideBack && S.wideBack.grid]) if (Array.isArray(g)) g.forEach(c => { if (c && c.max) { c.hp *= BASE_DMG; c.max *= BASE_DMG; } });
+  S.hpX10 = true;
   // Collections found before the museum curtains existed are already open
   if (!S.muOpened) S.muOpened = Object.fromEntries(Object.keys(SETS).filter(sk => setKeys(sk).some(k => setBook(sk)[k])).map(sk => [sk, true]));
   // A fairy removed from config.js (e.g. the old dark green one) becomes the first fairy of the list
