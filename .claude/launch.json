@@ -4,8 +4,9 @@
     {
       "name": "webmine",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8765"],
-      "port": 8765
+      "runtimeArgs": ["-c", "import http.server as h, os; h.SimpleHTTPRequestHandler.extensions_map['.html'] = 'text/html; charset=utf-8'; h.test(h.SimpleHTTPRequestHandler, port=int(os.environ.get('PORT', 8765)))"],
+      "port": 8765,
+      "autoPort": true
     }
   ]
 }

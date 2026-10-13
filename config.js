@@ -338,7 +338,7 @@ window.CONFIG = {
       sacBoutique: "Ton niveau de mineur agrandit ton sac !",  // fin des premiers pas : l'encart du niveau du joueur
       sacAcheter: "Récupère ta case de sac en plus",           // puis la récompense dans Progression
       priere: "Prie pour graver ta première rune",            // 1re visite de l'Autel
-      objectifs: "Tes objectifs rapportent des pièces", // fin des premiers pas : le bouton Objectifs apparaît
+      objectifs: "Chaque jour, de nouvelles missions", // fin des premiers pas : le bouton Missions apparaît
       fin: "Bravo, tu connais la mine ! Bonne chance !", // message de fin des premiers pas
       energieOfferte: "Énergie offerte pour ce tutoriel", // un niveau tutoriel remet l'énergie qu'il faut
       horsSac: "Bonus : hors du sac",                 // trésor d'un niveau tutoriel
@@ -754,7 +754,7 @@ window.CONFIG = {
         { tousLes: 250, cle: 'or' },
         { tousLes: 250, cle: 'etoile' },
       ],
-      // (les clés des missions sont maintenant dans la récompense des chapitres : voir chapitres)
+      // (les clés des missions sont dans la récompense du jour : voir missions > recompenses)
     },
 
     // Perles (monnaie premium, clé "gemmes") au début d'une partie. Dans le prototype, le menu cheat en ajoute.
@@ -785,79 +785,68 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
-     CHAPITRES (missions principales)
-     Un seul chapitre à la fois, en haut de la fenêtre Objectifs :
-     atteindre un niveau de la mine. Sa récompense (clés, perles, XP)
-     se récupère dans la fenêtre, puis le chapitre suivant commence et
-     de nouvelles missions (voir objectifs ci-dessous) arrivent.
+     MISSIONS DU JOUR (bouton Missions du village)
+     Chaque jour, de nouvelles missions. Le joueur touche "Récupérer" sur
+     une mission réussie pour gagner ses pièces, ses minerais et son XP.
+     Quand toutes les missions du jour sont récupérées, il gagne la
+     récompense du jour (perles, clé ou fée). La frise du haut montre la semaine (lundi → dimanche) :
+     un jour manqué est perdu, la semaine recommence chaque lundi.
      --------------------------------------------------------------- */
-  chapitres: {
-    // Les premiers chapitres de la mine 1, plus courts.
-    // "niveau" = le niveau à atteindre. "recompense" : pieces, gemmes (perles), xp,
-    // et cles = { bois, argent, or, etoile : combien }.
-    debut: [
-      { niveau: 16, recompense: { cles: { argent: 1, bois: 1 }, gemmes: 10, xp: 40 } },
-      { niveau: 30, recompense: { cles: { argent: 1, bois: 1 }, gemmes: 10, xp: 40 } },
-      { niveau: 50, recompense: { cles: { argent: 1, bois: 1 }, gemmes: 15, xp: 50 } },
-    ],
+  missions: {
+    nombre: 4,                   // missions par jour
+    relances: 1,                 // missions qu'on peut changer (bouton ↻) par jour, gratuitement
 
-    // Ensuite, un chapitre tous les X niveaux, selon la mine : [mine 1, mine 2, mine 3 et suivantes].
-    // Mine 1 = un chapitre par biome (100 niveaux). Les mines suivantes vont moins vite (voir
-    // equipement > cles > facteurParMine), donc leurs chapitres sont plus courts : environ 1 par jour partout.
-    tousLes: [100, 50, 25],
+    // Les récompenses grandissent de 4 % et les quantités de 3 % (arrondies à 5) par niveau du joueur au-delà du 1er
+    bonusParNiveau: 0.04,
+    quantiteParNiveau: 0.03,
 
-    // Récompense de ces chapitres
-    recompense: { cles: { or: 1, bois: 1 }, gemmes: 20, xp: 60 },
-  },
-
-  /* ---------------------------------------------------------------
-     OBJECTIFS AU VILLAGE (missions secondaires)
-     3 missions simples sont affichées à la fois. Quand l'une est réussie,
-     le joueur touche "Récupérer" pour gagner ses pièces et ses minerais,
-     et une nouvelle mission la remplace, tant que le chapitre en a encore.
-     --------------------------------------------------------------- */
-  objectifs: {
-    nombre: 3,                   // missions affichées en même temps
-    parChapitre: 10,             // missions proposées par chapitre ; ensuite il faut finir le chapitre
-
-    // Chaque chapitre, les récompenses grandissent de 15 % et les quantités de 10 % (arrondies à 5)
-    bonusParChapitre: 0.15,
-    quantiteParChapitre: 0.1,
-
-    // Minerais gagnés en plus des pièces : le meilleur minerai déjà débloqué, en cette quantité (au chapitre 1)
+    // Minerais gagnés en plus des pièces : le meilleur minerai déjà débloqué, en cette quantité (au niveau 1)
     minerais: { cuivre: 5, fer: 4, or: 2, mithril: 1, cristalBrut: 1 },
 
-    // Liste des missions possibles.
-    // "texte" : {n} est remplacé par la quantité.
-    // "choix" : la quantité est tirée au hasard parmi ces nombres ronds (les quantités de 5 et plus grandissent avec le chapitre).
-    // "pieces" : récompense (au chapitre 1).
+    // Liste des missions possibles (une même mission ne revient pas deux fois le même jour).
+    // "texte" : {n} est remplacé par la quantité ; [singulier, pluriel] quand la quantité peut valoir 1.
+    // "choix" : la quantité est tirée au hasard parmi ces nombres ronds (ceux de 5 et plus grandissent avec le niveau du joueur).
+    // "pieces" : récompense (au niveau 1).
     // "xp" (facultatif) : XP du joueur gagnée, à la place de progressionJoueur > xpParMission.
     // "deblocage" : la mission n'est proposée qu'une fois cette nouveauté débloquée
     //   (mêmes noms que progression > deblocages, ou 'musee').
     liste: [
-      { type: 'terre',      texte: 'Creuse {n} cases de terre',          choix: [20, 25, 30, 50], pieces: 25 },
+      { type: 'terre',      texte: 'Creuse {n} cases de terre',          choix: [30, 50, 80],     pieces: 25 },
       { type: 'tresors',    texte: 'Trouve {n} trésors',                 choix: [5, 10],          pieces: 40 },
       { type: 'niveaux',    texte: 'Termine {n} niveaux',                choix: [5, 10],          pieces: 40 },
       { type: 'pierres',    texte: 'Casse {n} pierres',                  choix: [10, 20, 25],     pieces: 40, deblocage: 'pioche' },
       { type: 'minerais',   texte: 'Récolte {n} minerais',               choix: [10, 20, 25],     pieces: 50, deblocage: 'cuivre' },
-      { type: 'forge',      texte: 'Améliore un objet', choix: [1],              pieces: 50, deblocage: 'forge' },
-      { type: 'coffres',    texte: 'Ouvre {n} coffres',                  choix: [1, 2, 3],        pieces: 50, deblocage: 'forge' },
+      { type: 'forge',      texte: 'Améliore un objet',                  choix: [1],              pieces: 50, deblocage: 'forge' },
+      { type: 'coffres',    texte: ['Ouvre un coffre', 'Ouvre {n} coffres'], choix: [1, 2],          pieces: 50, deblocage: 'forge' },
       { type: 'geodes',     texte: 'Ouvre {n} géodes',                   choix: [3, 5],           pieces: 60, deblocage: 'atelier' },
       { type: 'magma',      texte: 'Refroidis {n} cases de magma',       choix: [5, 10],          pieces: 40, deblocage: 'magma' },
       { type: 'bombes',     texte: 'Utilise {n} bombes',                 choix: [3, 5],           pieces: 50, deblocage: 'bombes' },
-      { type: 'collection', texte: 'Complète une collection',            choix: [1],              pieces: 100, deblocage: 'musee' },
+    ],
+
+    // Récompense du jour, du lundi au dimanche, gagnée quand toutes les missions du jour sont récupérées :
+    // gemmes (perles), cles = { bois, argent, or, etoile : combien }, fee ('hasard' = une couleur que le joueur
+    // n'a pas encore, ou une couleur de pets > fees), pieces, xp. La page montre le cadeau principal en grand
+    // (la fée, sinon la meilleure clé, sinon les perles) et le reste à côté.
+    recompenses: [
+      { gemmes: 15, xp: 40 },             // lundi
+      { cles: { bois: 1 }, xp: 40 },      // mardi
+      { gemmes: 20, xp: 50 },             // mercredi
+      { cles: { argent: 1 }, xp: 40 },    // jeudi
+      { gemmes: 25, xp: 50 },             // vendredi
+      { cles: { or: 1 }, xp: 60 },        // samedi
+      { fee: 'hasard', xp: 100 },         // dimanche : une fée
     ],
   },
 
   /* ---------------------------------------------------------------
      PROGRESSION DU JOUEUR (niveau du personnage)
-     Le joueur gagne de l'XP en réussissant des missions (les objectifs du village).
+     Le joueur gagne de l'XP en réussissant des missions (les missions du jour).
      Chaque niveau atteint donne une récompense, à récupérer dans le menu Progression
      (en touchant l'encart en haut à gauche du village). Certains niveaux débloquent une fonctionnalité.
      --------------------------------------------------------------- */
   progressionJoueur: {
     // ---- D'où vient l'XP ----
-    xpParMission: 20,                 // par mission réussie ("xp" dans objectifs > liste pour une valeur à part)
+    xpParMission: 20,                 // par mission réussie ("xp" dans missions > liste pour une valeur à part)
     xpRecord: 12,                     // par nouveau niveau atteint dans la mine (record)…
     xpRecordParBiome: 2,              // … + ça par biome au-delà du 1er (biome 2 : 14, biome 10 : 30)
     xpNiveau: 6,                      // par niveau terminé, même déjà joué (hors premiers pas) : un joueur bloqué progresse quand même

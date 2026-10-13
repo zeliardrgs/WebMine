@@ -393,7 +393,6 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .quest-btn .badge{top:-8px; right:-8px; min-width:26px; height:26px; font-size:15px}
 .vg-ic{flex:none; width:40px; height:40px; display:grid; place-items:center}
 .vg-ic img,.vg-ic svg{width:36px; height:36px; object-fit:contain}
-.goals-modal .vg-list{padding:0; margin-top:10px}
 .vg-txt{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; font-size:13px; font-weight:800}
 .vg-txt .bar.mini{height:14px}
 .vg-rw{flex:none; display:flex; align-items:center; gap:2px; font-size:13px; font-weight:900; color:#b5760a}
@@ -1325,20 +1324,80 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .prog-row.locked .prog-box,.prog-row.locked .prog-lv{opacity:.6}
 .prog-box .btn.sm{flex:none}
 /* XP of each mission, next to its coins */
-/* Chapter (main mission) at the top of the Objectifs popup */
-.chap-card{margin-top:10px; padding:8px 10px 10px; border-radius:14px; background:#fff6e0; box-shadow:inset 0 0 0 3px #e0b04a, 0 3px 0 #c98f22; text-align:left}
-.chap-card.done{background:#e3fbe9; box-shadow:inset 0 0 0 3px #4fc27a, 0 3px 0 #2f9a57}
-.chap-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px}
-.chap-head b{font-family:var(--font-display); font-weight:400; font-size:18px; color:#7d3c98}
-.chap-head span{font-size:12px; font-weight:900; color:var(--ink-soft)}
-.chap-body{display:flex; align-items:center; gap:10px; margin-top:4px}
-.chap-foot{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:8px}
+/* ---------- Missions page (full screen, opened by the village's Missions button) ---------- */
+#scr-missions .scr-head{background-position:center 55%}
+#scr-missions > *{flex:none; align-self:stretch}
+#scr-missions .vg-txt,#scr-missions .dc-card{color:var(--ink)}
+/* The week strip (Monday → Sunday, one chest a day) */
+.wk-strip{display:grid; grid-template-columns:repeat(7, 1fr); gap:calc(var(--u) * 1.4); padding:calc(var(--u) * 3) calc(var(--u) * 2.4); border-radius:calc(var(--u) * 4);
+  background:var(--card-bg); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge), 0 calc(var(--u) * .8) 0 var(--card-edge)}
+.wk-day{display:flex; flex-direction:column; align-items:center; gap:calc(var(--u) * 1.2); min-width:0; padding:0; border:0; background:none; font:inherit; color:inherit; cursor:pointer}
+.wk-day.locked{cursor:default}
+.wk-day b{font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 3.3); color:var(--ink-soft)}
+.wk-ic{position:relative; width:100%; aspect-ratio:1; display:grid; place-items:center; border-radius:50%; background:#fbf1dc; box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge)}
+.wk-ic .dr-art{width:66%; height:66%}
+.dr-art{position:relative; display:grid; place-items:center}
+.dr-art img,.dr-art svg{width:100%; height:100%; object-fit:contain}
+.dr-art b{position:absolute; bottom:-12%; left:50%; transform:translateX(-50%); font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 3); color:#fff;
+  -webkit-text-stroke:calc(var(--u) * .9) var(--outline); paint-order:stroke fill; white-space:nowrap; line-height:1}
+.wk-ic i{position:absolute; right:-8%; top:-8%; width:42%; height:42%}   /* tick or lock on the top corner, the amount stays readable below */
+.wk-ic i svg{display:block; width:100%; height:100%}
+.wk-day.now b{color:#7d3c98}
+.wk-day.sel .wk-ic{background:#fff6e0; box-shadow:inset 0 0 0 calc(var(--u) * .8) #e0b04a, 0 calc(var(--u) * .8) 0 #c98f22; transform:scale(1.14)}
+.wk-day.done:not(.sel) .wk-ic{background:#e3fbe9; box-shadow:inset 0 0 0 calc(var(--u) * .5) #9bdcb0}
+.wk-day.missed .dr-art,.wk-day.locked .dr-art{filter:grayscale(1); opacity:.45}
+/* The chest of the day, opened once every mission is claimed */
+.dc-card{display:flex; align-items:center; gap:calc(var(--u) * 3); padding:calc(var(--u) * 4); border-radius:calc(var(--u) * 4); background:#fff6e0;
+  box-shadow:inset 0 0 0 calc(var(--u) * .8) #e0b04a, 0 calc(var(--u) * 1) 0 #c98f22; text-align:left}
+.dc-card.ready{background:#e3fbe9; box-shadow:inset 0 0 0 calc(var(--u) * .8) #4fc27a, 0 calc(var(--u) * 1) 0 #2f9a57}
+.dc-card.open:not(.past){opacity:.75}
+.dc-card.past{background:var(--card-bg); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge), 0 calc(var(--u) * .8) 0 var(--card-edge)}
+.dc-card.past.open{background:#e3fbe9; box-shadow:inset 0 0 0 calc(var(--u) * .5) #9bdcb0, 0 calc(var(--u) * .8) 0 #6cc48e}
+.dc-card.missed .dr-art{filter:grayscale(1); opacity:.5}
+.dc-card .vg-txt{gap:calc(var(--u) * 2); font-size:calc(var(--u) * 3.8)}
+.dc-card .bar.mini{height:calc(var(--u) * 5)}
+.dc-card .bar span{font-size:calc(var(--u) * 3.3)}
+.dc-chest{flex:none; position:relative; width:calc(var(--u) * 26); padding:0; border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:calc(var(--u) * 1); cursor:default}
+.dc-chest .dr-art{width:calc(var(--u) * 20); height:calc(var(--u) * 20)}
+.dc-chest .dr-art b{font-size:calc(var(--u) * 6); -webkit-text-stroke:calc(var(--u) * 1.4) var(--outline)}
+.dc-got{position:absolute; top:0; right:calc(var(--u) * 1); width:calc(var(--u) * 8); height:calc(var(--u) * 8)}
+.dc-got svg{display:block; width:100%; height:100%}
+.dc-card.ready .dc-chest{cursor:pointer}
+.dc-card.ready .dc-chest .dr-art{animation:dcWobble 1.4s ease-in-out infinite; filter:drop-shadow(0 0 calc(var(--u) * 3) #ffe36b)}
+.dc-chest .btn{margin-top:calc(var(--u) * 2); min-height:0; padding:calc(var(--u) * 1.6) calc(var(--u) * 4); font-size:calc(var(--u) * 4); animation:twinkle 1.6s ease-in-out infinite}
+@keyframes dcWobble{0%,60%,100%{transform:rotate(0)} 70%{transform:rotate(-7deg)} 80%{transform:rotate(7deg)} 90%{transform:rotate(-4deg)}}
 .chap-rw{display:flex; flex-wrap:wrap; align-items:center; gap:4px}
-.chap-card .btn{flex:none; min-height:44px; animation:twinkle 1.6s ease-in-out infinite}
-.vg-sub{display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-top:14px; text-align:left}
-.vg-sub b{font-family:var(--font-display); font-weight:400; font-size:16px; color:#7d3c98}
-.vg-sub span{font-size:12px; font-weight:800; color:var(--ink-soft)}
-.vg-empty{margin:4px 0 0; padding:12px; border-radius:12px; background:#fff; font-size:13px; font-weight:800; color:var(--ink-soft)}
+.dc-card .prog-chip{font-size:calc(var(--u) * 3.4)}
+/* Missions: ↻ swaps one not done yet; a claimed one stays, ticked */
+#scr-missions .vg-list{gap:calc(var(--u) * 3.4); padding:0}
+#scr-missions .vg-row{position:relative; gap:calc(var(--u) * 3); padding:calc(var(--u) * 3.4) calc(var(--u) * 3); border-radius:calc(var(--u) * 4);
+  background:var(--card-bg); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge), 0 calc(var(--u) * .8) 0 var(--card-edge)}
+#scr-missions .vg-row.done{background:#e3fbe9; box-shadow:inset 0 0 0 calc(var(--u) * .5) #9bdcb0, 0 calc(var(--u) * .8) 0 #6cc48e}
+#scr-missions .vg-ic{width:calc(var(--u) * 12); height:calc(var(--u) * 12)}
+#scr-missions .vg-ic img,#scr-missions .vg-ic svg{width:100%; height:100%}
+#scr-missions .vg-txt{gap:calc(var(--u) * 1.8); font-size:calc(var(--u) * 3.8); text-align:left}
+#scr-missions .vg-txt .bar.mini{height:calc(var(--u) * 4.6)}
+#scr-missions .vg-txt .bar span{font-size:calc(var(--u) * 3.2)}
+#scr-missions .vg-rw{gap:calc(var(--u) * .8); font-size:calc(var(--u) * 3.8)}
+.vg-side{flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:calc(var(--u) * 1.4)}
+.vg-side .vg-xp{margin:0}
+#scr-missions .vg-rw img,#scr-missions .vg-row .btn img{width:calc(var(--u) * 4.6); height:calc(var(--u) * 4.6)}
+#scr-missions .vg-row .btn{min-height:calc(var(--u) * 11); font-size:calc(var(--u) * 3.8)}
+#scr-missions .vg-xp{font-size:calc(var(--u) * 3)}
+.vg-reroll{position:absolute; top:calc(var(--u) * -2); left:calc(var(--u) * -2); width:calc(var(--u) * 8); height:calc(var(--u) * 8); padding:calc(var(--u) * 1.4); border:0; border-radius:50%;
+  background:#3d8ff0; color:#fff; box-shadow:0 0 0 calc(var(--u) * .5) var(--outline), 0 calc(var(--u) * .6) 0 #1d6fd6; cursor:pointer}
+.vg-reroll::before{content:""; position:absolute; inset:calc(var(--u) * -2)}   /* bigger touch area */
+.vg-reroll svg{display:block; width:100%; height:100%}
+.vg-row.claimed{opacity:.6}
+.vg-row.missed .vg-ic{filter:grayscale(1); opacity:.6}
+.vg-state{flex:none; max-width:calc(var(--u) * 22); font-size:calc(var(--u) * 3.2); font-weight:900; color:var(--ink-soft); text-align:right}
+#scr-missions .vg-empty{text-align:center; font-size:calc(var(--u) * 3.6)}
+.vg-got{flex:none; width:calc(var(--u) * 9); height:calc(var(--u) * 9)}
+.vg-got svg{display:block; width:100%; height:100%}
+.vg-next{margin:0 !important; text-align:center; font-size:calc(var(--u) * 3.4) !important; font-weight:800; color:var(--ink-soft)}
+.dd-art{display:grid; place-items:center; margin-top:8px}
+.dd-art .dr-art{width:110px; height:110px}
+.dd-art .dr-art b{font-size:28px; -webkit-text-stroke:6px var(--outline)}
 .chap-done .chap-rw{justify-content:center; margin:12px 0 16px}
 .chap-done .prog-chip img{width:24px; height:24px}
 .vg-xp{flex:none; margin-left:4px; padding:2px 6px; border-radius:8px; background:#3d8ff0; color:#fff; font-family:var(--font-display); font-size:11px; white-space:nowrap}
@@ -1385,10 +1444,11 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 .pets-head h1{margin:0; text-align:center; font:700 calc(var(--u) * 9) 'Fredoka', sans-serif; color:#fff;
   -webkit-text-stroke:calc(var(--u) * 1.6) var(--outline); paint-order:stroke fill; text-shadow:0 calc(var(--u) * .8) 0 var(--outline)}
 .pets-back{position:absolute; z-index:3; left:0; bottom:calc(env(safe-area-inset-bottom, 0px) + var(--u) * 6)}
-.pets-back.back-red{display:grid; place-items:center; width:calc(var(--u) * 17); min-height:calc(var(--u) * 13); padding:0; border:calc(var(--u) * .7) solid var(--outline); border-left:0;
+/* Red back arrow: the Pets page and the Missions page */
+.pets-back.back-red,.menu .scr-head .back.back-red{display:grid; place-items:center; width:calc(var(--u) * 17); min-height:calc(var(--u) * 13); padding:0; border:calc(var(--u) * .7) solid var(--outline); border-left:0;
   border-radius:0 calc(var(--u) * 4) calc(var(--u) * 4) 0; background:#ff5a5f; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 #b8282f; cursor:pointer}
-.pets-back.back-red svg{width:calc(var(--u) * 8); height:calc(var(--u) * 8)}
-.pets-back.back-red:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 #b8282f}
+.pets-back.back-red svg,.menu .scr-head .back.back-red svg{width:calc(var(--u) * 8); height:calc(var(--u) * 8)}
+.pets-back.back-red:active,.menu .scr-head .back.back-red:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 #b8282f}
 .pets-field{position:absolute; inset:0; z-index:1; touch-action:manipulation}
 .tap-fx{position:fixed; inset:0; z-index:9999; pointer-events:none; overflow:hidden}
 .pet-spark{position:absolute; z-index:3; border-radius:2px; pointer-events:none; box-shadow:0 0 6px rgba(255,255,255,.9)}
@@ -1606,7 +1666,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <button class="iconbtn" id="settingsBtn" aria-label="Paramètres"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M26.0 12.9 L30.3 13.5 L30.3 18.5 L26.0 19.1 L25.3 20.9 L27.9 24.3 L24.3 27.9 L20.9 25.3 L19.1 26.0 L18.5 30.3 L13.5 30.3 L12.9 26.0 L11.1 25.3 L7.7 27.9 L4.1 24.3 L6.7 20.9 L6.0 19.1 L1.7 18.5 L1.7 13.5 L6.0 12.9 L6.7 11.1 L4.1 7.7 L7.7 4.1 L11.1 6.7 L12.9 6.0 L13.5 1.7 L18.5 1.7 L19.1 6.0 L20.9 6.7 L24.3 4.1 L27.9 7.7 L25.3 11.1Z" fill="#7d3c98" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="4.6" fill="#fff4dc" stroke="#3b2245" stroke-width="2"/></svg></button>
   </header>
   <div class="v-bottom">
-    <div class="v-quest"><button class="quest-btn" id="questBtn" aria-label="Objectifs"><img src="Assets/UI/Icon_Quests.png" alt="" draggable="false"><span class="badge" id="questBadge" hidden>!</span></button></div>
+    <div class="v-quest"><button class="quest-btn" id="questBtn" aria-label="Missions"><img src="Assets/UI/Icon_Quests.png" alt="" draggable="false"><span class="badge" id="questBadge" hidden>!</span></button></div>
     <section class="mine-door" aria-label="Entrée de la mine">
       <div class="md-info">
         <b>La mine</b>
@@ -1658,6 +1718,14 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   </div>
   <div class="prog-list" id="progList"></div>
   <button class="btn big prog-all" id="progAll" hidden>Tout récupérer</button>
+</div>
+
+<div class="screen menu" id="scr-missions" hidden>
+  <header class="scr-head"><button class="back back-red" data-go="village" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button><h1>Missions</h1><div class="wallet-bar" data-money></div></header>
+  <div class="wk-strip" id="weekBox"></div>
+  <div id="dayChestBox"></div>
+  <div class="vg-list" id="vgList"></div>
+  <p class="vg-next" id="vgNext"></p>
 </div>
 
 <div class="screen menu" id="scr-events" hidden>
@@ -1888,19 +1956,12 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <div class="pm-list" id="petsList"></div>
   </div>
 </div>
-<div class="modal" id="goalsModal" hidden>
-  <div class="card goals-modal" role="dialog" aria-labelledby="goalsTitle" style="text-align:center">
-    <button class="close" id="goalsClose" aria-label="Fermer">×</button>
-    <h2 id="goalsTitle">Objectifs</h2>
-    <div id="chapBox"></div>
-    <div class="vg-list" id="vgList"></div>
-  </div>
-</div>
-<div class="modal" id="chapDoneModal" hidden>
-  <div class="card chap-done" role="dialog" aria-labelledby="chapDoneTitle" style="text-align:center">
-    <h2 id="chapDoneTitle"></h2>
-    <div class="chap-rw" id="chapDoneRw"></div>
-    <button class="btn" id="chapDoneNext"></button>
+<div class="modal" id="dayDoneModal" hidden>
+  <div class="card chap-done" role="dialog" aria-labelledby="dayDoneTitle" style="text-align:center">
+    <h2 id="dayDoneTitle"></h2>
+    <div class="dd-art" id="dayDoneArt"></div>
+    <div class="chap-rw" id="dayDoneRw"></div>
+    <button class="btn" id="dayDoneOk">Super !</button>
   </div>
 </div>
 
@@ -2197,7 +2258,7 @@ const newTrip = () => ({ finds: [], dupes: [], bonus: [], coins: 0, ores: zeroOr
 
 function freshState() {
   return {
-    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goals: [], goalsClosed: false, guideBack: 0,
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goalsClosed: false, guideBack: 0,
     bag: {
       ores: zeroOres(),
       gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
@@ -2206,7 +2267,7 @@ function freshState() {
       arts: Object.fromEntries(Object.keys(ARTS).map(k => [k, 0])),
     },
     coins: CFG.depart.pieces, reached: 1, pxp: 0, pclaim: {}, altar: { n: 0, runes: {} }, trip: newTrip(), screen: 'village', roll: null,
-    grid: null, rewards: null, gear: newGear(), chap: { n: 1, spawned: 0 }, pets: newPets(), hpX10: true,
+    grid: null, rewards: null, gear: newGear(), pets: newPets(), hpX10: true,
   };
 }
 // Pets: for now only fairies, the player starts with a few (random colours) to try the screen
@@ -4328,7 +4389,7 @@ function gearCoach() {
 }
 
 /* ---------- Screens ---------- */
-const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets'];
+const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets', 'missions'];
 function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
@@ -4340,7 +4401,7 @@ function go(name) {
   if (name !== 'atelier') stopMini();
   if (name !== 'pets') stopPets();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets })[name]();
+  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals })[name]();
   updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -4348,7 +4409,7 @@ function go(name) {
 /* ---------- Bottom navigation bar ----------
    Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
    Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
-const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village' };
+const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village', missions: 'village' };
 function updateNav(name) {
   const tab = NAV_OF[name];
   $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
@@ -4580,53 +4641,69 @@ $('icAtelier').innerHTML = img(OW + 'Workshop.png' + OW_V, tr('Atelier'));
 $('scShopIc').innerHTML = img(OW + 'Shop.png' + OW_V); $('scAltarIc').innerHTML = ALTAR_ART;
 const museumTotal = () => Object.keys(GEMS).length + Object.keys(ARTS).length;
 const museumOwned = () => [S.bag.gems, S.bag.arts].reduce((a, b) => a + Object.values(b).filter(Boolean).length, 0);
-/* ---------- Village goals (config.js > objectifs) and chapters (config.js > chapitres) ----------
-   One chapter at a time (reach a level of the mine: keys, pearls, XP) and up to 3 goals on screen (coins, ore, XP).
-   Each chapter offers a limited number of goals; when they run out, the player must finish the chapter. */
-const OBJ = CFG.objectifs, CHAP = CFG.chapitres;
-// Counters of what the player does, used to follow the goals
-const stat = (k, n = 1) => { S.stats[k] = (S.stats[k] || 0) + n; };
+/* ---------- Daily missions (config.js > missions) ----------
+   Each day, a few missions (coins, ore, XP); once they are all claimed, the reward of the day (pearls, a key or a fairy).
+   The week strip goes from Monday to Sunday: a missed day is lost, the week starts again each Monday. */
+const OBJ = CFG.missions;
+// Counters of what the player does, used to follow the missions (past midnight, they count for the new day's missions)
+const stat = (k, n = 1) => { if (S.daily && S.daily.day !== today()) dailyMissions(); S.stats[k] = (S.stats[k] || 0) + n; };
 const tierSum = () => Object.keys(SETS).reduce((a, k) => a + setTier(k), 0);
 const goalValue = type => type === 'collection' ? tierSum() : S.stats[type] || 0;
 const goalOpen = o => !o.deblocage || (o.deblocage === 'musee' ? !!S.buildings.museum : has(o.deblocage));
-// Level to reach in chapter c (1, 2, …): the first chapters of the list, then one every X levels of the mine
-const CHAP_T = [0];
-function chapTarget(c) {
-  for (let i = CHAP_T.length; i <= c; i++) {
-    const prev = CHAP_T[i - 1], m = mineOf(prev + 1), step = CHAP.tousLes[Math.min(m, CHAP.tousLes.length) - 1];
-    CHAP_T[i] = i <= CHAP.debut.length ? CHAP.debut[i - 1].niveau : (m - 1) * MINE_LEN + Math.ceil(inMine(prev + 1) / step) * step;
-  }
-  return CHAP_T[c];
-}
-const chapReward = c => (CHAP.debut[c - 1] || CHAP).recompense;
-const chapDone = () => S.reached >= chapTarget(S.chap.n);
-// Goal rewards and amounts grow with the chapter
-const chapScale = k => 1 + k * (S.chap.n - 1);
-const goalsLeft = () => Math.max(0, OBJ.parChapitre - S.chap.spawned) + S.goals.length;
+const WEEK = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const WEEK_NAMES = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+const weekDay = () => (new Date().getDay() + 6) % 7;   // 0 = Monday
+const weekStart = () => { const d = new Date(); d.setDate(d.getDate() - weekDay()); return d.toDateString(); };
+// Mission rewards and amounts grow with the player level
+const goalScale = k => 1 + k * (plLevel() - 1);
 function newGoal(exclude) {
   const opts = OBJ.liste.filter(o => goalOpen(o) && !exclude.includes(o.type)
     && !(o.type === 'collection' && tierSum() >= Object.keys(SETS).length * MAX_STARS));
   if (!opts.length) return null;
   const o = opts[randInt(0, opts.length - 1)], start = goalValue(o.type), ch = o.choix || [1];
-  // A round number picked among the choices of config.js; the big ones grow with the chapter (rounded to 5)
+  // A round number picked among the choices of config.js; the big ones grow with the player level (rounded to 5)
   let n = ch[randInt(0, ch.length - 1)];
-  if (n >= 5) n = Math.round(n * chapScale(OBJ.quantiteParChapitre) / 5) * 5;
-  const reward = Math.round(o.pieces * chapScale(OBJ.bonusParChapitre) / 5) * 5;
+  if (n >= 5) n = Math.round(n * goalScale(OBJ.quantiteParNiveau) / 5) * 5;
+  const reward = Math.round(o.pieces * goalScale(OBJ.bonusParNiveau) / 5) * 5;
   // A few of the best ore already unlocked
   const ore = Object.keys(ORES).filter(k => has(ORE_UNLOCK[k])).pop();
-  const oreN = ore ? Math.round(((OBJ.minerais || {})[ORE_UNLOCK[ore]] || 0) * chapScale(OBJ.bonusParChapitre)) : 0;
-  return { type: o.type, n, start, target: start + n, reward, ore: oreN ? ore : null, oreN };
+  const oreN = ore ? Math.round(((OBJ.minerais || {})[ORE_UNLOCK[ore]] || 0) * goalScale(OBJ.bonusParNiveau)) : 0;
+  return { type: o.type, n, start, target: start + n, reward, ore: oreN ? ore : null, oreN, claimed: false };
 }
-function fillGoals() {
-  // Goals of a kind that no longer exists are dropped
-  S.goals = (S.goals || []).filter(g => OBJ.liste.some(x => x.type === g.type));
-  while (S.goals.length < OBJ.nombre && S.chap.spawned < OBJ.parChapitre) {
-    const g = newGoal(S.goals.map(x => x.type)); if (!g) break;
-    S.goals.push(g); S.chap.spawned++;
+// A day's missions as they ended, to be looked at later in the week (they can no longer be claimed)
+const freezeDay = d => ({ goals: d.goals.map(g => ({ type: g.type, n: g.n, reward: g.reward, ore: g.ore, oreN: g.oreN, claimed: g.claimed,
+  got: Math.max(0, Math.min(g.n, goalValue(g.type) - g.start)) })) });
+// A new day brings new missions (yesterday's are kept, frozen, for the week strip); a new week empties the strip.
+// Early in the game there may be fewer kinds than missions: the day fills up as new kinds open (until its chest is opened).
+function dailyMissions() {
+  if (!S.week || S.week.start !== weekStart()) S.week = { start: weekStart(), done: [], past: {} };
+  if (!S.week.past) S.week.past = {};
+  if (!S.daily || S.daily.day !== today()) {
+    if (S.daily && S.daily.wk === S.week.start) S.week.past[S.daily.wd] = freezeDay(S.daily);
+    S.daily = { day: today(), wk: S.week.start, wd: weekDay(), goals: [], rerolls: 0, chest: false };
+  }
+  while (!S.daily.chest && S.daily.goals.length < OBJ.nombre) {
+    const g = newGoal(S.daily.goals.map(x => x.type)); if (!g) break;
+    S.daily.goals.push(g);
   }
 }
 const goalDone = g => goalValue(g.type) >= g.target;
-// An icon for each kind of goal
+const goalsClaimed = () => S.daily.goals.filter(g => g.claimed).length;
+const dayChestReady = () => !S.daily.chest && S.daily.goals.length > 0 && goalsClaimed() === S.daily.goals.length;
+// The reward of a day, drawn by its main gift (a fairy, else its best key, else pearls, else coins) with its amount;
+// the rest of the reward (XP…) goes in small chips next to it
+function dayGift(r) {
+  if (r.fee) { const f = PETS.fees[r.fee]; return { art: img(f ? f.visuel : 'Assets/UI/Icon_Fairy.png', f ? tr(f.nom) : tr('Une fée')), n: '', rest: { ...r, fee: null } }; }
+  const k = ['etoile', 'or', 'argent', 'bois'].find(x => (r.cles || {})[x]);
+  if (k) { const cles = { ...r.cles }; delete cles[k]; return { art: keyArt(k), n: '×' + r.cles[k], rest: { ...r, cles } }; }
+  if (r.gemmes) return { art: GEM_ICON, n: r.gemmes, rest: { ...r, gemmes: 0 } };
+  return { art: COIN, n: r.pieces || '', rest: { ...r, pieces: 0 } };
+}
+const giftHTML = g => `<span class="dr-art">${g.art}${g.n !== '' ? `<b>${g.n}</b>` : ''}</span>`;
+const CHECK_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#35c46f" stroke="#3b2245" stroke-width="2.5"/><path d="M7 12.5 L10.5 16 L17 8.5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const LOCK_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 11 V8 a4.5 4.5 0 0 1 9 0 V11" stroke="#3b2245" stroke-width="3" fill="none"/><rect x="4.5" y="10" width="15" height="11.5" rx="3" fill="#f3dcb0" stroke="#3b2245" stroke-width="2.5"/><circle cx="12" cy="15.5" r="1.8" fill="#3b2245"/></svg>';
+const REROLL_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12 a7 7 0 1 1 -2.1 -5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M18.5 2.5 V7.5 H13.5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+// An icon for each kind of mission
 const LEVEL_ICON = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#7d3c98" stroke="#3b2245" stroke-width="3"/><path d="M20 9 V27 M12 20 L20 29 L28 20" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const GOAL_ICON = {
   terre: () => img('Assets/Ground/Ground_Dirt_01.png'), pierres: () => img('Assets/Ground/Ground_Stone_01.png'),
@@ -4637,75 +4714,135 @@ const GOAL_ICON = {
 // A reward as small chips (coins, ore, pearls, keys, XP)
 function rwChips(r) {
   const chip = (icon, n) => `<span class="prog-chip">${icon}${n}</span>`;
-  return (r.pieces ? chip(COIN, r.pieces) : '') + (r.ore ? chip(resArt(r.ore), r.oreN) : '') + (r.gemmes ? chip(GEM_ICON, r.gemmes) : '')
+  const f = r.fee && PETS.fees[r.fee];
+  return (r.fee ? chip(img(f ? f.visuel : 'Assets/UI/Icon_Fairy.png'), f ? tr(f.nom) : tr('Une fée')) : '')
+    + (r.pieces ? chip(COIN, r.pieces) : '') + (r.ore ? chip(resArt(r.ore), r.oreN) : '') + (r.gemmes ? chip(GEM_ICON, r.gemmes) : '')
     + Object.entries(r.cles || {}).map(([k, n]) => chip(keyArt(k), '×' + n)).join('') + (r.xp ? `<span class="vg-xp">+${r.xp} XP</span>` : '');
 }
-function renderChapter() {
-  const c = S.chap.n, t = chapTarget(c), m = mineOf(t), base = (m - 1) * MINE_LEN;
-  const done = chapDone(), cur = Math.max(0, Math.min(S.reached, t) - base), pct = cur / (t - base) * 100;
-  const left = goalsLeft();
-  return `<div class="chap-card${done ? ' done' : ''}">
-    <div class="chap-head"><b>${tr('Chapitre {n}', { n: c })}</b>${m > 1 ? `<span>${tr('Mine {n}', { n: m })}</span>` : ''}</div>
-    <div class="chap-body"><span class="vg-ic">${LEVEL_ICON}</span><div class="vg-txt"><span>${tr('Atteins le niveau {n}', { n: t - base })}</span>
-      <div class="bar mini"><i style="width:${pct}%"></i><span>${cur} / ${t - base}</span></div></div></div>
-    <div class="chap-foot"><div class="chap-rw">${rwChips(chapReward(c))}</div>
-      ${done ? `<button class="btn sm" data-chap>${tr('Récupérer')}</button>` : ''}</div>
-  </div>
-  <div class="vg-sub"><b>${tr('Missions')}</b><span>${left ? tr('{n} restantes dans ce chapitre', { n: left }) : ''}</span></div>`;
+// Day shown on the Missions page: today, or an earlier day of the week touched in the strip
+let missionDay = 7;   // 7 = today
+const shownDay = () => Math.min(missionDay, weekDay());
+function renderWeek() {
+  const t = weekDay(), sel = shownDay();
+  return OBJ.recompenses.map((r, i) => {
+    const st = S.week.done[i] ? 'done' : i === t ? 'today' : i < t ? 'missed' : 'locked';
+    const tag = st === 'done' ? CHECK_ICON : st === 'locked' ? LOCK_ICON : '';
+    return `<button class="wk-day ${st}${i === t ? ' now' : ''}${i === sel ? ' sel' : ''}" data-wkday="${i}" aria-pressed="${i === sel}" aria-label="${tr(WEEK_NAMES[i])}">
+      <b>${tr(WEEK[i])}</b><span class="wk-ic">${giftHTML(dayGift(r))}${tag ? `<i>${tag}</i>` : ''}</span></button>`;
+  }).join('');
+}
+// An earlier day: its reward (collected or missed) and its missions as they ended
+function renderPastDay(i) {
+  const r = OBJ.recompenses[i], day = tr(WEEK_NAMES[i]), open = !!S.week.done[i], past = S.week.past[i];
+  const goals = past ? past.goals : [], n = goals.filter(g => g.claimed).length, gift = dayGift(r);
+  $('dayChestBox').innerHTML = `<div class="dc-card past${open ? ' open' : ' missed'}">
+    <div class="vg-txt"><span>${open ? tr('Récompense du {d} récupérée', { d: day }) : tr('Récompense du {d} manquée', { d: day })}</span>
+      ${goals.length ? `<div class="bar mini"><i style="width:${n / goals.length * 100}%"></i><span>${n} / ${goals.length}</span></div>` : ''}
+      <div class="chap-rw">${rwChips(gift.rest)}</div></div>
+    <span class="dc-chest">${giftHTML(gift)}</span>
+  </div>`;
+  $('vgList').innerHTML = goals.map(g => {
+    const done = g.got >= g.n, state = g.claimed ? `<span class="vg-got">${CHECK_ICON}</span>`
+      : `<span class="vg-state">${done ? tr('Non récupérée') : tr('Non terminée')}</span>`;
+    return goalRow(g, g.claimed ? 'claimed' : 'missed', g.got, state, '');
+  }).join('') || `<p class="vg-empty">${tr('Pas de missions enregistrées ce jour-là.')}</p>`;
+  $('vgNext').innerHTML = `<button class="btn sm" data-wkday="${weekDay()}">${tr('Revenir à aujourd\'hui')}</button>`;
+}
+// One mission card: icon, text, progress bar, then what goes on the right
+function goalRow(g, cls, cur, side, extra) {
+  const o = OBJ.liste.find(x => x.type === g.type) || { texte: '' }, pct = Math.max(0, Math.min(100, cur / g.n * 100));
+  return `<div class="vg-row${cls ? ' ' + cls : ''}">${extra}<span class="vg-ic">${(GOAL_ICON[g.type] || (() => ''))()}</span><div class="vg-txt"><span>${tr(Array.isArray(o.texte) ? plural(g.n, ...o.texte) : o.texte, { n: g.n })}</span>
+    <div class="bar mini"><i style="width:${pct}%"></i><span>${Math.max(0, Math.min(cur, g.n))} / ${g.n}</span></div></div>
+    ${side}</div>`;
+}
+function renderDayChest() {
+  const r = OBJ.recompenses[weekDay()], day = tr(WEEK_NAMES[weekDay()]), n = goalsClaimed(), tot = S.daily.goals.length;
+  const ready = dayChestReady(), open = S.daily.chest, gift = dayGift(r);
+  const txt = open ? tr('Récompense du {d} récupérée ! Reviens demain.', { d: day }) : ready ? tr('La récompense du {d} est à toi !', { d: day })
+    : tr('Récupère toutes les missions pour gagner la récompense du {d}', { d: day });
+  return `<div class="dc-card${ready ? ' ready' : ''}${open ? ' open' : ''}">
+    <div class="vg-txt"><span>${txt}</span>
+      <div class="bar mini"><i style="width:${tot ? n / tot * 100 : 0}%"></i><span>${n} / ${tot}</span></div>
+      <div class="chap-rw">${rwChips(gift.rest)}</div></div>
+    <button class="dc-chest" data-dchest ${ready ? '' : 'disabled'} aria-label="${tr('Récupérer la récompense du {d}', { d: day })}">${giftHTML(gift)}${open ? `<i class="dc-got">${CHECK_ICON}</i>` : ''}${ready ? `<span class="btn sm">${tr('Récupérer')}</span>` : ''}</button>
+  </div>`;
 }
 function renderGoals() {
-  fillGoals();
-  const ready = S.goals.filter(goalDone).length + (chapDone() ? 1 : 0);
-  // Badge on the scroll button when a reward waits
+  dailyMissions();
+  const ready = S.daily.goals.filter(g => !g.claimed && goalDone(g)).length + (dayChestReady() ? 1 : 0);
+  // Badge on the village's Missions button when a reward waits
   $('questBadge').hidden = !ready; $('questBadge').textContent = ready;
   $('questBtn').classList.toggle('ready', !!ready);
-  $('chapBox').innerHTML = renderChapter();
-  $('vgList').innerHTML = S.goals.map((g, i) => {
-    const v = goalValue(g.type), done = v >= g.target, o = OBJ.liste.find(x => x.type === g.type);
-    const cur = Math.min(v - g.start, g.target - g.start), tot = g.target - g.start;
-    const pct = Math.max(0, Math.min(100, (v - g.start) / (g.target - g.start) * 100));
+  $('weekBox').innerHTML = renderWeek();
+  if (shownDay() < weekDay()) return renderPastDay(shownDay());
+  $('dayChestBox').innerHTML = renderDayChest();
+  const canReroll = S.daily.rerolls < (OBJ.relances || 0);
+  $('vgList').innerHTML = S.daily.goals.map((g, i) => {
+    const cur = goalValue(g.type) - g.start, done = goalDone(g);
     const rw = `+${g.reward}${COIN}${g.ore ? ` +${g.oreN}${resArt(g.ore)}` : ''}`;
-    return `<div class="vg-row${done ? ' done' : ''}"><span class="vg-ic">${(GOAL_ICON[g.type] || (() => ''))()}</span><div class="vg-txt"><span>${tr(o.texte, { n: g.n })}</span>
-      <div class="bar mini"><i style="width:${pct}%"></i><span>${cur} / ${tot}</span></div></div>
-      ${done ? `<button class="btn sm" data-claim="${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">${rw}</button>` : `<span class="vg-rw">${rw}</span>`}${goalXP(g) ? `<span class="vg-xp">+${goalXP(g)} XP</span>` : ''}</div>`;
-  }).join('') || `<p class="vg-empty">${tr('Termine le chapitre pour débloquer de nouvelles missions.')}</p>`;
+    const xp = goalXP(g) ? `<span class="vg-xp">+${goalXP(g)} XP</span>` : '';
+    const side = g.claimed ? `<span class="vg-got">${CHECK_ICON}</span>`
+      : `<div class="vg-side">${done ? `<button class="btn sm" data-claim="${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">${rw}</button>` : `<span class="vg-rw">${rw}</span>`}${xp}</div>`;
+    const reroll = canReroll && !done && !g.claimed ? `<button class="vg-reroll" data-reroll="${i}" aria-label="${tr('Changer de mission')}">${REROLL_ICON}</button>` : '';
+    return goalRow(g, g.claimed ? 'claimed' : done ? 'done' : '', g.claimed ? g.n : cur, side, reroll);
+  }).join('');
+  $('vgNext').textContent = tr('Nouvelles missions dans {t}', { t: untilTomorrow() });
 }
+// A day of the strip: today and the earlier days of the week can be looked at; the next ones are still locked
 document.addEventListener('click', e => {
-  const b = e.target.closest('[data-claim]'); if (!b) return;
-  const i = +b.dataset.claim, g = S.goals[i]; if (!g || !goalDone(g)) return;
+  const b = e.target.closest('[data-wkday]'); if (!b) return;
+  const i = +b.dataset.wkday;
+  unlockAudio();
+  if (i > weekDay()) { sfx('deny'); return toast(tr('Reviens {d} pour ces missions !', { d: tr(WEEK_NAMES[i]) })); }
+  sfx('pick'); missionDay = i; renderGoals();
+});
+// The missions of another day can't be claimed: the window shows the new ones instead
+const staleDay = () => { if (S.daily && S.daily.day === today()) return false; renderGoals(); save(); return true; };
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-claim]'); if (!b || staleDay()) return;
+  const g = S.daily.goals[+b.dataset.claim]; if (!g || g.claimed || !goalDone(g)) return;
   unlockAudio(); sfx('reward');
+  g.claimed = true;
   S.coins += g.reward; flyMoney(b.getBoundingClientRect(), g.reward, 0);
   if (g.ore) S.bag.ores[g.ore] += g.oreN;
   const xp = goalXP(g);
   gainXP(xp);
-  // A new goal takes its place (not the same kind), while the chapter still has some
-  const next = S.chap.spawned < OBJ.parChapitre ? newGoal(S.goals.map(x => x.type)) : null;
-  S.goals.splice(i, 1, ...(next ? [next] : []));
-  if (next) S.chap.spawned++;
-  toast(xp ? tr('Objectif réussi : +{n} pièces, +{x} XP !', { n: g.reward, x: xp }) : tr('Objectif réussi : +{n} pièces !', { n: g.reward }), 'good');
-  renderVillage(); save();
+  toast(xp ? tr('Mission réussie : +{n} pièces, +{x} XP !', { n: g.reward, x: xp }) : tr('Mission réussie : +{n} pièces !', { n: g.reward }), 'good');
+  renderGoals(); save();
 });
-// Chapter done: its reward, then the next chapter starts with new goals (the unfinished ones stay)
+// ↻ : a mission not done yet is swapped for another kind, a few times a day
 document.addEventListener('click', e => {
-  const cb = e.target.closest('[data-chap]');
-  if (!cb || !chapDone()) return;
-  const c = S.chap.n, r = chapReward(c);
+  const b = e.target.closest('[data-reroll]'); if (!b || staleDay()) return;
+  const i = +b.dataset.reroll, g = S.daily.goals[i];
+  if (!g || g.claimed || goalDone(g) || S.daily.rerolls >= (OBJ.relances || 0)) return;
+  const next = newGoal(S.daily.goals.map(x => x.type));
+  if (!next) return toast(tr('Pas d\'autre mission pour l\'instant'));
+  unlockAudio(); sfx('pick');
+  S.daily.goals[i] = next; S.daily.rerolls++;
+  renderGoals(); save();
+});
+// All the missions claimed: the reward of the day
+document.addEventListener('click', e => {
+  const cb = e.target.closest('[data-dchest]'); if (!cb || staleDay() || !dayChestReady()) return;
+  const d = weekDay(), r = OBJ.recompenses[d];
   unlockAudio(); sfx('win');
   S.coins += r.pieces || 0; G().gems += r.gemmes || 0;
   flyMoney(cb.getBoundingClientRect(), r.pieces || 0, r.gemmes || 0);
   for (const [k, n] of Object.entries(r.cles || {})) G().keys[k] = (G().keys[k] || 0) + n;
-  S.chap = { n: c + 1, spawned: 0 };
+  S.daily.chest = true; S.week.done[d] = true;
   gainXP(r.xp || 0);
-  $('chapDoneTitle').textContent = tr('Chapitre {n} terminé !', { n: c });
-  $('chapDoneRw').innerHTML = rwChips(r);
-  $('chapDoneNext').textContent = tr('Chapitre {n}', { n: c + 1 });
-  $('chapDoneModal').hidden = false;
-  refreshGear(); renderVillage(); save();
+  // A fairy has its own reward page; anything else shows in a small window
+  if (r.fee) giveFairy(r.fee);
+  else {
+    $('dayDoneTitle').textContent = tr('Récompense du {d} !', { d: tr(WEEK_NAMES[d]) });
+    $('dayDoneArt').innerHTML = giftHTML(dayGift(r));
+    $('dayDoneRw').innerHTML = rwChips(r);
+    $('dayDoneModal').hidden = false;
+  }
+  refreshGear(); renderGoals(); save();
 });
-$('chapDoneNext').addEventListener('click', () => { $('chapDoneModal').hidden = true; });
-$('questBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); renderGoals(); $('goalsModal').hidden = false; $('goalsClose').focus(); });
-$('goalsClose').addEventListener('click', () => { $('goalsModal').hidden = true; });
-$('goalsModal').addEventListener('click', e => { if (e.target.id === 'goalsModal') $('goalsModal').hidden = true; });
+$('dayDoneOk').addEventListener('click', () => { $('dayDoneModal').hidden = true; });
+$('questBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); missionDay = 7; go('missions'); });
 /* ---------- Player progression = the miner level (config.js > progressionJoueur) ----------
    Missions, depth records, the Museum, the equipment and the Altar give XP; the player's level comes from the total XP.
    Each level reached gives a reward, claimed in the Progression page (the card at the top left of the village):
@@ -5257,7 +5394,7 @@ function villageCoach() {
   }
   // End of the first steps: the goals appear, then a short "well done"
   if (!inGuide() && !S.tutoSeen.guideFin) {
-    if (!S.tutoSeen.objectifs) { applyUnlocks(); return startCoach('objectifs', [{ text: TX.objectifs, target: () => $('questBtn'), done: () => !$('goalsModal').hidden }]); }
+    if (!S.tutoSeen.objectifs) { applyUnlocks(); return startCoach('objectifs', [{ text: TX.objectifs, target: () => $('questBtn'), done: () => !$('scr-missions').hidden }]); }
     S.tutoSeen.guideFin = true; save(); applyUnlocks(); updateNav('village');
     return toast(tr(TX.fin), 'good');
   }
@@ -5886,9 +6023,8 @@ function start(data) {
   if (!saved || !saved.shopSeen) { S.shopSeen = {}; if (S.buildings && S.buildings.shop) SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; }); }
   if (!saved || !saved.guarDone) { S.guarDone = {}; for (const l of Object.keys(GUAR)) if (S.reached > +l) S.guarDone[l] = true; }
   if (!S.stats) S.stats = {};
-  if (!Array.isArray(S.goals)) S.goals = [];
-  // Saves from before the chapters: the chapter is the first one not passed yet; the goals on screen count in it
-  if (saved && !saved.chap) { S.chap = { n: 1, spawned: S.goals.length }; while (chapTarget(S.chap.n) < S.reached) S.chap.n++; }
+  // Saves from before the daily missions: the old goals and chapters are dropped
+  delete S.goals; delete S.chap;
   S.bag.ores = Object.assign(zeroOres(), S.bag.ores); S.trip.ores = Object.assign(zeroOres(), S.trip.ores);
   // Saves from before the progression: buildings already reached are open
   if (!saved || !saved.buildings) {
