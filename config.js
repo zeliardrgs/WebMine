@@ -1003,6 +1003,35 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
+     PETS
+     --------------------------------------------------------------- */
+  pets: {
+    // Les fées (une image par couleur, dans Assets/Pets/). bonus = texte affiché dans « Gérer » (vide = « Bonus à venir »)
+    // effet = ce que fait la fée équipée (la fée s'anime quand ça arrive) :
+    //   tasDOr   : chance, à chaque coup de pelle dans la terre, de trouver un tas d'or
+    //   minerais : chance d'avoir +1 minerai en cassant un minerai
+    //   geodes   : rend les géodes rares plus fréquentes (valeur 0.3 = +30 %), la fée s'anime quand on dégage une géode rare ou mieux
+    //   energie  : chance qu'un coup de pioche ne coûte pas d'énergie
+    //   detecter : chance, à chaque coup de pelle, de repérer un trésor caché (comme un radar)
+    //   magma    : chance de refroidir un magma en le touchant avec la pioche
+    //   unCoup   : chance de casser une pierre en 1 seul coup de pioche
+    fees: {
+      rose:      { nom: "Fée rose",        visuel: "Assets/Pets/Pet_Fairy_Pink.png", bonus: "Peut parfois détecter un trésor", effet: 'detecter', chance: 0.03 },
+      jaune:     { nom: "Fée jaune",       visuel: "Assets/Pets/Pet_Fairy_Yellow.png", bonus: "Peut faire apparaître des tas d'or", effet: 'tasDOr', chance: 0.06 },
+      orange:    { nom: "Fée orange",      visuel: "Assets/Pets/Pet_Fairy_Orange.png", bonus: "Augmente légèrement la présence de minerais", effet: 'minerais', chance: 0.25 },
+      verte:     { nom: "Fée verte",       visuel: "Assets/Pets/Pet_Fairy_Green.png", bonus: "Peut rendre de l'énergie sur certains coups de pioche", effet: 'energie', chance: 0.12 },
+      glace:     { nom: "Fée de glace",    visuel: "Assets/Pets/Pet_Fairy_Ice.png", bonus: "", effet: '' },
+      nuit:      { nom: "Fée de nuit",     visuel: "Assets/Pets/Pet_Fairy_Night.png", bonus: "", effet: '' },
+      violette:  { nom: "Fée violette",    visuel: "Assets/Pets/Pet_Fairy_Purple.png", bonus: "Augmente légèrement la rareté des géodes", effet: 'geodes', valeur: 0.3 },
+      rouge:     { nom: "Fée rouge",       visuel: "Assets/Pets/Pet_Fairy_Red.png", bonus: "A une chance de casser une pierre en 1 coup", effet: 'unCoup', chance: 0.08 },
+      bleue:     { nom: "Fée bleue",       visuel: "Assets/Pets/Pet_Fairy_Blue.png", bonus: "Peut refroidir un magma", effet: 'magma', chance: 0.25 },
+    },
+    depart: 5,          // fées données au joueur au début (couleurs au hasard, pour tester)
+    vitesse: 40,        // vitesse de vol, en % de la largeur de l'écran par seconde (40 = traverse l'écran en ~2,5 s)
+    taille: 17,         // largeur d'une fée, en % de la largeur de l'écran
+  },
+
+  /* ---------------------------------------------------------------
      ÉVÉNEMENTS
      --------------------------------------------------------------- */
   evenements: {
