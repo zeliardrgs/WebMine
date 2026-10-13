@@ -300,6 +300,7 @@ window.TEXTES_EN = {
   "Raté…": "Missed…",
   "Géode suivante": "Next geode",
   "Retour au village": "Back to the village",
+  "Retour au musée": "Back to the museum",
 
   /* ---------- Fin de la mine ---------- */
   "Mine 2 : bientôt disponible": "Mine 2: coming soon",

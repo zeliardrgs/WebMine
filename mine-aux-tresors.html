@@ -1375,6 +1375,10 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .eq-forge{border:calc(var(--u) * .7) solid var(--outline); border-left:0; background:var(--sun); background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 var(--sun-edge)}
 .eq-forge:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 var(--sun-edge)}
 
+/* The Workshop tab in the Museum: same button as the Forge; the shelves leave room for it */
+.mu-atelier img{width:calc(var(--u) * 19); height:calc(var(--u) * 15)}
+#scr-museum #museumBody{padding-bottom:calc(var(--u) * 22)}
+
 /* Red back arrow (Forge → Character), stuck to the left edge like the menus' back buttons */
 .menu .scr-head .back.back-red{display:grid; place-items:center; width:calc(var(--u) * 17); min-height:calc(var(--u) * 13); padding:0; border:calc(var(--u) * .7) solid var(--outline); border-left:0;
   background:#f04a4a; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 #b8282f}
@@ -1396,10 +1400,9 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     </div>
   </div>
   <div class="home-hero" aria-hidden="true"><img src="Assets/Characters/Miner_Home.png" alt="" draggable="false"></div>
-  <!-- Buildings that have no tab in the bottom bar (the Shop only until its tab shows); the Forge is reached from the Character screen -->
+  <!-- Buildings that have no tab in the bottom bar (the Shop only until its tab shows); the Forge is reached from the Character screen, the Workshop from the Museum -->
   <div class="home-side">
     <button class="home-sc" data-go="shop" id="scShop" aria-label="Boutique"><span id="scShopIc"></span><b>Boutique</b><span class="badge" id="badgeShop" hidden>!</span></button>
-    <button class="home-sc" data-go="atelier" aria-label="Atelier"><span id="scAtelierIc"></span><b>Atelier</b><span class="badge" id="badgeAtelier" hidden>0</span></button>
     <button class="home-sc" data-go="altar" aria-label="Autel"><span id="scAltarIc"></span><b>Autel</b><span class="badge" id="badgeAltar" hidden>!</span></button>
   </div>
   <header class="v-hud">
@@ -1430,6 +1433,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 <div class="screen menu" id="scr-museum" hidden>
   <header class="scr-head"><h1>Musée</h1><div class="wallet-bar" data-money></div></header>
   <div class="card flat" id="museumBody"></div>
+  <div id="muActions"></div>
 </div>
 
 <div class="screen" id="scr-hero" hidden>
@@ -1495,7 +1499,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <img class="ws-hammer" id="mgHammer" src="Assets/Shops/HammerWorkshop.png" alt="" draggable="false">
     <div class="mg-bar" id="mgBar"><i class="mg-zone" id="mgZone"></i><img class="mg-cursor" id="mgCursor" src="Assets/Shops/Cursor%20workshop.png" alt="" draggable="false"></div>
     <button class="ws-tap" id="mgHit">Frapper</button>
-    <button class="ws-back" data-go="village" aria-label="Retour au village"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4 L3 12 L11 20 V15 H21 V9 H11Z" fill="#fff" stroke="#2b0a0a" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
+    <button class="ws-back" data-go="museum" aria-label="Retour au musée"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4 L3 12 L11 20 V15 H21 V9 H11Z" fill="#fff" stroke="#2b0a0a" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
     <div class="ws-msg" id="wsEmpty" hidden>Aucune géode à ouvrir. Trouve-en dans la mine !</div>
     <div class="ws-result" id="mgResult" hidden></div>
   </div>
@@ -4341,7 +4345,7 @@ $('icShop').innerHTML = img(OW + 'Shop.png' + OW_V, tr('Boutique'));
 $('icForge').innerHTML = img(OW + 'Forge.png' + OW_V, tr('Forge'));
 $('icAltar').innerHTML = ALTAR_ART;
 $('icAtelier').innerHTML = img(OW + 'Workshop.png' + OW_V, tr('Atelier'));
-$('scShopIc').innerHTML = img(OW + 'Shop.png' + OW_V); $('scAtelierIc').innerHTML = img(OW + 'Workshop.png' + OW_V); $('scAltarIc').innerHTML = ALTAR_ART;
+$('scShopIc').innerHTML = img(OW + 'Shop.png' + OW_V); $('scAltarIc').innerHTML = ALTAR_ART;
 const museumTotal = () => Object.keys(GEMS).length + Object.keys(ARTS).length;
 const museumOwned = () => [S.bag.gems, S.bag.arts].reduce((a, b) => a + Object.values(b).filter(Boolean).length, 0);
 /* ---------- Village goals (config.js > objectifs) and chapters (config.js > chapitres) ----------
@@ -4627,7 +4631,6 @@ function renderVillage() {
   $('subMuseum').textContent = tr('{a} / {b} trésors', { a: museumOwned(), b: museumTotal() });
   const g = S.bag.geodes.length;
   $('subAtelier').textContent = g ? tr(plural(g, '{n} géode', '{n} géodes'), { n: g }) : tr('Aucune géode');
-  $('badgeAtelier').hidden = !g; $('badgeAtelier').textContent = g;
   $('badgeAltar').hidden = !canPray() || !!(S.bldNew || {}).altar;
   $('badgeMuseum').hidden = !museumPrimeWaiting() || !!(S.bldNew || {}).museum;
   $('badgeShop').hidden = !S.buildings.shop || (!shopNew() && !chestReady()) || !!(S.bldNew || {}).shop;
@@ -4962,6 +4965,10 @@ function villageCoach() {
       { text: TX.batiments.forge, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden || !$('scr-forge').hidden },
       { text: TX.batiments.forge, target: () => document.querySelector('#scr-hero .eq-forge'), done: () => !$('scr-forge').hidden },
     ]);
+    if (k === 'atelier') return startCoach('bld-atelier', [
+      { text: TX.batiments.atelier, target: () => document.querySelector('.nav-tab[data-nav="museum"]'), done: () => !$('scr-museum').hidden || !$('scr-atelier').hidden },
+      { text: TX.batiments.atelier, target: () => document.querySelector('#scr-museum .mu-atelier'), done: () => !$('scr-atelier').hidden },
+    ]);
     const entry = () => { const sc = document.querySelector(`.home-sc[data-go="${k}"]`); return sc && !sc.hidden ? sc : document.querySelector(`.nav-tab[data-nav="${k === 'shop' ? 'premium' : k}"]`); };
     return startCoach('bld-' + k, [{ text: TX.batiments[k], target: entry, done: () => !$('scr-' + k).hidden }]);
   }
@@ -5029,6 +5036,10 @@ document.addEventListener('click', e => {
 });
 function renderMuseum() {
   setTimeout(museumCoach);
+  // The Workshop: a yellow tab on the left edge, like the Forge in the Character screen (badge = geodes to open)
+  const geo = S.bag.geodes.length;
+  $('muActions').innerHTML = S.buildings.atelier
+    ? `<button class="eq-forge mu-atelier" data-go="atelier" aria-label="${tr('Atelier')}">${img(OW + 'Workshop.png' + OW_V)}${geo ? `<span class="badge">${geo}</span>` : ''}</button>` : '';
   const shelf = ([sk, set]) => {
     const keys = setKeys(sk), tier = setTier(sk), book = setBook(sk), table = setTable(sk);
     const owned = keys.filter(k => book[k]).length;
