@@ -754,8 +754,8 @@ body.nav-on #scr-hero{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 button.eq-dmg{cursor:pointer}
 .eq-dmg img{width:calc(var(--u) * 6.2); height:calc(var(--u) * 6.2); object-fit:contain}
 .eq-dmg b{font-weight:inherit}
-/* Only the items scroll; the scene with the miner stays put. Room at the bottom for the Forge button */
-.eq-inv{flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; padding:calc(var(--u) * 9) var(--side) calc(var(--u) * 22)}
+/* Only the items scroll; the scene with the miner stays put */
+.eq-inv{flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; padding:calc(var(--u) * 9) var(--side) calc(var(--u) * 6)}
 .eq-inv::-webkit-scrollbar{display:none}
 #scr-hero .eq-soon{color:var(--ink-soft)}
 #scr-hero .gi-grid{grid-template-columns:repeat(4, 1fr); gap:calc(var(--u) * 3.8) calc(var(--u) * 3.7); margin:0}
@@ -765,8 +765,8 @@ button.eq-dmg{cursor:pointer}
 #scr-hero .gi-new{top:calc(var(--u) * -2); left:50%; transform:translateX(-50%); padding:0 calc(var(--u) * 1.4); border-radius:calc(var(--u) * 2); white-space:nowrap;
   font-size:calc(var(--u) * 2.4); line-height:calc(var(--u) * 4.2); box-shadow:0 0 0 calc(var(--u) * .45) #1d1a2b}
 #scr-hero .gi-new::before{content:"✦ "}
-#scr-hero .gi.better::after{content:""; top:calc(var(--u) * -1.6); right:calc(var(--u) * -1.2); width:calc(var(--u) * 5.4); height:calc(var(--u) * 5.4); border-radius:0;
-  background:url("Assets/UI/Icon_ArrowUp.png") center / contain no-repeat; box-shadow:none}
+#scr-hero .gi.better::after{content:""; top:calc(var(--u) * -1.6); right:calc(var(--u) * -1.2); width:calc(var(--u) * 6.4); height:calc(var(--u) * 6.4);
+  border-radius:50%; background:url("Assets/UI/Icon_Thumb.svg") 52% 45% / 56% no-repeat, #3aa8ec; box-shadow:0 0 0 calc(var(--u) * .6) #1d1a2b}
 /* The Forge: a yellow tab stuck to the left edge, just above the navigation bar */
 .eq-forge{position:fixed; z-index:41; left:0; bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + var(--u) * 2.5);
   width:calc(var(--u) * 24); height:calc(var(--u) * 17); display:grid; place-items:center; border:0; border-radius:0 calc(var(--u) * 4) calc(var(--u) * 4) 0;
@@ -794,10 +794,12 @@ button.eq-dmg{cursor:pointer}
 .gs-list li span:last-child{display:grid; gap:1px}
 .gs-ic{width:34px; height:34px; flex:none}
 .gs-ic img{width:100%; height:100%; object-fit:contain}
-.gs-btns{display:flex; align-items:center; gap:10px; margin-top:16px}
-.gs-btns > .btn{flex:1}
-.gs-up{flex:1.3; display:flex; align-items:center; justify-content:flex-end; gap:8px}
-.gs-up .btn{flex:none}
+.gs-more{margin-top:6px; padding:4px 2px; border:0; background:none; font:inherit; font-size:12px; font-weight:800; color:var(--ink-soft); text-decoration:underline; cursor:pointer}
+.gs-btns{display:grid; grid-template-columns:1fr 1fr; align-items:end; gap:10px; margin-top:16px}
+.gs-col{display:flex; flex-direction:column; align-items:stretch; gap:6px; min-width:0}
+.gs-col .maxed{text-align:center; padding:10px 0}
+.gs-cost{display:flex; justify-content:center; flex-wrap:wrap}
+.gs-cost .price{flex-wrap:wrap; justify-content:center}
 .gs-free{font-family:var(--font-display); font-size:14px; color:#2e9c6a}
 .gs-merge{margin-top:16px; padding-top:12px; border-top:2px dashed #e6d2b0}
 .gs-fod{display:flex; gap:10px}
@@ -805,6 +807,56 @@ button.eq-dmg{cursor:pointer}
 .gs-merge .btn.big{margin-top:12px; display:flex; align-items:center; justify-content:center; gap:8px}
 .gs-merge .btn .rar{background:#fff; padding:2px 8px; border-radius:9px; font-size:14px}
 .gs-hint{margin:8px 0 0; font-size:13px; color:var(--ink-soft)}
+/* Item sheet, sized on the mockup (in --u = 1 % of the phone width): the big card over the panel, Stats / Passive boxes,
+   cost, blue and yellow buttons, round close below. The panel always has the same height so the close button never moves. */
+#gearModal{overflow-y:auto; align-items:safe center}
+.gs-wrap{width:calc(var(--u) * 91.2); max-width:100%; display:flex; flex-direction:column; align-items:center; animation:popin .35s cubic-bezier(.3,1.5,.5,1)}
+.gs-wrap > .card{width:100%}
+.gs-big{position:relative; z-index:2; width:calc(var(--u) * 33.3); height:calc(var(--u) * 40.2); aspect-ratio:auto; margin-bottom:calc(var(--u) * -22.4); padding:0; border-radius:calc(var(--u) * 5); cursor:default}
+.gs-big .gi-art{width:80%; height:70%; margin-bottom:16%}
+.gs-big .gi-lv{bottom:6%; font-size:calc(var(--u) * 5.58); -webkit-text-stroke:calc(var(--u) * 1.17) var(--outline)}
+.gs-big .gi-s{top:8px; left:8px; transform:scale(1.3); transform-origin:top left}
+.card.gs-panel{display:flex; flex-direction:column; height:min(calc(var(--u) * 129.5), calc(100dvh - var(--u) * 40 - 32px)); max-height:none; overflow:visible;
+  padding:calc(var(--u) * 24) calc(var(--u) * 1.8) calc(var(--u) * 1.8); border-radius:calc(var(--u) * 7); background:#fdf0d8; border:calc(var(--u) * .5) solid #4a2c18; box-shadow:0 8px 24px rgba(0,0,0,.45); animation:none}
+.card.gs-panel > *{flex:none}
+.gs-name{text-align:center; margin:0!important; font-size:calc(var(--u) * 6.48)!important; line-height:1.05!important; color:#fff!important; -webkit-text-stroke:calc(var(--u) * 1.35) var(--outline); paint-order:stroke fill; overflow-wrap:anywhere}
+.gs-panel .gs-h{position:relative; z-index:1; display:flex; align-items:center; gap:calc(var(--u) * 1.2); margin:calc(var(--u) * 2) calc(var(--u) * 8) calc(var(--u) * -2.2) calc(var(--u) * 11.5); font-size:calc(var(--u) * 3.9); line-height:1.2; color:#6b4a2e}
+.gs-panel .gs-h svg{width:calc(var(--u) * 4.4); height:calc(var(--u) * 5.2); flex:none; margin-left:calc(var(--u) * -2.6)}
+.gs-box{margin:0 calc(var(--u) * 3.3); border-radius:calc(var(--u) * 6); background:#f0e2c6; padding:calc(var(--u) * 3.2) calc(var(--u) * 5)}
+.gs-statrow{display:flex; align-items:center; gap:calc(var(--u) * 2.4); height:calc(var(--u) * 16.3); box-sizing:border-box; padding-left:calc(var(--u) * 4.2)}
+.gs-sic{width:calc(var(--u) * 8.4); height:calc(var(--u) * 8.4); margin:calc(var(--u) * -1) 0; flex:none; display:grid; place-items:center}
+.gs-sic img,.gs-sic svg{width:100%; height:100%; object-fit:contain}
+.gs-slab{flex:1; min-width:0; font-family:var(--font-display); font-size:calc(var(--u) * 4.68); color:var(--ink)}
+.gs-statrow b{font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 6.6); color:var(--ink); white-space:nowrap}
+.card.gs-panel > .gs-pasbox{flex:0 1 auto; min-height:0; margin-bottom:calc(var(--u) * 3); overflow-y:auto; display:flex; flex-direction:column; align-items:flex-start; gap:calc(var(--u) * 1.4); padding:calc(var(--u) * 4.6) calc(var(--u) * 4.6) calc(var(--u) * 3.6)}
+.gs-pastxt{margin:0!important; font-family:var(--font-display); font-size:calc(var(--u) * 3.6)!important; line-height:1.3!important; color:var(--ink)!important}
+.gs-pastxt.off{color:#b39a80!important}
+.gs-pasbox .gs-pas{width:100%}
+.gs-pasbox .gs-pas li{font-size:calc(var(--u) * 3.2)}
+.gs-unlock{margin:0!important; font-family:var(--font-display); font-size:calc(var(--u) * 3.1)!important; line-height:1.25!important; color:var(--ink)!important}
+.gs-fusebtn{position:absolute; top:calc(var(--u) * 3); right:calc(var(--u) * 3); width:calc(var(--u) * 13); height:calc(var(--u) * 13); padding:calc(var(--u) * 1.6); border:calc(var(--u) * .6) solid var(--outline); border-radius:calc(var(--u) * 4);
+  background:#f0e2c6; box-shadow:inset 0 calc(var(--u) * -1.1) 0 #d9bf93; cursor:pointer; display:grid; place-items:center}
+.gs-fusebtn img{width:100%; height:100%; object-fit:contain; filter:grayscale(.6); opacity:.7}
+.gs-fusebtn.on{background:linear-gradient(#ffe100, #ffc400); box-shadow:inset 0 calc(var(--u) * -1.1) 0 #ffa200}
+.gs-fusebtn.on img{filter:none; opacity:1}
+.gs-fusebtn .badge{position:absolute; top:calc(var(--u) * -2); right:calc(var(--u) * -2)}
+.gs-fusebtn:active{transform:translateY(2px)}
+.gs-more{margin-left:auto; padding:0; border:0; background:none; font:inherit; font-size:calc(var(--u) * 3); font-weight:800; color:#8a6a50; text-decoration:underline; cursor:pointer}
+.card.gs-panel > .gs-cost{margin-top:auto; display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:calc(var(--u) * 1) calc(var(--u) * 6); height:calc(var(--u) * 10.6); box-sizing:border-box; padding:0 calc(var(--u) * 4);
+  border-radius:calc(var(--u) * 5); font-family:var(--font-display); font-size:calc(var(--u) * 4.2); color:var(--ink); font-variant-numeric:tabular-nums}
+.gs-pasbox + .gs-cost{margin-top:auto}
+.gs-res{display:flex; align-items:center; gap:calc(var(--u) * 1.2); white-space:nowrap}
+.gs-res img{width:calc(var(--u) * 5); height:calc(var(--u) * 5); object-fit:contain}
+.gs-res.short{color:#d9432a}
+.gs-cost .gs-free{font-size:calc(var(--u) * 4.2)}
+.gs-panel .gs-btns{display:grid; grid-template-columns:1fr 1fr; gap:calc(var(--u) * 2.7); margin-top:calc(var(--u) * 4)}
+.gs-btn{height:calc(var(--u) * 18.2); padding:0 calc(var(--u) * 2); border:calc(var(--u) * .6) solid var(--outline); border-radius:calc(var(--u) * 5); cursor:pointer; font-family:var(--font-display); font-size:calc(var(--u) * 5.58); color:#fff;
+  -webkit-text-stroke:calc(var(--u) * 1.26) var(--outline); paint-order:stroke fill; background:linear-gradient(#ffe100, #ffc400); box-shadow:inset 0 calc(var(--u) * -1.3) 0 #ffa200}
+.gs-btn.blue{background:linear-gradient(#22c6ff, #08a8f4); box-shadow:inset 0 calc(var(--u) * -1.3) 0 #0a7fd6}
+.gs-btn:active{transform:translateY(2px)}
+.gs-btn:disabled{filter:grayscale(.7); opacity:.6; cursor:default; transform:none}
+.gs-close{margin-top:calc(var(--u) * 5.5); width:calc(var(--u) * 16.3); height:calc(var(--u) * 16.3); flex:none; border:calc(var(--u) * .7) solid var(--outline); border-radius:50%; background:linear-gradient(#ffffff, #dfe3ea); box-shadow:inset 0 calc(var(--u) * -1.2) 0 #b9c0cc, 0 4px 12px rgba(0,0,0,.35); cursor:pointer; display:grid; place-items:center; padding:0}
+.gs-close svg{width:55%; height:55%}
 /* Forge tabs */
 .forge-tabs{flex:none}
 .shop-tabs{flex:none} .shop-tabs button{position:relative; flex:1} .shop-tabs .badge{top:-6px; right:-4px}
@@ -871,6 +923,27 @@ button.eq-dmg{cursor:pointer}
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M40 10 L28 60 L44 60 L30 110' stroke='%23ff4040' stroke-width='5' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M165 30 L150 75 L168 76 L152 125' stroke='%23ffb0b0' stroke-width='4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
 @keyframes bolts{0%{opacity:1} 12%{opacity:0} 40%{opacity:.8; transform:scaleX(-1)} 52%{opacity:0} 100%{opacity:0}}
 .cm-btns{display:flex; flex-direction:column; gap:10px; width:min(280px, 100%)}
+/* Merge animation */
+.chest-modal{--mg:#fff}
+.chest-modal.r-common{--mg:#7ff0a3} .chest-modal.r-rare{--mg:#8cc4ff} .chest-modal.r-epic{--mg:#d9adff} .chest-modal.r-legendary{--mg:#ffd24a} .chest-modal.r-mythic{--mg:#ff6b6b}
+.chest-modal.merging .cm-item{animation:none}
+.mg-stage{position:relative; width:min(340px, 90vw); height:200px}
+.mg-card{position:absolute; left:50%; top:50%; width:96px; margin:-48px 0 0 -48px; cursor:default}
+.mg-c0{--x:-112px; animation:mgIn .3s cubic-bezier(.2,1.6,.4,1) both, mgSide 1s .45s cubic-bezier(.6,0,.9,.6) forwards}
+.mg-c2{--x:112px; animation:mgIn .3s .1s cubic-bezier(.2,1.6,.4,1) both, mgSide 1s .55s cubic-bezier(.6,0,.9,.6) forwards}
+.mg-c1{--x:0px; z-index:2; animation:mgIn .3s .05s cubic-bezier(.2,1.6,.4,1) both, mgShake .12s .5s linear 8, mgCharge 1.05s .45s ease-in forwards}
+@keyframes mgIn{from{transform:translateX(var(--x)) scale(.3); opacity:0} to{transform:translateX(var(--x)) scale(1); opacity:1}}
+@keyframes mgSide{0%{transform:translateX(var(--x)) scale(1); opacity:1} 15%{transform:translateX(calc(var(--x) * 1.15)) scale(1) rotate(0)} 100%{transform:translateX(0) scale(.7) rotate(calc(var(--x) / 4 * 1deg)); opacity:0}}
+@keyframes mgShake{0%,100%{translate:0} 25%{translate:-4px 0} 75%{translate:4px 0}}
+@keyframes mgCharge{0%{filter:none; transform:scale(1)} 100%{filter:brightness(2.2) drop-shadow(0 0 18px var(--mg)); transform:scale(1.15)}}
+.mg-glow{position:absolute; left:50%; top:50%; width:220px; height:220px; margin:-110px 0 0 -110px; border-radius:50%; pointer-events:none; opacity:0;
+  background:radial-gradient(circle, var(--mg) 0, transparent 65%); animation:mgGlow 1.1s .45s ease-in forwards}
+@keyframes mgGlow{to{opacity:.9; transform:scale(1.4)}}
+.mg-spark{position:absolute; left:50%; top:50%; width:8px; height:8px; margin:-4px; border-radius:50%; background:#fff; box-shadow:0 0 8px 2px var(--mg); opacity:0;
+  animation:mgSpark .7s 1.3s ease-out forwards}
+@keyframes mgSpark{0%{opacity:1; transform:rotate(var(--a)) translateY(0) scale(1.4)} 100%{opacity:0; transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) scale(.4)}}
+.mg-flash{position:absolute; inset:0; z-index:3; pointer-events:none; background:radial-gradient(circle at 50% 45%, #fff 0, var(--mg, #fff) 30%, transparent 75%); animation:mgFlash .6s ease-out forwards}
+@keyframes mgFlash{0%{opacity:1} 100%{opacity:0}}
 .cm-btns .btn{width:100%}
 .ad-modal .card{text-align:center; color:var(--ink)}
 .ad-modal b{display:block; font-family:var(--font-display); font-size:56px; color:var(--lava)}
@@ -1147,7 +1220,9 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .gi-lv{bottom:3px; transform:translateX(-50%); padding:0; background:none; color:#fff; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill}
 .gi-new{box-shadow:0 0 0 2px var(--outline); white-space:nowrap}
 .gi-new::before{content:"✦ "}
-.gi.better::after{content:""; width:24px; height:24px; border-radius:0; background:url("Assets/UI/Icon_ArrowUp.png") center / contain no-repeat; box-shadow:none}
+.gi.better::after{content:""; width:24px; height:24px; border-radius:50%; background:url("Assets/UI/Icon_Thumb.svg") 52% 45% / 56% no-repeat, #3aa8ec; box-shadow:0 0 0 2px #1d1a2b}
+/* Recommended item in its sheet: the thumb on the big card's corner */
+.gi.gs-big.better::after{top:calc(var(--u) * -1.5); right:calc(var(--u) * -1.5); width:calc(var(--u) * 10); height:calc(var(--u) * 10); box-shadow:0 0 0 calc(var(--u) * .7) #1d1a2b}
 
 /* ---------- Art direction in the mine: cream buttons with one dark outline (a real border, so no light fringe
    shows outside it) and a darker strip inside at the bottom; the selected tool in yellow ---------- */
@@ -1490,21 +1565,21 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   box-shadow:inset 0 -6px 0 var(--sun-edge)}
 .lf-go:active{transform:translateY(2px); box-shadow:inset 0 -2px 0 var(--sun-edge)}
 
-/* Character screen: the top part (scene, miner, slots) about 30% lower, so the inventory has more room to scroll */
-.eq-top{padding-top:calc(env(safe-area-inset-top, 0px) + var(--u) * 2); padding-bottom:calc(var(--u) * 2.5)}
-.eq-stage{grid-template-columns:calc(var(--u) * 13.3) 1fr calc(var(--u) * 13.3); margin-top:calc(var(--u) * 2)}
-.eq-col{gap:calc(var(--u) * 1.75)}
-.eq-slot{width:calc(var(--u) * 13.3); height:calc(var(--u) * 16.1); padding-top:calc(var(--u) * 1.7); border-radius:calc(var(--u) * 2)}
-.eq-ic{width:calc(var(--u) * 10.2); height:calc(var(--u) * 10.2)}
-.eq-lv{bottom:calc(var(--u) * 1.5); font-size:calc(var(--u) * 2.6); -webkit-text-stroke:calc(var(--u) * .6) #1d1a2b}
-.eq-slot.locked .eq-ic b{font-size:calc(var(--u) * 5)}
-.eq-slot.locked .eq-lv{font-size:calc(var(--u) * 2)}
-.eq-hero img{height:calc(var(--u) * 43)}
-.eq-name{font-size:calc(var(--u) * 4.4)}
-.eq-stats{margin-top:calc(var(--u) * .6)}
-.eq-dmg{height:calc(var(--u) * 7); font-size:calc(var(--u) * 4); gap:calc(var(--u) * 3.5)}
-.eq-dmg img{width:calc(var(--u) * 5); height:calc(var(--u) * 5)}
-#scr-hero .eq-slot .badge{min-width:calc(var(--u) * 3.8); height:calc(var(--u) * 3.8); font-size:calc(var(--u) * 2.4)}
+/* Character screen: the top part (scene, miner, slots) about 20% lower than the original, so the inventory has more room to scroll */
+.eq-top{padding-top:calc(env(safe-area-inset-top, 0px) + var(--u) * 2.2); padding-bottom:calc(var(--u) * 2.75)}
+.eq-stage{grid-template-columns:calc(var(--u) * 14.63) 1fr calc(var(--u) * 14.63); margin-top:calc(var(--u) * 2.2)}
+.eq-col{gap:calc(var(--u) * 1.93)}
+.eq-slot{width:calc(var(--u) * 14.63); height:calc(var(--u) * 17.71); padding-top:calc(var(--u) * 1.87); border-radius:calc(var(--u) * 2.2)}
+.eq-ic{width:calc(var(--u) * 11.22); height:calc(var(--u) * 11.22)}
+.eq-lv{bottom:calc(var(--u) * 1.65); font-size:calc(var(--u) * 2.86); -webkit-text-stroke:calc(var(--u) * 0.66) #1d1a2b}
+.eq-slot.locked .eq-ic b{font-size:calc(var(--u) * 5.5)}
+.eq-slot.locked .eq-lv{font-size:calc(var(--u) * 2.2)}
+.eq-hero img{height:calc(var(--u) * 47.3)}
+.eq-name{font-size:calc(var(--u) * 4.84)}
+.eq-stats{margin-top:calc(var(--u) * 0.66)}
+.eq-dmg{height:calc(var(--u) * 7.7); font-size:calc(var(--u) * 4.4); gap:calc(var(--u) * 3.85)}
+.eq-dmg img{width:calc(var(--u) * 5.5); height:calc(var(--u) * 5.5)}
+#scr-hero .eq-slot .badge{min-width:calc(var(--u) * 4.18); height:calc(var(--u) * 4.18); font-size:calc(var(--u) * 2.64)}
 /* The Forge button: same look as the other buttons (black outline, solid inner bottom edge), still stuck to the left edge */
 .eq-forge{border:calc(var(--u) * .7) solid var(--outline); border-left:0; background:var(--sun); background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 var(--sun-edge)}
 .eq-forge:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 var(--sun-edge)}
@@ -1807,7 +1882,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 </div>
 
 <!-- Equipment: item sheet, chest opening, fake ad -->
-<div class="modal" id="gearModal" hidden><div class="card gear-card" id="gearCard" role="dialog" aria-label="Objet"></div></div>
+<div class="modal" id="gearModal" hidden><div class="gs-wrap" id="gearCard" role="dialog" aria-label="Objet"></div></div>
 <div class="modal chest-modal" id="chestModal" hidden>
   <div class="cm" role="dialog" aria-label="Coffre">
     <p class="cm-title" id="chestTitle"></p>
@@ -2895,6 +2970,8 @@ function sfx(k) {
       case 'win': [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone(f, .3, 'triangle', .12, i * .1)); break;
       case 'boom': noise(.6, 220, .5, .7, 'lowpass'); tone(110, .45, 'sine', .35, 0, 35); break;
       case 'pick': tone(700, .05, 'sine', .07); break;
+      case 'charge': tone(260, 1.1, 'triangle', .07, 0, 1100); tone(390, 1.1, 'sine', .04, .1, 1500); noise(1.1, 2500, .5, .06, 'highpass'); break;
+      case 'fuse': noise(.45, 1800, .6, .3); [1047, 1319, 1568, 2093].forEach((f, i) => tone(f, .25, 'sine', .09, i * .05)); break;
       case 'descend': tone(520, .38, 'triangle', .09, 0, 190); noise(.3, 900, .8, .12, 'lowpass'); tone(330, .2, 'sine', .08, .3); break;
     }
   } catch (e) {}
@@ -3803,8 +3880,9 @@ function mergeCore(it, fod) {
 }
 function merge(it) {
   const fod = mergeFodder(it); if (!fod) return;
+  const cards = [it, ...fod].map(x => ({ arch: x.arch, rar: x.rar }));   // as they were, before the merge
   mergeCore(it, fod); $('gearModal').hidden = true;
-  save(); refreshGear(); showReveal(it, null);
+  save(); refreshGear(); showMergeAnim(cards, it);
 }
 // Auto-merge: every identical Common and Rare trio (the highest level of each trio is kept)
 function autoMerge() {
@@ -3961,6 +4039,29 @@ function showReveal(it, chest) {
   $('chestBtn').hidden = true; $('chestModal').className = 'modal chest-modal'; $('chestModal').hidden = false;
   unlockAudio(); sfx('win'); revealItem(it);
 }
+// Merge animation: the three cards pop in, slide together while the middle one shakes and glows
+// in the new rarity's colour, a flash with sparks, then the usual reveal (tap to skip)
+let mergeTimer = 0, mergeDone = null;
+function showMergeAnim(cards, it) {
+  cmItem = it; cmItems = [it]; cmChest = null;
+  const m = $('chestModal');
+  m.className = 'modal chest-modal merging r-' + RAR_CSS[it.rar]; m.hidden = false;
+  $('chestTitle').textContent = tr('Fusion…');
+  $('chestBtn').hidden = true; $('chestBtns').hidden = true;
+  const order = [cards[1], cards[0], cards[2]];   // the kept item in the middle
+  $('chestItem').innerHTML = `<div class="mg-stage">${order.map((c, i) => `<div class="gi big r-${RAR_CSS[c.rar]} mg-card mg-c${i}">${gearArt(c.arch)}${sBadge(c.rar)}</div>`).join('')}
+    <div class="mg-glow"></div>${Array.from({ length: 14 }, (_, i) => `<i class="mg-spark" style="--a:${i * 360 / 14}deg; --d:${70 + (i % 3) * 30}px"></i>`).join('')}</div>`;
+  $('chestItem').hidden = false;
+  unlockAudio(); sfx('pick'); setTimeout(() => sfx('charge'), 350);
+  clearTimeout(mergeTimer);
+  mergeDone = () => {
+    clearTimeout(mergeTimer); mergeDone = null; sfx('fuse');
+    const f = document.createElement('div'); f.className = 'mg-flash'; m.appendChild(f); f.addEventListener('animationend', () => f.remove());
+    showReveal(it, null);
+  };
+  mergeTimer = setTimeout(() => mergeDone && mergeDone(), 1550);
+}
+$('chestModal').addEventListener('click', e => { if (mergeDone && !e.target.closest('[data-cm]')) mergeDone(); });
 $('chestBtn').addEventListener('click', crackChest);
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-cm]'); if (!b) return;
@@ -3972,40 +4073,60 @@ document.addEventListener('click', e => {
 });
 
 /* ---------- Equipment: item sheet (tap an item anywhere) ---------- */
-let sheetId = null;
+let sheetId = null, sheetAllTiers = false;
 function openSheet(id) {
-  sheetId = id; const it = gearItem(id);
+  sheetId = id; sheetAllTiers = false; const it = gearItem(id);
   if (it && it.isNew) { it.isNew = false; save(); }
   renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick');
 }
 const gcard = (it, cls = '') => `<button class="gi r-${RAR_CSS[it.rar]} ${cls}" data-gi="${it.id}" aria-label="${itemName(it)} ${rarLabel(it.rar)}"><span class="gi-art">${gearArt(it.arch)}</span><span class="gi-lv">${tr('Niv. {n}', { n: it.lv })}</span>${sBadge(it.rar)}${it.isNew ? `<span class="gi-new">${tr('Nouveau')}</span>` : ''}${isEquipped(it) ? '<span class="gi-on">✓</span>' : ''}</button>`;
+// Icon of each slot's main stat, in the item sheet
+const STAT_ICON = { pioche: () => img('Assets/UI/Icon_Damage.png'), pelle: () => resArt('coin'), gants: () => resArt('copper'), casque: () => BOLT, lanterne: () => geodeArt('gold'), bottes: () => img('Assets/UI/Icon_Gold.png') };
+const LOCK_SVG = '<svg viewBox="0 0 24 28" aria-hidden="true"><path d="M6 12V8a6 6 0 0 1 12 0v4" fill="none" stroke="#1d1a2b" stroke-width="3.2"/><rect x="2" y="11" width="20" height="15" rx="4" fill="#fff" stroke="#1d1a2b" stroke-width="2.6"/><circle cx="12" cy="17.5" r="2.4" fill="#1d1a2b"/><path d="M12 18v4" stroke="#1d1a2b" stroke-width="2.6" stroke-linecap="round"/></svg>';
+// Upgrade cost: coins as an amount, ores as « owned / needed » (red when short)
+const sheetCostHTML = cost => Object.entries(cost).map(([k, n]) => {
+  const h = haveRes(k), short = h < n ? ' short' : '';
+  return `<span class="gs-res${short}">${resArt(k)}${k === 'coin' ? nfG(n) : `${nfG(h)} / ${nfG(n)}`}</span>`;
+}).join('');
 function renderSheet() {
   if (sheetId === 'stats') return renderStatsSheet();
   const it = gearItem(sheetId); if (!it) { $('gearModal').hidden = true; return; }
   const a = ARCH[it.arch], r = RAR_CSS[it.rar], cap = capOf(it), maxed = it.lv >= cap, cost = levelCost(it), free = upFree();
-  const next = maxed ? null : statOf({ ...it, lv: it.lv + 1 });
-  const tiers = PAS_TIERS.map((rr, i) => `<li class="${rarIdx(it.rar) >= rarIdx(rr) ? 'on' : 'off'}">${rarTagG(rr)}<span>${passiveTxt(it.arch, a.valeurs[Math.min(i, a.valeurs.length - 1)])}</span></li>`).join('');
-  const fod = mergeFodder(it), nr = nextRar(it.rar);
-  $('gearCard').innerHTML = `<button class="x" data-gclose aria-label="${tr('Fermer')}">×</button>
-    <div class="gs-head"><div class="gi big r-${r}">${gearArt(it.arch)}${sBadge(it.rar)}</div>
-      <div><h2 class="rar rar-${r}">${itemName(it)}</h2><p>${rarTagG(it.rar)} · ${slotName(it.slot)}</p><p class="gs-lv">${tr('Niveau {n} / {m}', { n: it.lv, m: cap })}</p></div></div>
-    <div class="gs-stat"><b>${statTxt(it.slot, statOf(it))}</b>${next != null ? `<span>${tr('Niveau suivant : {x}', { x: statTxt(it.slot, next) })}</span>` : ''}</div>
-    <p class="gs-h">${tr('Passif du modèle (dès Épique)')}</p><ul class="gs-pas">${tiers}</ul>
-    <div class="gs-btns">
-      ${isEquipped(it) ? `<button class="btn ghosty" data-gunequip>${tr('Retirer')}</button>` : `<button class="btn" data-gequip id="gEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>`}
-      ${maxed ? `<span class="maxed">${tr('Niveau max')}</span>` : `<div class="gs-up">${free ? `<span class="gs-free">${tr('Offert')}</span>` : priceHTML(cost)}<button class="btn" data-gup id="gUp" ${canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button></div>`}
+  const st = EQC.emplacements[it.slot].stat, v = statOf(it);
+  const active = rarIdx(it.rar) >= rarIdx(PAS_TIERS[0]);
+  const tier = (rr, i) => `<li class="${rarIdx(it.rar) >= rarIdx(rr) ? 'on' : 'off'}">${rarTagG(rr)}<span>${passiveTxt(it.arch, a.valeurs[Math.min(i, a.valeurs.length - 1)])}</span></li>`;
+  // One line: the active passive, or the first one to unlock; every rarity behind a button
+  const pi = Math.max(0, PAS_TIERS.indexOf(it.rar));
+  const pas = sheetAllTiers ? `<ul class="gs-pas">${PAS_TIERS.map(tier).join('')}</ul>`
+    : `<p class="gs-pastxt${active ? '' : ' off'}">${passiveTxt(it.arch, a.valeurs[Math.min(pi, a.valeurs.length - 1)])}</p>`;
+  const nr = nextRar(it.rar), fod = mergeFodder(it), n = EQC.fusion.nombre;
+  const how = bySlot(it.rar) ? tr('Fusionner {n} objets « {s} »', { n, s: slotName(it.slot) }) : tr('Fusionner {n} identiques', { n });
+  const hint = !nr ? '' : `<p class="gs-unlock">${active ? tr('{x} pour l\'améliorer', { x: how }) : tr('{x} pour débloquer', { x: how })}</p>`;
+  $('gearCard').innerHTML = `
+    <div class="gi gs-big r-${r}${better(it) ? ' better' : ''}"><span class="gi-art">${gearArt(it.arch)}</span>${sBadge(it.rar)}<span class="gi-lv">${tr('Niveau {n}', { n: it.lv })}</span></div>
+    <div class="card gear-card gs-panel">
+      ${nr ? `<button class="gs-fusebtn${fod ? ' on' : ''}" data-gmerge aria-label="${tr('Fusionner')}">${img('Assets/UI/Icon_Forge.png')}${fod ? '<span class="badge">!</span>' : ''}</button>` : ''}
+      <h2 class="gs-name">${itemName(it)}</h2>
+      <p class="gs-h">${tr('Stats')}</p>
+      <div class="gs-box gs-statrow"><span class="gs-sic">${STAT_ICON[it.slot]()}</span><span class="gs-slab">${tr(st.court)}</span><b>${st.nombre ? nfG(v) : pctG(v)}</b></div>
+      <p class="gs-h">${active ? '' : LOCK_SVG}${tr('Passif')}<button class="gs-more" data-gtiers>${sheetAllTiers ? tr('Masquer') : tr('Toutes les raretés')}</button></p>
+      <div class="gs-box gs-pasbox">${pas}${hint}</div>
+      <div class="gs-box gs-cost">${maxed ? `<span class="gs-free">${tr('Niveau max')}</span>` : free ? `<span class="gs-free">${tr('Offert')}</span>` : sheetCostHTML(cost)}</div>
+      <div class="gs-btns">
+        ${isEquipped(it) ? `<button class="gs-btn blue" data-gunequip>${tr('Retirer')}</button>` : `<button class="gs-btn blue" data-gequip id="gEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>`}
+        <button class="gs-btn" data-gup id="gUp" ${!maxed && canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button>
+      </div>
     </div>
-    <div class="gs-merge">${fod ? `<p class="gs-h">${tr('Fusionner avec')}</p><div class="gs-fod">${fod.map(f => gcard(f)).join('')}</div>
-      <button class="btn big" data-gmerge>${tr('Fusionner')} → ${rarTagG(nr)}</button>` : `<p class="gs-hint">${mergeHint(it)}</p>`}</div>`;
+    <button class="gs-close" data-gclose aria-label="${tr('Fermer')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#1d1a2b" stroke-width="7" stroke-linecap="round"/><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></button>`;
 }
 // Every bonus of the equipped items, in one list
 function renderStatsSheet() {
   const T = gearTotals();
   const rows = GSLOTS.filter(sk => slotOpen(sk)).map(sk => { const it = equipped(sk); return `<li><span class="gs-ic">${it ? gearArt(it.arch) : slotArt(sk)}</span><span><b>${slotName(sk)}</b>${it ? statTxt(sk, statOf(it)) : tr('Rien d\'équipé')}</span></li>`; }).join('');
   const pas = Object.entries(T.pas).map(([ak, v]) => `<li><span class="gs-ic">${gearArt(ak)}</span><span><b>${tr(ARCH[ak].nom)}</b>${passiveTxt(ak, v)}</span></li>`).join('');
-  $('gearCard').innerHTML = `<button class="x" data-gclose aria-label="${tr('Fermer')}">×</button><h2>${tr('Tes bonus')}</h2>
+  $('gearCard').innerHTML = `<div class="card gear-card"><button class="x" data-gclose aria-label="${tr('Fermer')}">×</button><h2>${tr('Tes bonus')}</h2>
     <ul class="gs-list">${rows}</ul>${pas ? `<p class="gs-h">${tr('Passifs actifs')}</p><ul class="gs-list">${pas}</ul>` : ''}
-    <p class="gs-hint">${(BAG_FREE ? tr('Énergie max {e} · Dégâts de la pioche {d}', { e: maxE(), d: nfG(Math.round(pickPower())) }) : tr('Énergie max {e} · Sac {b} cases · Dégâts de la pioche {d}', { e: maxE(), b: bagCap(), d: nfG(Math.round(pickPower())) }))}</p>`;
+    <p class="gs-hint">${(BAG_FREE ? tr('Énergie max {e} · Dégâts de la pioche {d}', { e: maxE(), d: nfG(Math.round(pickPower())) }) : tr('Énergie max {e} · Sac {b} cases · Dégâts de la pioche {d}', { e: maxE(), b: bagCap(), d: nfG(Math.round(pickPower())) }))}</p></div>`;
 }
 document.addEventListener('click', e => {
   const t = e.target;
@@ -4014,8 +4135,9 @@ document.addEventListener('click', e => {
   const it = gearItem(sheetId);
   if (t.closest('[data-gequip]')) { equip(it); return; }
   if (t.closest('[data-gunequip]') && it) { delete G().eq[it.slot]; sfx('pick'); refreshGear(); save(); return; }
+  if (t.closest('[data-gtiers]')) { sheetAllTiers = !sheetAllTiers; sfx('pick'); renderSheet(); return; }
   if (t.closest('[data-gup]')) return levelUp(it);
-  if (t.closest('[data-gmerge]')) return merge(it);
+  if (t.closest('[data-gmerge]')) { if (mergeFodder(it)) return merge(it); unlockAudio(); sfx('deny'); return toast(mergeHint(it), ''); }
   const up = t.closest('[data-gupid]'); if (up && !up.disabled) return levelUp(gearItem(+up.dataset.gupid));
   if (t.closest('[data-gstats]')) { sheetId = 'stats'; renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick'); return; }
   const sl = t.closest('[data-eqslot]');
@@ -4053,7 +4175,7 @@ function renderHero() {
   const slot = sk => {
     const it = equipped(sk), d = EQC.emplacements[sk].deblocage;
     if (!open || !slotOpen(sk)) return `<button class="eq-slot locked" data-eqslot="${sk}" aria-label="${slotName(sk)}"><span class="eq-ic"><b>?</b></span>${open && d ? `<span class="eq-lv">${tr('Niv. {n}', { n: UNLOCK[d] })}</span>` : ''}</button>`;
-    const up = G().items.some(x => x.slot === sk && better(x));
+    const up = G().items.some(x => x.slot === sk && better(x)) || (it && !!mergeFodder(it));
     if (!it) return `<button class="eq-slot empty" data-eqslot="${sk}" id="eqs-${sk}" aria-label="${slotName(sk)}"><span class="eq-ic">${slotArt(sk)}</span>${up ? '<span class="badge">!</span>' : ''}</button>`;
     return `<button class="eq-slot r-${RAR_CSS[it.rar]}" data-gi="${it.id}" id="eqs-${sk}" aria-label="${slotName(sk)}"><span class="eq-ic">${gearArt(it.arch)}</span><span class="eq-lv">${tr('Niv. {n}', { n: it.lv })}</span>${sBadge(it.rar)}${up ? '<span class="badge">!</span>' : ''}</button>`;
   };
@@ -4063,14 +4185,19 @@ function renderHero() {
   const dmg = nfG(Math.round(pickPower()));
   $('eqStats').innerHTML = !has('pioche') ? ''
     : `<${open ? 'button data-gstats' : 'span'} class="eq-dmg" title="${tr('Dégâts')}">${img('Assets/UI/Icon_Damage.png')}<b>${dmg}</b></${open ? 'button' : 'span'}>`;
-  // The Forge: a floating button at the bottom left
-  $('eqActions').innerHTML = open
-    ? `<button class="eq-forge" data-go="forge" aria-label="${tr('Forge')}">${img('Assets/UI/Icon_Forge.png')}${gearForgeReady() ? '<span class="badge">!</span>' : ''}</button>` : '';
+  // (no Forge button any more: levelling up and merging happen in the item sheet)
+  $('eqActions').innerHTML = '';
   const list = G().items.filter(it => !isEquipped(it)).sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot) || b.lv - a.lv);
   $('eqInv').innerHTML = !open ? `<p class="eq-soon">${tr('L\'équipement arrive avec la Forge, au niveau {n}.', { n: UNLOCK.forge })}</p>`
-    : list.length ? `<div class="gi-grid">${list.map(it => gcard(it, better(it) ? 'better' : '')).join('')}</div>`
+    : list.length ? `<div class="gi-grid">${list.map(it => gcard(it, better(it) ? 'better' : mergeFodder(it) ? 'can' : '')).join('')}</div>`
     : `<p class="eq-soon">${tr('Les objets que tu trouves dans les coffres arrivent ici.')}</p>`;
   $('navHeroBadge').hidden = !open || !heroBadge();
+  // First merge possible: the item, then the merge button of its sheet
+  const mergeable = open && G().items.find(it => mergeFodder(it));
+  if (mergeable && !S.tutoSeen['eq-fusion'] && !$('scr-hero').hidden) startCoach('eq-fusion', [
+    { text: TXE.fusionner, target: () => document.querySelector(`#scr-hero [data-gi="${mergeable.id}"]`), done: () => G().merges > 0 || !$('gearModal').hidden },
+    { text: TXE.fusionner, target: () => document.querySelector('.gs-fusebtn.on'), done: () => G().merges > 0 },
+  ]);
 }
 
 /* ---------- Forge: level up and merge ---------- */
@@ -5191,10 +5318,9 @@ function villageCoach() {
   // A building that just appeared: the camera goes to it, then the player enters it
   const k = ['museum', 'shop', 'forge', 'atelier', 'altar'].find(k => S.buildings[k] && (S.bldNew || {})[k] && !S.tutoSeen['bld-' + k]);
   if (k) {
-    // The Forge is in the Character screen: the hand shows that tab, then the Forge button
+    // The equipment is in the Character screen: the hand shows that tab
     if (k === 'forge') return startCoach('bld-forge', [
-      { text: TX.batiments.forge, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden || !$('scr-forge').hidden },
-      { text: TX.batiments.forge, target: () => document.querySelector('#scr-hero .eq-forge'), done: () => !$('scr-forge').hidden },
+      { text: TX.batiments.forge, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden },
     ]);
     if (k === 'atelier') return startCoach('bld-atelier', [
       { text: TX.batiments.atelier, target: () => document.querySelector('.nav-tab[data-nav="museum"]'), done: () => !$('scr-museum').hidden || !$('scr-atelier').hidden },

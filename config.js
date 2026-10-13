@@ -306,7 +306,7 @@ window.CONFIG = {
       descendre: "Descends dans la mine",             // tout premier lancement, au village
       batiments: {                                    // quand un bâtiment apparaît au village
         museum: "Entre dans ton Musée",
-        forge: "Entre dans la Forge",
+        forge: "Découvre ton équipement",
         atelier: "Entre dans l'Atelier",
         shop: "Entre dans la Boutique",
         altar: "Entre dans l'Autel de la montagne",
@@ -324,7 +324,7 @@ window.CONFIG = {
         personnage: "Va voir ton équipement",          // onglet Personnage
         toucherObjet: "Touche ta pioche",              // la pioche sur le mineur
         ameliorer: "Améliore-la, c'est offert !",      // bouton Améliorer de la fiche
-        fusionner: "Fusionne 3 objets identiques",     // 1re fusion possible, à la Forge
+        fusionner: "Fusionne 3 objets identiques",     // 1re fusion possible (écran Personnage, puis la fiche de l'objet)
       },
       // Premiers pas (niveaux 1 à 16)
       sac: "Tes trésors vont dans ton sac",           // 1er trésor ramassé (touche pour continuer)
@@ -645,6 +645,7 @@ window.CONFIG = {
 
     // Les 6 emplacements. "deblocage" = la nouveauté qui le fait apparaître dans les coffres
     // (mêmes noms que progression > deblocages ; null = dès l'ouverture de l'équipement).
+    // "court" = nom court de la stat, affiché avec sa valeur dans la fiche de l'objet.
     // Stat principale = (depart + parNiveau × (niveau − 1)) × multiplicateur de la rareté, sans dépasser "max".
     // Les pourcentages sont écrits en décimal : 0.1 = 10 % ("nombre: true" = un nombre, pas un pourcentage).
     // "modeles" = les archétypes de l'emplacement. "biome" = biome à partir duquel il sort des coffres.
@@ -653,7 +654,7 @@ window.CONFIG = {
     emplacements: {
       pioche: {
         nom: 'Pioche', deblocage: 'pioche',
-        stat: { texte: '+{v} dégâts par coup', depart: 3, parNiveau: 0.5, nombre: true },   // arrondi à l'entier
+        stat: { court: 'Dégâts', texte: '+{v} dégâts par coup', depart: 3, parNiveau: 0.5, nombre: true },   // arrondi à l'entier
         modeles: {
           picLourd:  { nom: 'Pic lourd',  biome: 1, passif: '{v} de chance de frapper deux fois plus fort', valeurs: [0.12, 0.16, 0.2, 0.25, 0.3] },
           picEclats: { nom: 'Pic à éclats', biome: 2, passif: '{v} de chance de casser aussi une roche voisine', valeurs: [0.12, 0.17, 0.22, 0.275, 0.33] },
@@ -662,7 +663,7 @@ window.CONFIG = {
       },
       pelle: {
         nom: 'Pelle', deblocage: null,
-        stat: { texte: '+{v} de pièces par tas', depart: 0.1, parNiveau: 0.02 },
+        stat: { court: 'Pièces par tas', texte: '+{v} de pièces par tas', depart: 0.1, parNiveau: 0.02 },
         modeles: {
           pelleProspecteur: { nom: 'Pelle de prospecteur', biome: 1, passif: '+{v} tas de pièces sur les niveaux trésor', valeurs: [1, 1.5, 2, 2.5, 3], nombre: true },
           pelleLarge:       { nom: 'Pelle large', biome: 2, passif: '{v} de chance de creuser aussi une terre voisine', valeurs: [0.15, 0.2, 0.25, 0.325, 0.4] },
@@ -670,7 +671,7 @@ window.CONFIG = {
       },
       gants: {
         nom: 'Gants', deblocage: 'cuivre',
-        stat: { texte: '{v} de chance de +1 minerai par bloc', depart: 0.1, parNiveau: 0.03, max: 2 },
+        stat: { court: 'Minerai en plus', texte: '{v} de chance de +1 minerai par bloc', depart: 0.1, parNiveau: 0.03, max: 2 },
         modeles: {
           gantsFer:        { nom: 'Gants de fer', biome: 1, passif: '{v} de chance de trouver aussi le meilleur minerai', valeurs: [0.05, 0.075, 0.1, 0.15, 0.2] },
           gantsDynamiteur: { nom: 'Gants de dynamiteur', biome: 2, passif: '{v} de chance qu\'une bombe ne soit pas utilisée', valeurs: [0.2, 0.225, 0.25, 0.29, 0.33] },
@@ -678,7 +679,7 @@ window.CONFIG = {
       },
       casque: {
         nom: 'Casque', deblocage: 'casque',
-        stat: { texte: '{v} de chance de coup gratuit (sans énergie)', depart: 0.02, parNiveau: 0.0025, max: 0.4 },
+        stat: { court: 'Coup gratuit', texte: '{v} de chance de coup gratuit (sans énergie)', depart: 0.02, parNiveau: 0.0025, max: 0.4 },
         modeles: {
           casqueChantier: { nom: 'Casque de chantier', biome: 1, passif: 'Un coup gratuit casse le bloc d\'un coup : {v} de chance', valeurs: [0.25, 0.375, 0.5, 0.75, 1] },
           casqueVeine:    { nom: 'Casque de veine', biome: 2, passif: '+{v} de chance de coup gratuit sur le minerai', valeurs: [0.1, 0.15, 0.2, 0.25, 0.3] },
@@ -686,7 +687,7 @@ window.CONFIG = {
       },
       lanterne: {
         nom: 'Lanterne', deblocage: 'geodes',
-        stat: { texte: 'Géodes rares {v} plus fréquentes', depart: 0.1, parNiveau: 0.03 },
+        stat: { court: 'Géodes rares', texte: 'Géodes rares {v} plus fréquentes', depart: 0.1, parNiveau: 0.03 },
         modeles: {
           lanterneProspecteur: { nom: 'Lanterne de prospecteur', biome: 1, passif: '{v} de chance qu\'une géode monte d\'une rareté', valeurs: [0.1, 0.15, 0.2, 0.275, 0.35] },
           lanterneAncienne:    { nom: 'Lanterne ancienne', biome: 2, passif: 'Artefacts jamais trouvés × {v} plus fréquents', valeurs: [1.5, 1.75, 2, 2.5, 3], nombre: true },
@@ -694,7 +695,7 @@ window.CONFIG = {
       },
       bottes: {
         nom: 'Bottes', deblocage: 'bottes',
-        stat: { texte: '{v} de chance qu\'une case de terre cache un tas d\'or', depart: 0.02, parNiveau: 0.003, max: 0.5 },
+        stat: { court: "Tas d'or caché", texte: '{v} de chance qu\'une case de terre cache un tas d\'or', depart: 0.02, parNiveau: 0.003, max: 0.5 },
         modeles: {
           bottesProspecteur:  { nom: 'Bottes de prospecteur', biome: 1, passif: '+{v} de tas d\'or en plus', valeurs: [0.25, 0.375, 0.5, 0.75, 1] },
           bottesPorteBonheur: { nom: 'Bottes porte-bonheur', biome: 2, passif: '{v} de chance qu\'un tas de pièces soit doublé', valeurs: [0.15, 0.2, 0.25, 0.325, 0.4] },
@@ -842,7 +843,7 @@ window.CONFIG = {
       { type: 'niveaux',    texte: 'Termine {n} niveaux',                choix: [5, 10],          pieces: 40 },
       { type: 'pierres',    texte: 'Casse {n} pierres',                  choix: [10, 20, 25],     pieces: 40, deblocage: 'pioche' },
       { type: 'minerais',   texte: 'Récolte {n} minerais',               choix: [10, 20, 25],     pieces: 50, deblocage: 'cuivre' },
-      { type: 'forge',      texte: 'Améliore un objet à la Forge', choix: [1],              pieces: 50, deblocage: 'forge' },
+      { type: 'forge',      texte: 'Améliore un objet', choix: [1],              pieces: 50, deblocage: 'forge' },
       { type: 'coffres',    texte: 'Ouvre {n} coffres',                  choix: [1, 2, 3],        pieces: 50, deblocage: 'forge' },
       { type: 'geodes',     texte: 'Ouvre {n} géodes',                   choix: [3, 5],           pieces: 60, deblocage: 'atelier' },
       { type: 'magma',      texte: 'Refroidis {n} cases de magma',       choix: [5, 10],          pieces: 40, deblocage: 'magma' },
