@@ -22,6 +22,7 @@ window.TEXTES_EN = {
   "Boutique": "Shop",
   "Forge": "Forge",
   "Atelier": "Workshop",
+  "Nouvelle collection !": "New collection!",
   "Une fée": "A fairy",
   "Nouvelle fée !": "New fairy!",
   "Elle t'accompagne déjà dans la mine !": "She already comes with you in the mine!",

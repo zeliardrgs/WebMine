@@ -1046,32 +1046,45 @@ body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !importan
 .cheats-off #cheatBtn,.cheats-off #cheatPanel{display:none!important}
 
 /* ---------- Museum: shelves in the game's style — pedestals on a wooden plank, name and progress below, prime dome on the right ---------- */
-.mu-shelf{position:relative; margin-top:12px; padding:14px 10px 10px; border-radius:18px; background:#f6e2bd; box-shadow:inset 0 3px 0 rgba(0,0,0,.06)}
-.mu-peds{display:flex; justify-content:center; gap:6px}
-.mu-ped{position:relative; width:72px; height:70px; padding:0; border:0; background:none; cursor:pointer; display:flex; align-items:flex-end; justify-content:center}
-.mu-shelf.many .mu-ped{width:52px; height:58px}
-.mu-ped::before{content:""; position:absolute; left:6%; right:6%; bottom:-6px; height:22px; border-radius:50%; background:#fff; box-shadow:0 4px 0 #ecd3a8}
-.mu-ped img{position:relative; width:78%; height:82%; object-fit:contain; object-position:bottom; filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
-.mu-ped.locked img{filter:brightness(0) opacity(.16)}
-.mu-ped i{position:absolute; right:-2px; top:0; padding:0 6px; border-radius:9px; background:var(--ink); color:#fff; font-style:normal; font-family:var(--font-display); font-size:11px; line-height:18px}
-.mu-plank{height:14px; margin:6px -10px 0; border-radius:4px; background:linear-gradient(var(--wood) 0 55%, var(--wood-dark) 55%); box-shadow:0 3px 6px rgba(0,0,0,.18)}
-.mu-label{display:flex; align-items:center; gap:10px; margin-top:10px; text-align:left}
-.mu-label > div{flex:1; min-width:0}
-.mu-label b{display:block; font-family:var(--font-display); font-weight:400; font-size:17px; line-height:1.15; color:#7d3c98}
-.mu-label span{display:block; margin-top:2px; font-size:12px; color:var(--ink-soft)}
-.mu-dome{position:relative; flex:none; width:58px; height:62px; margin-bottom:6px; padding:0; border:0; cursor:pointer; display:grid; place-items:center;
-  border-radius:50% 50% 8px 8px / 58% 58% 8px 8px; background:radial-gradient(ellipse at 34% 26%, rgba(255,255,255,.95), rgba(220,240,255,.55) 35%, rgba(170,210,240,.4) 75%, rgba(255,255,255,.6));
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.8), 0 4px 0 var(--sun-edge), 0 6px 0 #8f5f10, 0 10px 12px rgba(0,0,0,.2)}
-.mu-dome img{width:30px; height:30px; object-fit:contain; margin-top:-8px}
-.mu-dome i{position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); padding:0 7px; border-radius:9px; background:var(--panel); color:var(--ink);
-  font-style:normal; font-family:var(--font-display); font-size:14px; line-height:18px; white-space:nowrap; box-shadow:0 2px 0 var(--panel-edge)}
-.mu-dome b{font-size:30px; color:#ffbf1f; text-shadow:0 2px 0 #b5760a}
-.mu-dome.ready{animation:domeGlow 1.4s ease-in-out infinite}
-.mu-dome.ready i{background:var(--mint); color:#fff; box-shadow:0 2px 0 #1fae7a}
-@keyframes domeGlow{50%{transform:scale(1.08); filter:drop-shadow(0 0 10px #fff36b)}}
-.mu-locked{display:flex; justify-content:center; gap:22px; height:70px; padding-top:14px; box-sizing:border-box; border-radius:18px 18px 8px 8px; border:2px solid rgba(255,255,255,.8);
-  background:linear-gradient(rgba(170,210,240,.45), rgba(120,170,220,.5))}
-.mu-locked span{width:46px; height:46px; border-radius:50%; background:radial-gradient(circle, rgba(59,34,69,.28), transparent 70%)}
+/* Museum: one card per collection (title bar, stars, pedestals on a blurred landscape over a brown ground) */
+#scr-museum #museumBody{background:none; box-shadow:none; border:0; padding-inline:0}
+#museumBody h3{margin:6px 0 0; text-align:center; font-family:var(--font-display); font-weight:400; font-size:16px; color:var(--ink-soft)}
+.mc-wrap{position:relative; isolation:isolate; margin-bottom:14px}   /* its curtain and button stay under the sticky banner */
+.mc{border:3px solid var(--outline); border-radius:22px; overflow:hidden; background:#7f4f22}
+.mc-head{height:46px; display:grid; place-items:center; padding:0 64px; background:#0aa0e6; border-bottom:3px solid #5cc6f2}
+.mc-head b{font-family:var(--font-display); font-weight:400; font-size:21px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; -webkit-text-stroke:5px var(--outline); paint-order:stroke fill}
+.mc-row{position:relative; height:158px; overflow:hidden}
+.mc-row::before{content:""; position:absolute; inset:-12px; background:url("Assets/UI/Character%20BG.png") center 55% / cover; filter:blur(4px)}
+.mc-row::after{content:""; position:absolute; left:0; right:0; bottom:0; height:52px; background:linear-gradient(#b87a45 0 70%, #8a5527 70%)}
+.mc-row + .mc-row{border-top:3px solid #8a5527}
+.mc-stars{position:absolute; z-index:1; top:10px; left:0; right:0; display:flex; justify-content:center; gap:4px}
+.mc-stars svg{width:28px; height:28px; fill:#6f6a7a; stroke:var(--outline); stroke-width:2}
+.mc-stars svg.on{fill:#ffd21f}
+.mc-peds{position:absolute; z-index:1; left:0; right:0; bottom:8px; display:flex; justify-content:space-evenly; align-items:flex-end; padding:0 6px}
+.mc-ped{position:relative; width:22%; max-width:84px; height:96px; padding:0; border:0; background:none; cursor:pointer; display:flex; align-items:flex-end; justify-content:center}
+/* The pedestal: a green disc (blue and empty for a treasure still missing) */
+.mc-ped::before{content:""; position:absolute; left:2px; right:2px; bottom:10px; height:26px; border-radius:50%; background:#8fd66a; box-shadow:0 10px 0 #58ad43, 0 14px 0 rgba(60,30,10,.35)}
+.mc-ped.unknown::before{background:#6fc0e3; box-shadow:0 10px 0 #3f8fb5, 0 14px 0 rgba(60,30,10,.35)}
+.mc-ped img{position:relative; width:76%; height:70px; margin-bottom:24px; object-fit:contain; object-position:bottom; filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.mc-ped i{position:absolute; z-index:1; bottom:0; left:0; right:0; text-align:center; font-style:normal; font-family:var(--font-display); font-size:15px; color:#fff; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
+.mc-ped b{position:relative; margin-bottom:22px; font-family:var(--font-display); font-weight:400; font-size:44px; line-height:1; color:#fff; -webkit-text-stroke:7px var(--outline); paint-order:stroke fill}
+/* Star won, prime waiting: green button on the title bar */
+.mc-up{position:absolute; z-index:2; top:-8px; right:14px; width:52px; height:52px; padding:0; display:grid; place-items:center; border:3px solid var(--outline); border-radius:14px; cursor:pointer;
+  background:#55d13f; background-clip:padding-box; box-shadow:inset 0 -5px 0 #2f9a2a; animation:twinkle 1.6s ease-in-out infinite}
+.mc-up svg{width:30px; height:30px}
+.mc-up:active{transform:translateY(2px); box-shadow:inset 0 -2px 0 #2f9a2a}
+/* New collection: a red curtain over the card, « Ouvrir » slides it open */
+.mc-curtain{position:absolute; inset:0; z-index:3; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; border-radius:22px; overflow:hidden; border:3px solid var(--outline); background:var(--mc-bg, #fcefd8)}   /* the scallops show the page, not the shelf under it */
+.mc-curtain i{position:absolute; top:0; bottom:0; width:50.5%; background:repeating-linear-gradient(90deg, #a83c48 0 36px, #8c2c39 36px 72px);
+  -webkit-mask:linear-gradient(#000, #000) 0 0 / 100% calc(100% - 13px) no-repeat, radial-gradient(18px 14px at 50% 0, #000 97%, transparent 100%) 0 100% / 36px 14px repeat-x; mask:linear-gradient(#000, #000) 0 0 / 100% calc(100% - 13px) no-repeat, radial-gradient(18px 14px at 50% 0, #000 97%, transparent 100%) 0 100% / 36px 14px repeat-x;   /* each fold ends in a rounded bottom */
+  transition:transform .7s cubic-bezier(.6,0,.3,1)}
+.mc-curtain i.l{left:0} .mc-curtain i.r{right:0}
+.mc-curtain b{position:relative; font-family:var(--font-display); font-weight:400; font-size:28px; color:#fff; -webkit-text-stroke:7px var(--outline); paint-order:stroke fill; transition:opacity .2s}
+.mc-open{position:relative; min-width:180px; min-height:56px; border:3px solid var(--outline); border-radius:20px; background:var(--sun); background-clip:padding-box; font-size:24px; color:#fff;
+  -webkit-text-stroke:5px var(--outline); paint-order:stroke fill; box-shadow:inset 0 -6px 0 var(--sun-edge); transition:opacity .2s}
+.mc-curtain.opening{border-color:transparent; background:none; pointer-events:none}
+.mc-curtain.opening b,.mc-curtain.opening .mc-open{opacity:0}
+.mc-curtain.opening i.l{transform:translateX(-100%)} .mc-curtain.opening i.r{transform:translateX(100%)}
 
 /* =====================================================================
    ART DIRECTION (from the Character screen mock-up), shared by every menu:
@@ -1098,6 +1111,7 @@ body.nav-on .screen.menu{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-
 #scr-museum .scr-head{background-image:url("Assets/UI/MuseumBanner.jpg"); background-position:center 60%}
 #scr-shop .scr-head,#scr-premium .scr-head,#scr-events .scr-head,#scr-museum .scr-head{min-height:calc(var(--u) * 50); grid-template-rows:auto 1fr; box-sizing:border-box}
 #scr-shop .scr-head h1,#scr-premium .scr-head h1,#scr-events .scr-head h1,#scr-museum .scr-head h1{align-self:end; margin-bottom:0}
+#scr-museum .scr-head{min-height:calc(var(--u) * 40)}   /* the Museum banner: 20 % lower than the Shop's */
 /* The Shop's banner is lower than the others */
 #scr-shop .scr-head,#scr-premium .scr-head{min-height:calc(var(--u) * 38); background-position:center 43%}
 /* Money pills (pearls, coins, ores, keys): beige with a brown edge, everywhere */
@@ -5365,32 +5379,39 @@ function renderMuseum() {
   const geo = S.bag.geodes.length;
   $('muActions').innerHTML = S.buildings.atelier
     ? `<button class="eq-forge mu-atelier" data-go="atelier" aria-label="${tr('Atelier')}">${img(OW + 'Workshop.png' + OW_V)}${geo ? `<span class="badge">${geo}</span>` : ''}</button>` : '';
-  const shelf = ([sk, set]) => {
+  // One card per collection: blue title bar, the stars, then rows of up to 4 pedestals (found: the treasure and how many; missing: « ? »)
+  const STAR = on => `<svg viewBox="0 0 24 24" class="${on ? 'on' : ''}" aria-hidden="true"><path d="M12 2.2 L14.9 8.3 L21.5 9.1 L16.6 13.6 L17.9 20.2 L12 16.9 L6.1 20.2 L7.4 13.6 L2.5 9.1 L9.1 8.3Z" stroke-linejoin="round"/></svg>`;
+  const card = ([sk, set]) => {
     const keys = setKeys(sk), tier = setTier(sk), book = setBook(sk), table = setTable(sk);
-    const owned = keys.filter(k => book[k]).length;
-    const where = set.kind === 'gem' ? tr('Dans les géodes')
-      : rangeText(Math.min(...keys.map(k => table[k].range[0])), Math.max(...keys.map(k => table[k].range[1]))) + (SOIL_FR[table[keys[0]].soil] ? ', ' + SOIL_FR[table[keys[0]].soil] : '');
-    const sub = `${owned} / ${keys.length}` + (tier ? ' · ' + tr('doublons +{n} %', { n: Math.round(TIER_BONUS[tier] * 100) }) : ' · ' + where);
-    const peds = keys.map(k => `<button class="mu-ped${book[k] ? '' : ' locked'}" data-muitem="${sk}:${k}" aria-label="${book[k] ? table[k].name : tr('Pas encore trouvé')}">${itemArt(table[k])}${book[k] > 1 ? `<i>×${book[k]}</i>` : ''}</button>`).join('');
-    // The dome: a prime waiting (tap to collect), the next star's prime, or a gold star when every star is won
-    const w = (S.pendingPrimes || []).filter(p => p.set === sk), due = w.reduce((a, p) => a + starPrime(sk, p.tier), 0), next = tier < MAX_STARS ? starPrime(sk, tier + 1) : 0;
-    const dome = w.length ? `<button class="mu-dome ready" data-claimset="${sk}" aria-label="${tr('Récupérer')} +${due}">${COIN}<i>+${due}</i></button>`
-      : next ? `<button class="mu-dome" data-mudome="${sk}" aria-label="${tr('prime {n} pièces', { n: next })}">${COIN}<i>${next}</i></button>`
-      : tier >= MAX_STARS ? `<button class="mu-dome star" data-mudome="${sk}" aria-label="${tr('Toutes les étoiles obtenues !')}"><b>★</b></button>` : '';
-    const legend = tier && (set.message || set.legend) ? `<p class="set-legend">${[set.message, set.legend].filter(Boolean).join(' ')}</p>` : '';
-    return `<div class="mu-shelf${keys.length > 4 ? ' many' : ''}">${w.length ? '<span class="badge">!</span>' : ''}<div class="mu-peds">${peds}</div><div class="mu-plank"></div>
-      <div class="mu-label"><div><b>${set.name}${starsHTML(tier)}</b><span>${sub}</span></div>${dome}</div>${legend}</div>`;
+    const ped = k => `<button class="mc-ped${book[k] ? '' : ' unknown'}" data-muitem="${sk}:${k}" aria-label="${book[k] ? table[k].name : tr('Pas encore trouvé')}">`
+      + (book[k] ? `${itemArt(table[k])}<i>${book[k]}</i>` : '<b>?</b>') + '</button>';
+    const rows = []; for (let i = 0; i < keys.length; i += 4) rows.push(keys.slice(i, i + 4));
+    const stars = `<div class="mc-stars" aria-label="${tr(plural(tier, '{n} étoile sur {max}', '{n} étoiles sur {max}'), { n: tier, max: MAX_STARS })}">${Array.from({ length: MAX_STARS }, (_, i) => STAR(i < tier)).join('')}</div>`;
+    // A star won and its prime not collected yet: the green "upgrade" button on the title bar
+    const w = (S.pendingPrimes || []).filter(p => p.set === sk), due = w.reduce((a, p) => a + starPrime(sk, p.tier), 0);
+    const up = w.length ? `<button class="mc-up" data-claimset="${sk}" aria-label="${tr('Récupérer')} +${due}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 L28 16 H21 V28 H11 V16 H4Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button>` : '';
+    // Just discovered: hidden behind a curtain until the player opens it
+    const curtain = (S.muOpened || {})[sk] ? '' : `<div class="mc-curtain"><i class="l"></i><i class="r"></i><b>${tr('Nouvelle collection !')}</b><button class="btn mc-open" data-muopen="${sk}">${tr('Ouvrir')}</button></div>`;
+    return `<div class="mc-wrap" data-muset="${sk}">${up}<div class="mc"><div class="mc-head"><b>${set.name}</b></div>
+      ${rows.map((r, i) => `<div class="mc-row">${i ? '' : stars}<div class="mc-peds">${r.map(ped).join('')}</div></div>`).join('')}</div>${curtain}</div>`;
   };
   // Only series with at least one treasure found are shown (no spoilers)
   const all = Object.entries(SETS), sets = all.filter(([sk]) => setKeys(sk).some(k => setBook(sk)[k]));
   const hidden = all.length - sets.length;
-  $('museumBody').innerHTML = `<p>${tr('{a} trésors sur {b} sont exposés. Chaque nouveau trésor rapporte une prime, les doublons sont vendus à leur valeur. Complète une collection pour gagner une étoile : chaque étoile augmente le prix de revente de ses doublons.', { a: museumOwned(), b: museumTotal() })}</p>
-    ${['gem', 'art'].map(kind => {
-      const list = sets.filter(([, set]) => set.kind === kind);
-      return list.length ? `<h3>${kind === 'gem' ? tr('Pierres précieuses') : tr('Artefacts')}</h3>${list.map(shelf).join('')}` : '';
-    }).join('')}
-    ${hidden ? `<h3>${tr(plural(hidden, '{n} collection restante à découvrir', '{n} collections restantes à découvrir'), { n: hidden })}</h3><div class="mu-locked" aria-hidden="true"><span></span><span></span><span></span></div>` : ''}`;
+  $('museumBody').innerHTML = ['gem', 'art'].map(kind => sets.filter(([, set]) => set.kind === kind).map(card).join('')).join('')
+    + (hidden ? `<h3>${tr(plural(hidden, '{n} collection restante à découvrir', '{n} collections restantes à découvrir'), { n: hidden })}</h3>` : '');
 }
+// « Ouvrir » on a new collection: the curtain slides open
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-muopen]'); if (!b) return;
+  const sk = b.dataset.muopen, wrap = b.closest('.mc-wrap');
+  unlockAudio(); sfx('reward');
+  (S.muOpened = S.muOpened || {})[sk] = true; save();
+  const r = wrap.getBoundingClientRect();
+  [0, 150, 300].forEach(t => setTimeout(() => petSparkles(tapFx, r.left + r.width * rand(.2, .8), r.top + r.height * rand(.3, .7)), t));
+  wrap.querySelector('.mc-curtain').classList.add('opening');
+  setTimeout(() => { const c = wrap.querySelector('.mc-curtain'); if (c) c.remove(); }, reduced ? 0 : 750);
+});
 
 /* ---------- Atelier: timing mini-game to open geodes ---------- */
 // Per geode rarity (white, pink, gold, crystal): hits needed, zone width in % of the bar, cursor sweeps per second
@@ -5796,6 +5817,8 @@ function start(data) {
   // Saves where the player came home early in a guided stretch (before this fix): that stretch is over
   if (saved && inGuide() && !saved.guideFix && S.buildings.museum && S.screen !== 'mine' && S.reached > (S.guideBack || 0) && !GUIDE.retours.includes(S.reached)) S.guideBack = nextReturn();
   S.guideFix = true;
+  // Collections found before the museum curtains existed are already open
+  if (!S.muOpened) S.muOpened = Object.fromEntries(Object.keys(SETS).filter(sk => setKeys(sk).some(k => setBook(sk)[k])).map(sk => [sk, true]));
   // A fairy removed from config.js (e.g. the old dark green one) becomes the first fairy of the list
   if (Array.isArray(S.pets)) S.pets.forEach(p => { if (!PETS.fees[p.key]) p.key = Object.keys(PETS.fees)[0]; }); else S.pets = newPets();
   if (saved && S.reached > GUIDE.fin) for (const k of ['energie', 'continuer', 'echanger', 'forge', 'atelier', 'objectifs', 'guideFin', 'redescendre-11', 'redescendre-16', 'retour-11', 'retour-16']) S.tutoSeen[k] = true;
