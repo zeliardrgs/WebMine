@@ -333,9 +333,7 @@ window.CONFIG = {
       continuer: "Continue jusqu'au checkpoint !",    // 1er sac plein avant un retour prévu, sur « Descendre quand même »
       echanger: "Garde ta nouvelle découverte",       // 1re fenêtre « Nouvelle découverte » (sac plein)
       remonter: "Remonte : du nouveau au village !",  // à chaque retour prévu (niveaux 11 et 16)
-      forge: "Le cuivre sert à améliorer ta pioche",  // 1re visite de la Forge (touche pour continuer)
       retourVillage: "Retourne au village",           // fin des tutoriels de la Boutique et de l'Atelier
-      retourPersonnage: "Retourne à ton personnage",  // fin du tutoriel de la Forge (bouton retour rouge)
       atelier: "Tape quand le curseur est dans la zone", // 1re géode à l'Atelier (elle ne peut pas rater)
       sacBoutique: "Ton niveau de mineur agrandit ton sac !",  // fin des premiers pas : l'encart du niveau du joueur
       sacAcheter: "Récupère ta case de sac en plus",           // puis la récompense dans Progression
@@ -613,7 +611,7 @@ window.CONFIG = {
   /* ---------------------------------------------------------------
      ÉQUIPEMENT ET COFFRES (style Archero 2 / Dicero)
      Le mineur porte 6 pièces d'équipement, gagnées dans les coffres de la Boutique.
-     Elles s'améliorent et se fusionnent à la Forge.
+     Elles s'améliorent et se fusionnent depuis leur fiche (écran Personnage).
      L'équipement s'ouvre avec la Forge (progression > deblocages > forge).
      --------------------------------------------------------------- */
   equipement: {
@@ -637,11 +635,10 @@ window.CONFIG = {
       mythique:    { nom: 'Mythique',     niveauMax: 70, multiplicateur: 4.5 },
     },
 
-    // Fusion à la Forge : l'objet + 2 autres de la même rareté donnent 1 objet de la rareté suivante
-    // (voir "fusion" dans chaque rareté). L'objet choisi garde son niveau (la fusion auto garde celui
-    // qui a le plus haut niveau) ; tout ce qui a été dépensé pour améliorer les deux autres est rendu.
-    // La fusion auto ne fusionne que les Communs et les Rares.
-    fusion: { nombre: 3, autoJusqua: 'rare' },
+    // Fusion (bouton en haut à droite de la fiche de l'objet) : l'objet + 2 autres de la même rareté donnent
+    // 1 objet de la rareté suivante (voir "fusion" dans chaque rareté). L'objet choisi garde son niveau ;
+    // tout ce qui a été dépensé pour améliorer les deux autres est rendu.
+    fusion: { nombre: 3 },
 
     // Les 6 emplacements. "deblocage" = la nouveauté qui le fait apparaître dans les coffres
     // (mêmes noms que progression > deblocages ; null = dès l'ouverture de l'équipement).
@@ -703,7 +700,7 @@ window.CONFIG = {
       },
     },
 
-    // Améliorer un objet d'un niveau (à la Forge, ou depuis sa fiche).
+    // Améliorer un objet d'un niveau (depuis sa fiche).
     // Pièces : "depart" pour passer du niveau 1 au 2, puis × "hausse" à chaque niveau.
     // Minerai : selon la tranche de niveaux, "depart" + "parNiveau" × (niveaux déjà faits dans la tranche).
     // Le tout premier niveau est offert pendant le tutoriel.

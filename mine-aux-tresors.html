@@ -767,7 +767,7 @@ button.eq-dmg{cursor:pointer}
 #scr-hero .gi-new::before{content:"✦ "}
 #scr-hero .gi.better::after{content:""; top:calc(var(--u) * -1.6); right:calc(var(--u) * -1.2); width:calc(var(--u) * 6.4); height:calc(var(--u) * 6.4);
   border-radius:50%; background:url("Assets/UI/Icon_Thumb.svg") 52% 45% / 56% no-repeat, #3aa8ec; box-shadow:0 0 0 calc(var(--u) * .6) #1d1a2b}
-/* The Forge: a yellow tab stuck to the left edge, just above the navigation bar */
+/* A yellow tab stuck to the left edge, just above the navigation bar (the Workshop in the Museum) */
 .eq-forge{position:fixed; z-index:41; left:0; bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + var(--u) * 2.5);
   width:calc(var(--u) * 24); height:calc(var(--u) * 17); display:grid; place-items:center; border:0; border-radius:0 calc(var(--u) * 4) calc(var(--u) * 4) 0;
   background:linear-gradient(#ffdc55, #ffb400); box-shadow:0 calc(var(--u) * .8) 0 #c98a12, 0 calc(var(--u) * 1.6) calc(var(--u) * 3) rgba(0,0,0,.3); cursor:pointer}
@@ -857,13 +857,6 @@ button.eq-dmg{cursor:pointer}
 .gs-btn:disabled{filter:grayscale(.7); opacity:.6; cursor:default; transform:none}
 .gs-close{margin-top:calc(var(--u) * 5.5); width:calc(var(--u) * 16.3); height:calc(var(--u) * 16.3); flex:none; border:calc(var(--u) * .7) solid var(--outline); border-radius:50%; background:linear-gradient(#ffffff, #dfe3ea); box-shadow:inset 0 calc(var(--u) * -1.2) 0 #b9c0cc, 0 4px 12px rgba(0,0,0,.35); cursor:pointer; display:grid; place-items:center; padding:0}
 .gs-close svg{width:55%; height:55%}
-/* Forge tabs */
-.forge-tabs{flex:none}
-.shop-tabs{flex:none} .shop-tabs button{position:relative; flex:1} .shop-tabs .badge{top:-6px; right:-4px}
-.forge-tabs button{position:relative; flex:1}
-.forge-tabs .badge{top:-6px; right:-4px}
-.forge-body > p:first-child{margin-top:0}
-.forge-body #autoMerge{width:100%; margin-bottom:4px}
 /* Shop: chests */
 .ch-list{display:flex; flex-direction:column; gap:12px; flex:none}
 .ch-list .srow{color:var(--ink)}
@@ -1177,7 +1170,7 @@ body.nav-on .screen.menu{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-
 .menu .scr-head{display:grid; grid-template-columns:1fr; justify-items:center; row-gap:calc(var(--u) * 4)}
 .menu .scr-head .wallet-bar{grid-row:1; justify-self:end; margin:0 calc(var(--u) * -1.4) 0 0}
 .menu .scr-head h1{grid-row:2; flex:none; margin-bottom:calc(var(--u) * 2); font-size:calc(var(--u) * 7.4); text-align:center}
-/* Banners: each menu has its own scene (the Forge keeps the Character screen's). The header is taller so the
+/* Banners: each menu has its own scene. The header is taller so the
    scene's subject (chest, campfire, museum hall) shows whole, with the title on the ground below it */
 #scr-shop .scr-head,#scr-premium .scr-head{background-image:url("Assets/UI/ShopBanner.png"); background-position:center 38%}
 #scr-events .scr-head{background-image:url("Assets/UI/EventBanner.png"); background-position:center 46%}
@@ -1193,9 +1186,6 @@ body.nav-on .screen.menu{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-
 .wallet-bar .res img,.wallet-bar .res img[alt="perles"],.wallet-bar .res svg{width:calc(var(--u) * 4.9); height:calc(var(--u) * 4.9)}
 .wallet-bar{gap:calc(var(--u) * 1.1)}
 .menu .scr-head .res,.eq-top .res{min-width:calc(var(--u) * 26.5)}
-/* The Forge's ores under its header */
-#forgeWallet{justify-content:center}
-#forgeWallet .res{min-width:calc(var(--u) * 17)}
 /* Panels on the beige page */
 .menu .card.flat,.menu .pm-row,.menu .pm-card,.menu .ch-card,.menu .srow{background:var(--card-bg); color:var(--ink); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge), 0 calc(var(--u) * .8) 0 var(--card-edge)}
 .menu .card.flat{border-radius:calc(var(--u) * 4)}
@@ -1203,7 +1193,7 @@ body.nav-on .screen.menu{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-
 .menu .sh-h,.menu .pm-h{color:var(--ink); text-shadow:none; font-size:calc(var(--u) * 4.8)}
 .menu .sh-note{color:var(--ink-soft)}
 .menu .pm-note{background:var(--card-edge); color:var(--ink)}
-/* Sub-tabs (Shop, Forge): the selected one is a yellow block with a dark outline, like the bottom bar */
+/* Sub-tabs (Shop): the selected one is a yellow block with a dark outline, like the bottom bar */
 .seg{padding:calc(var(--u) * 1); border-radius:calc(var(--u) * 3.4); background:var(--card-edge); box-shadow:inset 0 0 0 calc(var(--u) * .5) #d9bf93}
 .seg button{min-height:calc(var(--u) * 9.4); border-radius:calc(var(--u) * 2.6); font-size:calc(var(--u) * 3.6); color:var(--ink)}
 .seg button[aria-pressed="true"]{background:linear-gradient(#ffe100, #ffb400); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--outline), inset 0 calc(var(--u) * -1) 0 #ff9a00}
@@ -1580,19 +1570,14 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .eq-dmg{height:calc(var(--u) * 7.7); font-size:calc(var(--u) * 4.4); gap:calc(var(--u) * 3.85)}
 .eq-dmg img{width:calc(var(--u) * 5.5); height:calc(var(--u) * 5.5)}
 #scr-hero .eq-slot .badge{min-width:calc(var(--u) * 4.18); height:calc(var(--u) * 4.18); font-size:calc(var(--u) * 2.64)}
-/* The Forge button: same look as the other buttons (black outline, solid inner bottom edge), still stuck to the left edge */
+/* That tab: same look as the other buttons (black outline, solid inner bottom edge), still stuck to the left edge */
 .eq-forge{border:calc(var(--u) * .7) solid var(--outline); border-left:0; background:var(--sun); background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 var(--sun-edge)}
 .eq-forge:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 var(--sun-edge)}
 
-/* The Workshop tab in the Museum: same button as the Forge; the shelves leave room for it */
+/* The Workshop tab in the Museum: the shelves leave room for it */
 .mu-atelier img{width:calc(var(--u) * 19); height:calc(var(--u) * 15)}
 #scr-museum #museumBody{padding-bottom:calc(var(--u) * 22)}
 
-/* Red back arrow (Forge → Character), stuck to the left edge like the menus' back buttons */
-.menu .scr-head .back.back-red{display:grid; place-items:center; width:calc(var(--u) * 17); min-height:calc(var(--u) * 13); padding:0; border:calc(var(--u) * .7) solid var(--outline); border-left:0;
-  background:#f04a4a; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 #b8282f}
-.menu .scr-head .back.back-red svg{width:calc(var(--u) * 8); height:calc(var(--u) * 8)}
-.menu .scr-head .back.back-red:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 #b8282f}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -1602,7 +1587,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       <button class="shaft" id="shaftBtn" style="left:500px; top:640px" aria-label="Descendre dans la mine"></button>
       <span class="shaft-sign" style="left:500px; top:688px">Mine</span>
       <button class="bld" data-go="museum" style="left:680px; top:450px; width:480px; z-index:1" aria-label="Musée"><span class="plate" style="--roof:#2f55c8"><b>Musée</b><small id="subMuseum"></small><span class="badge" id="badgeMuseum" hidden>!</span></span><span class="bimg" id="icMuseum"></span></button>
-      <button class="bld" data-go="forge" style="left:270px; top:560px; width:173px; z-index:2" aria-label="Forge"><span class="plate" style="--roof:#d0402e"><b>Forge</b><small>Équipement</small></span><span class="bimg" id="icForge"></span></button>
+      <button class="bld" data-go="hero" style="left:270px; top:560px; width:173px; z-index:2" aria-label="Forge"><span class="plate" style="--roof:#d0402e"><b>Forge</b><small>Équipement</small></span><span class="bimg" id="icForge"></span></button>
       <button class="bld" data-go="shop" style="left:720px; top:860px; width:290px; z-index:3" aria-label="Boutique"><span class="plate" style="--roof:#f2c21b"><b>Boutique</b><small>Coffres</small></span><span class="bimg" id="icShop"></span></button>
       <button class="bld" data-go="atelier" style="left:300px; top:930px; width:200px; z-index:4" aria-label="Atelier"><span class="plate" style="--roof:#3a6be0"><b>Atelier</b><small id="subAtelier"></small></span><span class="bimg" id="icAtelier"></span></button>
       <button class="bld" data-go="altar" style="left:140px; top:330px; width:150px; z-index:1" aria-label="Autel"><span class="plate" style="--roof:#6a58b8"><b>Autel</b><small>Runes</small></span><span class="bimg" id="icAltar"></span></button>
@@ -1610,7 +1595,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   </div>
   <div class="home-hero" aria-hidden="true"><img src="Assets/Characters/Miner_Home.png" alt="" draggable="false"></div>
   <img class="home-pet" id="homePet" alt="" draggable="false" hidden>
-  <!-- Buildings that have no tab in the bottom bar (the Shop only until its tab shows); the Forge is reached from the Character screen, the Workshop from the Museum -->
+  <!-- Buildings that have no tab in the bottom bar (the Shop only until its tab shows); the equipment is in the Character screen, the Workshop in the Museum -->
   <div class="home-side">
     <button class="home-sc" data-go="shop" id="scShop" aria-label="Boutique"><span id="scShopIc"></span><b>Boutique</b><span class="badge" id="badgeShop" hidden>!</span></button>
     <button class="home-sc" data-go="altar" aria-label="Autel"><span id="scAltarIc"></span><b>Autel</b><span class="badge" id="badgeAltar" hidden>!</span></button>
@@ -1701,12 +1686,6 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <button class="back back-red pets-back" data-go="village" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button>
 </div>
 
-<div class="screen menu" id="scr-forge" hidden>
-  <header class="scr-head"><button class="back back-red" data-go="hero" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button><h1>Forge</h1><div class="wallet-bar" data-money></div></header>
-  <div class="wallet-bar" id="forgeWallet"></div>
-  <div class="seg forge-tabs" id="forgeTabs"></div>
-  <div class="card flat forge-body" id="forgeBody"></div>
-</div>
 
 <div class="screen" id="scr-atelier" hidden>
   <div class="ws">
@@ -2137,7 +2116,7 @@ function rwLabel(rw) { return rw.kind === 'gem' ? tr('Pierre précieuse') : rw.k
 
 /* ---------- Equipment: data (config.js > equipement) ----------
    6 slots, each with a few models ("archétypes"). An item = { id, slot, arch, rar, lv, spent }.
-   Items come from the Shop's chests and are levelled up and merged at the Forge. */
+   Items come from the Shop's chests and are levelled up and merged from their sheet (Character screen). */
 const EQC = CFG.equipement;
 const RAR_KEYS = Object.keys(EQC.raretes);                       // commun, rare, epique, legendaire, mythique
 // Colour of each rarity (CSS --rar-*); the "S" tiers keep the colour of their rarity and get an S badge
@@ -2665,7 +2644,7 @@ function applyUnlocks() {
   // First steps: the goals wait until the end
   $('questBtn').hidden = inGuide();
   updateBadge();
-  for (const k of ['museum', 'forge', 'atelier', 'shop', 'altar']) { const b = document.querySelector(`.bld[data-go="${k}"]`); if (b) b.hidden = !S.buildings[k]; }
+  for (const k of ['museum', 'forge', 'atelier', 'shop', 'altar']) { const b = document.querySelector(`.bld[data-go="${k === 'forge' ? 'hero' : k}"]`); if (b) b.hidden = !S.buildings[k]; }
   document.querySelectorAll('.home-sc').forEach(b => { const k = b.dataset.go; b.hidden = !S.buildings[k] || (k === 'shop' && !!S.tutoSeen.guideFin); b.classList.toggle('new', !!(S.bldNew || {})[k]); });
 }
 // Info bubble: announces treasure, guardian and King's levels, and the guardian's reward (once each).
@@ -3825,7 +3804,7 @@ const score = it => rarIdx(it.rar) * 100 + it.lv;
 // Better than what the slot holds now (or the slot is empty)
 const better = it => { const cur = equipped(it.slot); return !isEquipped(it) && (!cur || score(it) > score(cur)); };
 
-/* ---------- Equipment: level up (Forge) ----------
+/* ---------- Equipment: level up (item sheet) ----------
    Coins (× a rise per level) + the ore of the level band (copper, iron, gold, mithril, raw crystal) */
 function levelCost(it) {
   const A = EQC.ameliorer, L = it.lv;
@@ -3850,12 +3829,11 @@ function equip(it) {
   refreshGear(); save();
 }
 
-/* ---------- Equipment: merge (Forge) ----------
+/* ---------- Equipment: merge (item sheet) ----------
    3 → 1 of the next rarity. Each rarity says what the 2 others must be (config.js > raretes > fusion):
    'identique' = the same model, 'emplacement' = any model of the same slot (Habby: only Epic → Epic S).
    The chosen item keeps its level; what was spent levelling the two others is given back. */
 const bySlot = r => (EQC.raretes[r] || {}).fusion === 'emplacement';
-const autoTier = r => rarIdx(r) <= rarIdx(EQC.fusion.autoJusqua || 'rare');
 const nextRar = r => RAR_KEYS[rarIdx(r) + 1];
 // The other items a merge would use (unequipped, lowest level first), or null
 function mergeFodder(it) {
@@ -3883,24 +3861,6 @@ function merge(it) {
   const cards = [it, ...fod].map(x => ({ arch: x.arch, rar: x.rar }));   // as they were, before the merge
   mergeCore(it, fod); $('gearModal').hidden = true;
   save(); refreshGear(); showMergeAnim(cards, it);
-}
-// Auto-merge: every identical Common and Rare trio (the highest level of each trio is kept)
-function autoMerge() {
-  let n = 0, best = null;
-  for (let again = true; again;) {
-    again = false;
-    for (const it of [...G().items].sort((a, b) => b.lv - a.lv)) {
-      if (!autoTier(it.rar)) continue;
-      const fod = mergeFodder(it); if (!fod) continue;
-      mergeCore(it, fod); n++; again = true;
-      if (!best || score(it) > score(best)) best = it;
-      break;
-    }
-  }
-  save(); refreshGear();
-  if (!n) return toast(tr('Rien à fusionner automatiquement.'), '');
-  if (n === 1) return showReveal(best, null);
-  unlockAudio(); sfx('win'); toast(tr('{n} fusions réussies !', { n }), 'good');
 }
 
 /* ---------- Equipment: chests and keys ---------- */
@@ -4138,7 +4098,6 @@ document.addEventListener('click', e => {
   if (t.closest('[data-gtiers]')) { sheetAllTiers = !sheetAllTiers; sfx('pick'); renderSheet(); return; }
   if (t.closest('[data-gup]')) return levelUp(it);
   if (t.closest('[data-gmerge]')) { if (mergeFodder(it)) return merge(it); unlockAudio(); sfx('deny'); return toast(mergeHint(it), ''); }
-  const up = t.closest('[data-gupid]'); if (up && !up.disabled) return levelUp(gearItem(+up.dataset.gupid));
   if (t.closest('[data-gstats]')) { sheetId = 'stats'; renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick'); return; }
   const sl = t.closest('[data-eqslot]');
   if (sl) {
@@ -4151,16 +4110,12 @@ document.addEventListener('click', e => {
   const op = t.closest('[data-open]'); if (op) return askOpen(op.dataset.open, +op.dataset.n);
   const ad = t.closest('[data-ad]'); if (ad && !ad.disabled) return watchAd(ad.dataset.ad);
   const st = t.closest('[data-stab]'); if (st) { shopTab = st.dataset.stab; sfx('pick'); renderShopScreen(); return; }
-  const ft = t.closest('[data-ftab]'); if (ft) { forgeTab = ft.dataset.ftab; sfx('pick'); renderForge(); return; }
-  if (t.closest('#autoMerge')) return autoMerge();
 });
 
 /* ---------- Equipment: badges and refresh ---------- */
 const heroBadge = () => G().items.some(it => it.isNew || better(it));
-const gearForgeReady = () => gearOpen() && (G().items.some(it => mergeFodder(it)) || GSLOTS.some(sk => canLevel(equipped(sk))));
 function refreshGear() {
   if (!$('scr-hero').hidden) renderHero();
-  if (!$('scr-forge').hidden) renderForge();
   if (!$('scr-shop').hidden) renderShopScreen();
   if (!$('gearModal').hidden) renderSheet();
   $('navShopBadge').hidden = !chestReady();
@@ -4197,44 +4152,6 @@ function renderHero() {
   if (mergeable && !S.tutoSeen['eq-fusion'] && !$('scr-hero').hidden) startCoach('eq-fusion', [
     { text: TXE.fusionner, target: () => document.querySelector(`#scr-hero [data-gi="${mergeable.id}"]`), done: () => G().merges > 0 || !$('gearModal').hidden },
     { text: TXE.fusionner, target: () => document.querySelector('.gs-fusebtn.on'), done: () => G().merges > 0 },
-  ]);
-}
-
-/* ---------- Forge: level up and merge ---------- */
-let forgeTab = 'gear';
-function renderForge() {
-  $('forgeWallet').innerHTML = walletHTML(Object.keys(ORES));
-  const canMerge = G().items.some(it => mergeFodder(it));
-  const tab = (k, label, dot) => `<button data-ftab="${k}" id="ftab-${k}" aria-pressed="${forgeTab === k}">${label}${dot ? '<span class="badge">!</span>' : ''}</button>`;
-  $('forgeTabs').innerHTML = tab('gear', tr('Améliorer'), GSLOTS.some(sk => canLevel(equipped(sk)))) + tab('merge', tr('Fusion'), canMerge);
-  let html = '';
-  if (forgeTab === 'gear') {
-    const eqd = GSLOTS.map(equipped).filter(Boolean);
-    html = !eqd.length ? `<p>${tr('Ouvre des coffres à la Boutique pour trouver ton premier équipement. Tu l\'amélioreras ici avec des pièces et des minerais.')}</p><button class="btn" data-go="premium">${tr('Aller à la Boutique')}</button>`
-      : `<p>${tr('Améliore ton équipement avec des pièces et des minerais. Les autres objets s\'améliorent depuis leur fiche.')}</p><div class="shop-list">` + eqd.map(it => {
-        const maxed = it.lv >= capOf(it), cost = levelCost(it);
-        return `<div class="srow"><button class="sic gi r-${RAR_CSS[it.rar]}" data-gi="${it.id}">${gearArt(it.arch)}</button>
-          <div class="stxt"><b class="rar rar-${RAR_CSS[it.rar]}">${itemName(it)}</b><span>${tr('Niv. {n} / {m}', { n: it.lv, m: capOf(it) })} · ${statTxt(it.slot, statOf(it))}</span></div>
-          <div class="sbuy">${maxed ? `<span class="maxed">${tr('Max')}</span>` : (upFree() ? `<span class="gs-free">${tr('Offert')}</span>` : priceHTML(cost)) + `<button class="btn sm" data-gupid="${it.id}" ${canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button>`}</div></div>`;
-      }).join('') + '</div>';
-  } else {
-    const all = [...G().items].sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot) || b.lv - a.lv);
-    const auto = G().items.some(it => autoTier(it.rar) && mergeFodder(it));
-    html = `<p>${tr('3 objets identiques donnent 1 objet de la rareté au-dessus. Seule exception : Épique → Épique S accepte 2 autres Épiques du même emplacement. Ce que tu as dépensé pour les objets fusionnés t\'est rendu.')}</p>
-      <button class="btn" id="autoMerge" ${auto ? '' : 'disabled'}>${tr('Fusion auto (Commun et Rare)')}</button>
-      ${all.length ? `<div class="gi-grid">${all.map(it => gcard(it, mergeFodder(it) ? 'can' : '')).join('')}</div>` : `<p class="eq-soon">${tr('Aucun objet pour l\'instant.')}</p>`}`;
-  }
-  $('forgeBody').innerHTML = html;
-  // First visit after the first chest: what the ores are for, then back to the village
-  if (S.tutoSeen['eq-premier'] && !S.tutoSeen.forge && document.querySelector('#forgeBody .srow')) startCoach('forge', [
-    { text: TX.forge, info: true, target: () => document.querySelector('#forgeBody .srow'), done() { return this.tapped || $('scr-forge').hidden; } },
-    { text: TX.retourPersonnage || TX.retourVillage, target: () => document.querySelector('#scr-forge .back'), done: () => $('scr-forge').hidden },
-  ]);
-  // First merge possible: show where it happens
-  if (canMerge && !S.tutoSeen['eq-fusion']) startCoach('eq-fusion', [
-    { text: TXE.fusionner, target: () => $('ftab-merge'), done: () => forgeTab === 'merge' || G().merges > 0 },
-    { text: TXE.fusionner, target: () => { const a = $('autoMerge'); return a && !a.disabled ? a : document.querySelector('#forgeBody .gi.can'); }, done: () => G().merges > 0 || !$('gearModal').hidden },
-    { text: TXE.fusionner, target: () => document.querySelector('[data-gmerge]'), done: () => G().merges > 0 },
   ]);
 }
 
@@ -4380,7 +4297,7 @@ function chestsHTML() {
   return `<h2 class="sh-h">${tr('Coffres d\'équipement')}</h2><div class="ch-grid">${CHESTS.map(card).join('')}</div>
     <p class="sh-note">${tr('Les chances de chaque rareté sont affichées sur chaque coffre.')}</p>`;
 }
-// Pearls (premium currency) and coins are shown on every menu screen; the ores only at the Forge, the keys at the Shop
+// Pearls (premium currency) and coins are shown on every menu screen; the keys at the Shop
 // While coins or pearls fly to the wallet (flyMoney), the amount still in the air is held back, so the wallet counts up as they land
 const moneyHold = { coins: 0, gems: 0 };
 const moneyHTML = () => `<span class="res" data-cur="gems" title="${tr('Perles')}">${GEM_ICON}${Math.max(0, G().gems - moneyHold.gems)}</span>`
@@ -4411,7 +4328,7 @@ function gearCoach() {
 }
 
 /* ---------- Screens ---------- */
-const SCREENS = ['village', 'mine', 'museum', 'shop', 'forge', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets'];
+const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets'];
 function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
@@ -4423,7 +4340,7 @@ function go(name) {
   if (name !== 'atelier') stopMini();
   if (name !== 'pets') stopPets();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, forge: renderForge, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets })[name]();
+  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets })[name]();
   updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -4431,7 +4348,7 @@ function go(name) {
 /* ---------- Bottom navigation bar ----------
    Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
    Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
-const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', forge: 'hero', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village' };
+const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village' };
 function updateNav(name) {
   const tab = NAV_OF[name];
   $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
@@ -4452,7 +4369,7 @@ $('navBar').addEventListener('click', e => {
   const k = b.dataset.nav;
   if (k === 'museum' && !S.buildings.museum) { sfx('deny'); return toast(tr('Le Musée s\'ouvre à ton premier retour de la mine.'), ''); }
   if (k === 'events' && !eventsOpen()) { sfx('deny'); return toast(tr('Les Événements se débloquent au niveau {n} du joueur.', { n: plUnlockAt('evenements') }), ''); }
-  // An active tab does nothing, unless one of its inner screens is open (the Forge under Personnage): it then goes back to the tab's screen
+  // An active tab does nothing, unless one of its inner screens is open (the Shop under its tab): it then goes back to the tab's screen
   const cur = SCREENS.find(n => !$('scr-' + n).hidden);
   if (b.classList.contains('on') && k !== 'village' && (cur === k || (k === 'premium' && cur === 'shop'))) return;
   sfx('pick'); go(k);
@@ -5504,7 +5421,7 @@ document.addEventListener('pointerdown', e => { if (!e.target.closest('#minePet'
 
 function renderMuseum() {
   setTimeout(museumCoach);
-  // The Workshop: a yellow tab on the left edge, like the Forge in the Character screen (badge = geodes to open)
+  // The Workshop: a yellow tab on the left edge, (badge = geodes to open)
   const geo = S.bag.geodes.length;
   $('muActions').innerHTML = S.buildings.atelier
     ? `<button class="eq-forge mu-atelier" data-go="atelier" aria-label="${tr('Atelier')}">${img(OW + 'Workshop.png' + OW_V)}${geo ? `<span class="badge">${geo}</span>` : ''}</button>` : '';
@@ -5696,7 +5613,7 @@ const renderHelp = () => $('help').innerHTML = [
   [null, UP_ICON, tr('<b>Remonter</b> : quitte la mine quand tu veux. Ton sac se vide : les nouveaux trésors vont au musée, les doublons sont vendus.')],
   [() => S.buildings.museum, artArt('lion'), tr('<b>Musée</b> : chaque nouveau trésor rapporte une prime. Complète une collection pour gagner une étoile (jusqu\'à {n}) : ses doublons se vendent plus cher, et la prime se récupère au Musée.', { n: MAX_STARS })],
   [() => S.buildings.shop, img('Assets/UI/Bag.png'), tr('<b>Boutique</b> : agrandis ton sac. D\'autres articles arrivent plus profond.')],
-  [() => S.buildings.forge, resArt('iron'), tr('<b>Forge</b> : améliore tes outils avec du fer, du cuivre, de l\'or et des pièces.')],
+  [() => S.buildings.forge, resArt('iron'), tr('<b>Équipement</b> : touche un objet (écran Personnage) pour l\'améliorer avec des pièces et des minerais, ou le fusionner.')],
   ['pierreDure', TOOLS.pickaxe, tr('<b>Pierre dure</b> : il faut deux fois plus de coups de pioche.')],
   ['source', TOOLS.shovel, tr('<b>Source</b> : creuse-la à la pelle, son eau refroidit le magma collé à elle.')],
   ['magmaChaine', TOOLS.bucket, tr('<b>Magma en chaîne</b> : arrose une case, tout le magma collé refroidit.')],
