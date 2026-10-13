@@ -875,16 +875,17 @@ window.CONFIG = {
     // "recompense" : pieces, gemmes (perles), potions, bombes, cle ('bois', 'argent', 'or', 'etoile') avec "cles" = combien,
     //   et les BÉNÉDICTIONS GARANTIES (paliers) :
     //   energie = énergie max (remplace l'ancienne Réserve d'énergie de la Forge),
-    //   sac = nombre de cases du sac, poche = géodes qui ne prennent pas de case.
+    //   sac = nombre de cases du sac, poche = géodes qui ne prennent pas de case,
+    //   fee = une fée : 'hasard' (une couleur que le joueur n'a pas encore) ou une couleur de pets > fees (ex. 'bleue').
     // "deblocage" : la fonctionnalité qui s'ouvre à ce niveau (voir "fonctionnalites" ci-dessous).
     // Repères (à vérifier en test) : niveau 13 vers la fin du biome 1, 19 au biome 2, 35 au biome 5, 53 à la fin de la mine 1.
     // Après le dernier niveau de la liste, l'XP continue de grandir, sans récompense.
     niveaux: [
       { recompense: { pieces: 100 } },                              // 2
-      { recompense: { sac: 5 } },                                   // 3  (montré à la fin des premiers pas)
+      { recompense: { sac: 5, fee: 'hasard' } },                    // 3  (montré à la fin des premiers pas) : la 1re fée
       { recompense: { energie: 40 } },                              // 4
       { recompense: { pieces: 300 }, deblocage: 'evenements' },     // 5
-      { recompense: { poche: 1 } },                                 // 6
+      { recompense: { poche: 1, fee: 'hasard' } },                  // 6  : la 2e fée
       { recompense: { energie: 50 } },                              // 7
       { recompense: { gemmes: 10, cle: 'bois', cles: 1 } },         // 8
       { recompense: { sac: 6 } },                                   // 9
@@ -1026,7 +1027,8 @@ window.CONFIG = {
       rouge:     { nom: "Fée rouge",       visuel: "Assets/Pets/Pet_Fairy_Red.png", bonus: "A une chance de casser une pierre en 1 coup", effet: 'unCoup', chance: 0.08 },
       bleue:     { nom: "Fée bleue",       visuel: "Assets/Pets/Pet_Fairy_Blue.png", bonus: "Peut refroidir un magma", effet: 'magma', chance: 0.25 },
     },
-    depart: 5,          // fées données au joueur au début (couleurs au hasard, pour tester)
+    feeSurNiveauVide: true,   // sac illimité : les niveaux de Progression qui ne donnaient que de la place dans le sac donnent une fée
+    depart: 0,          // fées données au joueur au début (couleurs au hasard). Les autres arrivent par la Progression (recompense > fee)
     vitesse: 40,        // vitesse de vol, en % de la largeur de l'écran par seconde (40 = traverse l'écran en ~2,5 s)
     taille: 17,         // largeur d'une fée, en % de la largeur de l'écran
   },

@@ -878,6 +878,17 @@ button.eq-dmg{cursor:pointer}
 /* Mine: a chest key on the ground */
 .t-gkey{background-image:url(Assets/Ground/Ground_Dirt_01.png)}
 .t-gkey::before{animation:twinkle 1.8s ease-in-out infinite; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='30' cy='50' r='18' fill='%23b0662f' stroke='%233b2245' stroke-width='5'/%3E%3Ccircle cx='30' cy='50' r='7' fill='%233b2245'/%3E%3Cpath d='M46 44 H88 V56 H80 V68 H70 V56 H62 V64 H52 V56 H46Z' fill='%23b0662f' stroke='%233b2245' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E")}
+/* New fairy reward page: the fairy floats in a halo of light, her name and bonus under her */
+.modal.fairy-modal{background:radial-gradient(circle at 50% 40%, rgba(70,110,170,.92), rgba(16,8,26,.95))}
+.fm-title{font-size:34px; color:#fff; text-shadow:none; -webkit-text-stroke:7px var(--outline); paint-order:stroke fill; animation:cmPop .5s cubic-bezier(.2,1.6,.4,1)}
+.fm-item{gap:10px}
+.fm-item .cm-rays{top:95px; width:400px; height:400px; margin:-200px 0 0 -200px; --g1:#fff6c8; opacity:.6}
+.fm-glow{position:absolute; left:50%; top:95px; width:210px; height:210px; margin:-105px 0 0 -105px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.75), rgba(255,240,170,.25) 45%, transparent 70%); pointer-events:none}
+.fm-fairy{position:relative; z-index:1; width:190px; height:190px; object-fit:contain; animation:pet-bob 2.4s ease-in-out infinite; filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+.fm-name{z-index:1; font-family:var(--font-display); font-size:28px; color:#fff; -webkit-text-stroke:6px var(--outline); paint-order:stroke fill}
+.fm-bonus{z-index:1; max-width:300px; padding:8px 14px; border:3px solid var(--outline); border-radius:14px; background:#fff8e6; color:var(--ink); font-weight:800; font-size:15px; line-height:1.3}
+.fairy-modal .cm-btns .btn{border:3px solid var(--outline); background-clip:padding-box; font-size:20px; box-shadow:inset 0 -5px 0 var(--sun-edge)}
+.fairy-modal .cm-btns .btn.ghosty{background:#fbf1dc; box-shadow:inset 0 -5px 0 #e2c89a}
 @media (prefers-reduced-motion: reduce){ .cm-rays,.cm-bolts,.gi.can,.eq-slot.r-mythic,.gi.r-mythic,.cm-chest img{animation:none} }
 
 .srow{display:flex; align-items:center; gap:10px; padding:10px; border-radius:16px; background:#fff; box-shadow:0 3px 0 #ecd3a8}
@@ -1282,6 +1293,11 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 #scr-village .mine-door::before,#scr-village .mine-door::after{display:none}
 #scr-village #descendBtn{width:100%; min-height:76px; border:3px solid var(--outline); border-radius:18px; background-clip:padding-box; font-size:26px; box-shadow:inset 0 -6px 0 var(--sun-edge)}
 #scr-village #descendBtn:active{transform:translateY(2px); box-shadow:inset 0 -2px 0 var(--sun-edge)}
+/* Narrow phones: the three buttons shrink together so the Pets button never leaves the screen */
+#scr-village .v-bottom{gap:clamp(8px, 3vw, 14px)}
+#scr-village .mine-door{min-width:0}
+#scr-village .quest-btn{width:clamp(62px, 19vw, 80px); height:auto; aspect-ratio:80 / 76}
+#scr-village #descendBtn{min-height:clamp(59px, 18vw, 76px); padding-inline:8px; font-size:clamp(19px, 6.4vw, 26px)}
 
 /* ---------- Pets: the player's fairies fly around freely ---------- */
 #scr-pets{--u:calc(min(100vw, 480px) / 100); position:fixed; inset:0; max-width:none; height:auto; padding:0; overflow:hidden;
@@ -1294,7 +1310,11 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
   border-radius:0 calc(var(--u) * 4) calc(var(--u) * 4) 0; background:#ff5a5f; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 #b8282f; cursor:pointer}
 .pets-back.back-red svg{width:calc(var(--u) * 8); height:calc(var(--u) * 8)}
 .pets-back.back-red:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 #b8282f}
-.pets-field{position:absolute; inset:0; z-index:1}
+.pets-field{position:absolute; inset:0; z-index:1; touch-action:manipulation}
+.tap-fx{position:fixed; inset:0; z-index:9999; pointer-events:none; overflow:hidden}
+.pet-spark{position:absolute; z-index:3; border-radius:2px; pointer-events:none; box-shadow:0 0 6px rgba(255,255,255,.9)}
+.pet-spark.dot{border-radius:50%}
+.pet-ring{position:absolute; z-index:3; width:70px; height:70px; border:3px solid #fff; border-radius:50%; pointer-events:none; box-shadow:0 0 10px rgba(255,246,168,.9)}
 .pet{position:absolute; left:0; top:0; width:calc(var(--u) * var(--pet-w)); will-change:transform; pointer-events:none}
 /* The equipped fairy (chosen in « Gérer »): a yellow check above it (kept upright when the fairy turns) */
 .pet.on::after{content:"✓"; position:absolute; left:50%; top:calc(var(--u) * -4); width:calc(var(--u) * 6); height:calc(var(--u) * 6); margin-left:calc(var(--u) * -3); border:calc(var(--u) * .6) solid var(--outline); border-radius:50%;
@@ -1376,7 +1396,7 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 #scr-mine #upIcon img{width:40px; height:40px}
 #scr-mine .goals{gap:12px}
 #scr-mine .goals-label{min-width:64px; text-align:center; font-size:15px}
-#scr-mine .goals-label small{margin-top:2px; font-family:var(--font-display); font-size:24px; color:#fff; -webkit-text-stroke:6px var(--outline); paint-order:stroke fill; opacity:1; white-space:nowrap}
+#scr-mine .goals-label small{display:block; margin-top:2px; font-family:var(--font-display); font-size:24px; color:#fff; -webkit-text-stroke:6px var(--outline); paint-order:stroke fill; opacity:1; white-space:nowrap}
 #scr-mine .slots{gap:9px; flex-wrap:nowrap}
 #scr-mine .slot,#scr-mine .slot.found{width:47px; height:47px; padding:6px; border:0; border-radius:12px; background:rgba(20,8,30,.35); box-shadow:none}
 /* Fairy and bag sit on the row above the tools ("next level" stays in the middle) */
@@ -1397,6 +1417,10 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 #scr-mine .tool.on .ic{width:70px; height:70px; margin-top:-14px}
 #scr-mine .tool .tl{position:static; margin-top:4px; font-size:17px}
 #scr-mine .tool:not(.on) .tl{display:none}
+/* Narrow phones: the treasure squares and the tools shrink instead of leaving the screen */
+#scr-mine .slots{flex:1 1 0; min-width:0}
+#scr-mine .slot,#scr-mine .slot.found{flex:0 1 47px; min-width:0; height:auto; aspect-ratio:1}
+#scr-mine .tool{width:min(107px, calc((100vw - 24px) / 3))}
 /* Wide Mine: smaller event title so the energy bar keeps its room; the Move button goes above the bag */
 #scr-mine #depthChip.wide b{font-size:22px; -webkit-text-stroke:5px var(--outline); text-shadow:0 2px 0 var(--outline)}
 #scr-mine #depthChip.wide span{font-size:12px; -webkit-text-stroke:3px var(--outline)}
@@ -1517,7 +1541,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       </div>
       <button class="btn" id="descendBtn">Descendre</button>
     </section>
-    <div class="v-quest"><button class="quest-btn" id="petsBtn" aria-label="Pets"><img src="Assets/UI/Icon_Pets.png" alt="" draggable="false"></button></div>
+    <div class="v-quest" id="petsSlot"><button class="quest-btn" id="petsBtn" aria-label="Pets"><img src="Assets/UI/Icon_Fairy.png" alt="" draggable="false"></button></div>
   </div>
 </div>
 
@@ -1781,6 +1805,14 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 <div class="modal buy-modal" id="buyModal" hidden><div class="card" role="dialog" aria-label="Ouvrir des coffres"><h2 id="buyTitle"></h2><div id="buyBody"></div>
   <div class="buy-btns"><button class="btn ghosty" id="buyNo">Annuler</button><button class="btn" id="buyOk">Confirmer</button></div></div></div>
 <div class="modal ad-modal" id="adModal" hidden><div class="card"><p class="ad-tag">Publicité (simulée)</p><b id="adCount">3</b><p>Ton coffre arrive…</p></div></div>
+<!-- Reward page: a new fairy -->
+<div class="modal chest-modal fairy-modal" id="fairyModal" hidden>
+  <div class="cm" role="dialog" aria-labelledby="fairyTitle">
+    <p class="cm-title fm-title" id="fairyTitle">Nouvelle fée !</p>
+    <div class="cm-item fm-item" id="fairyItem"></div>
+    <div class="cm-btns" id="fairyBtns"></div>
+  </div>
+</div>
 <div class="modal" id="petsModal" hidden>
   <div class="card pets-modal" role="dialog" aria-labelledby="petsTitle">
     <button class="close" id="petsClose" aria-label="Fermer">×</button>
@@ -4649,19 +4681,27 @@ function gainXP(n) {
 const refreshNav = () => { const scr = SCREENS.find(n => !$('scr-' + n).hidden); if (scr) updateNav(scr); };
 const PL_FEAT_ICON = { evenements: 'Assets/UI/Event.png' };
 // A level's reward and unlock, as small chips
+// A level's reward; with the unlimited bag, a level that only gave bag room (sac / poche) gives a fairy instead
+// (config.js > pets > feeSurNiveauVide)
+function plRewardOf(row) {
+  const r = (row && row.recompense) || {};
+  if (BAG_FREE && PETS.feeSurNiveauVide && !r.fee && Object.keys(r).every(k => k === 'sac' || k === 'poche')) return { ...r, fee: 'hasard' };
+  return r;
+}
 function plRewardHTML(row) {
-  const r = row.recompense || {}, chip = (icon, n) => `<span class="prog-chip">${icon}${n}</span>`;
+  const r = plRewardOf(row), chip = (icon, n) => `<span class="prog-chip">${icon}${n}</span>`;
   // Guaranteed blessings first, in their own colour
   const bless = (icon, txt) => `<span class="prog-chip bless">${icon}${txt}</span>`;
   return (r.energie ? bless(BOLT, tr('Énergie max {n}', { n: r.energie })) : '')
     + (r.sac && !BAG_FREE ? bless(img('Assets/UI/Bag.png'), tr('Sac {n} cases', { n: r.sac })) : '')
     + (r.poche && !BAG_FREE ? bless(geodeArt('white'), tr(plural(r.poche, 'Poche : {n} géode', 'Poche : {n} géodes'), { n: r.poche })) : '')
+    + (r.fee ? bless(img(PETS.fees[r.fee] ? PETS.fees[r.fee].visuel : 'Assets/UI/Icon_Fairy.png'), PETS.fees[r.fee] ? tr(PETS.fees[r.fee].nom) : tr('Une fée')) : '')
     + (r.pieces ? chip(COIN, r.pieces) : '') + (r.gemmes ? chip(GEM_ICON, r.gemmes) : '')
     + (r.cle ? chip(keyArt(r.cle), '×' + (r.cles || 1)) : '') + (r.potions ? chip(POTION, '×' + r.potions) : '') + (r.bombes ? chip(TOOLS.bomb, '×' + r.bombes) : '')
     + (row.deblocage ? `<span class="prog-chip unlock">${PL_FEAT_ICON[row.deblocage] ? img(PL_FEAT_ICON[row.deblocage]) : ''}${tr('Débloque : {x}', { x: tr((PJ.fonctionnalites || {})[row.deblocage] || row.deblocage) })}</span>` : '');
 }
 function plGive(l) {
-  const r = plRow(l).recompense || {};
+  const r = plRewardOf(plRow(l));
   S.coins += r.pieces || 0; G().gems += r.gemmes || 0; S.potions += r.potions || 0; S.bombs += r.bombes || 0;
   if (r.cle) G().keys[r.cle] = (G().keys[r.cle] || 0) + (r.cles || 1);
   const e0 = maxE();
@@ -4669,8 +4709,42 @@ function plGive(l) {
   // More max energy: the extra points are given straight away
   if (maxE() > e0) { S.energy = Math.min(maxE(), S.energy + maxE() - e0); updateEnergy(true); }
   if (r.sac || r.poche) updateBadge();
+  if (r.fee) giveFairy(r.fee);
   updateBombs(); updateQuick(); refreshGear();
 }
+// A new fairy: the given colour, or ('hasard') one the player does not have yet
+function giveFairy(key) {
+  const all = Object.keys(PETS.fees), missing = all.filter(k => !S.pets.some(p => p.key === k));
+  if (!PETS.fees[key]) key = (missing.length ? missing : all)[randInt(0, (missing.length ? missing : all).length - 1)];
+  const id = S.pets.reduce((m, p) => Math.max(m, p.id), 0) + 1;
+  S.pets.push({ id, kind: 'fee', key });
+  if (!S.petOn) S.petOn = id;   // the first fairy is equipped straight away
+  paintPet(); if (!$('scr-village').hidden) $('petsSlot').hidden = false;
+  fairyQueue.push(id); if (fairyQueue.length === 1) setTimeout(showFairyReward, 500);
+  save();
+}
+// Reward page for each new fairy (one after the other when several arrive at once)
+const fairyQueue = [];
+function showFairyReward() {
+  const p = S.pets.find(p => p.id === fairyQueue[0]); if (!p) { fairyQueue.shift(); if (fairyQueue.length) showFairyReward(); return; }
+  const f = PETS.fees[p.key];
+  $('fairyItem').innerHTML = `<div class="cm-rays"></div><div class="fm-glow"></div><img class="fm-fairy" src="${f.visuel}" alt="" draggable="false">
+    <b class="fm-name">${tr(f.nom)}</b><span class="fm-bonus">${f.bonus ? tr(f.bonus) : tr('Bonus à venir')}</span>`;
+  $('fairyBtns').innerHTML = S.petOn === p.id
+    ? `<p class="cm-stat">${tr('Elle t\'accompagne déjà dans la mine !')}</p><button class="btn" data-fm="close">${tr('Super !')}</button>`
+    : `<button class="btn" data-fm="equip">${tr('Équiper')}</button><button class="btn ghosty" data-fm="close">${tr('Plus tard')}</button>`;
+  $('fairyModal').hidden = false; unlockAudio(); sfx('win');
+  // Sparkles around the fairy as she appears
+  const burst = () => { const r = $('fairyItem').querySelector('.fm-fairy').getBoundingClientRect(); petSparkles(tapFx, r.left + r.width / 2 + rand(-60, 60), r.top + r.height / 2 + rand(-50, 50)); };
+  if (!reduced) [0, 180, 380, 650].forEach(t => setTimeout(burst, t));
+}
+$('fairyBtns').addEventListener('click', e => {
+  const b = e.target.closest('[data-fm]'); if (!b) return;
+  unlockAudio(); sfx('pick');
+  if (b.dataset.fm === 'equip') { S.petOn = fairyQueue[0]; paintPet(); markPets(); save(); }
+  $('fairyModal').hidden = true; fairyQueue.shift();
+  if (fairyQueue.length) setTimeout(showFairyReward, 250);
+});
 // The card on the village: face with the level, name, XP gauge (hidden during the first steps, like the missions)
 function renderPlCard() {
   const p = plInfo();
@@ -4757,6 +4831,7 @@ function revealBuildings() {
 }
 function renderVillage() {
   applyUnlocks(); renderPlCard(); paintPet();
+  $('petsSlot').hidden = !S.pets.length;   // the Pets button shows with the first fairy (Progression, level 3)
   // Buildings waiting for their entrance stay hidden until the camera reaches them; "Nouveau !" until first visit
   document.querySelectorAll('.bld').forEach(b => {
     const k = b.dataset.go;
@@ -5187,10 +5262,10 @@ function renderPets() {
     const dt = Math.min(.05, (t - last) / 1000); last = t;
     const w = f.clientWidth, h = f.clientHeight, pw = w * PETS.taille / 100, sp = PETS.vitesse / 100;   // speed in screen widths per second
     for (const p of petsFly) {
-      if (p.wait > 0) { p.wait -= dt; if (p.wait <= 0) { p.tx = rand(0, 1); p.ty = rand(.2, .9); } }
+      if (p.wait > 0) { p.wait -= dt; if (p.wait <= 0 && !p.boost) { p.tx = rand(0, 1); p.ty = rand(.2, .9); } }   // an attracted fairy keeps the tap as target
       else {
-        const dx = (p.tx - p.x) * w, dy = (p.ty - p.y) * h, d = Math.hypot(dx, dy), m = sp * w * dt;
-        if (d <= m) { p.x = p.tx; p.y = p.ty; p.wait = rand(.4, 2); }
+        const dx = (p.tx - p.x) * w, dy = (p.ty - p.y) * h, d = Math.hypot(dx, dy), m = sp * (p.boost || 1) * w * dt;
+        if (d <= m) { p.x = p.tx; p.y = p.ty; p.wait = p.boost ? rand(1.4, 2.6) : rand(.4, 2); p.boost = 0; }
         else { p.x += dx / d * m / w; p.y += dy / d * m / h; if (Math.abs(dx) > 2) p.dir = dx < 0 ? -1 : 1; }
       }
       p.ph += dt * 5;
@@ -5202,6 +5277,43 @@ function renderPets() {
   petsRaf = requestAnimationFrame(step);
 }
 function stopPets() { cancelAnimationFrame(petsRaf); petsRaf = 0; }
+// Tap on the Pets screen: the closest fairies fly over to gather around it (the sparkles come from the global tap effect)
+$('scr-pets').addEventListener('pointerdown', e => {
+  if (e.target.closest('button') || !$('petsModal').hidden) return;
+  const f = $('petsField'), r = f.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  unlockAudio();
+  const w = r.width, h = r.height, pw = w * PETS.taille / 100, clamp = v => Math.max(0, Math.min(1, v));
+  // Only the fairies near the tap (within ~45 % of the screen width), at least the closest one
+  const dist = p => Math.hypot(p.x * (w - pw) + pw / 2 - x, p.y * (h - pw) + pw / 2 - y);
+  const near = petsFly.filter(p => dist(p) < w * .45);
+  if (!near.length && petsFly.length) near.push(petsFly.reduce((a, b) => dist(a) < dist(b) ? a : b));
+  near.forEach(p => {
+    const a = rand(0, 6.3), d = rand(.25, .7) * pw;   // a loose ring around the tap
+    p.tx = clamp((x + Math.cos(a) * d - pw / 2) / (w - pw)); p.ty = clamp((y + Math.sin(a) * d * .8 - pw / 2) / (h - pw));
+    p.wait = rand(0, .15); p.boost = rand(1.2, 1.5);   // a bit faster than their stroll, not a dash
+  });
+});
+// Tap anywhere outside the mine: a burst of little sparkles under the finger (fixed layer over everything)
+const tapFx = document.createElement('div'); tapFx.className = 'tap-fx'; document.body.append(tapFx);
+document.addEventListener('pointerdown', e => {
+  if (!$('scr-mine').hidden || e.button > 0) return;
+  petSparkles(tapFx, e.clientX, e.clientY);
+}, true);
+function petSparkles(box, x, y) {
+  const cols = ['#fff6a8', '#ffd23d', '#ffffff', '#a6e6ff', '#ffb3e6'];
+  for (let n = 0; n < 14; n++) {
+    const d = document.createElement('i'), a = n / 14 * 6.283 + rand(-.2, .2), dist = rand(26, 62), sz = rand(5, 11);
+    d.className = 'pet-spark' + (n % 3 ? '' : ' dot');
+    Object.assign(d.style, { left: x + 'px', top: y + 'px', width: sz + 'px', height: sz + 'px', background: cols[n % cols.length] });
+    box.append(d);
+    d.animate([{ transform: 'translate(-50%, -50%) scale(.4) rotate(45deg)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(a) * dist}px), calc(-50% + ${Math.sin(a) * dist}px)) scale(1) rotate(45deg)`, opacity: 1, offset: .6 },
+      { transform: `translate(calc(-50% + ${Math.cos(a) * dist * 1.15}px), calc(-50% + ${Math.sin(a) * dist * 1.15 + 10}px)) scale(.2) rotate(45deg)`, opacity: 0 }],
+      { duration: rand(550, 800), easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => d.remove();
+  }
+  const ring = document.createElement('i'); ring.className = 'pet-ring'; Object.assign(ring.style, { left: x + 'px', top: y + 'px' }); box.append(ring);
+  ring.animate([{ transform: 'translate(-50%, -50%) scale(.2)', opacity: .9 }, { transform: 'translate(-50%, -50%) scale(1)', opacity: 0 }], { duration: 450, easing: 'ease-out' }).onfinish = () => ring.remove();
+}
 $('petsBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); go('pets'); });
 const markPets = () => document.querySelectorAll('#petsField [data-pet]').forEach(b => b.classList.toggle('on', +b.dataset.pet === S.petOn));
 // "Gérer": every fairy (owned or not) with its bonus
