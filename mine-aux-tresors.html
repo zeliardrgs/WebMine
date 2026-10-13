@@ -3276,8 +3276,8 @@ function openBagView() {
   // During the bomb tutorial, open straight on the consumables
   bagTab(coachStep() && coachStep().cons && !$('bagTabs').hidden ? 'cons' : 'items');
   const n = bagUsed(), cap = bagCap(), free = cap - n, gp = geoPocket();
-  $('bagViewText').textContent = tr('{n} / {cap} cases utilisées', { n, cap }) + ' · ' + (free > 0 ? tr(plural(free, '{n} place libre', '{n} places libres'), { n: free }) : tr('sac plein'))
-    + (gp ? ' · ' + tr('poche à géodes {a} / {b}', { a: Math.min(geodesInBag(), gp), b: gp }) : '');
+  $('bagViewText').textContent = BAG_FREE ? tr(plural(n, '{n} trésor dans ton sac', '{n} trésors dans ton sac'), { n }) : tr('{n} / {cap} cases utilisées', { n, cap }) + ' · ' + (free > 0 ? tr(plural(free, '{n} place libre', '{n} places libres'), { n: free }) : tr('sac plein'))
+    + (gp && !BAG_FREE ? ' · ' + tr('poche à géodes {a} / {b}', { a: Math.min(geodesInBag(), gp), b: gp }) : '');
   $('bagViewList').innerHTML = n
     ? S.trip.finds.map(f => `<div class="bf-item static">${findArt(f.kind, f.key)}<b>${rarName(findName(f.kind, f.key), rarityOfFind(f.kind, f.key))}</b>${f.kind !== 'geode' && !inMuseum(f.kind, f.key) ? `<span class="tagnew">${tr('Nouveau')}</span>` : ''}</div>`).join('')
     : `<p class="bv-empty" style="grid-column:1 / -1">${tr('Ton sac est vide pour l\'instant.')}</p>`;
@@ -3814,7 +3814,7 @@ function renderStatsSheet() {
   const pas = Object.entries(T.pas).map(([ak, v]) => `<li><span class="gs-ic">${gearArt(ak)}</span><span><b>${tr(ARCH[ak].nom)}</b>${passiveTxt(ak, v)}</span></li>`).join('');
   $('gearCard').innerHTML = `<button class="x" data-gclose aria-label="${tr('Fermer')}">×</button><h2>${tr('Tes bonus')}</h2>
     <ul class="gs-list">${rows}</ul>${pas ? `<p class="gs-h">${tr('Passifs actifs')}</p><ul class="gs-list">${pas}</ul>` : ''}
-    <p class="gs-hint">${tr('Énergie max {e} · Sac {b} cases · Dégâts de la pioche {d}', { e: maxE(), b: bagCap(), d: nfG(Math.round(pickPower() * 100) / 100) })}</p>`;
+    <p class="gs-hint">${(BAG_FREE ? tr('Énergie max {e} · Dégâts de la pioche {d}', { e: maxE(), d: nfG(Math.round(pickPower() * 100) / 100) }) : tr('Énergie max {e} · Sac {b} cases · Dégâts de la pioche {d}', { e: maxE(), b: bagCap(), d: nfG(Math.round(pickPower() * 100) / 100) }))}</p>`;
 }
 document.addEventListener('click', e => {
   const t = e.target;
@@ -4263,8 +4263,10 @@ const geoPocket = () => claimedBest('poche');
 const geodesInBag = () => S.trip.finds.filter(f => f.kind === 'geode').length;
 // Slots used: geodes in the pocket don't count
 const bagUsed = () => S.trip.finds.length - Math.min(geodesInBag(), geoPocket());
-const bagFull = () => bagUsed() >= bagCap();
-const roomFor = kind => !bagFull() || (kind === 'geode' && geodesInBag() < geoPocket());
+// config.js > sac > illimite: the bag has no limit (never full, no « sac plein » popup)
+const BAG_FREE = !!CFG.sac.illimite;
+const bagFull = () => !BAG_FREE && bagUsed() >= bagCap();
+const roomFor = kind => BAG_FREE || !bagFull() || (kind === 'geode' && geodesInBag() < geoPocket());
 /* Coins and pearls just won (Progression, Museum) fly from where they were won to the wallet at the top of the screen.
    from = the rect of the button or dome tapped; the amounts are already added to the save. */
 function flyMoney(from, coins, gems) {
@@ -4325,8 +4327,8 @@ function flyCoins(i, n) {
 function updateBadge() {
   const n = bagUsed(), cap = bagCap();
   const coins = S.trip.coins || 0;
-  $('bagTxt').innerHTML = tr('Sac {n}/{cap}', { n, cap }) + (coins ? ` · ${coins} ${COIN}` : '');
-  $('bagPill').classList.toggle('full', n >= cap);
+  $('bagTxt').innerHTML = (BAG_FREE ? tr('Sac {n}', { n }) : tr('Sac {n}/{cap}', { n, cap })) + (coins ? ` · ${coins} ${COIN}` : '');
+  $('bagPill').classList.toggle('full', !BAG_FREE && n >= cap);
 }
 function item(svg, name, n, locked, extra = '') {
   return `<div class="item${locked ? ' locked' : ''}">${svg}<span class="n">${n}</span><span class="nm">${name}</span>${extra}</div>`;
@@ -4509,8 +4511,8 @@ function plRewardHTML(row) {
   // Guaranteed blessings first, in their own colour
   const bless = (icon, txt) => `<span class="prog-chip bless">${icon}${txt}</span>`;
   return (r.energie ? bless(BOLT, tr('Énergie max {n}', { n: r.energie })) : '')
-    + (r.sac ? bless(img('Assets/UI/Bag.png'), tr('Sac {n} cases', { n: r.sac })) : '')
-    + (r.poche ? bless(geodeArt('white'), tr(plural(r.poche, 'Poche : {n} géode', 'Poche : {n} géodes'), { n: r.poche })) : '')
+    + (r.sac && !BAG_FREE ? bless(img('Assets/UI/Bag.png'), tr('Sac {n} cases', { n: r.sac })) : '')
+    + (r.poche && !BAG_FREE ? bless(geodeArt('white'), tr(plural(r.poche, 'Poche : {n} géode', 'Poche : {n} géodes'), { n: r.poche })) : '')
     + (r.pieces ? chip(COIN, r.pieces) : '') + (r.gemmes ? chip(GEM_ICON, r.gemmes) : '')
     + (r.cle ? chip(keyArt(r.cle), '×' + (r.cles || 1)) : '') + (r.potions ? chip(POTION, '×' + r.potions) : '') + (r.bombes ? chip(TOOLS.bomb, '×' + r.bombes) : '')
     + (row.deblocage ? `<span class="prog-chip unlock">${PL_FEAT_ICON[row.deblocage] ? img(PL_FEAT_ICON[row.deblocage]) : ''}${tr('Débloque : {x}', { x: tr((PJ.fonctionnalites || {})[row.deblocage] || row.deblocage) })}</span>` : '');
@@ -4965,7 +4967,7 @@ function villageCoach() {
   }
   // After the first steps: the miner level's first bag blessing waits in Progression
   const bagLv = PJ.niveaux.findIndex(r => r.recompense && r.recompense.sac) + 2;
-  if (!inGuide() && has('sac') && !S.tutoSeen.sacBoutique && plReady(bagLv)) {
+  if (!BAG_FREE && !inGuide() && has('sac') && !S.tutoSeen.sacBoutique && plReady(bagLv)) {
     renderPlCard();
     return startCoach('sacBoutique', [
       { text: TX.sacBoutique, target: () => $('plCard'), done: () => !$('scr-progress').hidden },

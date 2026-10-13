@@ -92,7 +92,12 @@ window.CONFIG = {
      ce sera une amélioration de la Tour du sorcier).
      --------------------------------------------------------------- */
   sac: {
-    // Nombre de cases au début du jeu
+    // true = le sac n'a plus de limite : tous les trésors trouvés y vont, sans fenêtre « sac plein ».
+    // false = le sac limité (cases ci-dessous, agrandi par le niveau du joueur). La version limitée est aussi
+    // gardée telle quelle sur la branche Git « sac-limite ».
+    illimite: true,
+
+    // Nombre de cases au début du jeu (sac limité)
     casesDepart: 4,
 
     // Sac plein : un doublon trouvé reste au sol, avec ce petit message (pas de fenêtre).
