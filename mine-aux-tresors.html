@@ -3718,8 +3718,32 @@ function checkStuck() {
   toast(tr(CFG.energie.texteRetourForce), 'warn'); sfx('deny');
   stuckT = setTimeout(() => { stuckT = null; if (!$('scr-mine').hidden && isStuck()) openRecap(); }, 1800);
 }
+/* Red dots: recomputed from the game state a few times a second, so each one goes away as soon as there is nothing
+   left to do (a reward claimed, a chest opened…), without waiting for a change of screen */
+let badgeT = 0;
+function setDot(id, on, txt) {
+  const el = $(id); if (!el) return;
+  if (el.hidden === on) el.hidden = !on;
+  if (txt != null && el.textContent !== String(txt)) el.textContent = txt;
+}
+function refreshBadges() {
+  const museumOpen = !!S.buildings.museum, bn = S.bldNew || {};
+  setDot('navMuseumBadge', museumOpen && museumPrimeWaiting());
+  setDot('navHeroBadge', gearOpen() && heroBadge());
+  setDot('navShopBadge', chestReady());
+  setDot('plBadge', plWaiting() > 0);
+  setDot('badgeAltar', canPray() && !bn.altar);
+  setDot('badgeMuseum', museumPrimeWaiting() && !bn.museum);
+  setDot('badgeShop', !!S.buildings.shop && (shopNew() || chestReady()) && !bn.shop);
+  if (S.daily && S.daily.goals) {
+    const ready = S.daily.goals.filter(g => !g.claimed && goalDone(g)).length + (dayChestReady() ? 1 : 0);
+    setDot('questBadge', ready > 0, ready);
+    const q = $('questBtn'); if (q && q.classList.contains('ready') !== !!ready) q.classList.toggle('ready', !!ready);
+  }
+}
 function loop() {
   paintMoney(); updateEnergy(); updateBucket(); checkStuck();
+  const now = performance.now(); if (now - badgeT > 250) { badgeT = now; try { refreshBadges(); } catch (e) {} }
   const up = !upAllowed(); if ($('upBtn').hidden !== up) $('upBtn').hidden = up;
   requestAnimationFrame(loop);
 }
