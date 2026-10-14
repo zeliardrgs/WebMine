@@ -311,7 +311,9 @@ window.CONFIG = {
         shop: "Entre dans la Boutique",
         altar: "Entre dans l'Autel de la montagne",
       },
-      prime: "Récupère ta récompense",                // 1re prime de collection au Musée
+      galerie: "Ouvre ta nouvelle collection",        // 1re visite du Musée : le rideau de la collection
+      ameliorerCollection: "Améliore ta collection",  // 1re visite du Musée : le bouton d'upgrade (1re étoile)
+      prime: "Récupère ta récompense",                // 1re prime de collection au Musée (si le tutoriel du rideau est déjà passé)
       museeRetour: "Retourne au village",             // fin de la 1re visite du Musée
       redescendre: "Redescends dans la mine",         // après la 1re visite du Musée
       checkpoints: "Les checkpoints t'évitent de tout refaire",  // 1re fois dans l'ascenseur, avant « Reprends au niveau »
@@ -465,6 +467,10 @@ window.CONFIG = {
     // Prime pour une NOUVELLE découverte (la première fois qu'on trouve ce trésor), selon sa rareté (en pièces)
     primeDecouverte: { common: 10, rare: 25, epic: 50, legendary: 100 },
 
+    // Pièces gagnées en ouvrant une nouvelle collection au Musée (bouton « Ouvrir » du rideau),
+    // en fraction de la prime de la collection (0.5 = la moitié ; arrondi à 5 pièces)
+    primeNouvelleCollection: 0.5,
+
     // ÉTOILES DES COLLECTIONS (au Musée) : une collection complétée 1 fois = 1 étoile, 2 fois = 2 étoiles, etc.
     etoilesSeries: {
       // Nombre maximum d'étoiles. Pour en ajouter, augmente ce nombre ET ajoute une valeur
@@ -528,6 +534,9 @@ window.CONFIG = {
     // "sol" = ce qui recouvre l'artefact : 'terre', 'pierre', 'magma', ou 'tout' (n'importe quoi).
     // Un objet peut avoir son propre "biome" (ex. une pièce ou une clé par biome) :
     // il n'apparaît alors que dans ce biome (biome 1 = niveaux 1 à 100, biome 2 = 101 à 200…).
+    // Un objet peut aussi avoir ses propres "niveaux" (ex. un objet rare qui n'arrive qu'en fin de mine) :
+    // ils passent avant son biome et avant les niveaux de la série.
+    // Mine des pionniers = niveaux 1 à 100.
     // Sols possibles : 'terre', 'pierre', 'pierreDure', 'magma', 'coffre' ou 'tout'.
     // (pierre dure et coffres arrivent avec les biomes 2 et 9 : en attendant, ils sont remplacés
     //  par de la pierre normale / n'importe quelle case.)
@@ -537,19 +546,33 @@ window.CONFIG = {
         feuille:    { nom: 'Feuille fossile',    rarete: 'common' },
         ammonite:   { nom: 'Petite ammonite',    rarete: 'common' },
       } },
-      celestes: { nom: 'Cartes célestes', prime: 50, niveaux: [10, 100], sol: 'tout', objets: {
+      // Une pièce par mine : le Sou de cuivre dans la Mine des pionniers, les autres dans les mines suivantes
+      monnaies: { nom: 'Monnaies du royaume perdu', prime: 200, sol: 'tout', objets: {
+        sou:     { nom: 'Sou de cuivre',     rarete: 'common', niveaux: [5, 100] },
+        denier:  { nom: "Denier d'argent",   rarete: 'common', biome: 2 },
+        ecu:     { nom: 'Écu de bronze',     rarete: 'common', biome: 3 },
+        ducat:   { nom: "Ducat d'or",        rarete: 'common', biome: 4 },
+        florin:  { nom: 'Florin de platine', rarete: 'common', biome: 5 },
+        pieceDuRoi: { nom: 'Pièce du roi',   rarete: 'epic',   biome: 6 },
+      } },
+      celestes: { nom: 'Cartes célestes', prime: 50, niveaux: [10, 70], sol: 'tout', objets: {
         lion:     { nom: 'Plaque du Lion',     rarete: 'common' },
         taureau:  { nom: 'Plaque du Taureau',  rarete: 'common' },
         scorpion: { nom: 'Plaque du Scorpion', rarete: 'common' },
         dragon:   { nom: 'Plaque du Dragon',   rarete: 'rare' },
       } },
-      outils: { nom: 'Outils du mineur oublié', prime: 100, niveaux: [16, 100], sol: 'pierre', objets: {
+      outils: { nom: 'Outils du mineur oublié', prime: 100, niveaux: [20, 80], sol: 'pierre', objets: {
         lampe:   { nom: 'Lampe rouillée',          rarete: 'common' },
         gourde:  { nom: 'Vieille gourde',          rarete: 'common' },
         casque:  { nom: 'Casque cabossé',          rarete: 'common' },
         pioche:  { nom: 'Pioche du premier mineur', rarete: 'rare' },
       } },
-      tablette: { nom: 'Tablette ancienne', prime: 100, niveaux: [101, 200], sol: 'pierreDure',
+      feu: { nom: 'Pierres de feu', prime: 200, niveaux: [30, 100], sol: 'magma', objets: {
+        obsidienne:   { nom: 'Obsidienne',     rarete: 'common' },
+        pierreDeLave: { nom: 'Pierre de lave', rarete: 'common' },
+        coeurDeBraise: { nom: 'Cœur de braise', rarete: 'epic', niveaux: [70, 100] },
+      } },
+      tablette: { nom: 'Tablette ancienne', prime: 100, niveaux: [50, 100], sol: 'pierre',
         // Texte affiché quand la tablette est complète
         legende: "« Sous la montagne dort le trésor du Roi Mineur. Cinq clés, cachées de plus en plus profond, ouvrent son coffre. »",
         objets: {
@@ -557,25 +580,14 @@ window.CONFIG = {
           fragmentCentral: { nom: 'Fragment central', rarete: 'common' },
           fragmentDroit:   { nom: 'Fragment droit',   rarete: 'common' },
         } },
-      feu: { nom: 'Pierres de feu', prime: 200, niveaux: [301, 400], sol: 'magma', objets: {
-        obsidienne:   { nom: 'Obsidienne',     rarete: 'common' },
-        pierreDeLave: { nom: 'Pierre de lave', rarete: 'common' },
-        coeurDeBraise: { nom: 'Cœur de braise', rarete: 'epic' },
-      } },
+
       abysses: { nom: 'Trésors des abysses', prime: 200, niveaux: [701, 800], sol: 'tout', objets: {
         corail:     { nom: 'Corail pétrifié', rarete: 'common' },
         conque:     { nom: 'Conque abyssale', rarete: 'common' },
         perleNoire: { nom: 'Perle noire',     rarete: 'epic' },
       } },
       // Une pièce par biome, du biome 1 au biome 6
-      monnaies: { nom: 'Monnaies du royaume perdu', prime: 200, sol: 'tout', objets: {
-        sou:     { nom: 'Sou de cuivre',     rarete: 'common', biome: 1 },
-        denier:  { nom: "Denier d'argent",   rarete: 'common', biome: 2 },
-        ecu:     { nom: 'Écu de bronze',     rarete: 'common', biome: 3 },
-        ducat:   { nom: "Ducat d'or",        rarete: 'common', biome: 4 },
-        florin:  { nom: 'Florin de platine', rarete: 'common', biome: 5 },
-        pieceDuRoi: { nom: 'Pièce du roi',   rarete: 'epic',   biome: 6 },
-      } },
+
       reliques: { nom: 'Reliques ornées', prime: 400, niveaux: [801, 900], sol: 'coffre', objets: {
         calice:  { nom: 'Calice orné',          rarete: 'epic' },
         masque:  { nom: "Masque d'or",          rarete: 'epic' },

@@ -856,4 +856,7 @@ window.TEXTES_EN = {
   "+{v} de pièces par tas (sans limite d'étoiles)": "+{v} coins per pile (no star limit)",
   "Ouvre tes géodes pour trouver des pierres précieuses.": "Open your geodes to find gemstones.",
   "{a} / {b} aujourd'hui": "{a} / {b} today",
+  "Nouvelle collection : +{n} pièces !": "New collection: +{n} coins!",
+  "Ouvre ta nouvelle collection": "Open your new collection",
+  "Améliore ta collection": "Upgrade your collection",
 };

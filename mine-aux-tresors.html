@@ -1638,6 +1638,12 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .mu-atelier img{width:calc(var(--u) * 19); height:calc(var(--u) * 15)}
 #scr-museum #museumBody{padding-bottom:calc(var(--u) * 22)}
 
+/* Museum: the star just claimed with the upgrade button pops in */
+.mc-stars svg.pop{animation:starPop .6s cubic-bezier(.3,1.8,.5,1)}
+/* The coins shown on the curtain's « Ouvrir » button */
+.mc-open img{width:1.2em; height:1.2em; margin-left:4px; vertical-align:-.25em; object-fit:contain; animation:none; filter:none}
+@keyframes starPop{0%{transform:scale(0) rotate(-40deg)} 100%{transform:none}}
+@media (prefers-reduced-motion: reduce){ .mc-stars svg.pop{animation:none} }
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -2106,8 +2112,8 @@ for (const [kind, group, table] of [['gem', COL.gemmes, GEMS], ['art', COL.artef
       const article = LANG === 'en' ? (/^[aeiou]/i.test(name) ? 'an' : 'a') : look.art || 'un';
       table[k] = { key: k, set: sk, name, rarity: o.rarete, look, art: article, sz: [look.w || 2, look.h || 2],
         w: look.w || 1, h: look.h || 1, soil: set.sol || 'tout',
-        // Levels where it can appear: its own biome, or the series' levels
-        range: o.biome ? [(o.biome - 1) * CFG.biomes.niveauxParBiome + 1, o.biome * CFG.biomes.niveauxParBiome] : set.niveaux || [1, 1000] };
+        // Levels where it can appear: its own levels, else its own biome, else the series' levels
+        range: o.niveaux || (o.biome ? [(o.biome - 1) * CFG.biomes.niveauxParBiome + 1, o.biome * CFG.biomes.niveauxParBiome] : set.niveaux || [1, 1000]) };
     }
   }
 const itemArt = o => o.look.file ? img(TR + o.look.file + '.png', o.name) : phImg(o.look.ph, o.rarity, o.name);
@@ -5418,6 +5424,9 @@ setInterval(villageCoach, 400);
 
 /* ---------- Museum ---------- */
 const museumPrimeWaiting = () => (S.pendingPrimes || []).length > 0;
+let starPop = null;   // the collection whose star was just claimed (it pops in)
+// Coins for opening a new collection: a share of its prime (config.js > economie > primeNouvelleCollection)
+const newSetCoins = sk => Math.max(5, Math.round((SETS[sk].prime || 0) * (CFG.economie.primeNouvelleCollection ?? .5) / 5) * 5);
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-claimset]'); if (!b) return;
   const sk = b.dataset.claimset, list = (S.pendingPrimes || []).filter(p => p.set === sk);
@@ -5426,11 +5435,21 @@ document.addEventListener('click', e => {
   S.coins += due; S.pendingPrimes = S.pendingPrimes.filter(p => p.set !== sk);
   unlockAudio(); sfx('reward'); flyMoney(b.getBoundingClientRect(), due, 0);
   toast(tr('{x} : +{n} pièces !', { x: SETS[sk].name, n: due }), 'good');
-  renderMuseum(); save();
+  starPop = sk; renderMuseum(); starPop = null; save();
 });
 function museumCoach() {
   const claim = () => document.querySelector('#scr-museum [data-claimset]');
-  if (!S.tutoSeen.prime && claim()) startCoach('prime', [{ text: TX.prime, target: claim, done: () => !claim() }]);
+  const open = () => document.querySelector('#scr-museum [data-muopen]');
+  // First visit: open the new collection (the curtain), then upgrade it (its first star)
+  if (!S.tutoSeen.galerie && open()) {
+    // Tied to the collection it starts on (other new collections may wait behind their own curtain)
+    const sk = open().dataset.muopen, its = sel => document.querySelector(`#scr-museum [${sel}="${sk}"]`);
+    startCoach('galerie', [
+      { text: TX.galerie, target: () => its('data-muopen'), done: () => !!(S.muOpened || {})[sk] },
+      { text: TX.ameliorerCollection, target: () => its('data-claimset'), done: () => { const d = !its('data-claimset'); if (d) S.tutoSeen.prime = true; return d; } },
+    ]);
+  }
+  else if (!S.tutoSeen.prime && claim() && !open()) startCoach('prime', [{ text: TX.prime, target: claim, done: () => !claim() }]);
   if (!S.tutoSeen.museeRetour) startCoach('museeRetour', [{ text: TX.museeRetour, target: () => document.querySelector('.nav-tab[data-nav="village"]'), done: () => $('scr-museum').hidden }]);
 }
 // Museum = display shelves: one shelf per collection (found treasures on pedestals, missing ones as silhouettes),
@@ -5569,12 +5588,14 @@ function renderMuseum() {
     const ped = k => `<button class="mc-ped${book[k] ? '' : ' unknown'}" data-muitem="${sk}:${k}" aria-label="${book[k] ? table[k].name : tr('Pas encore trouvé')}">`
       + (book[k] ? `${itemArt(table[k])}<i>${book[k]}</i>` : '<b>?</b>') + '</button>';
     const rows = []; for (let i = 0; i < keys.length; i += 4) rows.push(keys.slice(i, i + 4));
-    const stars = `<div class="mc-stars" aria-label="${tr(plural(tier, '{n} étoile sur {max}', '{n} étoiles sur {max}'), { n: tier, max: MAX_STARS })}">${Array.from({ length: MAX_STARS }, (_, i) => STAR(i < tier)).join('')}</div>`;
     // A star won and its prime not collected yet: the green "upgrade" button on the title bar
     const w = (S.pendingPrimes || []).filter(p => p.set === sk), due = w.reduce((a, p) => a + starPrime(sk, p.tier), 0);
+    // Only the stars already claimed show (no grey ones); a new star appears when the upgrade button is pressed
+    const shown = Math.max(0, tier - w.length), pop = starPop === sk;
+    const stars = shown ? `<div class="mc-stars" aria-label="${tr(plural(shown, '{n} étoile sur {max}', '{n} étoiles sur {max}'), { n: shown, max: MAX_STARS })}">${Array.from({ length: shown }, (_, i) => STAR(true).replace('class="on"', `class="on${pop && i === shown - 1 ? ' pop' : ''}"`)).join('')}</div>` : '';
     const up = w.length ? `<button class="mc-up" data-claimset="${sk}" aria-label="${tr('Récupérer')} +${due}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 L28 16 H21 V28 H11 V16 H4Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button>` : '';
     // Just discovered: hidden behind a curtain until the player opens it
-    const curtain = (S.muOpened || {})[sk] ? '' : `<div class="mc-curtain"><i class="l"></i><i class="r"></i><b>${tr('Nouvelle collection !')}</b><button class="btn mc-open" data-muopen="${sk}">${tr('Ouvrir')}</button></div>`;
+    const curtain = (S.muOpened || {})[sk] ? '' : `<div class="mc-curtain"><i class="l"></i><i class="r"></i><b>${tr('Nouvelle collection !')}</b><button class="btn mc-open" data-muopen="${sk}">${tr('Ouvrir')} +${newSetCoins(sk)}${COIN}</button></div>`;
     return `<div class="mc-wrap" data-muset="${sk}">${up}<div class="mc"><div class="mc-head"><b>${set.name}</b></div>
       ${rows.map((r, i) => `<div class="mc-row">${i ? '' : stars}<div class="mc-peds">${r.map(ped).join('')}</div></div>`).join('')}</div>${curtain}</div>`;
   };
@@ -5589,7 +5610,11 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-muopen]'); if (!b) return;
   const sk = b.dataset.muopen, wrap = b.closest('.mc-wrap');
   unlockAudio(); sfx('reward');
-  (S.muOpened = S.muOpened || {})[sk] = true; save();
+  (S.muOpened = S.muOpened || {})[sk] = true;
+  const coins = newSetCoins(sk); S.coins += coins;
+  flyMoney(b.getBoundingClientRect(), coins, 0);
+  toast(tr('Nouvelle collection : +{n} pièces !', { n: coins }), 'good');
+  save();
   const r = wrap.getBoundingClientRect();
   [0, 150, 300].forEach(t => setTimeout(() => petSparkles(tapFx, r.left + r.width * rand(.2, .8), r.top + r.height * rand(.3, .7)), t));
   wrap.querySelector('.mc-curtain').classList.add('opening');
