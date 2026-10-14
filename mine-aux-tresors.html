@@ -1438,18 +1438,53 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 #scr-village #descendBtn{min-height:clamp(59px, 18vw, 76px); padding-inline:8px; font-size:clamp(19px, 6.4vw, 26px)}
 
 /* ---------- Pets: the player's fairies fly around freely ---------- */
-#scr-pets{--u:calc(min(100vw, 480px) / 100); position:fixed; inset:0; max-width:none; height:auto; padding:0; overflow:hidden;
-  background:#bfe36b url("Assets/UI/Character%20BG.png") center 30% / cover no-repeat}
-.pets-head{position:relative; z-index:2; padding-top:calc(env(safe-area-inset-top, 0px) + var(--u) * 4); text-align:center; pointer-events:none}
-.pets-head h1{margin:0; text-align:center; font:700 calc(var(--u) * 9) 'Fredoka', sans-serif; color:#fff;
-  -webkit-text-stroke:calc(var(--u) * 1.6) var(--outline); paint-order:stroke fill; text-shadow:0 calc(var(--u) * .8) 0 var(--outline)}
+#scr-pets{--u:calc(min(100vw, 480px) / 100); position:fixed; inset:0; max-width:none; height:auto; padding:0; overflow:hidden; background:var(--page)}
+/* The money at the top right, over the meadow */
+.pets-head{position:relative; z-index:4; display:flex; justify-content:flex-end; padding:calc(env(safe-area-inset-top, 0px) + var(--u) * 3) calc(var(--u) * 3.5) 0; pointer-events:none}
+.pets-head .res{min-width:calc(var(--u) * 26.5)}
 .pets-back{position:absolute; z-index:3; left:0; bottom:calc(env(safe-area-inset-bottom, 0px) + var(--u) * 6)}
 /* Red back arrow: the Pets page and the Missions page */
 .pets-back.back-red,.menu .scr-head .back.back-red{display:grid; place-items:center; width:calc(var(--u) * 17); min-height:calc(var(--u) * 13); padding:0; border:calc(var(--u) * .7) solid var(--outline); border-left:0;
   border-radius:0 calc(var(--u) * 4) calc(var(--u) * 4) 0; background:#ff5a5f; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 #b8282f; cursor:pointer}
 .pets-back.back-red svg,.menu .scr-head .back.back-red svg{width:calc(var(--u) * 8); height:calc(var(--u) * 8)}
 .pets-back.back-red:active,.menu .scr-head .back.back-red:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 #b8282f}
-.pets-field{position:absolute; inset:0; z-index:1; touch-action:manipulation}
+/* The meadow where the fairies fly: the whole screen, or (Liste open) the top, with a rounded bottom edge */
+.pets-field{position:absolute; left:0; right:0; top:0; height:100%; z-index:2; touch-action:manipulation; background:#bfe36b url("Assets/UI/Character%20BG.png") center 30% / cover no-repeat;
+  transition:height .35s cubic-bezier(.3,1.2,.5,1), border-radius .35s}
+#scr-pets.listing .pets-field{height:46%; border-radius:0 0 50% 50% / 0 0 calc(var(--u) * 9) calc(var(--u) * 9); box-shadow:0 calc(var(--u) * 1.2) 0 #b49a5a}
+#scr-pets.listing .pets-manage,#scr-pets.listing .pets-back{display:none}
+/* Liste: the cards of the player's fairies, 4 per row, fading out under the close button */
+.pets-sheet{position:absolute; z-index:1; left:0; right:0; top:40%; bottom:0; overflow-y:auto; scrollbar-width:none; overscroll-behavior:contain;
+  -webkit-mask-image:linear-gradient(#000 calc(100% - var(--u) * 30), transparent calc(100% - var(--u) * 6)); mask-image:linear-gradient(#000 calc(100% - var(--u) * 30), transparent calc(100% - var(--u) * 6))}
+.pets-sheet::-webkit-scrollbar{display:none}
+.pets-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:calc(var(--u) * 4.4) calc(var(--u) * 3.6); width:min(100%, 480px); margin:0 auto; box-sizing:border-box;
+  padding:calc(6dvh + var(--u) * 7) calc(var(--u) * 4.4) calc(env(safe-area-inset-bottom, 0px) + var(--u) * 34)}
+.pets-empty{grid-column:1 / -1; margin:0; text-align:center; font-size:calc(var(--u) * 4); color:var(--ink-soft)}
+/* A fairy card: green, the fairy at the top, her category icon at the bottom; a green check on the equipped one */
+.pet-card{position:relative; display:block; aspect-ratio:.84; padding:0; box-sizing:border-box; cursor:pointer; border:calc(var(--u) * .8) solid #2fae1e; border-radius:calc(var(--u) * 4.4);
+  background:linear-gradient(160deg, #d7eea8, #a9d86c); box-shadow:inset 0 0 0 calc(var(--u) * 1.3) rgba(255,255,255,.28), 0 calc(var(--u) * 1) 0 #e4d3ae; -webkit-tap-highlight-color:transparent}
+.pet-card:active{transform:translateY(2px)}
+.pet-card > img{position:absolute; left:10%; top:3%; width:80%; height:62%; object-fit:contain; object-position:50% 30%; pointer-events:none}
+.pet-card > .pc-cat{left:50%; top:auto; bottom:6%; width:27%; height:auto; transform:translateX(-50%)}
+.pet-card.on::after{content:""; position:absolute; top:calc(var(--u) * -3.4); right:calc(var(--u) * -3.4); width:calc(var(--u) * 10); height:calc(var(--u) * 10); box-sizing:border-box; border-radius:50%;
+  border:calc(var(--u) * .7) solid #2fae1e; background:#5fd34a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%231d6b12' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 76% no-repeat;
+  box-shadow:0 0 0 calc(var(--u) * .6) #fff}
+.pets-x{position:absolute; z-index:5; left:50%; bottom:calc(env(safe-area-inset-bottom, 0px) + var(--u) * 6); margin:0; transform:translateX(-50%)}
+.pets-x:active{transform:translate(-50%, 2px)}
+/* A fairy's sheet: her big card overlaps the top of a beige panel */
+.modal.pet-detail{background:rgba(16,8,26,.55)}
+.pd{--u:calc(min(100vw, 480px) / 100); position:relative; width:min(100%, calc(var(--u) * 92)); box-sizing:border-box; margin-top:calc(var(--u) * 26); padding:calc(var(--u) * 21) calc(var(--u) * 7) calc(var(--u) * 7);
+  border:calc(var(--u) * .8) solid #6b4a2a; border-radius:calc(var(--u) * 6); background:#fff5e0; text-align:center; animation:popin .35s cubic-bezier(.3,1.5,.5,1)}
+.pd-card{position:absolute; left:50%; top:calc(var(--u) * -34); width:calc(var(--u) * 37); margin-left:calc(var(--u) * -18.5); cursor:default; border-width:calc(var(--u) * 1.1)}
+.pd-card:active{transform:none}
+.pd-card > img{top:10%; height:80%; animation:pet-bob 2.4s ease-in-out infinite}
+.pd-name{margin:0 0 calc(var(--u) * 5); font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 7.4); line-height:1.1; color:#5a3d1e}
+.pd-cat{position:relative; z-index:1; display:flex; align-items:center; gap:calc(var(--u) * 1.6); margin:0 0 calc(var(--u) * -3.6) calc(var(--u) * -1.5);
+  font-family:var(--font-display); font-size:calc(var(--u) * 5); color:#5a3d1e; text-align:left}
+.pd-cat img{width:calc(var(--u) * 10); height:calc(var(--u) * 10); object-fit:contain}
+.pd-bonus{margin:0; padding:calc(var(--u) * 6) calc(var(--u) * 4) calc(var(--u) * 6); border-radius:calc(var(--u) * 5); background:#f1e3c6; font-family:var(--font-display); font-size:calc(var(--u) * 4.4); line-height:1.3; color:#6b4a2a; text-wrap:balance}
+.pd-btn{display:block; width:calc(var(--u) * 54); max-width:100%; margin:calc(var(--u) * 10) auto 0}
+.pd-btn.on{background:linear-gradient(#7fe06a, #4cc236); box-shadow:inset 0 calc(var(--u) * -1.3) 0 #2f9a22}
 .tap-fx{position:fixed; inset:0; z-index:9999; pointer-events:none; overflow:hidden}
 .pet-spark{position:absolute; z-index:3; border-radius:2px; pointer-events:none; box-shadow:0 0 6px rgba(255,255,255,.9)}
 .pet-spark.dot{border-radius:50%}
@@ -1462,9 +1497,6 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 .pets-manage{position:absolute; z-index:3; left:50%; transform:translateX(-50%); bottom:calc(env(safe-area-inset-bottom, 0px) + var(--u) * 6); min-width:calc(var(--u) * 40); min-height:calc(var(--u) * 13);
   border:calc(var(--u) * .7) solid var(--outline); border-radius:calc(var(--u) * 4); background:var(--sun); background-clip:padding-box; font-size:calc(var(--u) * 6.4); box-shadow:inset 0 calc(var(--u) * -1.2) 0 var(--sun-edge)}
 .pets-manage:active{transform:translate(-50%, 2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 var(--sun-edge)}
-.pets-modal{width:min(100%, 420px); max-height:82dvh; display:flex; flex-direction:column; text-align:center}
-.pets-modal h2{margin:0 0 10px}
-.pm-list{display:flex; flex-direction:column; gap:8px; overflow-y:auto; text-align:left; padding:2px 2px 4px}
 .pm-row{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:14px; background:#fff; box-shadow:0 2px 0 #ecd3a8}
 .pm-row img{flex:none; width:56px; height:auto}
 .pm-row div{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px}
@@ -1754,9 +1786,14 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 </div>
 
 <div class="screen" id="scr-pets" hidden>
-  <header class="pets-head"><h1>Pets</h1></header>
+  <header class="pets-head"><div class="wallet-bar" data-money></div></header>
   <div class="pets-field" id="petsField"></div>
-  <button class="btn pets-manage" id="petsManage">Gérer</button>
+  <button class="btn pets-manage" id="petsManage">Liste</button>
+  <!-- « Liste »: the meadow shrinks to the top, the fairies' cards fill the panel below -->
+  <section class="pets-sheet" id="petsSheet" aria-label="Mes fées" hidden>
+    <div class="pets-grid" id="petsList"></div>
+  </section>
+  <button class="gs-close pets-x" id="petsClose" aria-label="Fermer" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#1d1a2b" stroke-width="7" stroke-linecap="round"/><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></button>
   <button class="back back-red pets-back" data-go="village" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button>
 </div>
 
@@ -1955,11 +1992,14 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <div class="cm-btns" id="fairyBtns"></div>
   </div>
 </div>
-<div class="modal" id="petsModal" hidden>
-  <div class="card pets-modal" role="dialog" aria-labelledby="petsTitle">
-    <button class="close" id="petsClose" aria-label="Fermer">×</button>
-    <h2 id="petsTitle">Mes fées</h2>
-    <div class="pm-list" id="petsList"></div>
+<!-- A fairy's sheet (tap on her card in the Liste): her card, name, category and bonus, Équiper -->
+<div class="modal pet-detail" id="petsModal" hidden>
+  <div class="pd" role="dialog" aria-labelledby="pdName">
+    <div class="pet-card pd-card"><img id="pdImg" alt="" draggable="false"></div>
+    <h2 class="pd-name" id="pdName"></h2>
+    <div class="pd-cat" id="pdCat"></div>
+    <p class="pd-bonus" id="pdBonus"></p>
+    <button class="gs-btn blue pd-btn" id="pdEquip"></button>
   </div>
 </div>
 <div class="modal" id="dayDoneModal" hidden>
@@ -5491,6 +5531,7 @@ document.addEventListener('click', e => {
 /* ---------- Pets screen: each fairy flies to a random spot, pauses, then picks another ---------- */
 let petsRaf = 0, petsFly = [];
 function renderPets() {
+  showPetsList(false); $('petsModal').hidden = true;
   const f = $('petsField'); f.style.setProperty('--pet-w', PETS.taille);
   f.innerHTML = S.pets.map(p => `<div class="pet${p.id === S.petOn ? ' on' : ''}" data-pet="${p.id}"><img src="${PETS.fees[p.key].visuel}" alt="${tr(PETS.fees[p.key].nom)}" draggable="false"></div>`).join('');
   petsFly = [...f.children].map(el => {
@@ -5519,7 +5560,7 @@ function renderPets() {
 function stopPets() { cancelAnimationFrame(petsRaf); petsRaf = 0; }
 // Tap on the Pets screen: the closest fairies fly over to gather around it (the sparkles come from the global tap effect)
 $('scr-pets').addEventListener('pointerdown', e => {
-  if (e.target.closest('button') || !$('petsModal').hidden) return;
+  if (!e.target.closest('#petsField') || !$('petsModal').hidden) return;   // only on the meadow
   const f = $('petsField'), r = f.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
   unlockAudio();
   const w = r.width, h = r.height, pw = w * PETS.taille / 100, clamp = v => Math.max(0, Math.min(1, v));
@@ -5556,23 +5597,47 @@ function petSparkles(box, x, y) {
 }
 $('petsBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); go('pets'); });
 const markPets = () => document.querySelectorAll('#petsField [data-pet]').forEach(b => b.classList.toggle('on', +b.dataset.pet === S.petOn));
-// "Gérer": every fairy (owned or not) with its bonus
+// A fairy's category (config.js > pets > categories), or null
+const petCat = f => (PETS.categories || {})[f.categorie] || null;
+// "Liste": a card per fairy the player has, by category (in the config order), then colour
 function renderPetsList() {
-  $('petsList').innerHTML = Object.entries(PETS.fees).map(([k, f]) => {
-    const own = S.pets.find(p => p.key === k), on = own && own.id === S.petOn;
-    const act = !own ? `<em>${tr('Pas obtenue')}</em>`
-      : `<button class="btn${on ? ' on' : ''}" data-petequip="${own.id}">${on ? tr('Équipée') : tr('Équiper')}</button>`;
-    return `<div class="pm-row${own ? '' : ' off'}"><img src="${f.visuel}" alt="" draggable="false"><div><b>${tr(f.nom)}</b><span>${f.bonus ? tr(f.bonus) : tr('Bonus à venir')}</span></div>${act}</div>`;
-  }).join('');
+  const cats = Object.keys(PETS.categories || {}), keys = Object.keys(PETS.fees);
+  const rank = p => { const c = cats.indexOf(PETS.fees[p.key].categorie); return (c < 0 ? cats.length : c) * 1e6 + keys.indexOf(p.key) * 1e3 + p.id; };
+  $('petsList').innerHTML = S.pets.length ? [...S.pets].sort((a, b) => rank(a) - rank(b)).map(p => {
+    const f = PETS.fees[p.key], c = petCat(f);
+    return `<button class="pet-card${p.id === S.petOn ? ' on' : ''}" data-petcard="${p.id}" aria-label="${tr(f.nom)}"><img src="${f.visuel}" alt="" draggable="false">${c ? `<img class="pc-cat" src="${c.icone}" alt="" draggable="false">` : ''}</button>`;
+  }).join('') : `<p class="pets-empty">${tr('Pas encore de fée')}</p>`;
 }
-$('petsManage').addEventListener('click', () => { unlockAudio(); sfx('pick'); renderPetsList(); $('petsModal').hidden = false; });
-$('petsClose').addEventListener('click', () => { $('petsModal').hidden = true; });
+function showPetsList(on) {
+  $('scr-pets').classList.toggle('listing', on);
+  $('petsSheet').hidden = $('petsClose').hidden = !on;
+  if (on) { renderPetsList(); $('petsSheet').scrollTop = 0; }
+}
+$('petsManage').addEventListener('click', () => { unlockAudio(); sfx('pick'); showPetsList(true); });
+$('petsClose').addEventListener('click', () => { sfx('pick'); showPetsList(false); });
+// Tap on a card: the fairy's sheet
+let petShown = 0;
+function renderPetDetail() {
+  const p = S.pets.find(p => p.id === petShown); if (!p) return;
+  const f = PETS.fees[p.key], c = petCat(f), on = p.id === S.petOn;
+  $('pdImg').src = f.visuel; $('pdName').textContent = tr(f.nom);
+  $('pdCat').innerHTML = c ? `<img src="${c.icone}" alt="" draggable="false">${tr(c.nom)}` : '';
+  $('pdBonus').textContent = f.bonus ? tr(f.bonus) : tr('Bonus à venir');
+  const b = $('pdEquip'); b.textContent = on ? tr('Retirer') : tr('Équiper'); b.classList.toggle('on', on);
+}
 $('petsList').addEventListener('click', e => {
-  const b = e.target.closest('[data-petequip]'); if (!b) return;
+  const b = e.target.closest('[data-petcard]'); if (!b) return;
   unlockAudio(); sfx('pick');
-  const id = +b.dataset.petequip; S.petOn = S.petOn === id ? null : id;
-  renderPetsList(); markPets(); paintPet(); save();
+  petShown = +b.dataset.petcard; renderPetDetail(); $('petsModal').hidden = false;
 });
+$('pdEquip').addEventListener('click', () => {
+  unlockAudio(); sfx('pick');
+  S.petOn = S.petOn === petShown ? null : petShown;
+  renderPetsList(); markPets(); paintPet(); save();
+  $('petsModal').hidden = true;
+});
+// Tap outside the sheet closes it
+$('petsModal').addEventListener('click', e => { if (!e.target.closest('.pd')) $('petsModal').hidden = true; });
 // The equipped fairy on the home screen and in the mine
 function paintPet() {
   const p = S.pets.find(p => p.id === S.petOn), src = p ? PETS.fees[p.key].visuel : '';
