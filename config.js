@@ -1015,28 +1015,43 @@ window.CONFIG = {
       tresor:   { nom: "Trésor",   icone: "Assets/Pets/Cat_Tresor.png" },
       fortune:  { nom: "Fortune",  icone: "Assets/Pets/Cat_Fortune.png" },
       minerais: { nom: "Minerais", icone: "Assets/Pets/Cat_Minerais.png" },
+      geodes:   { nom: "Géodes",   icone: "Assets/Treasures/Geode_07.png" },   // icône provisoire (une géode du jeu)
     },
     // Les fées (une image par couleur, dans Assets/Pets/). categorie = une des catégories ci-dessus (la Liste les range dans cet ordre).
-    // bonus = texte affiché dans la fiche de la fée (vide = « Bonus à venir »)
-    // effet = ce que fait la fée équipée (la fée s'anime quand ça arrive) :
-    //   tasDOr   : chance, à chaque coup de pelle dans la terre, de trouver un tas d'or
-    //   minerais : chance d'avoir +1 minerai en cassant un minerai
-    //   geodes   : rend les géodes rares plus fréquentes (valeur 0.3 = +30 %), la fée s'anime quand on dégage une géode rare ou mieux
-    //   energie  : chance qu'un coup de pioche ne coûte pas d'énergie
-    //   detecter : chance, à chaque coup de pelle, de repérer un trésor caché (comme un radar)
-    //   magma    : chance de refroidir un magma en le touchant avec la pioche
-    //   unCoup   : chance de casser une pierre en 1 seul coup de pioche
+    // bonus = phrase courte (fiche de la fée, bulle dans la mine) ; detail = quand et comment elle agit (fiche de la fée)
+    // effet = ce que fait la fée équipée, chance = probabilité que ça marche (la fée s'anime quand ça arrive) :
+    //   À la pioche ou à l'arrosoir :
+    //   unCoup   : au premier coup de pioche sur une pierre, la casse directement
+    //   energie  : sur un coup de pioche, rend de l'énergie (valeur = combien)
+    //   arrosoir : quand l'arrosoir se vide, le recharge d'un coup
+    //   En arrivant dans l'étage (une fois par étage) :
+    //   magma    : refroidit un magma de la grille
+    //   tasDOr   : cache un tas d'or dans la terre (on le trouve en creusant la bonne case)
+    //   reveler  : montre où se cache un trésor (comme un radar)
+    //   inconnu  : un trésor de l'étage est un trésor encore jamais découvert (s'il en reste à cette profondeur)
+    //   minerai  : ajoute un minerai dans la grille (une pierre devient un minerai)
+    //   geode    : une géode cachée de l'étage devient plus rare
     fees: {
-      rose:      { nom: "Fée rose",        categorie: 'tresor',   visuel: "Assets/Pets/Pet_Fairy_Pink.png", bonus: "Peut parfois détecter un trésor", effet: 'detecter', chance: 0.03 },
-      jaune:     { nom: "Fée jaune",       categorie: 'fortune',  visuel: "Assets/Pets/Pet_Fairy_Yellow.png", bonus: "Peut faire apparaître des tas d'or", effet: 'tasDOr', chance: 0.06 },
-      orange:    { nom: "Fée orange",      categorie: 'minerais', visuel: "Assets/Pets/Pet_Fairy_Orange.png", bonus: "Augmente légèrement la présence de minerais", effet: 'minerais', chance: 0.25 },
-      verte:     { nom: "Fée verte",       categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Green.png", bonus: "Peut rendre de l'énergie sur certains coups de pioche", effet: 'energie', chance: 0.12 },
-      glace:     { nom: "Fée des glaces",  categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Ice.png", bonus: "", effet: '' },
-      nuit:      { nom: "Fée de nuit",     categorie: 'fortune',  visuel: "Assets/Pets/Pet_Fairy_Night.png", bonus: "", effet: '' },
-      violette:  { nom: "Fée violette",    categorie: 'tresor',   visuel: "Assets/Pets/Pet_Fairy_Purple.png", bonus: "Augmente légèrement la rareté des géodes", effet: 'geodes', valeur: 0.3 },
-      rouge:     { nom: "Fée rouge",       categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Red.png", bonus: "A une chance de casser une pierre en 1 coup", effet: 'unCoup', chance: 0.08 },
-      bleue:     { nom: "Fée bleue",       categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Blue.png", bonus: "Peut refroidir un magma", effet: 'magma', chance: 0.25 },
+      rouge:     { nom: "Fée rouge",       categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Red.png",    effet: 'unCoup',   chance: 0.15,
+                   bonus: "Peut casser une pierre d'un coup",        detail: "Au premier coup de pioche sur une pierre : peut la casser directement" },
+      verte:     { nom: "Fée verte",       categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Green.png",  effet: 'energie',  chance: 0.12, valeur: 2,
+                   bonus: "Peut rendre un peu d'énergie",            detail: "Sur un coup de pioche : peut rendre un peu d'énergie" },
+      bleue:     { nom: "Fée bleue",       categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Blue.png",   effet: 'magma',    chance: 0.35,
+                   bonus: "Peut refroidir un magma",                 detail: "En arrivant dans l'étage : peut refroidir un magma de la grille" },
+      glace:     { nom: "Fée des glaces",  categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Ice.png",    effet: 'arrosoir', chance: 0.25,
+                   bonus: "Peut remplir l'arrosoir",                 detail: "Quand l'arrosoir est vide : peut le recharger d'un coup" },
+      jaune:     { nom: "Fée jaune",       categorie: 'fortune',  visuel: "Assets/Pets/Pet_Fairy_Yellow.png", effet: 'tasDOr',   chance: 0.35,
+                   bonus: "Peut faire apparaître un tas d'or",       detail: "En arrivant dans l'étage : peut cacher un tas d'or dans la terre" },
+      rose:      { nom: "Fée rose",        categorie: 'tresor',   visuel: "Assets/Pets/Pet_Fairy_Pink.png",   effet: 'reveler',  chance: 0.25,
+                   bonus: "Peut révéler un trésor caché",            detail: "En arrivant dans l'étage : peut montrer où se cache un trésor" },
+      nuit:      { nom: "Fée de nuit",     categorie: 'tresor',   visuel: "Assets/Pets/Pet_Fairy_Night.png",  effet: 'inconnu',  chance: 0.25,
+                   bonus: "Peut attirer un trésor jamais trouvé",    detail: "En arrivant dans l'étage : un trésor de l'étage peut être un trésor encore jamais découvert" },
+      orange:    { nom: "Fée orange",      categorie: 'minerais', visuel: "Assets/Pets/Pet_Fairy_Orange.png", effet: 'minerai',  chance: 0.4,
+                   bonus: "Peut ajouter un minerai",                 detail: "En arrivant dans l'étage : peut ajouter un minerai dans la grille" },
+      violette:  { nom: "Fée violette",    categorie: 'geodes',   visuel: "Assets/Pets/Pet_Fairy_Purple.png", effet: 'geode',    chance: 0.3,
+                   bonus: "Peut améliorer une géode",                detail: "En arrivant dans l'étage : si une géode est cachée, peut la rendre plus rare" },
     },
+    perlesDoublon: 10,        // pas de fée en double : quand le joueur a déjà toutes les fées, une fée gagnée devient ces perles
     feeSurNiveauVide: true,   // sac illimité : les niveaux de Progression qui ne donnaient que de la place dans le sac donnent une fée
     depart: 0,          // fées données au joueur au début (couleurs au hasard). Les autres arrivent par la Progression (recompense > fee)
     vitesse: 40,        // vitesse de vol, en % de la largeur de l'écran par seconde (40 = traverse l'écran en ~2,5 s)

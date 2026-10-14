@@ -1483,6 +1483,7 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
   font-family:var(--font-display); font-size:calc(var(--u) * 5); color:#5a3d1e; text-align:left}
 .pd-cat img{width:calc(var(--u) * 10); height:calc(var(--u) * 10); object-fit:contain}
 .pd-bonus{margin:0; padding:calc(var(--u) * 6) calc(var(--u) * 4) calc(var(--u) * 6); border-radius:calc(var(--u) * 5); background:#f1e3c6; font-family:var(--font-display); font-size:calc(var(--u) * 4.4); line-height:1.3; color:#6b4a2a; text-wrap:balance}
+.pd-detail{margin:calc(var(--u) * 3.6) calc(var(--u) * 2) 0; font-family:var(--font-display); font-size:calc(var(--u) * 3.5); line-height:1.3; color:#9a7a55; text-wrap:balance}
 .pd-btn{display:block; width:calc(var(--u) * 54); max-width:100%; margin:calc(var(--u) * 10) auto 0}
 .pd-btn.on{background:linear-gradient(#7fe06a, #4cc236); box-shadow:inset 0 calc(var(--u) * -1.3) 0 #2f9a22}
 .tap-fx{position:fixed; inset:0; z-index:9999; pointer-events:none; overflow:hidden}
@@ -1999,6 +2000,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <h2 class="pd-name" id="pdName"></h2>
     <div class="pd-cat" id="pdCat"></div>
     <p class="pd-bonus" id="pdBonus"></p>
+    <p class="pd-detail" id="pdDetail"></p>
     <button class="gs-btn blue pd-btn" id="pdEquip"></button>
   </div>
 </div>
@@ -2271,7 +2273,6 @@ function gearTotals() {
   // Runes of the Altar add to the same bonuses
   t.coin += runeVal('fortune') + runeVal('roi'); t.ore += runeVal('filon'); t.free += runeVal('souffle');
   t.geode += runeVal('lueur'); t.pile += runeVal('orpailleur');
-  const fg = petFx('geodes'); if (fg) t.geode += fg.valeur || 0;   // Fée violette
   return t;
 }
 // Rare geodes are more frequent with the Lantern; the Lanterne de prospecteur sometimes upgrades a geode
@@ -2391,9 +2392,13 @@ const guaranteeFor = level => GUAR[level] && !(S.guarDone || {})[level] && (GUAR
 const sizeOfFind = (kind, key) => kind === 'geode' ? GEODES[key].sz : [ARTS[key].w, ARTS[key].h];
 // Two levels in a row never get exactly the same grid
 const levelSig = () => JSON.stringify([S.grid.map(c => c.t + (c.ore || '')), S.rewards.map(r => [r.key, r.r, r.c])]);
+// Fée de nuit: rolled once per new floor, makes one artefact of it a never-found one
+let petNight = false;
 function genLevel(level) {
   const prev = S.lastSig, kind = floorKind(level);
+  petNight = !isTuto(level) && petRoll('inconnu');
   for (let k = 0; k < 12; k++) { genLevelOnce(level, kind); if (levelSig() !== prev) break; }
+  petNight = false;
   S.lastSig = levelSig();
   // The kind of this visit (shown in the HUD and the bubble); a treasure level is used up once generated
   S.floor = S.tuto ? 'easy' : kind;
@@ -2489,11 +2494,17 @@ function genLevelOnce(level, kindArg) {
     if (!Object.keys(options).length) { use = kind === 'art' ? 'geode' : 'art'; options = fresh(use); }
     if (!Object.keys(options).length) { use = 'art'; options = fresh('art', true); }
     if (!Object.keys(options).length) continue;
+    // Fée de nuit: the first artefact is drawn among those never found yet (if one fits)
+    let night = false;
+    if (petNight && use === 'art' && !picks.some(p => p.night)) {
+      const unknown = Object.fromEntries(Object.entries(options).filter(([k]) => !known(k)));
+      if (Object.keys(unknown).length) { options = unknown; night = true; }
+    }
     let key = pick(options);
     // Lanterne de prospecteur: a geode can go up one rarity
     if (use === 'geode') key = luckyGeode(key, geodes, GT);
     const table = use === 'geode' ? GEODES : ARTS, [w, h] = SRC[use][1](table[key]);
-    budget -= w * h; picks.push({ kind: use, key, w, h });
+    budget -= w * h; picks.push({ kind: use, key, w, h, ...(night ? { night } : {}) });
   }
   // The guaranteed treasure of this level takes the place of the first pick
   const gt = !S.wide && guaranteeFor(level);
@@ -3245,22 +3256,25 @@ function act(p, isTap) {
     if (c.t === 'dirt') return deny(i, tr('La terre part à la pelle, et c\'est gratuit !'), '');
     if (freeTap(i)) return breakCell(i);
     if (c.t === 'magma') {
-      // Fée bleue: sometimes cools the magma she is shown
-      if (petRoll('magma')) { petProc(); const n = coolMagma(i); floatText(i, n > 1 ? tr('Chaîne ×{n} !', { n }) : tr('Refroidi !'), '#a6e6ff'); save(); return; }
       burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, tr('Trop chaud ! Arrose le magma pour le refroidir d\'abord.'));
     }
     if (S.energy <= 0) return deny(i, REGEN_MS > 0 ? tr('Plus d\'énergie ! +1 dans {s} s, ou bois une potion.', { s: Math.ceil((S.nextRegen - Date.now()) / 1000) }) : tr('Plus d\'énergie ! Bois une potion ou remonte au village pour recharger.'));
     // Equipment: the Helmet gives free hits, the Pickaxe its damage and its model's passive
-    const T = gearTotals(), petFree = petRoll('energie'), free = petFree || Math.random() < T.free + (c.t === 'ore' ? T.pas.casqueVeine || 0 : 0);
-    if (petFree) petProc();
+    const T = gearTotals(), free = Math.random() < T.free + (c.t === 'ore' ? T.pas.casqueVeine || 0 : 0);
     if (free) floatText(i, tr('Coup gratuit !'), '#8ff5e8');
     else { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); }
+    // Fée verte: sometimes gives a little energy back
+    const fv = petFx('energie');
+    if (fv && S.energy < maxE() && Math.random() < (fv.chance || 0)) {
+      const n = Math.min(fv.valeur || 1, maxE() - S.energy);
+      S.energy += n; updateEnergy(true); petProc(); setTimeout(() => floatText(i, tr('+{n} énergie', { n }), '#8ff5e8'), 250);
+    }
     // The pickaxe does half damage on ice (full damage, or more, with the Pic de givre)
     let dmg = pickPower() * (c.t === 'ice' ? T.pas.picGivre || .5 : 1);
     if (Math.random() < (T.pas.picLourd || 0)) { dmg *= 2; floatText(i, tr('Coup puissant !'), '#ffd23d'); }
     if (free && Math.random() < (T.pas.casqueChantier || 0)) dmg = c.hp;
     // Fée rouge: a stone sometimes breaks in one hit
-    if (c.hp > dmg && ['stone', 'hard'].includes(c.t) && petRoll('unCoup')) { dmg = c.hp; petProc(); floatText(i, tr('En 1 coup !'), '#ffd23d'); }
+    if (c.hp === c.max && c.hp > dmg && ['stone', 'hard'].includes(c.t) && petRoll('unCoup')) { dmg = c.hp; petProc(); floatText(i, tr('En 1 coup !'), '#ffd23d'); }
     c.hp -= dmg;
     const chips = chipsOf(c);
     if (c.hp <= 0) {
@@ -3296,6 +3310,11 @@ function act(p, isTap) {
     burst(x, y - 10, ['#3db5ff', '#a6e6ff', '#ffffff'], 10, { spread: 30, size: [3, 7] });
     const n = coolMagma(i);
     if (n > 1) floatText(i, tr('Chaîne ×{n} !', { n }), '#a6e6ff');
+    // Fée des glaces: an empty watering can is sometimes refilled at once
+    if (S.bucketCharges <= 0 && petRoll('arrosoir')) {
+      S.bucketCharges = maxCharges(); S.bucketReady = 0; updateBucket(); petProc();
+      setTimeout(() => floatText(i, tr('Arrosoir rempli !'), '#a6e6ff'), n > 1 ? 450 : 200);
+    }
     save();
   }
 }
@@ -3364,20 +3383,16 @@ function pileValue() {
   return n;
 }
 // Shovel on dirt: the Boots sometimes find a gold pile, the Pelle large digs a neighbouring dirt too
+// A pile of gold found in the dirt (equipment and runes, or the one the Fée jaune hid)
+function goldPile(i) {
+  const n = pileValue(), { x, y } = center(i);
+  S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
+  sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 12, { spread: 30, up: 14, size: [3, 7] });
+  floatText(i, tr('Tas d\'or ! +{n}', { n }), '#ffe14d');
+}
 function digExtras(i) {
-  const T = gearTotals(), petPile = petRoll('tasDOr');
-  if (petPile) petProc();
-  // Fée rose: sometimes spots a hidden treasure, like a radar
-  if (petRoll('detecter')) {
-    const hidden = S.rewards.filter(r => !r.found && !r.radar);
-    if (hidden.length) { hidden[randInt(0, hidden.length - 1)].radar = true; paintRadar(); petProc(); floatText(i, tr('Trésor repéré !'), '#ffb3e6'); }
-  }
-  if (petPile || Math.random() < T.pile * (1 + (T.pas.bottesProspecteur || 0))) {
-    const n = pileValue(), { x, y } = center(i);
-    S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
-    sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 12, { spread: 30, up: 14, size: [3, 7] });
-    floatText(i, tr('Tas d\'or ! +{n}', { n }), '#ffe14d');
-  }
+  const T = gearTotals();
+  if (Math.random() < T.pile * (1 + (T.pas.bottesProspecteur || 0))) goldPile(i);
   if (Math.random() < (T.pas.pelleLarge || 0)) {
     const near = nb4(i).filter(j => S.grid[j].t === 'dirt');
     if (near.length) { const j = near[randInt(0, near.length - 1)], p = center(j); clearCell(j); stat('terre'); burst(p.x, p.y, ['#c0713f', '#9a5228', '#d98a52'], 6, { spread: 22 }); }
@@ -3429,10 +3444,8 @@ function giveBonus(i, kind) {
 function gainOre(i, ore) {
   // Gloves: a chance of +1 ore (above 100 %: +1 for sure and a chance of +2); Gants de fer: sometimes the best ore too
   const T = gearTotals(), n = randInt(...ORE_YIELD[ore]) + Math.floor(T.ore) + (Math.random() < T.ore % 1 ? 1 : 0);
-  const extra = petRoll('minerais') ? 1 : 0;   // Fée orange: sometimes one more ore
-  if (extra) petProc();
-  S.bag.ores[ore] += n + extra; S.trip.ores[ore] += n + extra; stat('minerais', n + extra);
-  floatText(i, `+${n + extra} ${ORES[ore].name}`, ORES[ore].txt);
+  S.bag.ores[ore] += n; S.trip.ores[ore] += n; stat('minerais', n);
+  floatText(i, `+${n} ${ORES[ore].name}`, ORES[ore].txt);
   if (Math.random() < (T.pas.gantsFer || 0)) {
     const best = Object.keys(ORES).filter(k => at(S.level, ORE_UNLOCK[k])).pop();
     if (best) { S.bag.ores[best]++; S.trip.ores[best]++; setTimeout(() => floatText(i, `+1 ${ORES[best].name}`, ORES[best].txt), 350); }
@@ -3490,7 +3503,9 @@ $('armIcon').innerHTML = TOOLS.bomb;
 $('armCancel').addEventListener('click', () => { unlockAudio(); sfx('pick'); disarm(); });
 
 function clearCell(i) {
+  const pile = S.grid[i].pile;   // the Fée jaune's hidden pile of gold, whatever clears the dirt
   S.grid[i] = { t: 'empty' }; paintTile(i);
+  if (pile) { goldPile(i); petProc(); }
   checkRewards(); save(); checkAutoNext();
 }
 // Every cell cleared and every treasure picked up: go to the next level on its own
@@ -3520,7 +3535,6 @@ function checkRewards() {
     // Uncovered: it glows until the player taps it (the level is done once every treasure is uncovered)
     rw.found = true; paintRadar();
     rwEls[ri].classList.add('ready'); overEl.append(rwEls[ri]); findLabel(rw); sfx('ore');
-    if (rw.kind === 'geode' && GEODES[rw.key] && GEODES[rw.key].rarity !== 'common' && petFx('geodes')) petProc();
     if (!$('tuto').hidden) closeTuto();
     startCoach('tresor', [{ text: TX.tresor, target: () => rwEls[ri], done: () => !!rw.taken }], true);
     if (S.rewards.every(r => r.found)) levelDone();
@@ -4794,7 +4808,7 @@ let missionDay = 7;   // 7 = today
 const shownDay = () => Math.min(missionDay, weekDay());
 function renderWeek() {
   const t = weekDay(), sel = shownDay();
-  return OBJ.recompenses.map((r, i) => {
+  return OBJ.recompenses.map(r => fairyReward(r)).map((r, i) => {
     const st = S.week.done[i] ? 'done' : i === t ? 'today' : i < t ? 'missed' : 'locked';
     const tag = st === 'done' ? CHECK_ICON : st === 'locked' ? LOCK_ICON : '';
     return `<button class="wk-day ${st}${i === t ? ' now' : ''}${i === sel ? ' sel' : ''}" data-wkday="${i}" aria-pressed="${i === sel}" aria-label="${tr(WEEK_NAMES[i])}">
@@ -4803,7 +4817,7 @@ function renderWeek() {
 }
 // An earlier day: its reward (collected or missed) and its missions as they ended
 function renderPastDay(i) {
-  const r = OBJ.recompenses[i], day = tr(WEEK_NAMES[i]), open = !!S.week.done[i], past = S.week.past[i];
+  const r = fairyReward(OBJ.recompenses[i]), day = tr(WEEK_NAMES[i]), open = !!S.week.done[i], past = S.week.past[i];
   const goals = past ? past.goals : [], n = goals.filter(g => g.claimed).length, gift = dayGift(r);
   $('dayChestBox').innerHTML = `<div class="dc-card past${open ? ' open' : ' missed'}">
     <div class="vg-txt"><span>${open ? tr('Récompense du {d} récupérée', { d: day }) : tr('Récompense du {d} manquée', { d: day })}</span>
@@ -4826,7 +4840,7 @@ function goalRow(g, cls, cur, side, extra) {
     ${side}</div>`;
 }
 function renderDayChest() {
-  const r = OBJ.recompenses[weekDay()], day = tr(WEEK_NAMES[weekDay()]), n = goalsClaimed(), tot = S.daily.goals.length;
+  const r = fairyReward(OBJ.recompenses[weekDay()]), day = tr(WEEK_NAMES[weekDay()]), n = goalsClaimed(), tot = S.daily.goals.length;
   const ready = dayChestReady(), open = S.daily.chest, gift = dayGift(r);
   const txt = open ? tr('Récompense du {d} récupérée ! Reviens demain.', { d: day }) : ready ? tr('La récompense du {d} est à toi !', { d: day })
     : tr('Récupère toutes les missions pour gagner la récompense du {d}', { d: day });
@@ -4894,7 +4908,7 @@ document.addEventListener('click', e => {
 // All the missions claimed: the reward of the day
 document.addEventListener('click', e => {
   const cb = e.target.closest('[data-dchest]'); if (!cb || staleDay() || !dayChestReady()) return;
-  const d = weekDay(), r = OBJ.recompenses[d];
+  const d = weekDay(), r = fairyReward(OBJ.recompenses[d]);
   unlockAudio(); sfx('win');
   S.coins += r.pieces || 0; G().gems += r.gemmes || 0;
   flyMoney(cb.getBoundingClientRect(), r.pieces || 0, r.gemmes || 0);
@@ -4953,8 +4967,8 @@ const PL_FEAT_ICON = { evenements: 'Assets/UI/Event.png' };
 // (config.js > pets > feeSurNiveauVide)
 function plRewardOf(row) {
   const r = (row && row.recompense) || {};
-  if (BAG_FREE && PETS.feeSurNiveauVide && !r.fee && Object.keys(r).every(k => k === 'sac' || k === 'poche')) return { ...r, fee: 'hasard' };
-  return r;
+  if (BAG_FREE && PETS.feeSurNiveauVide && !r.fee && Object.keys(r).every(k => k === 'sac' || k === 'poche')) return fairyReward({ ...r, fee: 'hasard' });
+  return fairyReward(r);
 }
 function plRewardHTML(row) {
   const r = plRewardOf(row), chip = (icon, n) => `<span class="prog-chip">${icon}${n}</span>`;
@@ -4981,9 +4995,18 @@ function plGive(l) {
   updateBombs(); updateQuick(); refreshGear();
 }
 // A new fairy: the given colour, or ('hasard') one the player does not have yet
+// No duplicate fairies: once the player has them all, a fairy reward becomes pearls (config.js > pets > perlesDoublon)
+const missingFairies = () => Object.keys(PETS.fees).filter(k => !S.pets.some(p => p.key === k));
+const fairyReward = r => r && r.fee && !missingFairies().length ? { ...r, fee: null, gemmes: (r.gemmes || 0) + (PETS.perlesDoublon ?? 10) } : r;
+// A new fairy: the given colour if the player does not have it yet, else one they do not have; none left: pearls
 function giveFairy(key) {
-  const all = Object.keys(PETS.fees), missing = all.filter(k => !S.pets.some(p => p.key === k));
-  if (!PETS.fees[key]) key = (missing.length ? missing : all)[randInt(0, (missing.length ? missing : all).length - 1)];
+  const missing = missingFairies();
+  if (!missing.length) {
+    const n = PETS.perlesDoublon ?? 10;
+    G().gems += n; paintMoney(); toast(tr('Tu as déjà toutes les fées : +{n} perles', { n }), 'good'); save();
+    return;
+  }
+  if (!missing.includes(key)) key = missing[randInt(0, missing.length - 1)];
   const id = S.pets.reduce((m, p) => Math.max(m, p.id), 0) + 1;
   S.pets.push({ id, kind: 'fee', key });
   if (!S.petOn) S.petOn = id;   // the first fairy is equipped straight away
@@ -5281,7 +5304,7 @@ function descendTo(level) {
   // Same depth as the unfinished gallery: resume it; otherwise a fresh gallery at that depth
   if (!(level === S.level && galleryInProgress())) {
     S.level = level; S.rewardMsg = null; bagQueue.length = 0;
-    genLevel(level); buildBoard(true);
+    genLevel(level); const fx = petArrive(); buildBoard(true); petArriveFx(fx);
   }
   go('mine');
 }
@@ -5623,6 +5646,7 @@ function renderPetDetail() {
   $('pdImg').src = f.visuel; $('pdName').textContent = tr(f.nom);
   $('pdCat').innerHTML = c ? `<img src="${c.icone}" alt="" draggable="false">${tr(c.nom)}` : '';
   $('pdBonus').textContent = f.bonus ? tr(f.bonus) : tr('Bonus à venir');
+  $('pdDetail').textContent = f.detail ? tr(f.detail) : ''; $('pdDetail').hidden = !f.detail;
   const b = $('pdEquip'); b.textContent = on ? tr('Retirer') : tr('Équiper'); b.classList.toggle('on', on);
 }
 $('petsList').addEventListener('click', e => {
@@ -5647,6 +5671,53 @@ function paintPet() {
 // Bonus of the equipped fairy: its config (effet, chance / valeur) when it has this effect, else null
 function petFx(effet) { const p = S.pets && S.pets.find(p => p.id === S.petOn), f = p && PETS.fees[p.key]; return f && f.effet === effet ? f : null; }
 const petRoll = effet => { const f = petFx(effet); return !!f && Math.random() < (f.chance || 0); };
+/* Fairies that act on arrival in a new floor: the change is made to the grid before it is drawn,
+   then shown once it is on screen (petArriveFx: the fairy jumps, a word on the tile) */
+function petArrive() {
+  if (S.tuto) return null;
+  const mid = (ROWS >> 1) * COLS + (COLS >> 1), any = a => a[randInt(0, a.length - 1)];
+  const cells = test => S.grid.map((c, i) => test(c) ? i : -1).filter(i => i >= 0);
+  const midOf = rw => (rw.r + (rw.h >> 1)) * COLS + rw.c + (rw.w >> 1);
+  // Fée de nuit: rolled while the floor was generated
+  if (S.rewards.some(r => r.night)) return { i: mid, txt: tr('Trésor inconnu !'), col: '#d7c2ff' };
+  const p = S.pets && S.pets.find(p => p.id === S.petOn), f = p && PETS.fees[p.key];
+  if (!f || !(Math.random() < (f.chance || 0))) return null;
+  if (f.effet === 'magma') {   // Fée bleue: one magma cools down
+    const m = cells(c => c.t === 'magma'); if (!m.length) return null;
+    const i = any(m);
+    return { i, txt: tr('Refroidi !'), col: '#a6e6ff', run: () => coolMagma(i) };
+  }
+  if (f.effet === 'tasDOr') {   // Fée jaune: a pile of gold hidden in the dirt
+    const d = cells(c => c.t === 'dirt' && !c.pile); if (!d.length) return null;
+    S.grid[any(d)].pile = true;
+    return { i: mid, txt: tr('Tas d\'or caché !'), col: '#ffe14d' };
+  }
+  if (f.effet === 'reveler') {   // Fée rose: a hidden treasure shows, like a radar
+    const h = S.rewards.filter(r => !r.found && !r.radar); if (!h.length) return null;
+    const rw = any(h); rw.radar = true;
+    return { i: midOf(rw), txt: tr('Trésor repéré !'), col: '#ffb3e6' };
+  }
+  if (f.effet === 'minerai') {   // Fée orange: a stone becomes an ore
+    const ores = Object.fromEntries(Object.entries(ORES).filter(([k]) => at(S.level, ORE_UNLOCK[k])).map(([k, o]) => [k, o.w]));
+    const s = cells(c => c.t === 'stone'); if (!s.length || !Object.keys(ores).length) return null;
+    const i = any(s); S.grid[i] = { ...tileOf('ore'), ore: pick(ores) };
+    return { i, txt: tr('+1 minerai'), col: '#ffd27a' };
+  }
+  if (f.effet === 'geode') {   // Fée violette: a hidden geode goes up one rarity
+    const order = ['white', 'pink', 'gold', 'crystal'];
+    const g = S.rewards.filter(r => r.kind === 'geode' && !r.found && order.indexOf(r.key) >= 0 && order.indexOf(r.key) < order.length - 1);
+    if (!g.length) return null;
+    const rw = any(g); rw.key = order[order.indexOf(rw.key) + 1];
+    return { i: mid, txt: tr('Géode améliorée !'), col: '#d7a6ff' };
+  }
+  return null;
+}
+function petArriveFx(fx) {
+  if (!fx) return;
+  const gen = boardGen;
+  save();
+  setTimeout(() => { if (gen !== boardGen) return; if (fx.run) fx.run(); petProc(); floatText(fx.i, fx.txt, fx.col); save(); }, 900);
+}
 // The fairy's bonus worked: she jumps and glows
 function petProc() {
   const el = $('minePet'); if (el.hidden) return;
@@ -5991,7 +6062,7 @@ function descend() {
 }
 function arriveNext() {
   S.level++; if (CFG.energie.rechargeEtageSuivant) S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges();
-  S.rewardMsg = null; genLevel(S.level); buildBoard(!DESCEND_MS); updateEnergy(true); save();
+  S.rewardMsg = null; genLevel(S.level); const petFxArrive = petArrive(); buildBoard(!DESCEND_MS); petArriveFx(petFxArrive); updateEnergy(true); save();
   const dc = $('depthChip'); dc.classList.remove('bump'); void dc.offsetWidth; dc.classList.add('bump');
   const newRecord = S.level > S.reached;
   if (newRecord) S.reached = S.level;
@@ -6121,6 +6192,10 @@ function start(data) {
   if (!S.muOpened) S.muOpened = Object.fromEntries(Object.keys(SETS).filter(sk => setKeys(sk).some(k => setBook(sk)[k])).map(sk => [sk, true]));
   // A fairy removed from config.js (e.g. the old dark green one) becomes the first fairy of the list
   if (Array.isArray(S.pets)) S.pets.forEach(p => { if (!PETS.fees[p.key]) p.key = Object.keys(PETS.fees)[0]; }); else S.pets = newPets();
+  // No duplicate fairies any more: older saves keep one of each colour (the equipped one first), the others become pearls
+  const keep = new Map();
+  for (const p of [...S.pets].sort((a, b) => (b.id === S.petOn) - (a.id === S.petOn))) if (!keep.has(p.key)) keep.set(p.key, p);
+  if (keep.size < S.pets.length) { G().gems += (S.pets.length - keep.size) * (PETS.perlesDoublon ?? 10); S.pets = S.pets.filter(p => keep.get(p.key) === p); }
   if (saved && S.reached > GUIDE.fin) for (const k of ['energie', 'continuer', 'echanger', 'forge', 'atelier', 'objectifs', 'guideFin', 'redescendre-11', 'redescendre-16', 'retour-11', 'retour-16']) S.tutoSeen[k] = true;
   // Saves from before the miner level (energy and bag from the Forge and the Shop, XP from missions only):
   // the XP the depth record and the Museum would have given is added, and the level rewards can be claimed again
@@ -6189,6 +6264,7 @@ function loadCheats() {
     genLevel, buildBoard, go, save, toast, paintTile, checkRewards, maxE, bagCap, gainXP, plInfo, renderVillage,
     updateBombs, updateQuick, updateBadge, updateEnergy,
     EQC, ARCH, RAR_KEYS, newItem, refreshGear, archOpen, gearTotals,
+    giveFairy, paintPet, paintMoney,
     // Texts still missing an English version (shown in the console with __mine.missingEN())
     missingEN: () => [...MISSING_EN],
     cheatsOn,

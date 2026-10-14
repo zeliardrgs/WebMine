@@ -6,6 +6,7 @@
   const M = window.__mine;
   if (!M) return;
   const KEY = 'mine-tresors-v3', BACKUP = 'mine-tresors-backup', INF = 'mine-cheat-energie';
+  const PF = M.CFG.pets.fees, PC = M.CFG.pets.categories;
 
   /* ---------- Style ---------- */
   const css = document.createElement('style');
@@ -135,6 +136,24 @@
       delete s.tutoSeen['eq-premier']; delete s.tutoSeen['eq-fusion'];
       M.refreshGear(); refresh(); msg('Équipement remis à zéro (tutoriel compris)');
     },
+    // Fairies (one of each colour at most: once the player has them all, a fairy gives pearls)
+    fairy() { M.giveFairy('hasard'); close(); },
+    // A fairy of this category the player does not have yet
+    fairyCat(cat) {
+      const s = S(), left = Object.keys(PF).filter(k => PF[k].categorie === cat && !s.pets.some(p => p.key === k));
+      if (!left.length) return msg(`Tu as déjà toutes les fées ${PC[cat].nom}`);
+      M.giveFairy(randomOf(left)); close();
+    },
+    fairyAll() {
+      const s = S(); let id = s.pets.reduce((m, p) => Math.max(m, p.id), 0), n = 0;
+      for (const k of Object.keys(PF)) if (!s.pets.some(p => p.key === k)) { s.pets.push({ id: ++id, kind: 'fee', key: k }); n++; }
+      if (!s.petOn && s.pets.length) s.petOn = s.pets[0].id;
+      M.paintPet(); refresh(); msg(n ? `+${n} fée${n > 1 ? 's' : ''} : toutes les fées` : 'Tu as déjà toutes les fées');
+    },
+    fairyNone() {
+      if (!confirm('Retirer toutes les fées ?')) return;
+      const s = S(); s.pets = []; s.petOn = null; M.paintPet(); refresh(); msg('Plus aucune fée');
+    },
     // Geodes
     geode(g) { S().bag.geodes.push(g); refresh(); msg('+1 ' + M.GEODES[g].name); },
     // Bag
@@ -213,6 +232,14 @@
       <button data-c="gearAll">+1 de chaque modèle</button>
       ${M.RAR_KEYS.map(r => `<button data-c="gearItem" data-g="${r}">+1 ${M.EQC.raretes[r].nom}</button>`).join('')}
       <button data-c="gearReset" class="warn">Remettre l'équipement à zéro</button>
+    </div>
+
+    <h3>Fées</h3>
+    <div class="row">
+      <button data-c="fairy">+1 fée au hasard</button>
+      ${Object.keys(PC).map(c => `<button data-c="fairyCat" data-g="${c}">+1 fée ${PC[c].nom}</button>`).join('')}
+      <button data-c="fairyAll">Toutes les fées</button>
+      <button data-c="fairyNone" class="warn">Retirer toutes les fées</button>
     </div>
 
     <h3>Géodes</h3>
