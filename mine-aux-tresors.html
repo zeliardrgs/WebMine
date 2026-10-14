@@ -7,9 +7,9 @@
 <link rel="preload" as="image" href="Assets/Ground/Ground_Stone_03.png">
 <link rel="preload" as="image" href="Assets/Ground/Ground_Stone_03-1.png">
 <link rel="preload" as="image" href="Assets/Ground/Ground_Stone_03-2.png">
-<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_Iron.png">
-<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_Cooper.png">
-<link rel="preload" as="image" href="Assets/Ground/Ground_Stone_Gold.png">
+<link rel="preload" as="image" href="Assets/Ground/Tile_Overlay_iron.png">
+<link rel="preload" as="image" href="Assets/Ground/Tile_Overlay_Copper.png">
+<link rel="preload" as="image" href="Assets/Ground/Tile_Overlay_Gold.png">
 <link rel="preload" as="image" href="Assets/Tools/Shovel.png">
 <link rel="preload" as="image" href="Assets/Tools/Icn_Pickaxe.png">
 <link rel="preload" as="image" href="Assets/Tools/watering%20can.png">
@@ -40,6 +40,8 @@ body{
   color:var(--panel); font-family:var(--font-body); font-weight:800;
   -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent;
 }
+/* A mine with its own background picture (config.js > biomes > cartes > fondMine), darkened a little so the HUD stays readable */
+body.in-mine.mine-bg{background:linear-gradient(rgba(22,14,34,.12), rgba(22,14,34,.42)), var(--mine-bg) center / cover no-repeat fixed, var(--cave)}
 button{font:inherit; color:inherit}
 button:focus-visible{outline:3px solid var(--water); outline-offset:3px}
 .app{max-width:480px; height:100%; margin:0 auto; padding-inline:16px; padding-block:10px 12px; box-sizing:border-box; display:flex; flex-direction:column; gap:10px}
@@ -230,15 +232,19 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 /* Tiles are 134x152: square top face + 18px front lip. Each row sits above the previous one, so a lip only shows once the tile below is dug out. */
 .tile{position:relative; height:calc(var(--tile) * 152 / 134); background:center top / 100% 100% no-repeat}
 .tile::after{content:""; position:absolute; left:0; right:0; top:0; height:88%; background:center / 74% 74% no-repeat; pointer-events:none}
-.t-dirt{background-image:url(Assets/Ground/Ground_Dirt_01.png)}
-.t-dirt.v1{background-image:url(Assets/Ground/Ground_Dirt_02.png)}
-.t-dirt.v2{background-image:url(Assets/Ground/Ground_Dirt_03.png)}
-.t-stone{background-image:url(Assets/Ground/Ground_Stone_01.png)}
-.t-stone.s2{background-image:url(Assets/Ground/Ground_Stone_02.png)}
-.t-stone.s3{background-image:url(Assets/Ground/Ground_Stone_03.png)}
-.o-iron{background-image:url(Assets/Ground/Ground_Stone_Iron.png)}
-.o-copper{background-image:url(Assets/Ground/Ground_Stone_Cooper.png)}
-.o-gold{background-image:url(Assets/Ground/Ground_Stone_Gold.png); animation:twinkle 1.8s ease-in-out infinite}
+/* The dirt (and the tiles drawn over dirt) can change with the mine: config.js > biomes > cartes > terre */
+.t-dirt{background-image:var(--dirt0, url(Assets/Ground/Ground_Dirt_01.png))}
+.t-dirt.v1{background-image:var(--dirt1, url(Assets/Ground/Ground_Dirt_02.png))}
+.t-dirt.v2{background-image:var(--dirt2, url(Assets/Ground/Ground_Dirt_03.png))}
+/* The stone can change with the mine (config.js > biomes > cartes > pierre); s2, s3 = more and more cracked.
+   An ore is the mine's stone with the ore's picture laid on its top face (config.js > mine > imagesMinerais). */
+.t-stone,.t-ore{background-image:var(--stone0, url(Assets/Ground/Ground_Stone_01.png))}
+.t-stone.s2,.t-ore.s2{background-image:var(--stone1, url(Assets/Ground/Ground_Stone_02.png))}
+.t-stone.s3,.t-ore.s3{background-image:var(--stone2, url(Assets/Ground/Ground_Stone_03.png))}
+.t-ore::before{content:""; position:absolute; left:0; right:0; top:0; height:88%; background:var(--ore-img) center / 82% 82% no-repeat; pointer-events:none}
+.o-iron{--ore-img:var(--ore-iron)} .o-copper{--ore-img:var(--ore-copper)} .o-gold{--ore-img:var(--ore-gold)}
+.o-mithril{--ore-img:var(--ore-mithril)} .o-crystal{--ore-img:var(--ore-crystal)}
+.o-gold::before{animation:twinkle 1.8s ease-in-out infinite}
 @keyframes twinkle{50%{filter:brightness(1.18)}}
 .t-magma{background-image:url(Assets/Ground/Ground_Stone_03-1.png); animation:heat 1.6s ease-in-out infinite}
 .t-magma::before{content:""; position:absolute; width:16%; height:14%; left:58%; top:30%; border-radius:50%; background:#fff1a6; animation:bubble 1.9s ease-in infinite}
@@ -250,8 +256,8 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .t-hard{background-image:url(Assets/Ground/Ground_Stone_01.png); filter:brightness(.62) saturate(1.8) hue-rotate(195deg)}
 .t-ice{background-image:url(Assets/Ground/Ground_Stone_02.png); filter:hue-rotate(175deg) saturate(.55) brightness(1.5)}
 .t-ice.melt::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M30 56 C35 66 40 70 36 78 A7 7 0 0 1 24 76 C22 68 27 64 30 56Z M66 46 C71 56 76 60 72 68 A7 7 0 0 1 60 66 C58 58 63 54 66 46Z' fill='%23ffffff' stroke='%237bc8ff' stroke-width='3'/%3E%3C/svg%3E")}
-.t-spring,.t-mystery,.t-gas,.t-chest,.t-stump{background-image:url(Assets/Ground/Ground_Dirt_01.png)}
-.t-root{background-image:url(Assets/Ground/Ground_Dirt_02.png)}
+.t-spring,.t-mystery,.t-gas,.t-chest,.t-stump{background-image:var(--dirt0, url(Assets/Ground/Ground_Dirt_01.png))}
+.t-root{background-image:var(--dirt1, url(Assets/Ground/Ground_Dirt_02.png))}
 .t-spring::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='50' cy='64' rx='38' ry='20' fill='%233db5ff' stroke='%23125a8a' stroke-width='4'/%3E%3Cellipse cx='40' cy='60' rx='13' ry='5' fill='%23bff0ff'/%3E%3Cpath d='M50 12 C62 30 66 38 66 46 A16 16 0 0 1 34 46 C34 38 38 30 50 12Z' fill='%2366ccff' stroke='%23125a8a' stroke-width='4'/%3E%3C/svg%3E")}
 .t-mystery::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='18' y='16' width='64' height='64' rx='14' fill='%238d42cc' stroke='%233b2245' stroke-width='5'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-size='50' font-family='Arial' font-weight='900' fill='%23fff'%3E?%3C/text%3E%3C/svg%3E"); animation:twinkle 1.8s ease-in-out infinite}
 .t-gas::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='36' cy='58' r='22' fill='%239be37a' fill-opacity='.85' stroke='%234a8a2a' stroke-width='4'/%3E%3Ccircle cx='62' cy='42' r='18' fill='%23b7f08f' fill-opacity='.85' stroke='%234a8a2a' stroke-width='4'/%3E%3Ccircle cx='64' cy='70' r='12' fill='%23c9f7a6' fill-opacity='.85' stroke='%234a8a2a' stroke-width='4'/%3E%3C/svg%3E")}
@@ -260,7 +266,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .tile.t-root::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M6 30 C28 44 38 18 60 34 S82 62 94 50 M8 72 C30 58 48 84 70 66 S88 78 96 74' fill='none' stroke='%235a3518' stroke-width='12' stroke-linecap='round'/%3E%3Cpath d='M6 30 C28 44 38 18 60 34 S82 62 94 50 M8 72 C30 58 48 84 70 66 S88 78 96 74' fill='none' stroke='%23a8743e' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"); background-size:100% 90%}
 .t-magma.chain{filter:saturate(1.4) brightness(1.08)}
 .t-magma.chain::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M10 52 L32 40 L50 58 L70 40 L90 54' fill='none' stroke='%23fff6c4' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='40' r='6' fill='%23fff6c4'/%3E%3Ccircle cx='70' cy='40' r='6' fill='%23fff6c4'/%3E%3C/svg%3E")}
-.t-coins,.t-king{background-image:url(Assets/Ground/Ground_Dirt_01.png)}
+.t-coins,.t-king{background-image:var(--dirt0, url(Assets/Ground/Ground_Dirt_01.png))}
 .t-coins::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='36' cy='78' rx='18' ry='7' fill='%23b5760a'/%3E%3Cellipse cx='36' cy='72' rx='18' ry='7' fill='%23ffd23d' stroke='%237a4a05' stroke-width='3'/%3E%3Cellipse cx='64' cy='78' rx='18' ry='7' fill='%23b5760a'/%3E%3Cellipse cx='64' cy='72' rx='18' ry='7' fill='%23ffd23d' stroke='%237a4a05' stroke-width='3'/%3E%3Cellipse cx='50' cy='66' rx='18' ry='7' fill='%23b5760a'/%3E%3Cellipse cx='50' cy='60' rx='18' ry='7' fill='%23ffd23d' stroke='%237a4a05' stroke-width='3'/%3E%3Cellipse cx='50' cy='52' rx='18' ry='7' fill='%23b5760a'/%3E%3Cellipse cx='50' cy='46' rx='18' ry='7' fill='%23ffd23d' stroke='%237a4a05' stroke-width='3'/%3E%3Ccircle cx='70' cy='30' r='4' fill='%23fff'/%3E%3C/svg%3E")}
 .tile.t-king::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='42' width='84' height='46' rx='8' fill='%23c9851e' stroke='%233b2245' stroke-width='5'/%3E%3Cpath d='M8 46 C8 20 92 20 92 46Z' fill='%23ffcf3d' stroke='%233b2245' stroke-width='5'/%3E%3Crect x='8' y='43' width='84' height='10' fill='%23fff1a6' stroke='%233b2245' stroke-width='3'/%3E%3Crect x='41' y='48' width='18' height='22' rx='4' fill='%238d42cc' stroke='%233b2245' stroke-width='3'/%3E%3Cpath d='M30 22 L36 8 L44 18 L50 4 L56 18 L64 8 L70 22Z' fill='%23ffe066' stroke='%233b2245' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"); background-size:92% 92%; animation:twinkle 1.6s ease-in-out infinite}
 .t-king{filter:drop-shadow(0 0 10px #ffd23d)}
@@ -283,8 +289,9 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .win-bonus{margin:10px 0 0; padding:10px 12px; border-radius:14px; background:linear-gradient(135deg, #ffe9a3, #fff8dc); box-shadow:0 3px 0 #e8b923; font-weight:800; color:var(--ink)}
 .win-bonus img{width:20px; height:20px; object-fit:contain; vertical-align:-4px; margin-left:2px}
 .win-bonus b{display:block; font-family:var(--font-display); font-weight:400; font-size:17px; color:#b5760a}
-.o-mithril{background-image:url(Assets/Ground/Ground_Stone_Iron.png); filter:hue-rotate(140deg) saturate(1.6) brightness(1.1)}
-.o-crystal{background-image:url(Assets/Ground/Ground_Stone_Cooper.png); filter:hue-rotate(250deg) saturate(1.4) brightness(1.15)}
+/* Mithril and raw crystal without their own picture: the iron and copper pictures, recoloured */
+.o-mithril.tint::before{filter:hue-rotate(140deg) saturate(1.6) brightness(1.1)}
+.o-crystal.tint::before{filter:hue-rotate(250deg) saturate(1.4) brightness(1.15)}
 .t-empty{background:none; pointer-events:none}
 .tile[data-crack="1"]::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M52 8 L46 34 L58 48 L50 68' fill='none' stroke='%231e1628' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .tile[data-crack="2"]::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M52 8 L46 34 L58 48 L50 68 M58 48 L80 56 M46 34 L24 30 M50 68 L38 84' fill='none' stroke='%231e1628' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
@@ -941,7 +948,7 @@ button.eq-dmg{cursor:pointer}
 .ad-modal b{display:block; font-family:var(--font-display); font-size:56px; color:var(--lava)}
 .ad-tag{margin:0; font-family:var(--font-display); color:var(--ink-soft)}
 /* Mine: a chest key on the ground */
-.t-gkey{background-image:url(Assets/Ground/Ground_Dirt_01.png)}
+.t-gkey{background-image:var(--dirt0, url(Assets/Ground/Ground_Dirt_01.png))}
 .t-gkey::before{animation:twinkle 1.8s ease-in-out infinite; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='30' cy='50' r='18' fill='%23b0662f' stroke='%233b2245' stroke-width='5'/%3E%3Ccircle cx='30' cy='50' r='7' fill='%233b2245'/%3E%3Cpath d='M46 44 H88 V56 H80 V68 H70 V56 H62 V64 H52 V56 H46Z' fill='%23b0662f' stroke='%233b2245' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E")}
 /* New fairy reward page: the fairy floats in a halo of light, her name and bonus under her */
 .modal.fairy-modal{background:radial-gradient(circle at 50% 40%, rgba(70,110,170,.92), rgba(16,8,26,.95))}
@@ -1103,7 +1110,7 @@ body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !importan
 }
 
 @media (prefers-reduced-motion: reduce){
-  .t-magma,.t-magma::before,.o-gold{animation:none}
+  .t-magma,.t-magma::before,.o-gold::before{animation:none}
   .card,.board.enter,.rw.done,.frame.leaving,.frame.arriving,.descend-fx.on{animation:none}
 }
 
@@ -1116,10 +1123,10 @@ body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !importan
 #museumBody h3{margin:6px 0 0; text-align:center; font-family:var(--font-display); font-weight:400; font-size:16px; color:var(--ink-soft)}
 .mc-wrap{position:relative; isolation:isolate; margin-bottom:14px}   /* its curtain and button stay under the sticky banner */
 .mc{border:3px solid var(--outline); border-radius:22px; overflow:hidden; background:#7f4f22}
-.mc-head{height:46px; display:grid; place-items:center; padding:0 64px; background:#0aa0e6; border-bottom:3px solid #5cc6f2}
+.mc-head{height:46px; display:grid; place-items:center; padding:0 64px; background:var(--mc-band, #0aa0e6); border-bottom:3px solid color-mix(in srgb, var(--mc-band, #0aa0e6) 55%, #fff)}
 .mc-head b{font-family:var(--font-display); font-weight:400; font-size:21px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; -webkit-text-stroke:5px var(--outline); paint-order:stroke fill}
 .mc-row{position:relative; height:158px; overflow:hidden}
-.mc-row::before{content:""; position:absolute; inset:-12px; background:url("Assets/UI/Character%20BG.png") center 55% / cover; filter:blur(4px)}
+.mc-row::before{content:""; position:absolute; inset:-12px; background:var(--mc-shelf, url("Assets/UI/Character%20BG.png")) center 55% / cover; filter:blur(4px)}
 .mc-row::after{content:""; position:absolute; left:0; right:0; bottom:0; height:52px; background:linear-gradient(#b87a45 0 70%, #8a5527 70%)}
 .mc-row + .mc-row{border-top:3px solid #8a5527}
 .mc-stars{position:absolute; z-index:1; top:10px; left:0; right:0; display:flex; justify-content:center; gap:4px}
@@ -1132,6 +1139,29 @@ body.drag-scroll, body.drag-scroll *{user-select:none; cursor:grabbing !importan
 .mc-ped.unknown::before{background:#6fc0e3; box-shadow:0 10px 0 #3f8fb5, 0 14px 0 rgba(60,30,10,.35)}
 .mc-ped img{position:relative; width:76%; height:70px; margin-bottom:24px; object-fit:contain; object-position:bottom; filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
 .mc-ped i{position:absolute; z-index:1; bottom:0; left:0; right:0; text-align:center; font-style:normal; font-family:var(--font-display); font-size:15px; color:#fff; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
+/* A treasure in fragments: the whole treasure in silhouette, the pieces found at their place */
+.frag-box{position:relative; display:block; width:66%; margin-bottom:24px}
+.mc-ped .frag-box img{display:block; margin:0; height:auto; object-fit:fill; filter:none}
+.mc-ped .frag-box .fr-sil{position:relative; width:100%; filter:brightness(0) opacity(.35)}
+.mc-ped .frag-box .fr-pc{position:absolute; transform:translate(-50%, -50%) rotate(var(--r, 0deg))}
+.frag-go{position:absolute; z-index:2; bottom:-2px; left:50%; transform:translateX(-50%); padding:4px 8px; border:3px solid var(--outline); border-radius:12px;
+  background:#55d13f; background-clip:padding-box; box-shadow:inset 0 -3px 0 #2f9a2a; color:#fff; font-family:var(--font-display); font-size:12px; white-space:nowrap;
+  -webkit-text-stroke:3px var(--outline); paint-order:stroke fill; animation:twinkle 1.6s ease-in-out infinite}
+/* « Reconstituer »: the pieces fly into place, then the whole treasure shows */
+.fx-rebuild{position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:16px; background:rgba(16,8,26,.8)}
+.rb-card{width:min(340px, 100%); display:flex; flex-direction:column; align-items:center; gap:12px; text-align:center}
+.rb-box{position:relative; width:min(240px, 64vw)}
+.rb-box img{display:block}
+.rb-sil{width:100%; filter:brightness(0) opacity(.45)}
+.rb-pc{position:absolute; transform:translate(-50%, -50%) rotate(var(--r, 0deg)); transition:opacity .35s}
+.rb-whole{position:absolute; inset:0; width:100%; opacity:0}
+.fx-rebuild.done .rb-whole{opacity:1; animation:rbPop .6s cubic-bezier(.3,1.6,.5,1); filter:drop-shadow(0 0 18px #fff6a8)}
+.fx-rebuild.done .rb-pc{opacity:0}
+.rb-title{font-family:var(--font-display); font-weight:400; font-size:22px; color:#fff; -webkit-text-stroke:5px var(--outline); paint-order:stroke fill}
+.rb-sub{margin:0; display:flex; gap:6px; align-items:center; justify-content:center}
+.rb-title,.rb-sub,.rb-ok{opacity:0; transform:translateY(8px); transition:opacity .3s .25s, transform .3s .25s}
+.fx-rebuild.done .rb-title,.fx-rebuild.done .rb-sub,.fx-rebuild.done .rb-ok{opacity:1; transform:none}
+@keyframes rbPop{0%{transform:scale(.85)} 60%{transform:scale(1.12)} 100%{transform:scale(1)}}
 .mc-ped b{position:relative; margin-bottom:22px; font-family:var(--font-display); font-weight:400; font-size:44px; line-height:1; color:#fff; -webkit-text-stroke:7px var(--outline); paint-order:stroke fill}
 /* Star won, prime waiting: green button on the title bar */
 .mc-up{position:absolute; z-index:2; top:-8px; right:14px; width:52px; height:52px; padding:0; display:grid; place-items:center; border:3px solid var(--outline); border-radius:14px; cursor:pointer;
@@ -1261,7 +1291,7 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 /* Guaranteed blessings of the miner level (energy, bag, geode pocket) */
 .prog-chip.bless{background:#e9dcff; box-shadow:inset 0 0 0 2px #6a58b8}
 /* Rainbow tile (Rune Arc-en-ciel) */
-.t-rainbow{background-image:url(Assets/Ground/Ground_Dirt_02.png)}
+.t-rainbow{background-image:var(--dirt1, url(Assets/Ground/Ground_Dirt_02.png))}
 .t-rainbow::before{animation:twinkle 1.4s ease-in-out infinite; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff5b5b'/%3E%3Cstop offset='.25' stop-color='%23ffd23d'/%3E%3Cstop offset='.5' stop-color='%233dd68c'/%3E%3Cstop offset='.75' stop-color='%234b8bff'/%3E%3Cstop offset='1' stop-color='%23cf9bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 12 L82 42 L50 88 L18 42Z' fill='url(%23g)' stroke='%233b2245' stroke-width='6' stroke-linejoin='round'/%3E%3Cpath d='M18 42 H82 M36 42 L50 88 L64 42 M36 42 L50 12 L64 42' fill='none' stroke='%23fff' stroke-opacity='.6' stroke-width='3'/%3E%3Ccircle cx='70' cy='22' r='5' fill='%23fff'/%3E%3C/svg%3E"); filter:drop-shadow(0 0 6px #fff)}
 /* ---------- Player progression: the card at the top left of the village and the Progression popup ---------- */
 .v-hud .wallet-bar{flex:none}
@@ -1408,6 +1438,33 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 #scr-village .world,#scr-village .v-hint,#scr-village .md-info{display:none}
 .home-hero{position:absolute; left:0; right:0; top:calc(env(safe-area-inset-top, 0px) + 96px); bottom:calc(var(--nav-h, 0px) + env(safe-area-inset-bottom, 0px) + 150px); display:flex; align-items:flex-end; justify-content:center; pointer-events:none}
 .home-hero img{height:min(100%, 40dvh); max-width:80%; object-fit:contain; object-position:bottom}
+/* Home: one offer per rare fairy not bought yet, on the left under the money: just the fairy, on its own colour (config.js > couleurAccueil) */
+.fairy-offers{position:absolute; z-index:10; left:max(12px, calc(50% - 228px)); top:calc(env(safe-area-inset-top, 0px) + 132px); display:flex; flex-direction:column; gap:10px}
+.fairy-offer{display:grid; place-items:center; width:76px; height:76px; padding:4px; box-sizing:border-box; border:3px solid var(--outline); border-radius:18px; cursor:pointer;
+  background:radial-gradient(circle at 50% 35%, rgba(255,255,255,.55), transparent 65%), var(--fo, #5ec8ff); background-clip:padding-box;
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.2), 0 4px 10px rgba(0,0,0,.25); -webkit-tap-highlight-color:transparent}
+.fairy-offer:active{transform:translateY(2px)}
+.fairy-offer img{width:100%; height:100%; object-fit:contain; animation:pet-bob 2.4s ease-in-out infinite; filter:drop-shadow(0 3px 2px rgba(0,0,0,.25)); pointer-events:none}
+.fairy-offer + .fairy-offer img{animation-delay:-1.2s}
+/* Premium shop: the rare fairies, one blue card each */
+.pf-card{position:relative; overflow:hidden; display:flex; flex-direction:column; gap:8px; padding:14px 16px 16px; border-radius:22px; color:#fff;
+  background:linear-gradient(135deg, #7cc0ff, #2670d6 60%, #1b4f9c); box-shadow:0 5px 0 #143c78, 0 10px 22px rgba(0,0,0,.3)}
+.pf-card .pm-tag{background:rgba(0,0,0,.3); letter-spacing:.04em; text-transform:uppercase}
+.pf-art{position:absolute; right:4px; top:4px; width:128px; height:128px; pointer-events:none}
+.pf-art img{width:100%; height:100%; object-fit:contain; animation:pet-bob 2.4s ease-in-out infinite; filter:drop-shadow(0 6px 4px rgba(0,0,0,.25))}
+.pf-txt{padding-right:124px; display:flex; flex-direction:column; gap:4px}
+.pf-txt b{font-family:var(--font-display); font-weight:400; font-size:22px; line-height:1.05; text-shadow:0 2px 0 rgba(0,0,0,.3)}
+.pf-cat{display:flex; align-items:center; gap:5px; font-family:var(--font-display); font-size:13px}
+.pf-cat img{width:22px; height:22px; object-fit:contain}
+.pf-txt p{margin:0; font-size:13px; line-height:1.35}
+.pf-buy{display:flex; align-items:center; justify-content:center; gap:6px; min-height:48px; border:3px solid var(--outline); border-radius:14px; cursor:pointer;
+  background:linear-gradient(#ffe100, #ffc400); background-clip:padding-box; box-shadow:inset 0 -5px 0 #ffa200; font-family:var(--font-display); font-size:20px; color:var(--ink)}
+.pf-buy img,.pf-buy svg{width:28px; height:28px}
+.pf-buy:active{transform:translateY(2px)}
+.pf-buy.own{cursor:default; background:rgba(255,255,255,.9); box-shadow:inset 0 -5px 0 rgba(0,0,0,.15); font-size:17px}
+.pf-buy.own:active{transform:none}
+.pf-card.flash{animation:pf-flash 1.2s ease-out}
+@keyframes pf-flash{0%,40%{box-shadow:0 0 0 5px #fff36b, 0 5px 0 #143c78}}
 .home-side{position:absolute; z-index:10; right:max(12px, calc(50% - 228px)); top:calc(env(safe-area-inset-top, 0px) + 132px); display:flex; flex-direction:column; gap:10px}
 .home-sc{position:relative; width:64px; padding:4px 2px 7px; border:3px solid var(--outline); border-radius:16px; cursor:pointer; background:#fbf1dc; background-clip:padding-box; box-shadow:inset 0 -4px 0 #e2c89a;
   display:flex; flex-direction:column; align-items:center; gap:1px; color:var(--ink); font-family:var(--font-display)}
@@ -1475,6 +1532,11 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 .modal.pet-detail{background:rgba(16,8,26,.55)}
 .pd{--u:calc(min(100vw, 480px) / 100); position:relative; width:min(100%, calc(var(--u) * 92)); box-sizing:border-box; margin-top:calc(var(--u) * 26); padding:calc(var(--u) * 21) calc(var(--u) * 7) calc(var(--u) * 7);
   border:calc(var(--u) * .8) solid #6b4a2a; border-radius:calc(var(--u) * 6); background:#fff5e0; text-align:center; animation:popin .35s cubic-bezier(.3,1.5,.5,1)}
+/* Rare fairies (premium shop): a blue card */
+.pet-card.rare{border-color:#2670d6; background:linear-gradient(160deg, #cfe6ff, #86bdf5)}
+.pet-card.rare.on::after{border-color:#2670d6}
+.pd-rar{display:inline-block; margin:0 0 calc(var(--u) * 1.6); padding:calc(var(--u) * .6) calc(var(--u) * 3); border-radius:calc(var(--u) * 3); background:#2670d6; color:#fff;
+  font-family:var(--font-display); font-size:calc(var(--u) * 3.4); letter-spacing:.04em; text-transform:uppercase}
 .pd-card{position:absolute; left:50%; top:calc(var(--u) * -34); width:calc(var(--u) * 37); margin-left:calc(var(--u) * -18.5); cursor:default; border-width:calc(var(--u) * 1.1)}
 .pd-card:active{transform:none}
 .pd-card > img{top:10%; height:80%; animation:pet-bob 2.4s ease-in-out infinite}
@@ -1667,6 +1729,20 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .eq-forge{border:calc(var(--u) * .7) solid var(--outline); border-left:0; background:var(--sun); background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.2) 0 var(--sun-edge)}
 .eq-forge:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.4) 0 var(--sun-edge)}
 
+/* Museum: the Collection button (top left of the banner) chooses the mine whose collections are shown */
+#scr-museum .scr-head{position:sticky}
+.mu-col{position:absolute; z-index:2; left:var(--side); top:calc(env(safe-area-inset-top, 0px) + var(--u) * 2); width:calc(var(--u) * 13); height:calc(var(--u) * 13); padding:0; border:0; background:none; cursor:pointer}
+.mu-col img{width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 calc(var(--u) * .6) 0 rgba(0,0,0,.35))}
+.mu-col:active{transform:translateY(2px)}
+.mu-col .badge{top:0; right:0}
+.mu-mine{margin:0 0 calc(var(--u) * 3); text-align:center; font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 5); color:#fff; -webkit-text-stroke:calc(var(--u) * 1) var(--outline); paint-order:stroke fill}
+.mu-col-list{display:flex; flex-direction:column; gap:10px; margin-top:12px}
+.mu-col-row{position:relative; display:flex; align-items:center; gap:12px; padding:8px 12px; border:3px solid var(--outline); border-radius:16px; background:#fff8ea; color:var(--ink); text-align:left; cursor:pointer; box-shadow:inset 0 -4px 0 #e2c89a}
+.mu-col-row.on{background:#d8f8e8; box-shadow:inset 0 -4px 0 #8fd6b0}
+.mu-col-row img{width:52px; height:52px; object-fit:contain; flex:none}
+.mu-col-row b{display:block; font-family:var(--font-display); font-weight:400; font-size:17px}
+.mu-col-row span{font-size:13px; color:var(--ink-soft)}
+.mu-col-row .badge{top:-8px; right:-8px}
 /* The Workshop tab in the Museum: the shelves leave room for it */
 .mu-atelier img{width:calc(var(--u) * 19); height:calc(var(--u) * 15)}
 #scr-museum #museumBody{padding-bottom:calc(var(--u) * 22)}
@@ -1695,6 +1771,8 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <div class="home-hero" aria-hidden="true"><img src="Assets/Characters/Miner_Home.png" alt="" draggable="false"></div>
   <img class="home-pet" id="homePet" alt="" draggable="false" hidden>
   <!-- Buildings that have no tab in the bottom bar (the Shop only until its tab shows); the equipment is in the Character screen, the Workshop in the Museum -->
+  <!-- Offers of the premium shop's rare fairies (one per fairy not bought yet); a tap opens the shop on it -->
+  <div class="fairy-offers" id="fairyOffers"></div>
   <div class="home-side">
     <button class="home-sc" data-go="shop" id="scShop" aria-label="Boutique"><span id="scShopIc"></span><b>Boutique</b><span class="badge" id="badgeShop" hidden>!</span></button>
     <button class="home-sc" data-go="altar" aria-label="Autel"><span id="scAltarIc"></span><b>Autel</b><span class="badge" id="badgeAltar" hidden>!</span></button>
@@ -1726,7 +1804,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 </div>
 
 <div class="screen menu" id="scr-museum" hidden>
-  <header class="scr-head"><h1>Musée</h1><div class="wallet-bar" data-money></div></header>
+  <header class="scr-head"><button class="mu-col" id="muColBtn" aria-label="Collections"><img src="Assets/UI/Icon_Collection.png" alt="" draggable="false"><span class="badge" id="muColBadge" hidden>!</span></button><h1>Musée</h1><div class="wallet-bar" data-money></div></header>
   <div class="card flat" id="museumBody"></div>
   <div id="muActions"></div>
 </div>
@@ -1934,6 +2012,13 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   </div>
 </div>
 
+<div class="modal" id="muColModal" hidden>
+  <div class="card" role="dialog" aria-labelledby="muColTitle" style="text-align:center">
+    <button class="close" id="muColClose" aria-label="Fermer">×</button>
+    <h2 id="muColTitle">Collections</h2>
+    <div class="mu-col-list" id="muColList"></div>
+  </div>
+</div>
 <div class="modal" id="liftModal" hidden>
   <div class="card" role="dialog" aria-labelledby="liftTitle" style="text-align:center">
     <button class="close" id="liftClose" aria-label="Fermer">×</button>
@@ -1997,6 +2082,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 <div class="modal pet-detail" id="petsModal" hidden>
   <div class="pd" role="dialog" aria-labelledby="pdName">
     <div class="pet-card pd-card"><img id="pdImg" alt="" draggable="false"></div>
+    <span class="pd-rar" id="pdRar" hidden></span>
     <h2 class="pd-name" id="pdName"></h2>
     <div class="pd-cat" id="pdCat"></div>
     <p class="pd-bonus" id="pdBonus"></p>
@@ -2144,18 +2230,37 @@ const LOOK = {
 // Series (gems and artefacts) and their items, built from config.js
 const COL = CFG.collections;
 const SETS = {}, GEMS = {}, ARTS = {};
+// "mine" in config.js: the levels given are those of that mine (1 to 100); without it, levels count from the top of the first mine
+const MINE_LEVELS = CFG.biomes.niveauxParBiome;
+const mineRange = (r, mine) => mine ? r.map(l => (mine - 1) * MINE_LEVELS + l) : r;
 for (const [kind, group, table] of [['gem', COL.gemmes, GEMS], ['art', COL.artefacts, ARTS]])
   for (const [sk, set] of Object.entries(group)) {
     SETS[sk] = { kind, name: tr(set.nom), prime: set.prime || 0, legend: set.legende && tr(set.legende), message: set.message && tr(set.message) };
     for (const [k, o] of Object.entries(set.objets)) {
-      const look = LOOK[k] || { ph: kind === 'gem' ? 'gem' : 'spiral', w: 1, h: 1 };
+      // A new treasure can give its picture and size in config.js ("image", "taille"); the others keep LOOK
+      const look = o.image ? { file: o.image, w: (o.taille || [1, 1])[0], h: (o.taille || [1, 1])[1] } : LOOK[k] || { ph: kind === 'gem' ? 'gem' : 'spiral', w: 1, h: 1 };
+      const mine = o.mine || set.mine;
       const name = tr(o.nom);
       // Article used in sentences: "une Citrine" / "a Citrine", "an Emerald"
       const article = LANG === 'en' ? (/^[aeiou]/i.test(name) ? 'an' : 'a') : look.art || 'un';
       table[k] = { key: k, set: sk, name, rarity: o.rarete, look, art: article, sz: [look.w || 2, look.h || 2],
         w: look.w || 1, h: look.h || 1, soil: set.sol || 'tout',
         // Levels where it can appear: its own levels, else its own biome, else the series' levels
-        range: o.niveaux || (o.biome ? [(o.biome - 1) * CFG.biomes.niveauxParBiome + 1, o.biome * CFG.biomes.niveauxParBiome] : set.niveaux || [1, 1000]) };
+        range: o.niveaux ? mineRange(o.niveaux, mine) : o.biome ? [(o.biome - 1) * MINE_LEVELS + 1, o.biome * MINE_LEVELS]
+          : set.niveaux ? mineRange(set.niveaux, set.mine) : mine ? [(mine - 1) * MINE_LEVELS + 1, mine * MINE_LEVELS] : [1, 1000] };
+      // A treasure in fragments ("morceaux"): only its pieces lie in the mine, one cell each. The treasure itself
+      // goes to the Museum when the player puts its pieces back together ("Reconstituer").
+      if (o.morceaux && kind === 'art') {
+        const whole = table[k], n = o.morceaux.length;
+        whole.pieces = o.morceaux.map((m, i) => k + (i + 1));
+        // "la Longue-vue" in the first piece's tutorial
+        const art = o.article ? tr(o.article) : '';
+        whole.theName = art ? (/'$/.test(art) ? art : art + ' ') + name : name;
+        o.morceaux.forEach((m, i) => {
+          table[k + (i + 1)] = { ...whole, key: k + (i + 1), name: tr('{x} (morceau {i}/{n})', { x: name, i: i + 1, n }), pieces: null,
+            look: { file: m.image, w: 1, h: 1 }, w: 1, h: 1, sz: [1, 1], of: k, idx: i, pos: m.position || [50, 50, 100, 0] };
+        });
+      }
     }
   }
 const itemArt = o => o.look.file ? img(TR + o.look.file + '.png', o.name) : phImg(o.look.ph, o.rarity, o.name);
@@ -2336,7 +2441,8 @@ function pick(weights) {
 // Which ores and geodes exist at a level
 const ORE_UNLOCK = { copper: 'cuivre', iron: 'fer', gold: 'or', mithril: 'mithril', crystal: 'cristalBrut' };
 const GEODE_UNLOCK = { white: 'geodes', pink: 'geodeRose', gold: 'geodeDoree', crystal: 'geodeCristal' };
-const artsAt = level => Object.entries(ARTS).filter(([, o]) => level >= o.range[0] && level <= o.range[1]);
+// (a treasure in fragments never lies in the mine: its pieces do)
+const artsAt = level => Object.entries(ARTS).filter(([, o]) => !o.pieces && level >= o.range[0] && level <= o.range[1]);
 const geodesAt = level => Object.entries(GEODES).filter(([k]) => at(level, GEODE_UNLOCK[k]));
 // Cover a treasure with the ground its series asks for
 const tileOf = t => HP[t] ? { t, hp: HP[t], max: HP[t] } : { t };
@@ -2387,7 +2493,7 @@ function addSpecials(g, level, mult = 1) {
 }
 // Treasures guaranteed the first time a level is played (level 1-3 fossils, level 11 white geode)
 const GEODE_FR = Object.fromEntries(Object.entries(FR_GEODE).map(([k, fr]) => [fr, k]));
-const GUAR = Object.fromEntries((PROG.tresorsGarantis || []).map(g => [g.niveau, g.geode ? { kind: 'geode', key: GEODE_FR[g.geode] } : { kind: 'art', key: g.tresor }]));
+const GUAR = Object.fromEntries((PROG.tresorsGarantis || []).map(g => [g.mine ? (g.mine - 1) * MINE_LEVELS + g.niveau : g.niveau, g.geode ? { kind: 'geode', key: GEODE_FR[g.geode] } : { kind: 'art', key: g.tresor }]));
 const guaranteeFor = level => GUAR[level] && !(S.guarDone || {})[level] && (GUAR[level].kind === 'geode' ? GEODES : ARTS)[GUAR[level].key] ? GUAR[level] : null;
 const sizeOfFind = (kind, key) => kind === 'geode' ? GEODES[key].sz : [ARTS[key].w, ARTS[key].h];
 // Two levels in a row never get exactly the same grid
@@ -2696,18 +2802,25 @@ const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'c
 function tileClass(c, i) {
   let cls = 'tile t-' + c.t;
   if (c.t === 'dirt') { const v = c.v ?? i % 3; if (v) cls += ' v' + v; }
-  if (c.t === 'stone') cls += ' s' + Math.min(3, 1 + Math.floor((c.max - c.hp) / c.max * 3));
+  if (c.t === 'stone' || c.t === 'ore') cls += ' s' + Math.min(3, 1 + Math.floor((c.max - c.hp) / c.max * 3));
   if (c.t === 'gkey') cls += ' k-' + (c.k || 'bois');
-  if (c.t === 'ore') cls += ' o-' + c.ore;
+  if (c.t === 'ore') cls += ' o-' + c.ore + (ORE_TINT[c.ore] ? ' tint' : '');
   if (c.t === 'magma' && c.chain) cls += ' chain';
   if (OVERLAY.includes(c.t)) cls += ' ov';
   if (c.t === 'ice' && isMelting(i)) cls += ' melt';
   return cls;
 }
+// Ore pictures (config.js > mine > imagesMinerais). Mithril and raw crystal borrow iron and copper, recoloured, until they have their own.
+const ORE_IMG = CFG.mine.imagesMinerais || {}, ORE_TINT = {};
+for (const [k, fr] of Object.entries(ORE_UNLOCK)) {
+  const own = ORE_IMG[fr], src = own || ORE_IMG[k === 'mithril' ? 'fer' : 'cuivre'];
+  if (!own) ORE_TINT[k] = true;
+  if (src) document.documentElement.style.setProperty('--ore-' + k, `url("${src}")`);
+}
 function paintTile(i) {
   const el = tileEls[i], c = S.grid[i];
   el.className = tileClass(c, i);
-  if (c.max && c.hp < c.max && c.t !== 'stone') el.dataset.crack = Math.min(3, Math.ceil((c.max - c.hp) / c.max * 3));
+  if (c.max && c.hp < c.max && c.t !== 'stone' && c.t !== 'ore') el.dataset.crack = Math.min(3, Math.ceil((c.max - c.hp) / c.max * 3));
   else delete el.dataset.crack;
 }
 let boardGen = 0;   // changes with every new board, so late animations of the previous level are ignored
@@ -2734,6 +2847,7 @@ function buildBoard(animate) {
     d.innerHTML = rwSVG(rw); slotsEl.append(d); return d;
   });
   $('depth').textContent = S.wide ? tr(WIDE.nom) : mineLv(S.level);
+  paintMineBg();
   const fk = S.tuto ? 'easy' : S.floor || floorKind(S.level);
   $('depthLbl').textContent = S.wide ? tr('Événement') : tr('Niveau');
   $('depthChip').classList.toggle('wide', !!S.wide);
@@ -3678,6 +3792,10 @@ function pickUp(rw, ri) {
   // A tutorial level's treasure is a bonus: it takes no bag slot
   if (rw.bonus) { (S.trip.bonus = S.trip.bonus || []).push({ kind: rw.kind, key: rw.key }); floatText(rw.r * COLS + rw.c, tr(TX.horsSac), '#fff6a8'); }
   else S.trip.finds.push({ kind: rw.kind, key: rw.key });
+  // The very first piece of a treasure in fragments: a short tutorial on its slot (tap to continue)
+  const whole = rw.kind === 'art' && ARTS[rw.key].of && ARTS[ARTS[rw.key].of];
+  if (whole && !S.tutoSeen.morceau) setTimeout(() => startCoach('morceau', [{ text: TX.morceau || 'Un morceau ! Trouve les autres pour reconstituer {x}.', vars: { x: whole.theName }, info: true,
+    target: () => slotEls[ri] && slotEls[ri].getClientRects().length ? slotEls[ri] : $('bagPill'), done() { return this.tapped; } }], true), 1000);
   // The very first treasure: a short tutorial shows the bag (tap to continue)
   if (!S.bagSeen) setTimeout(() => startCoach('sac', [{ text: TX.sac, info: true, target: () => $('bagPill'), done() { return this.tapped; } }], true), 1000);
   // The bag is introduced the first time it gets full: it appears, with a short bubble pointing at "go back up"
@@ -3782,12 +3900,12 @@ function setDot(id, on, txt) {
 }
 function refreshBadges() {
   const museumOpen = !!S.buildings.museum, bn = S.bldNew || {};
-  setDot('navMuseumBadge', museumOpen && museumPrimeWaiting());
+  setDot('navMuseumBadge', museumOpen && museumWaiting());
   setDot('navHeroBadge', gearOpen() && heroBadge());
   setDot('navShopBadge', chestReady());
   setDot('plBadge', plWaiting() > 0);
   setDot('badgeAltar', canPray() && !bn.altar);
-  setDot('badgeMuseum', museumPrimeWaiting() && !bn.museum);
+  setDot('badgeMuseum', museumWaiting() && !bn.museum);
   setDot('badgeShop', !!S.buildings.shop && (shopNew() || chestReady()) && !bn.shop);
   if (S.daily && S.daily.goals) {
     const ready = S.daily.goals.filter(g => !g.claimed && goalDone(g)).length + (dayChestReady() ? 1 : 0);
@@ -4480,12 +4598,13 @@ function go(name) {
   if (name === 'premium') { shopTab = gearOpen() ? 'coffres' : 'premium'; name = 'shop'; }
   else if (name === 'shop' && $('scr-shop').hidden) shopTab = gearOpen() && !G().firstFree ? 'coffres' : 'articles';
   SCREENS.forEach(n => $('scr-' + n).hidden = n !== name);
+  document.body.classList.toggle('in-mine', name === 'mine');
   if (name !== 'mine') dropBoardCoaches();
   if (name === 'village' || name === 'mine') S.screen = name;
   if (name !== 'atelier') stopMini();
   if (name !== 'pets') stopPets();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: renderMuseum, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals })[name]();
+  ({ village: renderVillage, museum: () => { muView = 0; renderMuseum(); }, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals })[name]();
   updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -4504,7 +4623,7 @@ function updateNav(name) {
   // First steps: only what is open shows (Museum after the first return, Character with the equipment, Premium and Events at the end)
   const off = { museum: !museumOpen, hero: !gearOpen(), premium: !S.tutoSeen.guideFin, events: !S.tutoSeen.guideFin };
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('nav-off', !!off[b.dataset.nav]));
-  $('navMuseumBadge').hidden = !museumOpen || !museumPrimeWaiting();
+  $('navMuseumBadge').hidden = !museumOpen || !museumWaiting();
   $('navHeroBadge').hidden = !gearOpen() || !heroBadge();
   $('navShopBadge').hidden = !chestReady();
 }
@@ -4523,9 +4642,42 @@ $('navBar').addEventListener('click', e => {
    Nothing can be bought or played there yet: every button says "Bientôt" and only shows a message. */
 const SOON_BTN = cls => `<button class="btn ${cls || ''} soon" data-soon="1">${tr('Bientôt')}</button>`;
 const coinPile = n => '<span class="pm-pile">' + [[0, 18], [17, 18], [34, 18], [8, 4], [26, 4], [17, -9]].slice(0, n).map(([x, y]) => `<img src="Assets/UI/Icon_Coin.png" alt="" draggable="false" style="left:${x}px; top:${y + 12}px">`).join('') + '</span>';
+/* ---------- Rare fairies of the premium shop (config.js > pets > fees: those with a "prix") ---------- */
+const fairyOffers = () => Object.keys(PETS.fees).filter(shopFairy);
+function fairyOffersHTML() {
+  return fairyOffers().map(k => {
+    const f = PETS.fees[k], c = petCat(f), own = ownsFairy(k);
+    return `<div class="pf-card" id="offer-${k}"><span class="pf-art"><img src="${f.visuel}" alt="" draggable="false"></span>
+      <span class="pm-tag">${petRarName(f)}</span>
+      <div class="pf-txt"><b>${tr(f.nom)}</b>${c ? `<span class="pf-cat"><img src="${c.icone}" alt="" draggable="false">${tr(c.nom)}</span>` : ''}<p>${tr(f.bonus)}</p></div>
+      ${own ? `<button class="pf-buy own" disabled>✓ ${tr('Obtenue')}</button>` : `<button class="pf-buy" data-buyfairy="${k}">${f.prix}</button>`}</div>`;
+  }).join('');
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-buyfairy]'); if (!b) return;
+  const k = b.dataset.buyfairy, f = PETS.fees[k]; unlockAudio();
+  if (!f || ownsFairy(k)) return;
+  sfx('win');   // no real payment yet: the price is only shown (config.js > prix)
+  giveFairy(k);   // its reward page, and it can be equipped from there
+  renderPremium(); paintFairyOffer(); save();
+});
+// Home: one offer per rare fairy not bought yet (just the fairy, on its colour); a tap opens the premium shop on it
+function paintFairyOffer() {
+  const list = S.tutoSeen.guideFin ? fairyOffers().filter(k => !ownsFairy(k)) : [];   // like the shop's Premium tab: after the first steps
+  $('fairyOffers').innerHTML = list.map(k => { const f = PETS.fees[k];
+    return `<button class="fairy-offer" data-fairyoffer="${k}" style="--fo:${f.couleurAccueil || '#5ec8ff'}" aria-label="${tr('Offre : {x}', { x: tr(f.nom) })}"><img src="${f.visuel}" alt="" draggable="false"></button>`;
+  }).join('');
+}
+$('fairyOffers').addEventListener('click', e => {
+  const b = e.target.closest('[data-fairyoffer]'); if (!b) return;
+  const k = b.dataset.fairyoffer; unlockAudio(); sfx('pick');
+  go('shop'); shopTab = 'premium'; renderShopScreen();   // go() picks the shop's default tab: the Premium one instead
+  setTimeout(() => { const c = $('offer-' + k); if (!c) return; c.scrollIntoView({ behavior: 'smooth', block: 'center' }); c.classList.add('flash'); }, 80);
+});
 function renderPremium() {
   const pack = (n, title, sub) => `<div class="pm-card">${coinPile(n)}<b>${title}</b><small>${sub}</small>${SOON_BTN('sm')}</div>`;
-  $('premiumBody').innerHTML = `<p class="pm-note">${tr('Les achats arrivent bientôt. Voici un aperçu de ce qui t\'attend !')}</p>
+  $('premiumBody').innerHTML = `<h2 class="pm-h">${tr('Fées rares')}</h2>${fairyOffersHTML()}
+    <p class="pm-note">${tr('Les achats arrivent bientôt. Voici un aperçu de ce qui t\'attend !')}</p>
     <div class="pm-hero"><span class="pm-art">${img('Assets/Treasures/Rubis.png')}</span>
       <span class="pm-tag">${tr('Offre spéciale')}</span>
       <div class="pm-txt"><b>${tr('Pack de départ')}</b><p>${tr('Tout ce qu\'il faut pour bien commencer l\'aventure.')}</p></div>
@@ -4723,8 +4875,8 @@ $('icForge').innerHTML = img(OW + 'Forge.png' + OW_V, tr('Forge'));
 $('icAltar').innerHTML = ALTAR_ART;
 $('icAtelier').innerHTML = img(OW + 'Workshop.png' + OW_V, tr('Atelier'));
 $('scShopIc').innerHTML = img(OW + 'Shop.png' + OW_V); $('scAltarIc').innerHTML = ALTAR_ART;
-const museumTotal = () => Object.keys(GEMS).length + Object.keys(ARTS).length;
-const museumOwned = () => [S.bag.gems, S.bag.arts].reduce((a, b) => a + Object.values(b).filter(Boolean).length, 0);
+const museumTotal = () => Object.keys(GEMS).length + Object.values(ARTS).filter(o => !o.of).length;
+const museumOwned = () => Object.values(S.bag.gems).filter(Boolean).length + Object.entries(S.bag.arts).filter(([k, n]) => n && ARTS[k] && !ARTS[k].of).length;
 /* ---------- Daily missions (config.js > missions) ----------
    Each day, a few missions (coins, ore, XP); once they are all claimed, the reward of the day (pearls, a key or a fairy).
    The week strip goes from Monday to Sunday: a missed day is lost, the week starts again each Monday. */
@@ -4995,18 +5147,23 @@ function plGive(l) {
   updateBombs(); updateQuick(); refreshGear();
 }
 // A new fairy: the given colour, or ('hasard') one the player does not have yet
-// No duplicate fairies: once the player has them all, a fairy reward becomes pearls (config.js > pets > perlesDoublon)
-const missingFairies = () => Object.keys(PETS.fees).filter(k => !S.pets.some(p => p.key === k));
+// No duplicate fairies: once the player has them all, a fairy reward becomes pearls (config.js > pets > perlesDoublon).
+// The premium shop's fairies (those with a price) are only bought, never given by a reward.
+const ownsFairy = k => S.pets.some(p => p.key === k);
+const shopFairy = k => !!PETS.fees[k].prix;
+const missingFairies = () => Object.keys(PETS.fees).filter(k => !shopFairy(k) && !ownsFairy(k));
 const fairyReward = r => r && r.fee && !missingFairies().length ? { ...r, fee: null, gemmes: (r.gemmes || 0) + (PETS.perlesDoublon ?? 10) } : r;
-// A new fairy: the given colour if the player does not have it yet, else one they do not have; none left: pearls
+// A new fairy: the given one if the player does not have it yet, else one they do not have; none left: pearls
 function giveFairy(key) {
-  const missing = missingFairies();
-  if (!missing.length) {
-    const n = PETS.perlesDoublon ?? 10;
-    G().gems += n; paintMoney(); toast(tr('Tu as déjà toutes les fées : +{n} perles', { n }), 'good'); save();
-    return;
+  if (!PETS.fees[key] || ownsFairy(key)) {
+    const missing = missingFairies();
+    if (!missing.length) {
+      const n = PETS.perlesDoublon ?? 10;
+      G().gems += n; paintMoney(); toast(tr('Tu as déjà toutes les fées : +{n} perles', { n }), 'good'); save();
+      return;
+    }
+    key = missing[randInt(0, missing.length - 1)];
   }
-  if (!missing.includes(key)) key = missing[randInt(0, missing.length - 1)];
   const id = S.pets.reduce((m, p) => Math.max(m, p.id), 0) + 1;
   S.pets.push({ id, kind: 'fee', key });
   if (!S.petOn) S.petOn = id;   // the first fairy is equipped straight away
@@ -5123,6 +5280,7 @@ function revealBuildings() {
 function renderVillage() {
   applyUnlocks(); renderPlCard(); paintPet();
   $('petsSlot').hidden = !S.pets.length;   // the Pets button shows with the first fairy (Progression, level 3)
+  paintFairyOffer();
   // Buildings waiting for their entrance stay hidden until the camera reaches them; "Nouveau !" until first visit
   document.querySelectorAll('.bld').forEach(b => {
     const k = b.dataset.go;
@@ -5137,10 +5295,11 @@ function renderVillage() {
   const g = S.bag.geodes.length;
   $('subAtelier').textContent = g ? tr(plural(g, '{n} géode', '{n} géodes'), { n: g }) : tr('Aucune géode');
   $('badgeAltar').hidden = !canPray() || !!(S.bldNew || {}).altar;
-  $('badgeMuseum').hidden = !museumPrimeWaiting() || !!(S.bldNew || {}).museum;
+  $('badgeMuseum').hidden = !museumWaiting() || !!(S.bldNew || {}).museum;
   $('badgeShop').hidden = !S.buildings.shop || (!shopNew() && !chestReady()) || !!(S.bldNew || {}).shop;
   const cps = CHECKPOINTS.filter(l => l <= S.reached).length;
-  $('mineDepth').textContent = tr('Record : niveau {n}', { n: S.reached }) + (cps ? ' · ' + tr(plural(cps, '{n} checkpoint', '{n} checkpoints'), { n: cps }) : '');
+  // Each mine has its own levels 1 to 100: the record shows the deepest mine and its level
+  $('mineDepth').textContent = tr('Record : {x}, niveau {n}', { x: biomeName(biomeOf(S.reached || 1)), n: mineLv(S.reached || 1) }) + (cps ? ' · ' + tr(plural(cps, '{n} checkpoint', '{n} checkpoints'), { n: cps }) : '');
   applyCam();
   updateEnergy(true);
 }
@@ -5221,9 +5380,23 @@ function openLift() {
   go('lift');
 }
 const liftCard = b => (CFG.biomes.cartes || [])[b - 1] || {};
-// A mine opens once the previous one reaches config.js > biomes > niveauDeblocage (level 80 of 100)
+// Background of the mine screen: each mine can have its own picture (config.js > biomes > cartes > fondMine)
+function paintMineBg() {
+  const src = !S.wide && liftCard(biomeOf(S.level || 1)).fondMine;
+  document.body.style.setProperty('--mine-bg', src ? `url("${src}")` : 'none');
+  document.body.classList.toggle('mine-bg', !!src);
+  // Its dirt: up to 3 pictures (the 3 looks of a dirt tile); none = the brown dirt
+  const dirt = liftCard(biomeOf(S.level || 1)).terre || [], el = $('scr-mine');
+  for (let v = 0; v < 3; v++) { const f = dirt[v] || dirt[0]; if (f) el.style.setProperty('--dirt' + v, `url("${f}")`); else el.style.removeProperty('--dirt' + v); }
+  // Its stone: 3 pictures (intact, cracked, very cracked); none = the grey stone
+  const stone = liftCard(biomeOf(S.level || 1)).pierre || [];
+  for (let v = 0; v < 3; v++) { const f = stone[v] || stone[stone.length - 1]; if (f) el.style.setProperty('--stone' + v, `url("${f}")`); else el.style.removeProperty('--stone' + v); }
+}
+// A mine opens once the player has finished config.js > biomes > niveauDeblocage of the previous one
+// (100 = its guardian level beaten, even if the player went back up without going further)
 const MINE_UNLOCK = CFG.biomes.niveauDeblocage || BIOME_LEN;
-const mineOpen = b => b <= 1 || (S.reached || 1) >= (b - 2) * BIOME_LEN + MINE_UNLOCK;
+const unlockLevel = b => (b - 2) * BIOME_LEN + MINE_UNLOCK;
+const mineOpen = b => b <= 1 || (S.reached || 1) > unlockLevel(b) || !!(S.guardDone || {})[unlockLevel(b)];
 const biomeOres = b => Object.keys(ORES).filter(k => (UNLOCK[ORE_UNLOCK[k]] ?? 1) <= b * BIOME_LEN);
 function renderLift() {
   // The mines open so far, then the next one (locked: only what unlocks it)
@@ -5232,7 +5405,9 @@ function renderLift() {
   const last = Math.min(total, lastOpen + 1);
   $('lfCards').innerHTML = Array.from({ length: last }, (_, i) => i + 1).map(b => {
     const from = (b - 1) * BIOME_LEN + 1, to = b * BIOME_LEN, c = liftCard(b);
-    if (!mineOpen(b)) return `<div class="lf-card locked" data-biome="${b}"><p class="lf-lock">${tr('Atteins le niveau {n} de la mine {x} pour débloquer cette mine.', { n: MINE_UNLOCK, x: biomeName(b - 1) })}</p></div>`;
+    if (!mineOpen(b)) return `<div class="lf-card locked" data-biome="${b}"><p class="lf-lock">${MINE_UNLOCK % 100 === 0
+      ? tr('{x} : bats le gardien du niveau {n} pour débloquer cette mine.', { n: MINE_UNLOCK, x: biomeName(b - 1) })
+      : tr('{x} : termine le niveau {n} pour débloquer cette mine.', { n: MINE_UNLOCK, x: biomeName(b - 1) })}</p></div>`;
     const reach = S.reached >= from ? mineLv(Math.min(S.reached, to)) : 0;
     return `<div class="lf-card" data-biome="${b}"${c.fond ? ` style="--bg:url('${c.fond}')"` : ''}>
       <h3>${biomeName(b)}</h3>
@@ -5318,7 +5493,7 @@ for (const b of [$('descendBtn'), $('shaftBtn')]) b.addEventListener('click', ()
   sfx('pick'); openLift();
 });
 function enterMine() {
-  paintTools(); paintPet();
+  paintTools(); paintPet(); paintMineBg();
   paintWide();
   fitBoard();
   setTimeout(levelCoach, 60);
@@ -5342,7 +5517,8 @@ const starPrime = (set, n) => Math.round((SETS[set].prime || 0) * (STARS.primes[
 const rarityOf = (kind, key) => kind === 'gem' ? GEMS[key].rarity : ARTS[key].rarity;
 const setTable = set => SETS[set].kind === 'gem' ? GEMS : ARTS;
 const setBook = set => SETS[set].kind === 'gem' ? S.bag.gems : S.bag.arts;
-const setKeys = set => Object.keys(setTable(set)).filter(a => setTable(set)[a].set === set);
+// (the pieces of a treasure in fragments are not items of the collection: the whole treasure is)
+const setKeys = set => Object.keys(setTable(set)).filter(a => setTable(set)[a].set === set && !setTable(set)[a].of);
 // A series' level = how many times it has been completed (fewest copies found of any of its items), capped at Or
 const setTier = set => Math.min(MAX_STARS, ...setKeys(set).map(a => setBook(set)[a] || 0));
 // Duplicates sell by rarity, plus the series level bonus
@@ -5357,7 +5533,9 @@ function applyFind(kind, key) {
   const book = kind === 'gem' ? S.bag.gems : kind === 'crystal' ? S.bag.opened : S.bag.arts;
   // Every copy found is counted (duplicates are still sold); the counts drive the series levels
   const set = kind === 'art' ? ARTS[key].set : kind === 'gem' ? GEMS[key].set : null, tierBefore = set ? setTier(set) : 0;
-  if (!book[key]) {
+  // A new piece of a treasure in fragments waits at the Museum: the treasure's prime comes when it is put back together
+  if (!book[key] && kind === 'art' && ARTS[key].of) r.tag = 'piece';
+  else if (!book[key]) {
     r.tag = 'new'; r.coins = kind === 'crystal' ? 0 : PRIME[rarityOf(kind, key)] || 0; r.prime = r.coins;
     if (kind !== 'crystal') gainXP(PJ.xpNouveauTresor);
   } else { r.tag = 'sold'; r.coins = findValue(kind, key); }
@@ -5375,10 +5553,10 @@ function applyFind(kind, key) {
   }
   return r;
 }
-const tagHTML = r => r.tag === 'new' ? `<span class="rtag new">${tr('Nouveau')}${r.prime ? ` +${r.prime}${COIN}` : ''}</span>`
+const tagHTML = r => r.tag === 'piece' ? `<span class="rtag new">${tr('Morceau')}</span>` : r.tag === 'new' ? `<span class="rtag new">${tr('Nouveau')}${r.prime ? ` +${r.prime}${COIN}` : ''}</span>`
   : r.tag === 'geo' ? `<span class="rtag geo">${tr('Atelier')}</span>`
   : `<span class="rtag sold">${tr('Vendu')} +${r.coins}${COIN}</span>`;
-const findRow = r => `<div class="rrow">${r.art}<div><b>${rarName(r.name, rarityOfFind(r.kind, r.key))}</b><span>${r.tag === 'sold' ? tr('Doublon') : r.kind === 'geode' ? tr('À ouvrir à l\'atelier') : tr('Ajouté à ta collection')}</span></div>${tagHTML(r)}</div>`
+const findRow = r => `<div class="rrow">${r.art}<div><b>${rarName(r.name, rarityOfFind(r.kind, r.key))}</b><span>${r.tag === 'sold' ? tr('Doublon') : r.tag === 'piece' ? tr('À reconstituer au Musée') : r.kind === 'geode' ? tr('À ouvrir à l\'atelier') : tr('Ajouté à ta collection')}</span></div>${tagHTML(r)}</div>`
   + (r.tierUp ? `<div class="rrow">${r.art}<div><b>${tr('{x} : nouvelle étoile !', { x: r.setName })} ${starsHTML(r.tierUp)}</b><span>${tr('Prime à récupérer au Musée')}</span></div></div>` : '')
   + (r.setMsg ? `<div class="rrow">${r.art}<div><b>${r.setMsg}</b><span>${tr('{x} réunies !', { x: r.setName })}</span></div></div>` : '')
   + (r.legend ? `<div class="rlegend">${r.legend}</div>` : '');
@@ -5419,7 +5597,8 @@ function openRecap() {
   const groups = [];
   for (const r of rows) {
     const g = groups.find(x => x.kind === r.kind && x.key === r.key);
-    if (g) { g.n++; g.isNew = g.isNew || r.tag === 'new'; } else groups.push({ kind: r.kind, key: r.key, art: r.art, name: r.name, n: 1, isNew: r.tag === 'new' });
+    const isNew = r.tag === 'new' || r.tag === 'piece';
+    if (g) { g.n++; g.isNew = g.isNew || isNew; } else groups.push({ kind: r.kind, key: r.key, art: r.art, name: r.name, n: 1, isNew });
   }
   // Loot sorted into sections; each tile is coloured by rarity and shows how many were brought back
   let i = 0;
@@ -5511,6 +5690,60 @@ setInterval(villageCoach, 400);
 
 /* ---------- Museum ---------- */
 const museumPrimeWaiting = () => (S.pendingPrimes || []).length > 0;
+/* ---------- Treasures in fragments (config.js > collections > fragments) ----------
+   Only the pieces lie in the mine. At the Museum the treasure shows as a silhouette, each piece found fills it
+   (at its place: config.js > morceaux > position). With every piece, « Reconstituer » puts it together:
+   only then does the treasure count as found (discovery prime, collection, stars). */
+const FRAG = COL.fragments || {};
+// Pieces found beyond the copies already put back together (a full new set rebuilds it once more)
+const fragHas = (k, p) => (S.bag.arts[p] || 0) > (S.bag.arts[k] || 0);
+const fragFound = k => ARTS[k].pieces.filter(p => fragHas(k, p)).length;
+const fragReady = k => fragFound(k) === ARTS[k].pieces.length;
+const fragWaiting = () => Object.values(ARTS).some(o => o.pieces && fragReady(o.key));
+// Something to do at the Museum: a star prime to collect, or a treasure to put back together
+const museumWaiting = () => museumPrimeWaiting() || fragWaiting();
+// A piece drawn at its place on the whole treasure: [centre X, centre Y, width, rotation] in % of the whole picture
+const pieceImg = (p, cls) => `<img class="${cls}" src="${TR + p.look.file}.png" alt="" draggable="false" style="left:${p.pos[0]}%; top:${p.pos[1]}%; width:${p.pos[2]}%; --r:${p.pos[3] || 0}deg">`;
+// The whole treasure in silhouette, with the pieces found
+const fragArt = k => `<span class="frag-box"><img class="fr-sil" src="${TR + ARTS[k].look.file}.png" alt="" draggable="false">`
+  + ARTS[k].pieces.filter(p => fragHas(k, p)).map(p => pieceImg(ARTS[p], 'fr-pc')).join('') + '</span>';
+function rebuild(k) {
+  if (!ARTS[k] || !ARTS[k].pieces || !fragReady(k)) return;
+  const o = ARTS[k], r = applyFind('art', k);   // the whole treasure joins the Museum now
+  S.coins += r.coins; save();
+  unlockAudio(); sfx('pick');
+  const dur = FRAG.dureeAnimation || 1400;
+  const fx = document.createElement('div'); fx.className = 'fx-rebuild';
+  fx.innerHTML = `<div class="rb-card"><div class="rb-box"><img class="rb-sil" src="${TR + o.look.file}.png" alt="" draggable="false">`
+    + o.pieces.map(p => pieceImg(ARTS[p], 'rb-pc')).join('')
+    + `<img class="rb-whole" src="${TR + o.look.file}.png" alt="${o.name}" draggable="false"></div>
+    <b class="rb-title">${tr(FRAG.message || 'Trésor reconstitué : {x} !', { x: o.name })}</b>
+    <p class="rb-sub">${rarTag(o.rarity)}${r.coins ? ` <span class="rtag ${r.tag === 'new' ? 'new' : 'sold'}">${r.tag === 'new' ? tr('Nouveau') : tr('Vendu')} +${r.coins}${COIN}</span>` : ''}</p>
+    <button class="btn big rb-ok">${tr('Super !')}</button></div>`;
+  document.body.append(fx);
+  const box = fx.querySelector('.rb-box'), w = box.clientWidth;
+  // The pieces come from around the silhouette and lock into place, one after the other
+  const pcs = [...fx.querySelectorAll('.rb-pc')];
+  pcs.forEach((el, i) => {
+    const p = ARTS[o.pieces[i]].pos, rot = p[3] || 0;
+    const dx = ((p[0] - 50) / 50 || (i % 2 ? 1 : -1)) * w * .55 + rand(-12, 12), dy = ((p[1] - 50) / 50 || -1) * w * .55 + rand(-12, 12);
+    if (!reduced) el.animate([
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${rot + rand(-35, 35)}deg) scale(.8)`, opacity: 0 },
+      { opacity: 1, offset: .25 },
+      { transform: `translate(-50%, -50%) rotate(${rot}deg) scale(1)`, opacity: 1 }],
+      { duration: dur * .45, delay: i * dur * .12, easing: 'cubic-bezier(.3,1.25,.5,1)', fill: 'backwards' })
+      .onfinish = () => sfx('hit');
+  });
+  setTimeout(() => {
+    if (!fx.isConnected) return;
+    fx.classList.add('done'); sfx('reward');
+    const b = box.getBoundingClientRect();
+    [0, 150, 300].forEach(t => setTimeout(() => petSparkles(tapFx, b.left + b.width * rand(.2, .8), b.top + b.height * rand(.2, .8)), t));
+    if (r.coins) flyMoney(b, r.coins, 0);
+  }, reduced ? 0 : dur * .45 + (pcs.length - 1) * dur * .12 + 120);
+  fx.querySelector('.rb-ok').addEventListener('click', () => { sfx('pick'); fx.remove(); renderMuseum(); updateNav('museum'); });
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-rebuild]'); if (b) rebuild(b.dataset.rebuild); });
 let starPop = null;   // the collection whose star was just claimed (it pops in)
 // Coins for opening a new collection: a share of its prime (config.js > economie > primeNouvelleCollection)
 const newSetCoins = sk => Math.max(5, Math.round((SETS[sk].prime || 0) * (CFG.economie.primeNouvelleCollection ?? .5) / 5) * 5);
@@ -5546,6 +5779,7 @@ document.addEventListener('click', e => {
   unlockAudio(); sfx('pick');
   if (t.dataset.muitem) {
     const [sk, k] = t.dataset.muitem.split(':'), o = setTable(sk)[k], n = setBook(sk)[k] || 0;
+    if (o.pieces && !n) return toast(tr('{x} : {a} / {b} morceaux', { x: o.name, a: fragFound(k), b: o.pieces.length }));
     return toast(n ? `${o.name} · ${RARITY_FR[o.rarity]} · ${tr('doublon : {n} pièces', { n: findValue(SETS[sk].kind, k) })}` : tr('Pas encore trouvé'));
   }
   const sk = t.dataset.mudome, tier = setTier(sk);
@@ -5622,13 +5856,15 @@ $('petsBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); go('p
 const markPets = () => document.querySelectorAll('#petsField [data-pet]').forEach(b => b.classList.toggle('on', +b.dataset.pet === S.petOn));
 // A fairy's category (config.js > pets > categories), or null
 const petCat = f => (PETS.categories || {})[f.categorie] || null;
+// A fairy's rarity (config.js > pets > fees > rarete): only the premium shop's fairies have one
+const petRarName = f => tr({ rare: 'Rare', epique: 'Épique', legendaire: 'Légendaire' }[f.rarete] || f.rarete);
 // "Liste": a card per fairy the player has, by category (in the config order), then colour
 function renderPetsList() {
   const cats = Object.keys(PETS.categories || {}), keys = Object.keys(PETS.fees);
   const rank = p => { const c = cats.indexOf(PETS.fees[p.key].categorie); return (c < 0 ? cats.length : c) * 1e6 + keys.indexOf(p.key) * 1e3 + p.id; };
   $('petsList').innerHTML = S.pets.length ? [...S.pets].sort((a, b) => rank(a) - rank(b)).map(p => {
     const f = PETS.fees[p.key], c = petCat(f);
-    return `<button class="pet-card${p.id === S.petOn ? ' on' : ''}" data-petcard="${p.id}" aria-label="${tr(f.nom)}"><img src="${f.visuel}" alt="" draggable="false">${c ? `<img class="pc-cat" src="${c.icone}" alt="" draggable="false">` : ''}</button>`;
+    return `<button class="pet-card${p.id === S.petOn ? ' on' : ''}${f.rarete ? ' rare' : ''}" data-petcard="${p.id}" aria-label="${tr(f.nom)}"><img src="${f.visuel}" alt="" draggable="false">${c ? `<img class="pc-cat" src="${c.icone}" alt="" draggable="false">` : ''}</button>`;
   }).join('') : `<p class="pets-empty">${tr('Pas encore de fée')}</p>`;
 }
 function showPetsList(on) {
@@ -5644,6 +5880,7 @@ function renderPetDetail() {
   const p = S.pets.find(p => p.id === petShown); if (!p) return;
   const f = PETS.fees[p.key], c = petCat(f), on = p.id === S.petOn;
   $('pdImg').src = f.visuel; $('pdName').textContent = tr(f.nom);
+  $('pdRar').hidden = !f.rarete; $('pdRar').textContent = f.rarete ? petRarName(f) : ''; document.querySelector('.pd-card').classList.toggle('rare', !!f.rarete);
   $('pdCat').innerHTML = c ? `<img src="${c.icone}" alt="" draggable="false">${tr(c.nom)}` : '';
   $('pdBonus').textContent = f.bonus ? tr(f.bonus) : tr('Bonus à venir');
   $('pdDetail').textContent = f.detail ? tr(f.detail) : ''; $('pdDetail').hidden = !f.detail;
@@ -5682,15 +5919,17 @@ function petArrive() {
   if (S.rewards.some(r => r.night)) return { i: mid, txt: tr('Trésor inconnu !'), col: '#d7c2ff' };
   const p = S.pets && S.pets.find(p => p.id === S.petOn), f = p && PETS.fees[p.key];
   if (!f || !(Math.random() < (f.chance || 0))) return null;
-  if (f.effet === 'magma') {   // Fée bleue: one magma cools down
+  if (f.effet === 'magma') {   // Fée bleue: one magma cools down; Fée méduse (nombre: 2): two magmas side by side
     const m = cells(c => c.t === 'magma'); if (!m.length) return null;
-    const i = any(m);
-    return { i, txt: tr('Refroidi !'), col: '#a6e6ff', run: () => coolMagma(i) };
+    const pairs = (f.nombre || 1) > 1 ? m.filter(i => nb4(i).some(j => S.grid[j].t === 'magma')) : [];
+    const i = any(pairs.length ? pairs : m), next = pairs.length ? any(nb4(i).filter(j => S.grid[j].t === 'magma')) : -1;
+    return { i, txt: tr('Refroidi !'), col: '#a6e6ff', run: () => { coolMagma(i); if (next >= 0 && S.grid[next].t === 'magma') coolMagma(next); } };
   }
-  if (f.effet === 'tasDOr') {   // Fée jaune: a pile of gold hidden in the dirt
+  if (f.effet === 'tasDOr') {   // Fée jaune: a pile of gold hidden in the dirt; Fée champignon (nombre: 2): two piles
     const d = cells(c => c.t === 'dirt' && !c.pile); if (!d.length) return null;
-    S.grid[any(d)].pile = true;
-    return { i: mid, txt: tr('Tas d\'or caché !'), col: '#ffe14d' };
+    const n = Math.min(f.nombre || 1, d.length);
+    for (let k = 0; k < n; k++) S.grid[d.splice(randInt(0, d.length - 1), 1)[0]].pile = true;
+    return { i: mid, txt: n > 1 ? tr('{n} tas d\'or cachés !', { n }) : tr('Tas d\'or caché !'), col: '#ffe14d' };
   }
   if (f.effet === 'reveler') {   // Fée rose: a hidden treasure shows, like a radar
     const h = S.rewards.filter(r => !r.found && !r.radar); if (!h.length) return null;
@@ -5735,8 +5974,48 @@ $('minePet').addEventListener('click', e => {
 });
 document.addEventListener('pointerdown', e => { if (!e.target.closest('#minePet')) $('petTip').hidden = true; });
 
+/* Collection button: the Museum shows one category at a time (config.js > collections > vitrines): one per mine, then
+   « Pierres précieuses et Reliques » = the gems (from the geodes of every mine) and the collections spread over several
+   mines (coins, keys). Each category has its own background behind the shelves and its own title bar colour. */
+const VIT = COL.vitrines || {}, PRECIOUS = 'precieux';
+let muView = 0;   // 0 = choose again when the Museum opens: the mine played last
+const setMines = sk => { const m = new Set(); for (const k of setKeys(sk)) { const r = ARTS[k].range; for (let b = biomeOf(r[0]); b <= biomeOf(Math.min(r[1], BIOME_NAMES.length * BIOME_LEN)); b++) m.add(b); } return m; };
+// The category of a collection: its mine, or the precious one
+const catOf = sk => { if (SETS[sk].kind === 'gem') return PRECIOUS; const m = [...setMines(sk)]; return m.length === 1 ? m[0] : PRECIOUS; };
+const inView = (sk, v) => catOf(sk) === v;
+const catLook = v => (v === PRECIOUS ? VIT.precieux : (VIT.mines || [])[v - 1]) || {};
+const catName = v => v === PRECIOUS ? tr((VIT.precieux || {}).nom || 'Pierres précieuses et Reliques') : biomeName(v);
+const catIcon = v => v === PRECIOUS ? (VIT.precieux || {}).icone || 'Assets/Treasures/Gem_Purple_4.png' : liftCard(v).visuel || 'Assets/UI/Icon_Mine.png';
+// The categories shown: the mines opened, then the precious one
+const muCats = () => [...openMines(), PRECIOUS];
+const setSeen = sk => setKeys(sk).some(k => setBook(sk)[k] || setTable(sk)[k].pieces && fragFound(k));
+const openMines = () => { const out = [1]; while (out.length < BIOME_NAMES.length && mineOpen(out.length + 1)) out.push(out.length + 1); return out; };
+// Something to do in a mine's collections: a new collection to open, a star prime, a treasure to put back together
+const setWaiting = sk => setSeen(sk) && (!(S.muOpened || {})[sk] || (S.pendingPrimes || []).some(p => p.set === sk) || setKeys(sk).some(k => setTable(sk)[k].pieces && fragReady(k)));
+const mineWaiting = v => Object.keys(SETS).some(sk => inView(sk, v) && setWaiting(sk));
+function renderMuCol() {
+  $('muColList').innerHTML = muCats().map(v => {
+    const keys = Object.keys(SETS).filter(sk => inView(sk, v)).flatMap(sk => setKeys(sk).map(k => [sk, k]));
+    const got = keys.filter(([sk, k]) => setBook(sk)[k]).length;
+    return `<button class="mu-col-row${v === muView ? ' on' : ''}" data-muview="${v}">${img(catIcon(v))}<div><b>${catName(v)}</b><span>${tr('{a} / {b} trésors', { a: got, b: keys.length })}</span></div>${v !== muView && mineWaiting(v) ? '<span class="badge">!</span>' : ''}</button>`;
+  }).join('');
+}
+$('muColBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); renderMuCol(); $('muColModal').hidden = false; });
+$('muColClose').addEventListener('click', () => $('muColModal').hidden = true);
+$('muColModal').addEventListener('click', e => {
+  if (e.target.id === 'muColModal') return $('muColModal').hidden = true;
+  const b = e.target.closest('[data-muview]'); if (!b) return;
+  sfx('pick'); muView = b.dataset.muview === PRECIOUS ? PRECIOUS : +b.dataset.muview; $('muColModal').hidden = true; renderMuseum(); $('scr-museum').scrollTop = 0;
+});
 function renderMuseum() {
   setTimeout(museumCoach);
+  if (!muView || muView !== PRECIOUS && !mineOpen(muView)) muView = mineOpen(biomeOf(S.level || 1)) ? biomeOf(S.level || 1) : 1;
+  // The other categories have something waiting: a badge on the Collection button
+  setDot('muColBadge', muCats().some(v => v !== muView && mineWaiting(v)));
+  // The category's look: background behind the shelves, title bar colour
+  const look = catLook(muView), body = $('museumBody');
+  body.style.setProperty('--mc-shelf', look.fond ? `url("${look.fond}")` : '');
+  body.style.setProperty('--mc-band', look.bandeau || '');
   // The Workshop: a yellow tab on the left edge, (badge = geodes to open)
   const geo = S.bag.geodes.length;
   $('muActions').innerHTML = S.buildings.atelier
@@ -5745,7 +6024,14 @@ function renderMuseum() {
   const STAR = on => `<svg viewBox="0 0 24 24" class="${on ? 'on' : ''}" aria-hidden="true"><path d="M12 2.2 L14.9 8.3 L21.5 9.1 L16.6 13.6 L17.9 20.2 L12 16.9 L6.1 20.2 L7.4 13.6 L2.5 9.1 L9.1 8.3Z" stroke-linejoin="round"/></svg>`;
   const card = ([sk, set]) => {
     const keys = setKeys(sk), tier = setTier(sk), book = setBook(sk), table = setTable(sk);
-    const ped = k => `<button class="mc-ped${book[k] ? '' : ' unknown'}" data-muitem="${sk}:${k}" aria-label="${book[k] ? table[k].name : tr('Pas encore trouvé')}">`
+    // A treasure in fragments, not put back together yet (or a new full set waiting): its silhouette, the pieces found,
+    // « 2 / 3 », then « Reconstituer » once every piece is there
+    const fragPed = k => {
+      const o = table[k], n = o.pieces.length, f = fragFound(k), ready = f === n;
+      return `<button class="mc-ped frag${ready ? ' ready' : ''}" ${ready ? `data-rebuild="${k}"` : `data-muitem="${sk}:${k}"`} aria-label="${ready ? tr(FRAG.bouton || 'Reconstituer') + ' : ' + o.name : tr('{x} : {a} / {b} morceaux', { x: o.name, a: f, b: n })}">`
+        + fragArt(k) + (ready ? `<span class="frag-go">${tr(FRAG.bouton || 'Reconstituer')}</span>` : `<i>${f} / ${n}</i>`) + '</button>';
+    };
+    const ped = k => table[k].pieces && (fragFound(k) && !book[k] || fragReady(k)) ? fragPed(k) : `<button class="mc-ped${book[k] ? '' : ' unknown'}" data-muitem="${sk}:${k}" aria-label="${book[k] ? table[k].name : tr('Pas encore trouvé')}">`
       + (book[k] ? `${itemArt(table[k])}<i>${book[k]}</i>` : '<b>?</b>') + '</button>';
     const rows = []; for (let i = 0; i < keys.length; i += 4) rows.push(keys.slice(i, i + 4));
     // A star won and its prime not collected yet: the green "upgrade" button on the title bar
@@ -5760,9 +6046,9 @@ function renderMuseum() {
       ${rows.map((r, i) => `<div class="mc-row">${i ? '' : stars}<div class="mc-peds">${r.map(ped).join('')}</div></div>`).join('')}</div>${curtain}</div>`;
   };
   // Only series with at least one treasure found are shown (no spoilers)
-  const all = Object.entries(SETS), sets = all.filter(([sk]) => setKeys(sk).some(k => setBook(sk)[k]));
+  const all = Object.entries(SETS).filter(([sk]) => inView(sk, muView)), sets = all.filter(([sk]) => setSeen(sk));
   const hidden = all.length - sets.length;
-  $('museumBody').innerHTML = ['gem', 'art'].map(kind => sets.filter(([, set]) => set.kind === kind).map(card).join('')).join('')
+  $('museumBody').innerHTML = `<h2 class="mu-mine">${catName(muView)}</h2>` + ['gem', 'art'].map(kind => sets.filter(([, set]) => set.kind === kind).map(card).join('')).join('')
     + (hidden ? `<h3>${tr(plural(hidden, '{n} collection restante à découvrir', '{n} collections restantes à découvrir'), { n: hidden })}</h3>` : '');
 }
 // « Ouvrir » on a new collection: the curtain slides open
@@ -5980,7 +6266,10 @@ function levelDone() {
       if (best) { S.bag.geodes.push(best); parts.push(rarName(GEODES[best].name, GEODES[best].rarity) + ' ' + tr('(à l\'Atelier)')); }
     }
     if (gearOpen() && EQC.cles.gardien && keyEvery(S.level, EQC.cles.gardienTousLes || 100)) { const k = EQC.cles.gardien; G().keys[k]++; parts.push(tr('+1 {x}', { x: keyName(k) })); }
+    // Beating this guardian may open the next mine (config.js > biomes > niveauDeblocage)
+    const nextMine = biomeOf(S.level) + 1, opens = nextMine <= BIOME_NAMES.length && !mineOpen(nextMine);
     S.guardDone[S.level] = true;
+    if (opens && mineOpen(nextMine)) parts.push(`<b>${tr(CFG.biomes.texteDeblocage || 'Nouvelle mine débloquée : {x} !', { x: biomeName(nextMine) })}</b>`);
     S.rewardMsg = { level: S.level, html: `<b>${tr('Gardien vaincu !')}</b> ${parts.join(' · ')}` };
     showTuto();
   }

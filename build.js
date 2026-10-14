@@ -13,7 +13,7 @@ const page = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2a1b3d">
-<link rel="icon" href="Assets/Tools/Icn_Pickaxe.png">
+<link rel="icon" href="Assets/AppIcon/icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="Assets/AppIcon/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">

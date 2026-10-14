@@ -51,6 +51,21 @@
   const level = () => Math.max(1, Math.min(1000, parseInt($('cheatLvl').value, 10) || 1));
   const randomOf = list => list[Math.floor(Math.random() * list.length)];
 
+  // Skips the guided first steps (config.js > progression > guide, levels 1 to 16): every first-steps tutorial
+  // is marked as seen, the buildings of the planned returns are open, and the player starts just after the guide.
+  function ftueDone(s) {
+    const guide = M.CFG.progression.guide, after = guide.fin + 1;
+    for (const k of ['toucher', 'creuser', 'tresor', 'sac', 'suivant', 'energie', 'sacPlein', 'continuer', 'echanger', 'surface', 'descendre',
+      'prime', 'museeRetour', 'ascenseur', 'forge', 'atelier', 'eq-premier', 'sacBoutique', 'sacAcheter', 'objectifs', 'guideFin']) s.tutoSeen[k] = true;
+    for (const r of guide.retours) s.tutoSeen['retour-' + r] = s.tutoSeen['redescendre-' + r] = true;
+    for (let l = 1; l <= guide.fin; l++) s.tutoSeen[l] = s.guarDone[l] = true;
+    for (const k of ['museum', 'forge', 'atelier', 'shop']) s.buildings[k] = s.tutoSeen['bld-' + k] = true;
+    s.bldNew = {}; s.newBuildings = [];
+    s.introDone = true; s.bagSeen = true; s.guideBack = guide.fin;
+    s.reached = Math.max(s.reached, after);
+    if (s.level < after) { s.level = after; s.stayLevel = 0; M.genLevel(after); }
+  }
+
   /* ---------- Actions ---------- */
   const A = {
     // Progression
@@ -66,18 +81,34 @@
     // is marked as seen, the buildings of the planned returns are open, and the player starts just after the guide.
     // Reloads the page so no tutorial hand stays on screen.
     skipFtue() {
-      const s = S(), guide = M.CFG.progression.guide, after = guide.fin + 1;
-      for (const k of ['toucher', 'creuser', 'tresor', 'sac', 'suivant', 'energie', 'sacPlein', 'continuer', 'echanger', 'surface', 'descendre',
-        'prime', 'museeRetour', 'ascenseur', 'forge', 'atelier', 'eq-premier', 'sacBoutique', 'sacAcheter', 'objectifs', 'guideFin']) s.tutoSeen[k] = true;
-      for (const r of guide.retours) s.tutoSeen['retour-' + r] = s.tutoSeen['redescendre-' + r] = true;
-      for (let l = 1; l <= guide.fin; l++) s.tutoSeen[l] = s.guarDone[l] = true;
-      for (const k of ['museum', 'forge', 'atelier', 'shop']) s.buildings[k] = s.tutoSeen['bld-' + k] = true;
-      s.bldNew = {}; s.newBuildings = [];
-      s.introDone = true; s.bagSeen = true; s.guideBack = guide.fin;
-      s.reached = Math.max(s.reached, after);
-      if (s.level < after) { s.level = after; s.stayLevel = 0; M.genLevel(after); }
+      const s = S(); ftueDone(s);
       s.screen = 'village';
       localStorage.setItem(KEY, JSON.stringify(s)); location.reload();
+    },
+    // TEST GROTTE DES MARÉES — À RETIRER AVANT LA MISE EN LIGNE
+    // Opens the second mine without playing its 100 levels: first steps skipped, record at the last level of the
+    // Mine des pionniers and its guardian beaten. « Descendre » in the village then offers the Grotte des Marées.
+    openMine2() {
+      const s = S(), gate = M.CFG.biomes.niveauDeblocage || M.CFG.biomes.niveauxParBiome;
+      if ((s.guideBack || 0) < M.CFG.progression.guide.fin) ftueDone(s);
+      s.reached = Math.max(s.reached, gate);
+      (s.guardDone = s.guardDone || {})[gate] = true;
+      s.screen = 'village';
+      localStorage.setItem(KEY, JSON.stringify(s)); location.reload();
+    },
+    // Every piece of every treasure in fragments, straight to the Museum: « Reconstituer » shows on each
+    allPieces() {
+      const b = S().bag.arts;
+      for (const o of Object.values(M.ARTS)) if (o.pieces) for (const p of o.pieces) b[p] = Math.max(b[p] || 0, (b[o.key] || 0) + 1);
+      refresh(); msg('Tous les morceaux au Musée');
+    },
+    // Back to no piece and no treasure in fragments put together (the first-piece tutorial and the level 15 piece come back)
+    resetPieces() {
+      const s = S(), b = s.bag.arts, len = M.CFG.biomes.niveauxParBiome;
+      for (const o of Object.values(M.ARTS)) if (o.pieces) { b[o.key] = 0; for (const p of o.pieces) b[p] = 0; }
+      delete s.tutoSeen.morceau;
+      for (const g of M.CFG.progression.tresorsGarantis) if (g.mine) delete s.guarDone[(g.mine - 1) * len + g.niveau];
+      refresh(); msg('Morceaux remis à zéro');
     },
     finishFloor() {
       if (visibleScreen() !== 'mine') return msg('Va d\'abord dans la mine');
@@ -205,6 +236,14 @@
       <button data-c="finishFloor">Dégager tout l'étage</button>
       <button data-c="skipFtue">Passer la FTUE</button>
     </div>
+
+    <h3>Grotte des Marées (tests, à retirer avant la mise en ligne)</h3>
+    <div class="row">
+      <button data-c="openMine2">Débloquer la Grotte des Marées</button>
+      <button data-c="allPieces">Tous les morceaux au Musée</button>
+      <button data-c="resetPieces" class="warn">Remettre les morceaux à zéro</button>
+    </div>
+    <p class="note">Niveaux de la mine 2 dans « Aller à ce niveau » : ajoute 100 (niveau 15 de la mine 2 = 115).</p>
 
     <h3>Ressources</h3>
     <div class="row">

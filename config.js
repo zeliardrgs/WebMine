@@ -13,7 +13,7 @@
 
 window.CONFIG = {
   // Version affichée en bas des Paramètres (avec la date de mise en ligne). À changer à chaque envoi aux testeurs.
-  version: 'V1 test interne 0.1',
+  version: 'V1 test interne 0.2',
 
 
   /* ---------------------------------------------------------------
@@ -119,15 +119,24 @@ window.CONFIG = {
     // Nombre de niveaux dans chaque biome
     niveauxParBiome: 100,
 
-    // La mine suivante se débloque dès ce niveau de la mine précédente : on peut alors partir de son niveau 1
-    // (sans faire la fin de la mine précédente)
-    niveauDeblocage: 80,
+    // La mine suivante se débloque quand le joueur TERMINE ce niveau de la mine précédente
+    // (100 = battre l'étage gardien du niveau 100). On peut alors partir de son niveau 1.
+    niveauDeblocage: 100,
+    // Message affiché quand une nouvelle mine se débloque ({x} = le nom de la mine)
+    texteDeblocage: "Nouvelle mine débloquée : {x} !",
 
     // Écran de choix de la mine : une carte par biome, dans l'ordre. "visuel" = le dessin de la mine au centre de la carte,
     // "fond" = l'image de fond de la carte (fichiers dans Assets/). Sans image, la carte prend un visuel et un fond par défaut.
+    // "fondMine" = l'image de fond de l'écran pendant qu'on creuse dans cette mine (sans image : la grotte violette).
+    // "terre" = les 3 images de la terre dans cette mine (les 3 variantes d'une case ; sans image : la terre marron).
+    // "pierre" = les 3 images de la pierre dans cette mine : intacte, fissurée, très fissurée (sans image : la pierre grise).
+    //   Les minerais sont dessinés par-dessus (mine > imagesMinerais).
     cartes: [
       { visuel: 'Assets/Mines/Mine_Tente.png',     fond: 'Assets/Mines/Fond_Prairie.webp' },   // 1  Mine des pionniers
-      { visuel: 'Assets/Mines/Mine_Cristal.png',   fond: 'Assets/Mines/Fond_Cristal.webp' },   // 2  Cavernes de cristal
+      // Fond de plage provisoire (dessin simple) : à remplacer par la vraie illustration
+      { visuel: 'Assets/Mines/Mine_Plage.png',     fond: 'Assets/Mines/Fond_Plage.svg', fondMine: 'Assets/Mines/Fond_Plage.svg',   // 2  Grotte des Marées
+        terre: ['Assets/Ground/Tile_Beach_Sand1.png', 'Assets/Ground/Tile_Beach_Sand2.png', 'Assets/Ground/Tile_Beach_Sand3.png'],   // du sable
+        pierre: ['Assets/Ground/Tile_Beach_Stone.png', 'Assets/Ground/Tile_Beach_Stone2.png', 'Assets/Ground/Tile_Beach_Stone3.png'] },
       { visuel: 'Assets/Mines/Mine_Sousmarin.png', fond: 'Assets/Mines/Fond_Riviere.webp' },   // 3  Rivière souterraine
       { visuel: 'Assets/Mines/Mine_Lave.png',      fond: 'Assets/Mines/Fond_Volcan.webp' },    // 4  Cœur volcanique
       { visuel: 'Assets/Mines/Mine_Roche.png',     fond: 'Assets/Mines/Fond_Jungle.webp' },    // 5  Grottes obscures
@@ -141,7 +150,7 @@ window.CONFIG = {
     // Nom de chaque biome, dans l'ordre (biome 1 = niveaux 1 à 100, etc.)
     noms: [
       'Mine des pionniers',
-      'Cavernes de cristal',
+      'Grotte des Marées',
       'Rivière souterraine',
       'Cœur volcanique',
       'Grottes obscures',
@@ -181,7 +190,9 @@ window.CONFIG = {
       geodeRose: 66,     // géodes bleues (Rares)
       potions: 81,       // les potions d'énergie arrivent à la Boutique
       // Biomes suivants
-      pierreDure: 101,   // biome 2 : pierre dure
+      // Pierre dure : retirée de la Grotte des Marées (une autre nouveauté viendra à sa place).
+      // Provisoire : elle arrive au niveau 6 de la mine 3, à revoir quand on fera la mine 3.
+      pierreDure: 206,
       or: 116,           // minerai d'or
       geodeDoree: 131,   // géodes violettes (Épiques)
       // (161, 176, 191 : nouveautés à créer)
@@ -202,7 +213,7 @@ window.CONFIG = {
     // "biomes" = les biomes où la case apparaît (le biome 10 mélange toutes les cases).
     // "part" = proportion des pierres (ou du magma) transformées ; "nombre" = [minimum, maximum] par niveau.
     casesSpeciales: {
-      pierreDure:  { biomes: [2, 10], part: 0.5 },          // part des pierres qui deviennent dures
+      pierreDure:  { biomes: [3, 10], part: 0.5 },          // part des pierres qui deviennent dures
       source:      { biomes: [3, 10], nombre: [1, 2] },     // posées de préférence à côté du magma
       magmaChaine: { biomes: [4, 10], part: 1, magmaEnPlus: 1 }, // part du magma "en chaîne" + taches de magma en plus
       mystere:     { biomes: [5, 10], nombre: [1, 2] },
@@ -252,11 +263,13 @@ window.CONFIG = {
     // "outil" : l'outil mis en avant ('shovel' pelle, 'pickaxe' pioche, 'bucket' arrosoir, 'bomb' bombe).
     // Trésors garantis la PREMIÈRE fois qu'on joue ces niveaux (ensuite, tirage normal).
     // "tresor" = un artefact (identifiant de la liste des collections) ; "geode" = 'blanche', 'rose', 'doree' ou 'cristal'.
+    // "mine" = le niveau est celui de cette mine (sans "mine" : Mine des pionniers).
     tresorsGarantis: [
       { niveau: 1,  tresor: 'feuille' },
       { niveau: 2,  tresor: 'coquillage' },
       { niveau: 3,  tresor: 'ammonite' },
       { niveau: 16, geode: 'blanche' },
+      { mine: 2, niveau: 15, tresor: 'longueVue1' },   // le premier morceau du premier trésor en fragments
     ],
 
     // PREMIERS PAS (niveaux 1 à 16) : le jeu guide le joueur jusqu'à sa première géode ouverte.
@@ -284,7 +297,7 @@ window.CONFIG = {
       { niveau: 26,  nouveaute: 'magma',       outil: 'bucket',  texte: "Arrose le magma" },
       { niveau: 36,  nouveaute: 'fer',         outil: 'pickaxe', texte: "Casse le minerai de fer" },
       { niveau: 56,  nouveaute: 'bombe',       outil: 'bomb',    texte: "Touche une case pour exploser" },
-      { niveau: 101, nouveaute: 'pierreDure',  outil: 'pickaxe', texte: "La pierre dure demande plus de coups" },
+      { niveau: 206, nouveaute: 'pierreDure',  outil: 'pickaxe', texte: "La pierre dure demande plus de coups" },
       { niveau: 201, nouveaute: 'source',      outil: 'shovel',  texte: "Creuse la source" },
       { niveau: 301, nouveaute: 'magmaChaine', outil: 'bucket',  texte: "Arrose une case : tout refroidit" },
       { niveau: 401, nouveaute: 'mystere',     outil: 'shovel',  texte: "Creuse la case mystère" },
@@ -346,6 +359,8 @@ window.CONFIG = {
       horsSac: "Bonus : hors du sac",                 // trésor d'un niveau tutoriel
       ouvrirSac: "Ouvre ton sac",                     // tutoriels de la bombe
       utiliserBombe: "Utilise la bombe",
+      // Le tout premier morceau d'un trésor en fragments ({x} = le trésor, avec son article)
+      morceau: "Un morceau ! Trouve les autres pour reconstituer {x}.",
       // Quand il faut d'abord changer d'outil
       outils: { shovel: "Prends la pelle", pickaxe: "Prends la pioche", bucket: "Prends l'arrosoir" },
     },
@@ -435,6 +450,16 @@ window.CONFIG = {
     // (chaque minerai n'apparaît qu'à partir de son niveau, voir progression > deblocages)
     frequenceMinerais: { fer: 55, cuivre: 32, or: 13, mithril: 10, cristalBrut: 8 },
 
+    // Image de chaque minerai, posée par-dessus la pierre de la mine (une pierre à minerai prend la pierre de la mine
+    // où l'on creuse, puis ce dessin). Vide = le mithril reprend le fer, le cristal brut reprend le cuivre, recolorés.
+    imagesMinerais: {
+      cuivre: 'Assets/Ground/Tile_Overlay_Copper.png',
+      fer: 'Assets/Ground/Tile_Overlay_iron.png',
+      or: 'Assets/Ground/Tile_Overlay_Gold.png',
+      mithril: '',
+      cristalBrut: '',
+    },
+
     // Quantité obtenue en cassant une pierre à minerai : [minimum, maximum]
     quantiteMinerais: { fer: [1, 3], cuivre: [1, 2], or: [1, 1], mithril: [1, 1], cristalBrut: [1, 1] },
   },
@@ -501,6 +526,30 @@ window.CONFIG = {
     // Un artefact pas encore découvert (ni au Musée, ni déjà dans le sac) a X fois plus de chances d'apparaître
     chanceNonDecouvert: 3,
 
+    // TRÉSORS EN FRAGMENTS, au Musée : le trésor est en silhouette, chaque morceau trouvé la remplit.
+    // Quand tous les morceaux sont réunis, le bouton « Reconstituer » apparaît ; c'est seulement alors
+    // que le trésor compte comme trouvé (prime de découverte, collection, étoiles).
+    // Un nouveau jeu complet de morceaux (doublons compris) permet de le reconstituer encore une fois.
+    // MUSÉE : le bouton Collection (en haut à gauche) range les collections par catégorie.
+    // Une catégorie par mine (dans l'ordre des mines), puis « Pierres précieuses et Reliques » : les pierres des géodes
+    // et les trésors trouvables dans plusieurs mines (Monnaies du royaume perdu, Clés du Roi Mineur).
+    // "fond" = l'image derrière les vitrines (vide = le fond par défaut) ; "bandeau" = la couleur du bandeau de titre.
+    vitrines: {
+      mines: [
+        { fond: 'Assets/UI/Character BG.png', bandeau: '#0aa0e6' },   // Mine des pionniers (bleu)
+        { fond: 'Assets/Mines/Fond_Plage.svg', bandeau: '#12a594' },  // Grotte des Marées (bleu-vert)
+      ],
+      precieux: { nom: 'Pierres précieuses et Reliques', icone: 'Assets/Treasures/Gem_Purple_4.png',
+        fond: 'Assets/Mines/Fond_Cristal.webp', bandeau: '#8d42cc' },   // violet
+    },
+
+    fragments: {
+      bouton: "Reconstituer",
+      message: "Trésor reconstitué : {x} !",
+      // Durée de l'animation d'assemblage, en millisecondes
+      dureeAnimation: 1400,
+    },
+
     // PIERRES PRÉCIEUSES (clé "gemmes") : elles sortent uniquement des géodes (une géode en donne une de sa rareté)
     gemmes: {
       claires: { nom: 'Pierres claires', prime: 100, objets: {
@@ -537,9 +586,24 @@ window.CONFIG = {
     // Un objet peut aussi avoir ses propres "niveaux" (ex. un objet rare qui n'arrive qu'en fin de mine) :
     // ils passent avant son biome et avant les niveaux de la série.
     // Mine des pionniers = niveaux 1 à 100.
+    // "mine" (sur une série ou sur un objet) : les "niveaux" sont ceux de CETTE mine, de 1 à 100
+    // (ex. mine: 2, niveaux: [10, 60] = niveaux 10 à 60 de la Grotte des Marées). Sans "mine" : mine 1.
     // Sols possibles : 'terre', 'pierre', 'pierreDure', 'magma', 'coffre' ou 'tout'.
-    // (pierre dure et coffres arrivent avec les biomes 2 et 9 : en attendant, ils sont remplacés
+    // (pierre dure et coffres arrivent avec les biomes 3 et 9 : en attendant, ils sont remplacés
     //  par de la pierre normale / n'importe quelle case.)
+    //
+    // Pour un nouvel objet, on peut donner son image et sa taille ici :
+    // "image" = le fichier dans Assets/Treasures/, sans « .png » (ex. 'BeachPirate/image 1') ;
+    // "taille" = [largeur, hauteur] en cases dans la grille (sans taille : 1 case).
+    //
+    // TRÉSORS EN FRAGMENTS : un seul trésor du Musée, découpé en morceaux trouvés séparément.
+    // "morceaux" = la liste des morceaux, dans l'ordre (morceau 1, 2, 3…). Chaque morceau :
+    //   "image" = son image découpée ; "position" = [centre X, centre Y, largeur, rotation] du morceau
+    //   sur l'image entière, en % de l'image entière (rotation en degrés). Ces positions ont été mesurées
+    //   en recalant chaque morceau sur l'image entière : à refaire si l'artiste change les images.
+    // Les morceaux s'appellent comme le trésor suivi de leur numéro : longueVue1, longueVue2…
+    // Chaque morceau prend une case dans la grille et une case dans le sac. Un morceau déjà trouvé est un doublon.
+    // "article" = le petit mot devant le nom dans le tutoriel (« reconstituer LA Longue-vue »).
     artefacts: {
       fossiles: { nom: 'Fossiles de surface', prime: 50, niveaux: [1, 30], sol: 'terre', objets: {
         coquillage: { nom: 'Coquillage fossile', rarete: 'common' },
@@ -549,7 +613,7 @@ window.CONFIG = {
       // Une pièce par mine : le Sou de cuivre dans la Mine des pionniers, les autres dans les mines suivantes
       monnaies: { nom: 'Monnaies du royaume perdu', prime: 200, sol: 'tout', objets: {
         sou:     { nom: 'Sou de cuivre',     rarete: 'common', niveaux: [5, 100] },
-        denier:  { nom: "Denier d'argent",   rarete: 'common', biome: 2 },
+        denier:  { nom: "Denier d'argent",   rarete: 'common', mine: 2, niveaux: [5, 100] },
         ecu:     { nom: 'Écu de bronze',     rarete: 'common', biome: 3 },
         ducat:   { nom: "Ducat d'or",        rarete: 'common', biome: 4 },
         florin:  { nom: 'Florin de platine', rarete: 'common', biome: 5 },
@@ -581,10 +645,54 @@ window.CONFIG = {
           fragmentDroit:   { nom: 'Fragment droit',   rarete: 'common' },
         } },
 
-      abysses: { nom: 'Trésors des abysses', prime: 200, niveaux: [701, 800], sol: 'tout', objets: {
-        corail:     { nom: 'Corail pétrifié', rarete: 'common' },
-        conque:     { nom: 'Conque abyssale', rarete: 'common' },
-        perleNoire: { nom: 'Perle noire',     rarete: 'epic' },
+      /* ----- GROTTE DES MARÉES (mine 2) -----
+         Primes : même logique que la Mine des pionniers (plus la collection est difficile, plus la prime est grande),
+         × 1,5 car les tas de pièces valent 50 % de plus dans la mine 2 (rythme > niveauTresor > bonusParBiome).
+         Du plus facile au plus dur : Coquillages 75, Butin des pirates 150 (morceaux : 2), Journal du capitaine 225
+         (morceaux : 3), Trésors des abysses 300 (Épique), Épave engloutie 450 (Épique en 4 morceaux). */
+      coquillages: { nom: 'Coquillages de la crique', prime: 75, mine: 2, niveaux: [1, 30], sol: 'terre', objets: {
+        saintJacques: { nom: 'Coquille Saint-Jacques', rarete: 'common', image: 'BeachPirate/image 1' },
+        etoileDeMer:  { nom: 'Étoile de mer',          rarete: 'common', image: 'BeachPirate/image 2' },
+        oursin:       { nom: 'Oursin',                 rarete: 'common', image: 'BeachPirate/image 3' },
+        hippocampe:   { nom: 'Hippocampe',             rarete: 'rare',   image: 'BeachPirate/image 4' },
+      } },
+      pirates: { nom: 'Butin des pirates', prime: 150, mine: 2, niveaux: [10, 60], sol: 'tout', objets: {
+        pieceDeHuit: { nom: 'Pièce de huit',  rarete: 'common', image: 'BeachPirate/image 7' },
+        crochet:     { nom: 'Crochet rouillé', rarete: 'common', image: 'BeachPirate/image 8', taille: [2, 2] },
+        bandana:     { nom: 'Bandana troué',   rarete: 'common', image: 'BeachPirate/image 9', taille: [2, 2] },
+        // Le premier trésor en fragments du jeu : ses morceaux n'arrivent qu'à partir du niveau 15
+        // (le morceau 1 est garanti au niveau 15 : progression > tresorsGarantis)
+        longueVue: { nom: 'Longue-vue', article: 'la', rarete: 'rare', niveaux: [15, 60], image: 'BeachPirate/image 10', morceaux: [
+          { image: 'BeachPirate/Mask group-3', position: [31.1, 59.5, 74.2, -30] },   // l'objectif
+          { image: 'BeachPirate/Mask group-4', position: [74.8, 33.4, 46.1, -30] },   // l'oculaire
+        ] },
+      } },
+      journal: { nom: 'Journal du capitaine', prime: 225, mine: 2, niveaux: [30, 80], sol: 'tout', objets: {
+        encrier: { nom: 'Encrier',          rarete: 'common', image: 'BeachPirate/image 11', taille: [2, 2] },
+        plume:   { nom: 'Plume de mouette', rarete: 'common', image: 'BeachPirate/image 12', taille: [2, 2] },
+        sablier: { nom: 'Sablier',          rarete: 'common', image: 'BeachPirate/image 13', taille: [2, 2] },
+        carteAuTresor: { nom: 'Carte au trésor', article: 'la', rarete: 'rare', image: 'BeachPirate/image 14', morceaux: [
+          { image: 'BeachPirate/Mask group',   position: [37.7, 26.2, 81.8, 0] },   // le haut
+          { image: 'BeachPirate/Mask group-1', position: [26.2, 83.9, 58.8, 0] },   // le palmier
+          { image: 'BeachPirate/Mask group-2', position: [73.7, 58.6, 64.5, 0] },   // la croix
+        ] },
+      } },
+      epave: { nom: 'Épave engloutie', prime: 450, mine: 2, niveaux: [50, 100], sol: 'tout', objets: {
+        ancre:      { nom: 'Ancre miniature',     rarete: 'common', image: 'BeachPirate/image 11-1', taille: [2, 2] },
+        cloche:     { nom: 'Cloche du navire',    rarete: 'common', image: 'BeachPirate/image 12-1', taille: [2, 2] },
+        gouvernail: { nom: 'Roue de gouvernail',  rarete: 'common', image: 'BeachPirate/image 13-1', taille: [2, 2] },
+        figureDeProue: { nom: 'Figure de proue', article: 'la', rarete: 'epic', image: 'BeachPirate/image 14-1', morceaux: [
+          { image: 'BeachPirate/Mask group-5', position: [53.6, 17.2, 69.8, 0] },   // la tête
+          { image: 'BeachPirate/Mask group-6', position: [29.0, 46.5, 50.2, 0] },   // les cheveux
+          { image: 'BeachPirate/Mask group-7', position: [70.7, 52.8, 35.5, 0] },   // le buste
+          { image: 'BeachPirate/Mask group-8', position: [53.6, 86.1, 69.8, 0] },   // la queue
+        ] },
+      } },
+      // Déplacée de l'ancien biome 8 (niveaux 701 à 800) vers la Grotte des Marées
+      abysses: { nom: 'Trésors des abysses', prime: 300, mine: 2, niveaux: [70, 100], sol: 'tout', objets: {
+        corail:     { nom: 'Corail pétrifié', rarete: 'common', image: 'BeachPirate/image 11-2', taille: [2, 2] },
+        conque:     { nom: 'Conque abyssale', rarete: 'common', image: 'BeachPirate/image 12-2', taille: [2, 2] },
+        perleNoire: { nom: 'Perle noire',     rarete: 'epic',   image: 'BeachPirate/image 13-2', taille: [2, 2] },
       } },
       // Une pièce par biome, du biome 1 au biome 6
 
@@ -1024,8 +1132,8 @@ window.CONFIG = {
     //   energie  : sur un coup de pioche, rend de l'énergie (valeur = combien)
     //   arrosoir : quand l'arrosoir se vide, le recharge d'un coup
     //   En arrivant dans l'étage (une fois par étage) :
-    //   magma    : refroidit un magma de la grille
-    //   tasDOr   : cache un tas d'or dans la terre (on le trouve en creusant la bonne case)
+    //   magma    : refroidit un magma de la grille (nombre: 2 = deux magmas côte à côte)
+    //   tasDOr   : cache un tas d'or dans la terre (on le trouve en creusant la bonne case ; nombre: 2 = deux tas)
     //   reveler  : montre où se cache un trésor (comme un radar)
     //   inconnu  : un trésor de l'étage est un trésor encore jamais découvert (s'il en reste à cette profondeur)
     //   minerai  : ajoute un minerai dans la grille (une pierre devient un minerai)
@@ -1049,6 +1157,15 @@ window.CONFIG = {
                    bonus: "Peut ajouter un minerai",                 detail: "En arrivant dans l'étage : peut ajouter un minerai dans la grille" },
       violette:  { nom: "Fée violette",    categorie: 'tresor',   visuel: "Assets/Pets/Pet_Fairy_Purple.png", effet: 'geode',    chance: 0.3,
                    bonus: "Peut améliorer une géode",                detail: "En arrivant dans l'étage : si une géode est cachée, peut la rendre plus rare" },
+      // Fées rares de la boutique premium : rarete 'rare' (carte bleue), prix = texte du bouton d'achat (pas encore de vrai paiement :
+      // l'achat donne la fée tout de suite). Elles ne se gagnent qu'en les achetant (jamais dans une récompense « fée au hasard »).
+      // couleurAccueil = fond de son encart sur la page d'accueil (un encart par fée pas encore achetée).
+      champi:    { nom: "Fée champignon",  categorie: 'fortune',  visuel: "Assets/Pets/Pet_Fairy_Mushroom.png", effet: 'tasDOr', chance: 0.3, nombre: 2,
+                   rarete: 'rare', prix: "0.00$", couleurAccueil: "#ff8a7a",
+                   bonus: "Peut faire apparaître 2 tas d'or",        detail: "En arrivant dans l'étage : peut cacher 2 tas d'or dans la terre" },
+      meduse:    { nom: "Fée méduse",      categorie: 'energie',  visuel: "Assets/Pets/Pet_Fairy_Jellyfish.png", effet: 'magma', chance: 0.35, nombre: 2,
+                   rarete: 'rare', prix: "0.00$", couleurAccueil: "#5ec8ff",
+                   bonus: "Peut refroidir 2 magmas côte à côte",     detail: "En arrivant dans l'étage : peut refroidir 2 magmas adjacents" },
     },
     perlesDoublon: 10,        // pas de fée en double : quand le joueur a déjà toutes les fées, une fée gagnée devient ces perles
     feeSurNiveauVide: true,   // sac illimité : les niveaux de Progression qui ne donnaient que de la place dans le sac donnent une fée

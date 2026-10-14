@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 932" preserveAspectRatio="xMidYMid slice">
+  <!-- Fond provisoire de la Grotte des Marées : à remplacer par la vraie illustration (config.js > biomes > cartes > fondMine) -->
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d5e6b"/>
+      <stop offset=".55" stop-color="#1f9aa0"/>
+      <stop offset="1" stop-color="#4cc7b8"/>
+    </linearGradient>
+    <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9cf95"/>
+      <stop offset="1" stop-color="#c99a5b"/>
+    </linearGradient>
+    <radialGradient id="light" cx=".5" cy=".05" r=".7">
+      <stop offset="0" stop-color="#bff7ee" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#bff7ee" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grain" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="6" r="1.4" fill="#b8874b" opacity=".45"/>
+      <circle cx="16" cy="3" r="1" fill="#fff4d6" opacity=".5"/>
+      <circle cx="11" cy="17" r="1.2" fill="#b8874b" opacity=".35"/>
+      <circle cx="21" cy="20" r=".9" fill="#fff4d6" opacity=".45"/>
+    </pattern>
+  </defs>
+
+  <!-- Eau -->
+  <rect width="430" height="932" fill="url(#sea)"/>
+  <rect width="430" height="520" fill="url(#light)"/>
+  <g fill="none" stroke="#bff7ee" stroke-linecap="round" opacity=".35" stroke-width="4">
+    <path d="M-10 90 q30 -14 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/>
+    <path d="M-40 190 q30 -14 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/>
+    <path d="M-10 290 q30 -14 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/>
+    <path d="M-40 390 q30 -14 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/>
+  </g>
+  <!-- Bulles -->
+  <g fill="none" stroke="#dffcf6" stroke-width="2.5" opacity=".5">
+    <circle cx="48" cy="140" r="7"/><circle cx="62" cy="116" r="4"/><circle cx="378" cy="240" r="8"/>
+    <circle cx="392" cy="212" r="4.5"/><circle cx="350" cy="80" r="5"/><circle cx="90" cy="330" r="5"/>
+  </g>
+
+  <!-- Écume, puis sable mouillé et sable sec -->
+  <path d="M0 520 C60 490 110 540 175 512 S300 480 360 510 S420 520 430 505 V932 H0Z" fill="#9fe6d6" opacity=".8"/>
+  <path d="M0 540 C70 512 120 560 185 532 S305 500 365 530 S420 540 430 525 V932 H0Z" fill="#d7b77c"/>
+  <path d="M0 566 C70 540 130 584 195 556 S310 528 370 556 S420 566 430 552 V932 H0Z" fill="url(#sand)"/>
+  <rect y="540" width="430" height="392" fill="url(#grain)"/>
+
+  <!-- Coquillage Saint-Jacques -->
+  <g transform="translate(58 640) rotate(-14)">
+    <path d="M0 34 C-34 30 -40 -6 -18 -24 C-6 -34 6 -34 18 -24 C40 -6 34 30 0 34Z" fill="#f4a7a0" stroke="#7a3b3b" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M0 32 V-28 M0 32 L-18 -18 M0 32 L18 -18 M0 32 L-30 2 M0 32 L30 2" stroke="#c5605a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M-10 34 h20 l-4 9 h-12z" fill="#f4a7a0" stroke="#7a3b3b" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+  <!-- Étoile de mer -->
+  <g transform="translate(360 700) rotate(18)">
+    <path d="M0 -36 L10 -11 L36 -9 L16 8 L23 34 L0 20 L-23 34 L-16 8 L-36 -9 L-10 -11Z" fill="#f0884a" stroke="#7a3b1e" stroke-width="4" stroke-linejoin="round"/>
+    <g fill="#ffd27a"><circle r="3.5"/><circle cy="-18" r="2.5"/><circle cx="17" cy="-5" r="2.5"/><circle cx="11" cy="15" r="2.5"/><circle cx="-11" cy="15" r="2.5"/><circle cx="-17" cy="-5" r="2.5"/></g>
+  </g>
+  <!-- Coquillage en spirale -->
+  <g transform="translate(250 850) rotate(-30)">
+    <path d="M-26 8 C-30 -14 -6 -26 14 -18 L40 -6 C30 4 22 18 6 22 C-10 26 -24 20 -26 8Z" fill="#7fd0d8" stroke="#2a5d66" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="-8" cy="2" r="9" fill="none" stroke="#2a5d66" stroke-width="3"/>
+    <circle cx="-8" cy="2" r="3.5" fill="#2a5d66"/>
+  </g>
+  <!-- Petit coquillage -->
+  <g transform="translate(120 800) rotate(22) scale(.7)">
+    <path d="M0 34 C-34 30 -40 -6 -18 -24 C-6 -34 6 -34 18 -24 C40 -6 34 30 0 34Z" fill="#fde3c4" stroke="#7a5233" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M0 32 V-28 M0 32 L-18 -18 M0 32 L18 -18" stroke="#d9a877" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- Galets -->
+  <g stroke="#6b4a2a" stroke-width="3">
+    <ellipse cx="300" cy="610" rx="16" ry="10" fill="#b9a99a"/>
+    <ellipse cx="322" cy="620" rx="10" ry="7" fill="#a39283"/>
+    <ellipse cx="40" cy="880" rx="14" ry="9" fill="#b9a99a"/>
+    <ellipse cx="395" cy="860" rx="12" ry="8" fill="#a39283"/>
+    <ellipse cx="190" cy="640" rx="9" ry="6" fill="#c9b9a9"/>
+  </g>
+</svg>
