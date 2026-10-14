@@ -1015,7 +1015,6 @@ window.CONFIG = {
       tresor:   { nom: "Trésor",   icone: "Assets/Pets/Cat_Tresor.png" },
       fortune:  { nom: "Fortune",  icone: "Assets/Pets/Cat_Fortune.png" },
       minerais: { nom: "Minerais", icone: "Assets/Pets/Cat_Minerais.png" },
-      geodes:   { nom: "Géodes",   icone: "Assets/Treasures/Geode_07.png" },   // icône provisoire (une géode du jeu)
     },
     // Les fées (une image par couleur, dans Assets/Pets/). categorie = une des catégories ci-dessus (la Liste les range dans cet ordre).
     // bonus = phrase courte (fiche de la fée, bulle dans la mine) ; detail = quand et comment elle agit (fiche de la fée)
@@ -1048,7 +1047,7 @@ window.CONFIG = {
                    bonus: "Peut attirer un trésor jamais trouvé",    detail: "En arrivant dans l'étage : un trésor de l'étage peut être un trésor encore jamais découvert" },
       orange:    { nom: "Fée orange",      categorie: 'minerais', visuel: "Assets/Pets/Pet_Fairy_Orange.png", effet: 'minerai',  chance: 0.4,
                    bonus: "Peut ajouter un minerai",                 detail: "En arrivant dans l'étage : peut ajouter un minerai dans la grille" },
-      violette:  { nom: "Fée violette",    categorie: 'geodes',   visuel: "Assets/Pets/Pet_Fairy_Purple.png", effet: 'geode',    chance: 0.3,
+      violette:  { nom: "Fée violette",    categorie: 'tresor',   visuel: "Assets/Pets/Pet_Fairy_Purple.png", effet: 'geode',    chance: 0.3,
                    bonus: "Peut améliorer une géode",                detail: "En arrivant dans l'étage : si une géode est cachée, peut la rendre plus rare" },
     },
     perlesDoublon: 10,        // pas de fée en double : quand le joueur a déjà toutes les fées, une fée gagnée devient ces perles
