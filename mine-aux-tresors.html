@@ -1753,6 +1753,99 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .mc-open img{width:1.2em; height:1.2em; margin-left:4px; vertical-align:-.25em; object-fit:contain; animation:none; filter:none}
 @keyframes starPop{0%{transform:scale(0) rotate(-40deg)} 100%{transform:none}}
 @media (prefers-reduced-motion: reduce){ .mc-stars svg.pop{animation:none} }
+
+/* ---------- Haunted Mine (Halloween event) ----------
+   Temporary looks until the pictures exist (config.js > mineHantee): tinted dirt, simple drawings on the tiles (--hw-*) */
+#scr-mine.haunt.hb1:not(.hw-own-dirt) :is(.t-dirt,.t-root,.t-stump){filter:sepia(.3) saturate(1.5) hue-rotate(-14deg) brightness(.92)}
+#scr-mine.haunt.hb2:not(.hw-own-dirt) :is(.t-dirt,.t-root,.t-stump){filter:hue-rotate(70deg) saturate(.6) brightness(.78)}
+#scr-mine.haunt.hb3:not(.hw-own-dirt) :is(.t-dirt,.t-root,.t-stump){filter:hue-rotate(230deg) saturate(.55) brightness(.75)}
+#scr-mine.haunt:not(.hw-own-stone) .t-stone{filter:brightness(.8) saturate(.75)}
+.t-hcandy{background-image:var(--stone0, url(Assets/Ground/Ground_Stone_01.png))}
+.t-heyes{background-image:var(--stone0, url(Assets/Ground/Ground_Stone_01.png))}
+.t-hbag,.t-hpile{background-image:var(--dirt0, url(Assets/Ground/Ground_Dirt_01.png))}
+.t-hsweet{background-image:var(--hw-sweet-tile, var(--dirt0, url(Assets/Ground/Ground_Dirt_01.png)))}
+.tile.t-hcandy::before{background-image:var(--hw-candy); background-size:96% 96%}
+.tile.t-hsweet::before{background-image:var(--hw-sweet); animation:twinkle 1.8s ease-in-out infinite}
+.tile.t-hbag::before{background-image:var(--hw-bag)}
+.tile.t-hpile::before{background-image:var(--hw-pile); animation:twinkle 1.8s ease-in-out infinite}
+#scr-mine.haunt .tile.t-stump::before{background-image:var(--hw-spider)}
+#scr-mine.haunt .tile.t-root::before{background-image:var(--hw-web); background-size:100% 100%}
+/* Pierre aux yeux: two eyes that blink; the pupils follow the finger (--ex / --ey, set while it moves) */
+.tile.t-heyes::before{background:
+  radial-gradient(circle at calc(34% + var(--ex, 0%)) calc(46% + var(--ey, 0%)), #2a0d3a 0 7.5%, transparent 8.2%),
+  radial-gradient(circle at calc(66% + var(--ex, 0%)) calc(46% + var(--ey, 0%)), #2a0d3a 0 7.5%, transparent 8.2%),
+  radial-gradient(15% 19% at 34% 46%, #fff8d6 0 82%, #3b2245 86% 100%, transparent 104%),
+  radial-gradient(15% 19% at 66% 46%, #fff8d6 0 82%, #3b2245 86% 100%, transparent 104%);
+  transform-origin:50% 46%; animation:hw-blink 4.6s ease-in-out infinite}
+/* With the eye pictures (config.js > mineHantee > tuiles > yeux): the whole drawing blinks and leans toward the finger */
+.hw-eyes-img .tile.t-heyes::before{background:var(--hw-eyes0) center / 84% 84% no-repeat; translate:var(--ex, 0%) var(--ey, 0%)}
+.hw-eyes-img .tile.t-heyes.e1::before{background-image:var(--hw-eyes1, var(--hw-eyes0))}
+.tile.t-heyes:nth-child(3n)::before{animation-delay:-1.6s}
+.tile.t-heyes:nth-child(3n+1)::before{animation-delay:-3.1s}
+@keyframes hw-blink{0%,90%,100%{transform:none} 94%{transform:scaleY(.08)}}
+
+/* Event page (hub) */
+.screen.menu.hw-screen{background:linear-gradient(#2c1a4f, #4a1f4f 45%, #24102f)}
+.hw-screen .scr-head h1{color:#ffd9a0}
+.pm-hero.hw-hero,.pm-hero.hw-ev{background:linear-gradient(135deg, #ff9a2a, #b8441b 55%, #4a1f4f); box-shadow:0 5px 0 #2a0f20, 0 10px 22px rgba(0,0,0,.35)}
+.hw-card{display:flex; flex-direction:column; gap:10px; padding:14px; border-radius:20px; background:var(--card-bg); color:var(--ink); box-shadow:0 4px 0 var(--card-edge)}
+.hw-tk{display:flex; align-items:center; gap:10px}
+.hw-tk img{width:64px; height:64px; flex:none}
+.hw-tk b{font-family:var(--font-display); font-weight:900; font-size:42px; line-height:1; color:#c2561a}
+.hw-tk span{display:flex; flex-direction:column; font-weight:800; font-size:17px}
+.hw-tk small{font-size:12px; color:#7a6a80}
+.hw-next,.hw-rule,.hw-none{margin:0}
+.hw-next{font-weight:800; font-size:15px}
+.hw-rule{font-size:12px; color:#7a6a80}
+.hw-none{font-size:13px; font-weight:700; color:#9a4a2a; text-align:center}
+.hw-ad{display:flex; align-items:center; justify-content:center; gap:8px}
+.hw-ad small{font-size:12px; opacity:.75}
+.hw-starts{display:flex; gap:8px}
+.hw-start{flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 4px; border:3px solid var(--outline); border-radius:14px; background:#fbf1dc; color:var(--ink); font:inherit; cursor:pointer}
+.hw-start.on{background:#ffb35a; box-shadow:inset 0 -4px 0 #d9822a}
+.hw-start b{font-family:var(--font-display); font-weight:900; font-size:15px}
+.hw-start small{font-size:11px; font-weight:700; line-height:1.15; text-align:center}
+.hw-down{align-self:stretch}
+.hw-links{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px}
+.hw-link{display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px; border:3px solid var(--outline); border-radius:16px; background:#fbf1dc; color:var(--ink); font:inherit; cursor:pointer; box-shadow:inset 0 -4px 0 #e2c89a}
+.hw-link-ic{width:46px; height:46px; display:grid; place-items:center}
+.hw-link-ic img{width:100%; height:100%; object-fit:contain}
+.hw-link b{font-family:var(--font-display); font-weight:900; font-size:12px; line-height:1.15; text-align:center}
+.hw-sc{background:#ffe0b8}
+.seg.hw-tabs{background:rgba(255,255,255,.14)}
+.seg.hw-tabs button{flex:1; color:#fff3d6}
+.seg.hw-tabs button[aria-pressed="true"]{color:var(--ink)}
+.hw-col{flex-direction:row; align-items:center; text-align:left; border:0; font:inherit; cursor:pointer}
+.hw-col > span:last-child{display:flex; flex-direction:column; gap:2px}
+.hw-col b{font-family:var(--font-display); font-size:16px}
+.hw-col small{font-size:12px; font-weight:700; color:#7a6a80}
+.hw-shop > p{margin:0 0 10px; font-weight:700}
+.srow.hw-excl{background:linear-gradient(#fff4e0, #ffe0b8); box-shadow:0 3px 0 #e0a43a, inset 0 0 0 2px #ff8a1e}
+.hw-owned{font-family:var(--font-display); font-size:14px; color:#1f9a4a}
+.hw-pay s{opacity:.6; font-size:.85em; margin-right:4px}
+.hw-promo{margin:0; padding:8px 12px; border-radius:14px; background:#ff5b5b; color:#fff; font-family:var(--font-display); text-align:center}
+.hw-none.hw-light{color:#ffd9a0}
+.hw-pack{position:relative; display:grid; place-items:center; width:100%; height:100%}
+.hw-pack img{width:78%; height:78%; object-fit:contain}
+.hw-pack img + img{position:absolute; right:-6px; bottom:-6px; width:58%; height:58%}
+.home-sc .badge.bnew{right:auto; left:50%; transform:translateX(-50%); background:#1fae7a; font-size:10px; padding:0 6px; white-space:nowrap}
+.xp-tile.hw-candy{border-color:#e07a1a; background:linear-gradient(#ffe3b0, #ffc47a)}
+/* « Bonbon ou farce ? » */
+.modal.hw-trick-modal{background:radial-gradient(circle at 50% 40%, rgba(110,46,130,.92), rgba(16,8,26,.95))}
+.hw-trick{text-align:center}
+.hw-trick h2{color:#c2561a}
+.hw-trick p{margin:6px 0 0}
+.hw-trick-eyes{display:flex; justify-content:center; gap:14px; margin:2px 0 10px}
+.hw-trick-eyes i{width:34px; height:42px; border-radius:50%; border:3px solid #3b2245; background:radial-gradient(circle at 50% 60%, #2a0d3a 0 28%, #fff8d6 31%); animation:hw-blink 3.2s ease-in-out infinite}
+.hw-trick-btns{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+.hw-choice{display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 8px; border:3px solid var(--outline); border-radius:18px; background:#ffe3a6; box-shadow:inset 0 -5px 0 #e0a43a; color:var(--ink); font:inherit; cursor:pointer}
+.hw-choice.farce{background:#e7c8ff; box-shadow:inset 0 -5px 0 #a873d6}
+.hw-choice:active{transform:translateY(2px)}
+.hw-choice b{font-family:var(--font-display); font-weight:900; font-size:21px}
+.hw-choice small{font-size:12px; font-weight:800; line-height:1.3; color:#5a4a60}
+.hw-ic{width:58px; height:58px; display:grid; place-items:center}
+.hw-ic img{width:100%; height:100%; object-fit:contain}
+@media (prefers-reduced-motion: reduce){ .tile.t-heyes::before,.hw-trick-eyes i{animation:none} }
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -1776,6 +1869,8 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <div class="home-side">
     <button class="home-sc" data-go="shop" id="scShop" aria-label="Boutique"><span id="scShopIc"></span><b>Boutique</b><span class="badge" id="badgeShop" hidden>!</span></button>
     <button class="home-sc" data-go="altar" aria-label="Autel"><span id="scAltarIc"></span><b>Autel</b><span class="badge" id="badgeAltar" hidden>!</span></button>
+    <!-- Haunted Mine (Halloween event): shown during the event, with a « Nouveau » badge until its page is opened -->
+    <button class="home-sc hw-sc" data-go="haunt" id="scHaunt" aria-label="Mine Hantée" hidden><span id="scHauntIc"></span><b>Mine Hantée</b><span class="badge" id="badgeHaunt" hidden>!</span></button>
   </div>
   <header class="v-hud">
     <button class="pl-card" id="plCard" aria-label="Progression" hidden><span class="pl-face"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b id="plLv">1</b></span><span class="pl-info"><b id="plName"></b><span class="pl-bar"><i id="plFill"></i><span id="plTxt"></span></span></span><span class="badge" id="plBadge" hidden>!</span></button>
@@ -1848,6 +1943,12 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 <div class="screen menu" id="scr-events" hidden>
   <header class="scr-head"><h1>Événements</h1><div class="wallet-bar" data-money></div></header>
   <div id="eventsBody" class="pm-body"></div>
+</div>
+
+<!-- Haunted Mine (Halloween event): tickets, the way down, the event's shops and collection, the end countdown -->
+<div class="screen menu hw-screen" id="scr-haunt" hidden>
+  <header class="scr-head"><button class="back back-red" data-go="village" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button><h1 id="hwTitle">Mine Hantée</h1><div class="wallet-bar" id="hwWallet"></div></header>
+  <div id="hwBody" class="pm-body"></div>
 </div>
 
 <div class="screen menu" id="scr-shop" hidden>
@@ -2069,7 +2170,19 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 </div>
 <div class="modal buy-modal" id="buyModal" hidden><div class="card" role="dialog" aria-label="Ouvrir des coffres"><h2 id="buyTitle"></h2><div id="buyBody"></div>
   <div class="buy-btns"><button class="btn ghosty" id="buyNo">Annuler</button><button class="btn" id="buyOk">Confirmer</button></div></div></div>
-<div class="modal ad-modal" id="adModal" hidden><div class="card"><p class="ad-tag">Publicité (simulée)</p><b id="adCount">3</b><p>Ton coffre arrive…</p></div></div>
+<div class="modal ad-modal" id="adModal" hidden><div class="card"><p class="ad-tag">Publicité (simulée)</p><b id="adCount">3</b><p id="adTxt">Ton coffre arrive…</p></div></div>
+<!-- Haunted Mine: « Bonbon ou farce ? » after a Pierre aux yeux (texts and chances: config.js > mineHantee > bonbonOuFarce) -->
+<div class="modal hw-trick-modal" id="trickModal" hidden>
+  <div class="card hw-trick" role="dialog" aria-labelledby="trickTitle">
+    <div class="hw-trick-eyes" aria-hidden="true"><i></i><i></i></div>
+    <h2 id="trickTitle">Bonbon ou farce ?</h2>
+    <p id="trickText"></p>
+    <div class="hw-trick-btns">
+      <button class="hw-choice" id="trickTreat"><span class="hw-ic" id="trickTreatIc"></span><b>Bonbon</b><small id="trickTreatOdds"></small></button>
+      <button class="hw-choice farce" id="trickTrick"><span class="hw-ic" id="trickTrickIc"></span><b>Farce</b><small id="trickTrickOdds"></small></button>
+    </div>
+  </div>
+</div>
 <!-- Reward page: a new fairy -->
 <div class="modal chest-modal fairy-modal" id="fairyModal" hidden>
   <div class="cm" role="dialog" aria-labelledby="fairyTitle">
@@ -2162,7 +2275,7 @@ const baseKind = level => level >= 1000 ? 'king' : level % 100 === 0 || GUARD_EX
 const floorKind = level => { const k = baseKind(level); return k === 'treasure' && (S.treasureDone || {})[level] ? 'easy' : k; };
 // A tutorial level is a tutorial only until the player has gone past it: replayed later (starting again from the top
 // of the mine or from a checkpoint), it is a normal level
-const isTuto = level => !S.wide && !!TUTO[level] && level >= (S.reached || 1);
+const isTuto = level => !S.wide && !S.haunt && !!TUTO[level] && level >= (S.reached || 1);
 /* First steps (config.js > progression > guide): until the player is back from the last planned return,
    every expedition ends at a planned return (5: Museum, 11: Shop and Forge, 16: Atelier) */
 const GUIDE = PROG.guide || { fin: 0, retours: [] };
@@ -2206,8 +2319,18 @@ const PH_SHAPES = {
   spiral: '<circle cx="50" cy="52" r="38" fill="C" stroke="#3b2245" stroke-width="5"/><path d="M50 52 m0 -6 a6 6 0 1 1 -6 6 a12 12 0 1 1 12 12 a20 20 0 1 1 -20 -20 a28 28 0 1 1 28 28" stroke="#fff" stroke-opacity=".65" stroke-width="4" fill="none" stroke-linecap="round"/>',
   cup: '<path d="M22 14 H78 C78 46 66 58 50 58 C34 58 22 46 22 14Z M44 58 H56 V76 H44Z M28 88 C28 78 72 78 72 88Z" fill="C" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><path d="M32 22 C33 38 40 46 48 48" stroke="#fff" stroke-opacity=".6" stroke-width="4" fill="none" stroke-linecap="round"/>',
   scepter: '<path d="M45 34 H55 L58 92 H42Z" fill="C" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="22" r="15" fill="C" stroke="#3b2245" stroke-width="5"/><path d="M30 40 H70" stroke="#3b2245" stroke-width="7" stroke-linecap="round"/><circle cx="45" cy="17" r="4" fill="#fff" fill-opacity=".7"/>',
+  // Haunted Mine (Halloween)
+  candy: '<path d="M30 50 L8 30 L12 70Z M70 50 L92 30 L88 70Z" fill="C" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="50" r="22" fill="C" stroke="#3b2245" stroke-width="5"/><path d="M38 40 C46 52 54 46 62 60" stroke="#fff" stroke-opacity=".6" stroke-width="4" fill="none" stroke-linecap="round"/>',
+  cat: '<path d="M24 92 C20 60 26 42 34 32 L30 8 L46 22 H56 L72 8 L68 32 C76 42 82 60 76 92Z" fill="C" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><circle cx="41" cy="42" r="5" fill="#fff36b"/><circle cx="61" cy="42" r="5" fill="#fff36b"/>',
+  broom: '<path d="M18 18 L60 60" stroke="#8a5a2b" stroke-width="9" stroke-linecap="round"/><path d="M54 50 L78 92 L92 78 L64 54Z" fill="C" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><path d="M64 62 L80 86 M70 58 L87 80" stroke="#fff" stroke-opacity=".5" stroke-width="3"/>',
+  cauldron: '<path d="M16 42 H84 C84 74 70 88 50 88 C30 88 16 74 16 42Z" fill="C" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><ellipse cx="50" cy="42" rx="34" ry="8" fill="#9be37a" stroke="#3b2245" stroke-width="5"/><circle cx="40" cy="26" r="6" fill="#9be37a"/><circle cx="58" cy="17" r="4" fill="#9be37a"/>',
+  pumpkin: '<ellipse cx="50" cy="58" rx="40" ry="32" fill="C" stroke="#3b2245" stroke-width="5"/><path d="M38 28 C34 50 34 76 40 88 M62 28 C66 50 66 76 60 88" stroke="#3b2245" stroke-opacity=".45" stroke-width="4" fill="none"/><path d="M48 28 C46 18 52 10 60 8" stroke="#3a7a2a" stroke-width="7" fill="none" stroke-linecap="round"/>',
+  moon: '<circle cx="50" cy="52" r="38" fill="C" stroke="#3b2245" stroke-width="5"/><path d="M60 26 A24 24 0 1 0 60 78 A30 30 0 0 1 60 26Z" fill="#fff6c4" stroke="#3b2245" stroke-width="3"/>',
 };
-const phImg = (shape, rarity, name) => img('data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' + PH_SHAPES[shape].split('"C"').join('"' + RAR_HEX[rarity] + '"') + '</svg>'), name);
+const phSrc = (shape, rarity) => 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' + (PH_SHAPES[shape] || PH_SHAPES.spiral).split('"C"').join('"' + RAR_HEX[rarity] + '"') + '</svg>');
+const phImg = (shape, rarity, name) => img(phSrc(shape, rarity), name);
+// A treasure's picture file, or its temporary drawing
+const artSrc = o => o.look.file ? TR + o.look.file + '.png' : phSrc(o.look.ph, o.rarity);
 /* Look of each treasure: image file (in Assets/Treasures) or temporary shape, size in the grid (w × h cells),
    and the article used in sentences ("une Citrine"). Names, rarities and series are in config.js. */
 const LOOK = {
@@ -2226,25 +2349,34 @@ const LOOK = {
   sou: { file: 'CopperCoin', w: 1, h: 1 }, denier: { file: 'SilverCoin', w: 1, h: 1 }, ecu: { file: 'BronzeCoin', w: 1, h: 1 }, ducat: { file: 'GoldCoin', w: 1, h: 1 }, florin: { file: 'PlatinumCoin', w: 1, h: 1 }, pieceDuRoi: { file: 'KingCoin', w: 1, h: 1 },
   calice: { ph: 'cup', w: 2, h: 2 }, masque: { file: 'Artefact_01', w: 2, h: 2 }, sceptre: { ph: 'scepter', w: 2, h: 2 },
   cleFer: { file: 'IronKey', w: 2, h: 2 }, cleCuivre: { file: 'Copperkey', w: 2, h: 2 }, cleArgent: { file: 'SilverKey', w: 2, h: 2 }, cleOr: { file: 'GoldKey', w: 2, h: 2 }, cleCristal: { file: 'CrystalKey', w: 2, h: 2 },
+  // Haunted Mine: temporary drawings until the pictures exist (config.js > mineHantee > collections)
+  quartzEtoile: { ph: 'gem', art: 'un' }, opaleDeLune: { ph: 'gem', art: 'une' }, amethysteMinuit: { ph: 'gem', art: 'une' }, ambreCaramel: { ph: 'gem', art: 'un' },
+  bonbonEmballe: { ph: 'candy', w: 1, h: 1 }, chatPeluche: { ph: 'cat', w: 1, h: 2 }, balai: { ph: 'broom', w: 2, h: 2 }, chaudron: { ph: 'cauldron', w: 2, h: 2 }, grandeCitrouille: { ph: 'pumpkin', w: 2, h: 2 },
 };
 // Series (gems and artefacts) and their items, built from config.js
 const COL = CFG.collections;
+// Haunted Mine (config.js > mineHantee): a temporary Halloween event with its own mine, tickets and collections
+const HW = CFG.mineHantee || null;
 const SETS = {}, GEMS = {}, ARTS = {};
 // "mine" in config.js: the levels given are those of that mine (1 to 100); without it, levels count from the top of the first mine
 const MINE_LEVELS = CFG.biomes.niveauxParBiome;
 const mineRange = (r, mine) => mine ? r.map(l => (mine - 1) * MINE_LEVELS + l) : r;
-for (const [kind, group, table] of [['gem', COL.gemmes, GEMS], ['art', COL.artefacts, ARTS]])
+// The event's collections (ev = 'hantee') never lie in the main mine: their treasures come from the Haunted Mine and its geodes
+const HWC = (HW && HW.collections) || {};
+for (const [kind, group, table, ev] of [['gem', COL.gemmes, GEMS], ['art', COL.artefacts, ARTS], ['gem', HWC.gemmes || {}, GEMS, 'hantee'], ['art', HWC.artefacts || {}, ARTS, 'hantee']])
   for (const [sk, set] of Object.entries(group)) {
-    SETS[sk] = { kind, name: tr(set.nom), prime: set.prime || 0, legend: set.legende && tr(set.legende), message: set.message && tr(set.message) };
+    SETS[sk] = { kind, name: tr(set.nom), prime: set.prime || 0, legend: set.legende && tr(set.legende), message: set.message && tr(set.message), ev };
     for (const [k, o] of Object.entries(set.objets)) {
       // A new treasure can give its picture and size in config.js ("image", "taille"); the others keep LOOK
-      const look = o.image ? { file: o.image, w: (o.taille || [1, 1])[0], h: (o.taille || [1, 1])[1] } : LOOK[k] || { ph: kind === 'gem' ? 'gem' : 'spiral', w: 1, h: 1 };
+      // (no picture yet: LOOK's temporary drawing, at the size given in config.js)
+      const size = o.taille ? { w: o.taille[0], h: o.taille[1] } : {};
+      const look = o.image ? { file: o.image, w: (o.taille || [1, 1])[0], h: (o.taille || [1, 1])[1] } : { ...(LOOK[k] || { ph: kind === 'gem' ? 'gem' : 'spiral', w: 1, h: 1 }), ...size };
       const mine = o.mine || set.mine;
       const name = tr(o.nom);
       // Article used in sentences: "une Citrine" / "a Citrine", "an Emerald"
       const article = LANG === 'en' ? (/^[aeiou]/i.test(name) ? 'an' : 'a') : look.art || 'un';
       table[k] = { key: k, set: sk, name, rarity: o.rarete, look, art: article, sz: [look.w || 2, look.h || 2],
-        w: look.w || 1, h: look.h || 1, soil: set.sol || 'tout',
+        w: look.w || 1, h: look.h || 1, soil: set.sol || 'tout', ev,
         // Levels where it can appear: its own levels, else its own biome, else the series' levels
         range: o.niveaux ? mineRange(o.niveaux, mine) : o.biome ? [(o.biome - 1) * MINE_LEVELS + 1, o.biome * MINE_LEVELS]
           : set.niveaux ? mineRange(set.niveaux, set.mine) : mine ? [(mine - 1) * MINE_LEVELS + 1, mine * MINE_LEVELS] : [1, 1000] };
@@ -2258,7 +2390,7 @@ for (const [kind, group, table] of [['gem', COL.gemmes, GEMS], ['art', COL.artef
         whole.theName = art ? (/'$/.test(art) ? art : art + ' ') + name : name;
         o.morceaux.forEach((m, i) => {
           table[k + (i + 1)] = { ...whole, key: k + (i + 1), name: tr('{x} (morceau {i}/{n})', { x: name, i: i + 1, n }), pieces: null,
-            look: { file: m.image, w: 1, h: 1 }, w: 1, h: 1, sz: [1, 1], of: k, idx: i, pos: m.position || [50, 50, 100, 0] };
+            look: m.image ? { file: m.image, w: 1, h: 1 } : { ph: whole.look.ph || 'spiral', w: 1, h: 1 }, w: 1, h: 1, sz: [1, 1], of: k, idx: i, pos: m.position || [50, 50, 100, 0] };
         });
       }
     }
@@ -2285,6 +2417,8 @@ const GEODES = {
 };
 const FR_GEODE = { white: 'blanche', pink: 'rose', gold: 'doree', crystal: 'cristal' };
 for (const [k, w] of Object.entries(fromFr(FR_GEODE, CFG.geodes.frequence))) GEODES[k].w = w;
+// Haunted Mine: the moon geode (config.js > mineHantee > geodeLune) gives a moon gem; it never lies in the main mine
+if (HW && HW.geodeLune) GEODES.lune = { name: tr(HW.geodeLune.nom), rarity: HW.geodeLune.rarete || 'rare', file: HW.geodeLune.image, sz: [2, 2], ev: 'hantee' };
 // Older saves used ten coloured geodes: each becomes the new geode of the closest colour
 // Treasures of the first collections that live on under a new name
 const OLD_GEM = { emerald: 'emeraude', aquamarine: 'aigueMarine', topaz: 'topazeImperiale' };
@@ -2298,7 +2432,8 @@ const OPEN = {
   o15: { name: tr('Quartz rose'),       file: 'Geode_15' },
 };
 const gemArt = k => itemArt(GEMS[k]);
-const geodeArt = k => img(TR + GEODES[k].file + '.png', GEODES[k].name);
+// (the moon geode's "image" is a full path from config.js; none yet: a temporary drawing)
+const geodeArt = k => GEODES[k].ev ? (GEODES[k].file ? img(GEODES[k].file, GEODES[k].name) : phImg('moon', GEODES[k].rarity, GEODES[k].name)) : img(TR + GEODES[k].file + '.png', GEODES[k].name);
 const openArt = k => img(TR + OPEN[k].file + '.png', OPEN[k].name);
 const artArt = k => itemArt(ARTS[k]);
 // Resale value of duplicates, by rarity (in coins)
@@ -2345,6 +2480,13 @@ const keyEvery = (level, n) => { const F = EQC.cles.facteurParMine || [1]; retur
 const GSLOTS = ['pioche', 'pelle', 'gants', 'casque', 'lanterne', 'bottes'];   // left column, then right column
 const SLOT_STAT = { pioche: 'dmg', pelle: 'coin', gants: 'ore', casque: 'free', lanterne: 'geode', bottes: 'pile' };
 const CHESTS = Object.keys(EQC.coffres);                         // bois, argent, or, etoile
+// Haunted Mine: themed models (config.js > mineHantee > equipement). Each one goes in a slot of the miner and has the passive
+// of another model of that slot ("commeModele"); they only come from the Coffre Halloween and the event's exclusives.
+if (HW && HW.equipement) for (const [k, m] of Object.entries(HW.equipement)) {
+  const sl = EQC.emplacements[m.emplacement], base = sl && sl.modeles[m.commeModele]; if (!base) continue;
+  sl.modeles[k] = { nom: m.nom, biome: 1, passif: base.passif, valeurs: m.valeurs || base.valeurs, nombre: base.nombre, comme: m.commeModele, ev: 'hantee' };
+  if (m.image) EQC.images[k] = m.image;
+}
 const ARCH = {};
 for (const [sk, sl] of Object.entries(EQC.emplacements)) for (const [ak, a] of Object.entries(sl.modeles)) ARCH[ak] = { ...a, key: ak, slot: sk };
 const newGear = () => ({ items: [], eq: {}, keys: Object.fromEntries(CHESTS.map(k => [k, 0])), gems: EQC.gemmesDepart || 0, pity: {},
@@ -2373,7 +2515,8 @@ function gearTotals() {
   for (const sk of GSLOTS) {
     const it = equipped(sk); if (!it) continue;
     t[SLOT_STAT[sk]] = statOf(it);
-    const p = passiveOf(it); if (p) t.pas[it.arch] = p;
+    // (a Halloween model works like the model it copies: "commeModele")
+    const p = passiveOf(it), pk = ARCH[it.arch].comme || it.arch; if (p) t.pas[pk] = Math.max(t.pas[pk] || 0, p);
   }
   // Runes of the Altar add to the same bonuses
   t.coin += runeVal('fortune') + runeVal('roi'); t.ore += runeVal('filon'); t.free += runeVal('souffle');
@@ -2419,11 +2562,20 @@ function freshState() {
       arts: Object.fromEntries(Object.keys(ARTS).map(k => [k, 0])),
     },
     coins: CFG.depart.pieces, reached: 1, pxp: 0, pclaim: {}, altar: { n: 0, runes: {} }, trip: newTrip(), screen: 'village', roll: null,
-    grid: null, rewards: null, gear: newGear(), pets: newPets(), hpX10: true,
+    grid: null, rewards: null, gear: newGear(), pets: newPets(), hpX10: true, hallo: newHallo(),
   };
+}
+/* Haunted Mine (config.js > mineHantee): what the event keeps between two descents.
+   candy = Candy Corn; free = free tickets of the day (lost at midnight), paid = tickets bought (kept until the end);
+   freeDay / evening = the day (and the 6 pm half) the free tickets were given for; ads / adsDay = tickets from ads today;
+   first = the guided first descent is done; best = deepest level reached; seen = the event page has been opened */
+function newHallo() {
+  return { candy: 0, free: 0, freeDay: 0, evening: false, ads: 0, adsDay: 0, paid: 0, first: false, best: 1, seen: false };
 }
 // Pets: for now only fairies, the player starts with a few (random colours) to try the screen
 const PETS = CFG.pets;
+// Haunted Mine: its fairies (config.js > mineHantee > fees) join the others; they are never given by a « fée au hasard » reward
+if (HW && HW.fees) for (const [k, f] of Object.entries(HW.fees)) PETS.fees[k] = { ...f, ev: 'hantee', visuel: f.visuel || HW_FAIRY_PH(k) };
 function newPets() {
   const keys = Object.keys(PETS.fees).sort(() => Math.random() - .5);
   return Array.from({ length: PETS.depart }, (_, i) => ({ id: i + 1, kind: 'fee', key: keys[i % keys.length] }));
@@ -2442,8 +2594,9 @@ function pick(weights) {
 const ORE_UNLOCK = { copper: 'cuivre', iron: 'fer', gold: 'or', mithril: 'mithril', crystal: 'cristalBrut' };
 const GEODE_UNLOCK = { white: 'geodes', pink: 'geodeRose', gold: 'geodeDoree', crystal: 'geodeCristal' };
 // (a treasure in fragments never lies in the mine: its pieces do)
-const artsAt = level => Object.entries(ARTS).filter(([, o]) => !o.pieces && level >= o.range[0] && level <= o.range[1]);
-const geodesAt = level => Object.entries(GEODES).filter(([k]) => at(level, GEODE_UNLOCK[k]));
+// (the Haunted Mine's treasures and moon geode never lie in the main mine)
+const artsAt = level => Object.entries(ARTS).filter(([, o]) => !o.pieces && !o.ev && level >= o.range[0] && level <= o.range[1]);
+const geodesAt = level => Object.entries(GEODES).filter(([k]) => GEODE_UNLOCK[k] && at(level, GEODE_UNLOCK[k]));
 // Cover a treasure with the ground its series asks for
 const tileOf = t => HP[t] ? { t, hp: HP[t], max: HP[t] } : { t };
 function coverSoil(g, cells, soil, level) {
@@ -2615,25 +2768,7 @@ function genLevelOnce(level, kindArg) {
   // The guaranteed treasure of this level takes the place of the first pick
   const gt = !S.wide && guaranteeFor(level);
   if (gt) { const [w, h] = sizeOfFind(gt.kind, gt.key); picks.splice(0, 1, { kind: gt.kind, key: gt.key, w, h, guaranteed: true }); }
-  picks.sort((a, b) => b.w * b.h - a.w * a.h);
-  // Place them all; if one has no room left, start the placement over (keeps the best attempt)
-  let best = [];
-  for (let attempt = 0; attempt < 40 && best.length < picks.length; attempt++) {
-    const occ = new Array(N).fill(false), placed = [];
-    reserved.forEach(i => occ[i] = true);
-    for (const p of picks) {
-      for (let tries = 0; tries < 60; tries++) {
-        const r = randInt(0, ROWS - p.h), c = randInt(0, COLS - p.w);
-        const cells = [];
-        for (let y = 0; y < p.h; y++) for (let x = 0; x < p.w; x++) cells.push((r + y) * COLS + c + x);
-        if (cells.some(i => occ[i])) continue;
-        cells.forEach(i => occ[i] = true);
-        placed.push({ p, r, c, cells });
-        break;
-      }
-    }
-    if (placed.length > best.length) best = placed;
-  }
+  const best = placeAll(picks, reserved);
   // Some series lie only in dirt, under stone or under magma: cover them accordingly
   for (const { p, cells } of best) coverSoil(g, cells, p.kind === 'art' ? ARTS[p.key].soil : 'tout', level);
   trimCost(g, best, level, kind);
@@ -2652,6 +2787,29 @@ function genLevelOnce(level, kindArg) {
     if (list.length) g[list[randInt(0, list.length - 1)]] = { t: 'rainbow' };
   }
   S.grid = g; S.rewards = best.map(({ p, r, c }) => ({ ...p, r, c, found: false }));
+}
+// Places the treasures on the grid, biggest first; if one has no room left, starts the placement over (keeps the best attempt).
+// reserved = cells already taken. Returns [{ p, r, c, cells }].
+function placeAll(picks, reserved) {
+  picks.sort((a, b) => b.w * b.h - a.w * a.h);
+  let best = [];
+  for (let attempt = 0; attempt < 40 && best.length < picks.length; attempt++) {
+    const occ = new Array(N).fill(false), placed = [];
+    reserved.forEach(i => occ[i] = true);
+    for (const p of picks) {
+      for (let tries = 0; tries < 60; tries++) {
+        const r = randInt(0, ROWS - p.h), c = randInt(0, COLS - p.w);
+        const cells = [];
+        for (let y = 0; y < p.h; y++) for (let x = 0; x < p.w; x++) cells.push((r + y) * COLS + c + x);
+        if (cells.some(i => occ[i])) continue;
+        cells.forEach(i => occ[i] = true);
+        placed.push({ p, r, c, cells });
+        break;
+      }
+    }
+    if (placed.length > best.length) best = placed;
+  }
+  return best;
 }
 /* Energy a level asks for = pickaxe hits (at base strength) on the tiles covering its treasures.
    Above the biome's budget, rock over the treasures turns into dirt, starting with treasures that have no ground rule. */
@@ -2798,12 +2956,13 @@ const $ = id => document.getElementById(id);
 const board = $('board'), tilesEl = $('tiles'), underEl = $('under'), overEl = $('overRw'), fx = $('fx'), slotsEl = $('slots');
 let tileEls = [], rwEls = [], slotEls = [];
 
-const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'coins', 'king', 'gkey', 'rainbow'];
+const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'coins', 'king', 'gkey', 'rainbow', 'hcandy', 'heyes', 'hsweet', 'hbag', 'hpile'];
 function tileClass(c, i) {
   let cls = 'tile t-' + c.t;
   if (c.t === 'dirt') { const v = c.v ?? i % 3; if (v) cls += ' v' + v; }
   if (c.t === 'stone' || c.t === 'ore') cls += ' s' + Math.min(3, 1 + Math.floor((c.max - c.hp) / c.max * 3));
   if (c.t === 'gkey') cls += ' k-' + (c.k || 'bois');
+  if (c.t === 'heyes' && c.v) cls += ' e' + c.v;
   if (c.t === 'ore') cls += ' o-' + c.ore + (ORE_TINT[c.ore] ? ' tint' : '');
   if (c.t === 'magma' && c.chain) cls += ' chain';
   if (OVERLAY.includes(c.t)) cls += ' ov';
@@ -2820,7 +2979,7 @@ for (const [k, fr] of Object.entries(ORE_UNLOCK)) {
 function paintTile(i) {
   const el = tileEls[i], c = S.grid[i];
   el.className = tileClass(c, i);
-  if (c.max && c.hp < c.max && c.t !== 'stone' && c.t !== 'ore') el.dataset.crack = Math.min(3, Math.ceil((c.max - c.hp) / c.max * 3));
+  if (c.max && c.hp < c.max && ((c.t !== 'stone' && c.t !== 'ore') || S.haunt)) el.dataset.crack = Math.min(3, Math.ceil((c.max - c.hp) / c.max * 3));
   else delete el.dataset.crack;
 }
 let boardGen = 0;   // changes with every new board, so late animations of the previous level are ignored
@@ -2877,7 +3036,7 @@ function applyUnlocks() {
   $('questBtn').hidden = inGuide();
   updateBadge();
   for (const k of ['museum', 'forge', 'atelier', 'shop', 'altar']) { const b = document.querySelector(`.bld[data-go="${k === 'forge' ? 'hero' : k}"]`); if (b) b.hidden = !S.buildings[k]; }
-  document.querySelectorAll('.home-sc').forEach(b => { const k = b.dataset.go; b.hidden = !S.buildings[k] || (k === 'shop' && !!S.tutoSeen.guideFin); b.classList.toggle('new', !!(S.bldNew || {})[k]); });
+  document.querySelectorAll('.home-sc:not(.hw-sc)').forEach(b => { const k = b.dataset.go; b.hidden = !S.buildings[k] || (k === 'shop' && !!S.tutoSeen.guideFin); b.classList.toggle('new', !!(S.bldNew || {})[k]); });
 }
 // Info bubble: announces treasure, guardian and King's levels, and the guardian's reward (once each).
 // No button: it closes by itself after a few seconds, or with a tap.
@@ -2885,6 +3044,8 @@ function bubbleInfo() {
   if (S.rewardMsg && S.rewardMsg.level === S.level) return { key: 'r' + S.level, html: S.rewardMsg.html, reward: true };
   if (S.tuto) return null;
   const k = S.floor || floorKind(S.level);
+  // Haunted Mine: its own treasure and guardian texts (each shown once)
+  if (S.haunt) { const t = k === 'treasure' ? HW.niveauTresor.texte : k === 'guardian' ? HW.niveauGardien.texte : null; return t ? { key: 'hw-' + k, text: tr(t) } : null; }
   const text = k === 'treasure' ? RY.niveauTresor.texte : k === 'guardian' ? RY.niveauGardien.texte : k === 'king' ? RY.niveau1000.texte : null;
   return text ? { key: 'f' + S.level, text: tr(text) } : null;
 }
@@ -3009,6 +3170,7 @@ function dropBoardCoaches() {
   if (coach && coach.gen) endCoach(false);
 }
 function levelCoach() {
+  if (S.haunt) return hwCoach();
   if (S.wide) return;
   if ($('scr-mine').hidden) return;
   const lv = S.level, t = TUTO[lv];
@@ -3328,7 +3490,7 @@ function deny(i, msg, kind = 'warn') { shake(i); sfx('deny'); toast(msg, kind); 
 
 let digLock = false;
 // Tiles a simple tap removes for free, with the shovel or the pickaxe
-const SOFT = ['spring', 'mystery', 'gas', 'chest', 'coins', 'gkey', 'rainbow'];
+const SOFT = ['spring', 'mystery', 'gas', 'chest', 'coins', 'gkey', 'rainbow', 'hpile'];
 function nb4(i) {
   const r = i / COLS | 0, c = i % COLS;
   return [[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dr, dc]) => [r + dr, c + dc]).filter(([y, x]) => y >= 0 && x >= 0 && y < ROWS && x < COLS).map(([y, x]) => y * COLS + x);
@@ -3339,6 +3501,7 @@ const freeTap = i => SOFT.includes(S.grid[i].t) || isMelting(i);
 const CHIPS = {
   cool: ['#7a2a32', '#3a1a20', '#ff9a3d'], hard: ['#5a6aa8', '#3b4577', '#9fb0ff'], ice: ['#dff6ff', '#a6e6ff', '#ffffff'],
   root: ['#8a5a2b', '#5a3518', '#c08a50'], stump: ['#8a5a2b', '#5a3518', '#e0b074'], stone: ['#8e9ac0', '#6b7699', '#4d5577'],
+  hcandy: ['#8e9ac0', '#ff9a2a', '#ffe14d'], heyes: ['#8e9ac0', '#6b7699', '#fff7c8'], hsweet: ['#ff5bb0', '#ffd0ec', '#fff'], hbag: ['#c97a3a', '#ff9a2a', '#ffe14d'],
 };
 const chipsOf = c => c.t === 'ore' ? ['#8e9ac0', ORES[c.ore].o1, '#5a6488'] : CHIPS[c.t] || CHIPS.stone;
 function act(p, isTap) {
@@ -3358,6 +3521,7 @@ function act(p, isTap) {
     } else if (freeTap(i)) breakCell(i);
     else if (isTap) {
       if (c.t === 'magma') deny(i, tr('Attention, c\'est brûlant ! Refroidis le magma avec l\'arrosoir.'));
+      else if (c.t === 'root' && S.haunt) deny(i, tr('Toile trop solide pour la pelle : casse l\'araignée à la pioche !'), '');
       else if (c.t === 'root') deny(i, tr('Racine trop dure pour la pelle : casse sa souche à la pioche !'), '');
       else if (c.t === 'ice') deny(i, tr('La glace ne fond à la pelle que si elle touche du magma.'), '');
       else deny(i, tr('La pelle ne passe pas la roche. Prends la pioche.'), '');
@@ -3451,8 +3615,9 @@ const refreshIce = () => S.grid.forEach((c, j) => { if (c.t === 'ice') paintTile
 function breakCell(i) {
   const c = S.grid[i], t = c.t, { x, y } = center(i);
   if (t === 'ore') gainOre(i, c.ore);
-  if (t === 'stone' || t === 'hard' || t === 'ore') stat('pierres');
+  if (t === 'stone' || t === 'hard' || t === 'ore' || t === 'hcandy' || t === 'heyes') stat('pierres');
   clearCell(i);
+  if (S.haunt) hwBreak(i, c, t);
   if (t === 'spring') {
     sfx('steam'); burst(x, y, ['#3db5ff', '#a6e6ff', '#ffffff'], 14, { spread: 36, size: [3, 8] });
     for (const j of nb4(i)) if (S.grid[j].t === 'magma') coolMagma(j);
@@ -3625,7 +3790,7 @@ function clearCell(i) {
 // Every cell cleared and every treasure picked up: go to the next level on its own
 // (a treasure left in the mine, or the bottom of the mine, keeps the "next level" button instead)
 function checkAutoNext() {
-  if (!S.rewards || !S.rewards.length || S.level >= 1000) return;
+  if (!S.rewards || !S.rewards.length || S.level >= 1000 || hwBottom()) return;
   if (!S.rewards.every(r => r.taken === true) || !S.grid.every(c => c.t === 'empty')) return;
   // The first full bag is handled by pickUp (tutorial: down one level, then the "Sac plein" popup)
   if (bagFull() && !S.tutoSeen.sacPlein) return;
@@ -3907,6 +4072,7 @@ function refreshBadges() {
   setDot('badgeAltar', canPray() && !bn.altar);
   setDot('badgeMuseum', museumWaiting() && !bn.museum);
   setDot('badgeShop', !!S.buildings.shop && (shopNew() || chestReady()) && !bn.shop);
+  hwPaintVillage();
   if (S.daily && S.daily.goals) {
     const ready = S.daily.goals.filter(g => !g.claimed && goalDone(g)).length + (dayChestReady() ? 1 : 0);
     setDot('questBadge', ready > 0, ready);
@@ -3914,7 +4080,7 @@ function refreshBadges() {
   }
 }
 function loop() {
-  paintMoney(); updateEnergy(); updateBucket(); checkStuck();
+  paintMoney(); updateEnergy(); updateBucket(); checkStuck(); hwTick();
   const now = performance.now(); if (now - badgeT > 250) { badgeT = now; try { refreshBadges(); } catch (e) {} }
   const up = !upAllowed(); if ($('upBtn').hidden !== up) $('upBtn').hidden = up;
   requestAnimationFrame(loop);
@@ -4010,8 +4176,9 @@ const GIMG = EQC.images || {};
 const svgImg = (body, alt) => img('data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' + body + '</svg>'), alt);
 const G_OUT = 'stroke="#3b2245" stroke-width="5" stroke-linejoin="round"';
 // Pickaxe and shovel: the tool pictures, recoloured per model; the other slots: a drawing in the model's colour
-const ARCH_TINT = { picEclats: 'hue-rotate(150deg) saturate(1.4)', picGivre: 'hue-rotate(185deg) saturate(1.8) brightness(1.15)', pelleLarge: 'hue-rotate(120deg) saturate(1.5)' };
-const ARCH_COL = { gantsFer: '#9aa6c8', gantsDynamiteur: '#e0553a', casqueChantier: '#ffc23d', casqueVeine: '#3fc2a8', lanterneProspecteur: '#ffb13b', lanterneAncienne: '#7ab36a', bottesProspecteur: '#a8693a', bottesPorteBonheur: '#3a9a5a' };
+const ARCH_TINT = { piocheCitrouille: 'hue-rotate(-25deg) saturate(2.2)', pelleBalai: 'hue-rotate(250deg) saturate(1.3)', picEclats: 'hue-rotate(150deg) saturate(1.4)', picGivre: 'hue-rotate(185deg) saturate(1.8) brightness(1.15)', pelleLarge: 'hue-rotate(120deg) saturate(1.5)' };
+const ARCH_COL = { gantsFer: '#9aa6c8', gantsDynamiteur: '#e0553a', casqueChantier: '#ffc23d', casqueVeine: '#3fc2a8', lanterneProspecteur: '#ffb13b', lanterneAncienne: '#7ab36a', bottesProspecteur: '#a8693a', bottesPorteBonheur: '#3a9a5a',
+  gantsSquelette: '#ece6d6', lanterneCitrouille: '#ff8a1e', chapeauSorciere: '#6b3fa0', capeChauveSouris: '#3a2350' };
 const GEAR_SVG = {
   gants: c => `<path d="M30 86 V46 C30 30 40 20 54 20 C68 20 76 30 76 46 V86 Z" fill="${c}" ${G_OUT}/><path d="M30 58 C18 56 12 44 20 36 C26 31 33 36 34 46" fill="${c}" ${G_OUT}/><rect x="25" y="74" width="56" height="16" rx="4" fill="#fff3d6" ${G_OUT}/><path d="M44 30 V48 M56 28 V48 M66 32 V48" stroke="#3b2245" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/>`,
   casque: c => `<path d="M14 66 C14 34 30 18 50 18 C70 18 86 34 86 66 Z" fill="${c}" ${G_OUT}/><rect x="6" y="64" width="88" height="13" rx="6" fill="${c}" ${G_OUT}/><circle cx="50" cy="44" r="12" fill="#fff7b0" ${G_OUT}/><path d="M28 40 C30 30 36 26 42 24" stroke="#fff" stroke-opacity=".7" stroke-width="5" fill="none" stroke-linecap="round"/>`,
@@ -4026,19 +4193,22 @@ function gearArt(ak) {
 }
 // An empty slot shows its first model, greyed
 const slotArt = sk => gearArt(Object.keys(EQC.emplacements[sk].modeles)[0]);
-const CHEST_COL = { bois: ['#b0662f', '#d9893f', '#ffc23d'], argent: ['#8a96b8', '#c4cde6', '#ffffff'], or: ['#e0a30f', '#ffd23d', '#fff7b0'], etoile: ['#3a3f9e', '#6a5fd6', '#ffe36b'] };
+const CHEST_COL = { halloween: ['#6b3fa0', '#ff8a1e', '#3a2350'], bois: ['#b0662f', '#d9893f', '#ffc23d'], argent: ['#8a96b8', '#c4cde6', '#ffffff'], or: ['#e0a30f', '#ffd23d', '#fff7b0'], etoile: ['#3a3f9e', '#6a5fd6', '#ffe36b'] };
 function gStar(x, y, r, f) {
   const p = [];
   for (let k = 0; k < 10; k++) { const a = Math.PI / 5 * k - Math.PI / 2, rr = k % 2 ? r * .45 : r; p.push((x + Math.cos(a) * rr).toFixed(1) + ',' + (y + Math.sin(a) * rr).toFixed(1)); }
   return `<polygon points="${p.join(' ')}" fill="${f}" stroke="#3b2245" stroke-width="2.5" stroke-linejoin="round"/>`;
 }
 const gCap = t => t.charAt(0).toUpperCase() + t.slice(1);
+// (the Coffre Halloween of the Haunted Mine is not one of the Shop's chests)
+const chestName = k => tr(k === 'halloween' ? HW.coffre.nom : EQC.coffres[k].nom);
+if (HW && HW.coffre && HW.coffre.image) GIMG.coffreHalloween = HW.coffre.image;
 function chestArt(k, open) {
   const n = 'coffre' + gCap(k);
-  if (GIMG[n] && !open) return img(GIMG[n], tr(EQC.coffres[k].nom));
+  if (GIMG[n] && !open) return img(GIMG[n], chestName(k));
   const [body, lid, band] = CHEST_COL[k];
   const top = open ? `<path d="M16 34 C18 10 84 4 88 26 L84 30 C78 14 22 18 20 38Z" fill="${lid}" ${G_OUT}/><ellipse cx="50" cy="42" rx="32" ry="7" fill="#fff7b0"/>` : `<path d="M14 44 C14 20 86 20 86 44Z" fill="${lid}" ${G_OUT}/>`;
-  return svgImg(`<rect x="14" y="40" width="72" height="44" rx="6" fill="${body}" ${G_OUT}/>${top}<rect x="14" y="41" width="72" height="9" fill="${band}" stroke="#3b2245" stroke-width="3"/><rect x="43" y="46" width="14" height="19" rx="3" fill="${band}" stroke="#3b2245" stroke-width="3"/>${k === 'etoile' ? gStar(28, 68, 8, '#ffe36b') + gStar(72, 68, 8, '#ffe36b') : ''}`, tr(EQC.coffres[k].nom));
+  return svgImg(`<rect x="14" y="40" width="72" height="44" rx="6" fill="${body}" ${G_OUT}/>${top}<rect x="14" y="41" width="72" height="9" fill="${band}" stroke="#3b2245" stroke-width="3"/><rect x="43" y="46" width="14" height="19" rx="3" fill="${band}" stroke="#3b2245" stroke-width="3"/>${k === 'etoile' ? gStar(28, 68, 8, '#ffe36b') + gStar(72, 68, 8, '#ffe36b') : ''}`, chestName(k));
 }
 function keyArt(k) {
   const n = 'cle' + gCap(k);
@@ -4137,7 +4307,7 @@ function rollItem(chest) {
     if (rar === C.pitieRarete) g.pity[chest] = 0;
     else if (g.pity[chest] >= C.pitie) { rar = C.pitieRarete; g.pity[chest] = 0; }
   }
-  const archsOf = sk => Object.keys(EQC.emplacements[sk].modeles).filter(archOpen);
+  const archsOf = sk => Object.keys(EQC.emplacements[sk].modeles).filter(ak => archOpen(ak) && !ARCH[ak].ev);
   const slots = GSLOTS.filter(sk => archsOf(sk).length);
   const sk = slots.length ? slots[randInt(0, slots.length - 1)] : 'pelle', archs = archsOf(sk);
   return newItem(archs.length ? archs[randInt(0, archs.length - 1)] : Object.keys(EQC.emplacements[sk].modeles)[0], rar);
@@ -4210,7 +4380,7 @@ function watchAd(chest) {
 let cmItem = null, cmItems = [], cmChest = null, cmState = 'closed';
 function showChest(chest, items) {
   cmItems = items; cmItem = items[0]; cmChest = chest; cmState = 'closed';
-  $('chestTitle').textContent = tr(EQC.coffres[chest].nom);
+  $('chestTitle').textContent = chestName(chest);
   $('chestBtn').hidden = false; $('chestBtn').className = 'cm-chest ch-' + chest;
   $('chestBtn').innerHTML = chestArt(chest) + `<span>${tr('Touche pour ouvrir')}</span>`;
   $('chestItem').hidden = true; $('chestBtns').hidden = true;
@@ -4591,7 +4761,7 @@ function gearCoach() {
 }
 
 /* ---------- Screens ---------- */
-const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets', 'missions'];
+const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets', 'missions', 'haunt'];
 function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
@@ -4604,7 +4774,7 @@ function go(name) {
   if (name !== 'atelier') stopMini();
   if (name !== 'pets') stopPets();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: () => { muView = 0; renderMuseum(); }, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals })[name]();
+  ({ village: renderVillage, museum: () => { muView = 0; renderMuseum(); }, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals, haunt: renderHaunt })[name]();
   updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -4612,7 +4782,7 @@ function go(name) {
 /* ---------- Bottom navigation bar ----------
    Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
    Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
-const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village', missions: 'village' };
+const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village', missions: 'village', haunt: 'events' };
 function updateNav(name) {
   const tab = NAV_OF[name];
   $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
@@ -4643,7 +4813,8 @@ $('navBar').addEventListener('click', e => {
 const SOON_BTN = cls => `<button class="btn ${cls || ''} soon" data-soon="1">${tr('Bientôt')}</button>`;
 const coinPile = n => '<span class="pm-pile">' + [[0, 18], [17, 18], [34, 18], [8, 4], [26, 4], [17, -9]].slice(0, n).map(([x, y]) => `<img src="Assets/UI/Icon_Coin.png" alt="" draggable="false" style="left:${x}px; top:${y + 12}px">`).join('') + '</span>';
 /* ---------- Rare fairies of the premium shop (config.js > pets > fees: those with a "prix") ---------- */
-const fairyOffers = () => Object.keys(PETS.fees).filter(shopFairy);
+// (the Haunted Mine's bat fairy is sold on the event's page only)
+const fairyOffers = () => Object.keys(PETS.fees).filter(k => shopFairy(k) && !PETS.fees[k].ev);
 function fairyOffersHTML() {
   return fairyOffers().map(k => {
     const f = PETS.fees[k], c = petCat(f), own = ownsFairy(k);
@@ -4691,6 +4862,10 @@ function renderPremium() {
 function renderEvents() {
   const ev = (icon, title, text) => `<div class="pm-row"><div class="sic">${icon}</div><div class="stxt"><b>${title}</b><span>${text}</span></div>${SOON_BTN('sm')}</div>`;
   $('eventsBody').innerHTML = `<p class="pm-note">${tr('Des événements limités dans le temps, avec des récompenses spéciales.')}</p>
+    ${hwShown() ? `<div class="pm-hero ev hw-ev"><span class="pm-art">${HW_ICON()}</span>
+      <span class="pm-tag">${tr('Halloween')} · ${tr('Fin dans {t}', { t: hwDur(hwEnd() - hwNow()) })}</span>
+      <div class="pm-txt"><b>${tr(HW.nom)}</b><p>${tr(HW.textes.intro)}</p></div>
+      <button class="btn big" data-go="haunt">${tr('Entrer')}</button></div>` : ''}
     <div class="pm-hero ev wide-ev"><span class="pm-art">${img('Assets/UI/Icon_Mine.png')}</span>
       <span class="pm-tag">${tr('En ce moment')}</span>
       <div class="pm-txt"><b>${tr(WIDE.nom)}</b><p>${tr('Une mine immense de {n} × {n} cases, pleine de trésors. Fais-la glisser avec le bouton Déplacer.', { n: WIDE.taille })}</p></div>
@@ -4788,6 +4963,478 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-go]'); if (!b) return;
   unlockAudio(); sfx('pick'); go(b.dataset.go);
 });
+
+/* ---------- Event « La Mine Hantée » (config.js > mineHantee) ----------
+   A temporary Halloween mine of 30 levels, in 3 settings of 10 levels. 1 ticket = 1 descent with full energy.
+   Like the Wide Mine, the normal mine (level, board, treasures) is put aside during a descent and comes back
+   when the player goes back up (S.hauntBack). The mine is drawn again at every descent. Candy Corn is the event's
+   money: it takes no bag space and is counted at once (S.hallo.candy), like the ores. */
+const HWT = HW ? HW.tickets : {}, HWCal = HW ? HW.calendrier : {}, DAY_MS = 864e5;
+// Test clock (cheat menu): shifts the event's clock to try any day and hour; kept apart from the save, ignored without cheats
+const CLOCK_KEY = 'mine-cheat-horloge';
+const hwNow = () => { let off = 0; if (cheatsOn()) { try { off = +localStorage.getItem(CLOCK_KEY) || 0; } catch (e) {} } return Date.now() + off; };
+// Midnight starting day n of the event (n = 0: the "debut" day), phone time
+const hwDate = n => { const [y, m, d] = HW.debut.split('-').map(Number); return new Date(y, m - 1, d + n).getTime(); };
+// Day of the event: 1 = the "debut" day; 0 or less = not started yet
+const hwDay = (t = hwNow()) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return Math.round((d.getTime() - hwDate(0)) / DAY_MS) + 1; };
+const hwEnd = () => hwDate(HWCal.fin);
+const hwLive = () => !!HW && hwDay() >= 1 && hwDay() <= HWCal.fin;
+const hwMineDays = () => HWCal.mineOuverte || [1, HWCal.fin];
+const hwMineOpen = () => { const d = hwDay(); return !!HW && d >= hwMineDays()[0] && d <= hwMineDays()[1]; };
+// The event shows with the Events (player level), once the first steps are over
+const hwShown = () => hwLive() && eventsOpen() && !inGuide();
+function hwBottom() { return !!S.haunt && S.level >= HW.niveaux; }
+// The setting of a level (Potager 1-10, Forêt 11-20, Manoir 21-30) and the kind of level
+function hwBiomeIdx(level) { let k = 0; HW.biomes.forEach((b, i) => { if (level >= b.depuis) k = i; }); return k; }
+function hwBiome(level) { return HW.biomes[hwBiomeIdx(level)]; }
+const hwKind = level => (HW.niveauTresor.niveaux || []).includes(level) ? 'treasure' : level === HW.niveauGardien.niveau ? 'guardian' : 'easy';
+// "3 j 4 h", "4 h 12 min", "2 min 30 s"
+function hwDur(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  return d ? tr('{d} j {h} h', { d, h }) : h ? tr('{h} h {m} min', { h, m }) : tr('{m} min {s} s', { m, s: s % 60 });
+}
+
+/* Pictures: config.js > mineHantee (empty = a temporary drawing) */
+const svgUrl = s => `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' + s + '</svg>')}")`;
+const CORN = '<path d="M50 8 L84 82 Q50 98 16 82Z" fill="#ffd23d"/><path d="M50 8 L78.5 70 Q50 76 21.5 70Z" fill="#ff8a1e"/><path d="M50 8 L63.8 38 Q50 42 36.2 38Z" fill="#fff6e0"/><path d="M50 8 L84 82 Q50 98 16 82Z" fill="none" stroke="#3b2245" stroke-width="6" stroke-linejoin="round"/>';
+const cornAt = (x, y, s, r = 0) => `<g transform="translate(${x} ${y}) rotate(${r}) scale(${s}) translate(-50 -50)">${CORN}</g>`;
+const PUMPKIN = '<ellipse cx="50" cy="58" rx="42" ry="34" fill="#ff8a1e" stroke="#3b2245" stroke-width="5"/><path d="M36 26 C30 50 30 78 38 90 M64 26 C70 50 70 78 62 90" stroke="#b8441b" stroke-width="4" fill="none"/><path d="M48 26 C46 16 52 8 60 6" stroke="#3a7a2a" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M30 50 L40 42 L44 54Z M70 50 L60 42 L56 54Z M30 68 Q50 84 70 68 L64 66 L58 72 L50 66 L42 72 L36 66Z" fill="#3b2245"/>';
+const TICKET = '<path d="M8 28 H92 V42 A8 8 0 0 0 92 58 V72 H8 V58 A8 8 0 0 0 8 42Z" fill="#ff9a2a" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><path d="M66 30 V70" stroke="#3b2245" stroke-width="3" stroke-dasharray="5 4"/><g transform="translate(36 50) scale(.32) translate(-50 -56)">' + PUMPKIN + '</g>';
+const CANDY_ART = () => HW.candy.icone ? img(HW.candy.icone, tr(HW.candy.nom)) : svgImg(CORN, tr(HW.candy.nom));
+const HW_ICON = () => HW.images.bouton ? img(HW.images.bouton, tr(HW.nom)) : svgImg(PUMPKIN, tr(HW.nom));
+const TICKET_ART = () => svgImg(TICKET, tr('Ticket'));
+// Night skies behind the board until the settings' pictures exist (Potager, Forêt, Manoir)
+const HW_NIGHT = ['linear-gradient(#2c1a4f, #5a2d4a 70%, #8a3c1c)', 'linear-gradient(#14213d, #24304f 55%, #1a2a22)', 'linear-gradient(#24102f, #45204e 55%, #160a1e)'];
+if (HW) {
+  const T = HW.tuiles, ART = {
+    candy: [T.pierreCandy.image, cornAt(32, 38, .5, -18) + cornAt(68, 34, .46, 14) + cornAt(50, 68, .54, 4)],
+    spider: [T.toile.imageAraignee, '<path d="M50 4 V34" stroke="#f4f0ff" stroke-width="2"/><g stroke="#1d1a2b" stroke-width="5" stroke-linecap="round" fill="none"><path d="M50 52 L20 30 L12 40 M50 52 L14 52 L8 62 M50 52 L20 70 L16 84 M50 52 L80 30 L88 40 M50 52 L86 52 L92 62 M50 52 L80 70 L84 84"/></g><circle cx="50" cy="58" r="16" fill="#3a2350" stroke="#1d1a2b" stroke-width="4"/><circle cx="50" cy="38" r="11" fill="#3a2350" stroke="#1d1a2b" stroke-width="4"/><circle cx="45" cy="37" r="3" fill="#ffd23d"/><circle cx="55" cy="37" r="3" fill="#ffd23d"/>'],
+    web: [T.toile.imageFil, '<g stroke="#f4f0ff" stroke-opacity=".9" stroke-width="2.5" fill="none" stroke-linejoin="round"><path d="M0 0 L100 100 M100 0 L0 100 M50 0 V100 M0 50 H100"/><path d="M50 8 L80 20 L92 50 L80 80 L50 92 L20 80 L8 50 L20 20Z M50 24 L68 32 L76 50 L68 68 L50 76 L32 68 L24 50 L32 32Z M50 38 L58 42 L62 50 L58 58 L50 62 L42 58 L38 50 L42 42Z"/></g>'],
+    bag: [T.sac.image, '<path d="M26 42 C18 62 20 84 30 90 H70 C80 84 82 62 74 42Z" fill="#c97a3a" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><path d="M28 42 C36 32 64 32 72 42" fill="none" stroke="#3b2245" stroke-width="5"/><path d="M40 36 L34 20 M50 34 V16 M60 36 L66 20" stroke="#ff5bb0" stroke-width="6" stroke-linecap="round"/><circle cx="34" cy="17" r="7" fill="#ffd23d" stroke="#3b2245" stroke-width="3"/><circle cx="50" cy="13" r="7" fill="#9be37a" stroke="#3b2245" stroke-width="3"/><circle cx="66" cy="17" r="7" fill="#ff8a1e" stroke="#3b2245" stroke-width="3"/><text x="50" y="76" text-anchor="middle" font-size="28" font-family="Arial" font-weight="900" fill="#fff6e0">?</text>'],
+    sweet: [T.grosBonbon.image, '<path d="M28 50 L6 28 L10 72Z M72 50 L94 28 L90 72Z" fill="#ff5bb0" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="50" r="26" fill="#ff5bb0" stroke="#3b2245" stroke-width="5"/><path d="M32 40 C44 52 56 44 68 58 M30 56 C42 66 54 60 66 70" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>'],
+    pile: [T.tas.image, cornAt(30, 64, .36, -30) + cornAt(70, 64, .36, 28) + cornAt(50, 70, .4, 0) + cornAt(40, 44, .34, -10) + cornAt(60, 42, .34, 16)],
+  };
+  const root = document.documentElement.style;
+  for (const [k, [file, ph]] of Object.entries(ART)) root.setProperty('--hw-' + k, file ? `url("${file}")` : svgUrl(ph));
+  // The big candy's picture is a whole tile (nothing drawn on top)
+  if (T.grosBonbon.image) { root.setProperty('--hw-sweet-tile', `url("${T.grosBonbon.image}")`); root.setProperty('--hw-sweet', 'none'); }
+  // Pierre aux yeux: the eye pictures, posed on the stone (one at random per stone); none = eyes drawn in CSS
+  (T.yeux.yeux || []).forEach((f, i) => root.setProperty('--hw-eyes' + i, `url("${f}")`));
+  document.documentElement.classList.toggle('hw-eyes-img', !!(T.yeux.yeux || []).length);
+}
+
+/* ---------- Tickets: free ones each day (lost at midnight), from ads, bought (kept until the end) ---------- */
+function hwRefresh() {
+  if (!HW) return;
+  const H = S.hallo, d = hwDay(), two = !!HWT.enDeuxFois, half = HWT.deuxFois || { aMinuit: HWT.parJour, heure: 18 };
+  if (H.adsDay !== d) { H.adsDay = d; H.ads = 0; }
+  // A new day: the tickets left are lost, the day's free tickets arrive (all at midnight, or in two halves)
+  if (H.freeDay !== d) { H.freeDay = d; H.evening = false; H.free = hwMineOpen() ? (two ? Math.min(half.aMinuit, HWT.parJour) : HWT.parJour) : 0; }
+  if (two && !H.evening && hwMineOpen() && new Date(hwNow()).getHours() >= half.heure) { H.evening = true; H.free += Math.max(0, HWT.parJour - half.aMinuit); }
+}
+// When the next free tickets arrive (null: no more free tickets in this event)
+function hwNextFree() {
+  const now = new Date(hwNow()), half = HWT.deuxFois || {};
+  if (HWT.enDeuxFois && hwMineOpen() && !S.hallo.evening && now.getHours() < half.heure) { const t = new Date(now); t.setHours(half.heure, 0, 0, 0); return t.getTime(); }
+  const tomorrow = hwDay() + 1;
+  if (tomorrow < hwMineDays()[0] || tomorrow > hwMineDays()[1]) return null;
+  const t = new Date(now); t.setHours(24, 0, 0, 0); return t.getTime();
+}
+const hwFirstFree = () => !S.hallo.first && !!HWT.premiereDescenteOfferte;
+// Fake rewarded ad (prototype), like the wooden chest's: 3 seconds, then +1 ticket
+function hwAd() {
+  hwRefresh();
+  if (!hwMineOpen() || S.hallo.ads >= (HWT.pubsParJour || 0)) return;
+  sfx('pick');
+  const m = $('adModal'); m.hidden = false; $('adTxt').textContent = tr('Ton Ticket arrive…');
+  let s = 3; $('adCount').textContent = s;
+  const t = setInterval(() => {
+    s--; $('adCount').textContent = s; if (s > 0) return;
+    clearInterval(t); m.hidden = true; $('adTxt').textContent = tr('Ton coffre arrive…');
+    hwRefresh(); S.hallo.ads++; S.hallo.free++;
+    sfx('reward'); toast(tr('+1 Ticket !'), 'good'); if (!$('scr-haunt').hidden) renderHaunt(); save();
+  }, 1000);
+}
+
+/* ---------- Event page (hub) ---------- */
+// Starting points: level 1, and each "départ" once reached (config.js > mineHantee > departs)
+const hwStarts = () => [1, ...(HW.departs || []).filter(l => (S.hallo.best || 1) >= l)];
+let hwFrom = 0;   // chosen start (0 = the deepest one)
+// The event page has three tabs: the mine (tickets, going down), the Witch's shop (Candy Corn) and the event's premium shop
+let hwView = 'mine';
+function renderHaunt() {
+  if (!HW) return;
+  hwRefresh(); hwConvert();
+  const H = S.hallo;
+  if (!H.seen) { H.seen = true; save(); }
+  $('hwTitle').textContent = tr(HW.nom);
+  $('hwWallet').innerHTML = `<span class="res" title="${tr(HW.candy.nom)}">${CANDY_ART()}${H.candy}</span>` + moneyHTML();
+  const open = hwMineOpen();
+  const tab = (k, label) => `<button data-hwview="${k}" aria-pressed="${hwView === k}">${label}</button>`;
+  $('hwBody').innerHTML = `
+    <div class="pm-hero hw-hero"><span class="pm-art">${HW_ICON()}</span>
+      <span class="pm-tag">${tr('Jour {d} / {n}', { d: hwDay(), n: HWCal.fin })} · ${tr('Fin dans {t}', { t: '<span data-hwt="end"></span>' })}</span>
+      <div class="pm-txt"><b>${tr(HW.nom)}</b><p>${tr(open ? HW.textes.intro : HW.textes.fermee)}</p></div></div>
+    <div class="seg hw-tabs">${tab('mine', tr('La mine'))}${tab('witch', tr('Sorcière'))}${tab('premium', tr('Premium'))}</div>
+    ${hwView === 'witch' ? hwWitchHTML() : hwView === 'premium' ? hwPremiumHTML() : hwMineHTML()}`;
+  hwTimers();
+}
+function hwMineHTML() {
+  const H = S.hallo, open = hwMineOpen(), tickets = H.free + H.paid, first = hwFirstFree(), adMax = HWT.pubsParJour || 0, next = hwNextFree();
+  const starts = hwStarts(); if (!starts.includes(hwFrom)) hwFrom = starts[starts.length - 1];
+  const collection = `<button class="hw-card hw-col" data-hwcol><span class="hw-link-ic">${svgImg(PH_SHAPES.pumpkin.split('"C"').join('"#ff8a1e"'))}</span>
+    <span><b>${tr('Collection « {x} »', { x: tr(HW.vitrine.nom) })}</b><small>${tr('Au Musée. 3 étoiles : la Cape de chauve-souris !')}</small></span></button>`;
+  if (!open) return collection;
+  return `<div class="hw-card">
+      <div class="hw-tk">${TICKET_ART()}<b>${tickets}</b><span>${tr(plural(tickets, 'Ticket', 'Tickets'))}${H.paid ? `<small>${tr('dont {n} acheté(s), gardé(s) jusqu\'à la fin', { n: H.paid })}</small>` : ''}</span></div>
+      <p class="hw-next">${next ? tr('Prochains Tickets gratuits dans {t}', { t: '<b data-hwt="free"></b>' }) : tr('C\'est le dernier jour de la mine : plus de Tickets gratuits.')}</p>
+      <p class="hw-rule">${tr('{n} Tickets gratuits par jour, perdus à minuit. 1 Ticket = 1 descente avec l\'énergie pleine.', { n: HWT.parJour })}</p>
+      ${adMax ? `<button class="btn hw-ad" data-hwad ${H.ads < adMax ? '' : 'disabled'}>▶ ${tr('+1 Ticket')}<small>${tr('pub {a} / {b}', { a: H.ads, b: adMax })}</small></button>` : ''}
+    </div>
+    <div class="hw-card">
+      ${starts.length > 1 && !first ? `<div class="hw-starts">${starts.map(l => `<button class="hw-start${l === hwFrom ? ' on' : ''}" data-hwfrom="${l}"><b>${tr('Niveau {n}', { n: l })}</b><small>${tr(hwBiome(l).nom)}</small></button>`).join('')}</div>` : ''}
+      <button class="btn big hw-down" data-hwgo ${first || tickets ? '' : 'disabled'}>${first ? tr('Première descente offerte !') : tr('Descendre · 1 Ticket')}</button>
+      ${!first && !tickets ? `<p class="hw-none">${tr('Plus de Tickets pour l\'instant. Regarde une pub ou reviens plus tard !')}</p>` : ''}
+    </div>${collection}`;
+}
+
+/* ---------- The Witch's shop: paid in Candy Corn (config.js > mineHantee > boutiqueSorciere) ---------- */
+const HAT = '<path d="M50 6 L70 66 H30Z" fill="#6b3fa0" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><ellipse cx="50" cy="70" rx="44" ry="12" fill="#6b3fa0" stroke="#3b2245" stroke-width="5"/><path d="M33 58 H67" stroke="#ff8a1e" stroke-width="8"/>';
+const hwBought = k => ((S.hallo.buys || {})[hwDay()] || {})[k] || 0;
+// Each article: its picture, name, text, what it gives, and (exclusives) whether the player already has it
+const WITCH = {
+  bombe:     { art: () => TOOLS.bomb, name: () => tr('Bombe'), desc: () => tr('Fait sauter les 9 cases autour de la cible.'), give: () => { S.bombs++; updateBombs(); toast(tr('+1 {x}', { x: tr('Bombe') }), 'good'); } },
+  radar:     { art: () => RADAR, name: () => tr('Radar'), desc: () => tr('Entoure l\'emplacement d\'un trésor caché.'), give: () => { S.radars++; toast(tr('+1 {x}', { x: tr('Radar') }), 'good'); } },
+  potion:    { art: () => POTION, name: () => tr('Potion d\'énergie'), desc: () => tr('Remplit ton énergie au maximum.'), give: () => { S.potions++; updateQuick(); toast(tr('+1 {x}', { x: tr('Potion d\'énergie') }), 'good'); } },
+  geodeLune: { art: () => geodeArt('lune'), name: () => GEODES.lune.name, desc: () => tr('À ouvrir à l\'Atelier : une pierre de lune pour ta collection.'), give: () => { S.bag.geodes.push('lune'); toast(tr('+1 {x} (à l\'Atelier)', { x: GEODES.lune.name }), 'good'); } },
+  coffre:    { art: () => chestArt('halloween'), name: () => chestName('halloween'), desc: () => tr('Une pièce d\'équipement à thème : Pioche-citrouille, Pelle-balai, Gants squelette ou Lanterne-citrouille.'), give: () => hwChest() },
+  chapeau:   { art: () => GIMG.chapeauSorciere ? gearArt('chapeauSorciere') : svgImg(HAT), name: () => tr(HW.equipement.chapeauSorciere.nom), excl: true, owned: () => !!S.hallo.hat,
+               desc: () => tr('Exclusif ! Un casque Épique : {x}', { x: passiveTxt('chapeauSorciere', passiveOf({ arch: 'chapeauSorciere', rar: HW.equipement.chapeauSorciere.rarete || 'epique' })) }), give: () => hwGiveGear('chapeauSorciere') },
+  feeCitrouille: { art: () => img(PETS.fees.citrouille.visuel), name: () => tr(PETS.fees.citrouille.nom), excl: true, owned: () => ownsFairy('citrouille'),
+               desc: () => tr('Exclusif ! {x}', { x: tr(PETS.fees.citrouille.bonus) }), give: () => giveFairy('citrouille') },
+};
+function hwWitchHTML() {
+  const B = HW.boutiqueSorciere, H = S.hallo;
+  const rows = Object.entries(WITCH).filter(([k]) => B[k]).map(([k, w]) => {
+    const o = B[k], owned = w.owned && w.owned(), left = o.parJour ? o.parJour - hwBought(k) : Infinity;
+    const can = !owned && left > 0 && H.candy >= o.prix;
+    return `<div class="srow${w.excl ? ' hw-excl' : ''}"><div class="sic">${w.art()}</div>
+      <div class="stxt"><b>${w.name()}</b><span>${w.desc()}${o.parJour ? ' ' + tr('{a} / {b} aujourd\'hui', { a: hwBought(k), b: o.parJour }) : ''}</span></div>
+      <div class="sbuy">${owned ? `<span class="hw-owned">✓ ${tr('Obtenu')}</span>` : `<div class="price"><span class="${H.candy < o.prix ? 'short' : ''}">${o.prix}${CANDY_ART()}</span></div>
+        <button class="btn sm" data-hwwitch="${k}" ${can ? '' : 'disabled'}>${tr('Acheter')}</button>`}</div></div>`;
+  });
+  return `<div class="card flat hw-shop"><p>${tr('La Sorcière n\'accepte que les Candy Corn. Ses deux exclusivités ne reviendront pas !')}</p><div class="shop-list">${rows.join('')}</div></div>`;
+}
+function hwBuyWitch(k) {
+  const o = HW.boutiqueSorciere[k], w = WITCH[k], H = S.hallo;
+  if (!o || !w || (w.owned && w.owned()) || H.candy < o.prix || (o.parJour && hwBought(k) >= o.parJour)) return;
+  H.candy -= o.prix;
+  const d = hwDay(); H.buys = { [d]: { ...((H.buys || {})[d] || {}), [k]: hwBought(k) + 1 } };
+  sfx('reward'); w.give(); renderHaunt(); save();
+}
+// Coffre Halloween: one of the 4 themed pieces, its rarity drawn from boutiqueSorciere > coffre > chances
+function hwChest() {
+  const archs = Object.keys(HW.equipement).filter(k => !HW.equipement[k].rarete && ARCH[k]);
+  const it = newItem(archs[randInt(0, archs.length - 1)], pick(HW.boutiqueSorciere.coffre.chances));
+  G().items.push(it); stat('coffres'); gainXP((PJ.xpEquipement || {}).nouveau);
+  save(); refreshGear(); showChest('halloween', [it]);
+}
+// An exclusive piece (Chapeau de sorcière, Cape de chauve-souris), given once and shown like a chest's item
+function hwGiveGear(ak, msg) {
+  const m = HW.equipement[ak]; if (!m || !ARCH[ak]) return;
+  if (ak === 'chapeauSorciere') S.hallo.hat = true; else S.hallo.cape = true;
+  const it = newItem(ak, m.rarete || 'epique'); G().items.push(it); refreshGear(); save();
+  if (msg) toast(tr(msg), 'good');
+  setTimeout(() => { showReveal(it, null); $('chestTitle').textContent = tr('Exclusivité d\'Halloween !'); }, msg ? 1200 : 0);
+}
+
+/* ---------- The event's premium shop (no real payment yet: immediate, like the rare fairies) ---------- */
+const hwPromo = () => { const p = HWCal.promo; return !!p && hwDay() >= p[0] && hwDay() <= p[1]; };
+const hwPrice = o => hwPromo() && o.prixPromo ? `<s>${o.prix}</s> ${o.prixPromo}` : o.prix;
+function hwPremiumHTML() {
+  const P = HW.premium, open = hwMineOpen(), f = PETS.fees.chauveSouris, N = P.packNuitHantee;
+  const row = (art, title, sub, buy) => `<div class="srow"><div class="sic">${art}</div><div class="stxt"><b>${title}</b><span>${sub}</span></div><div class="sbuy">${buy}</div></div>`;
+  const btn = (key, o) => `<button class="btn sm hw-pay" data-hwbuy="${key}">${hwPrice(o)}</button>`;
+  return `${hwPromo() && open ? `<p class="hw-promo">${tr(P.texteVieuxPrix)}</p>` : ''}
+    ${f ? `<div class="pf-card hw-bat"><span class="pf-art"><img src="${f.visuel}" alt="" draggable="false"></span><span class="pm-tag">${petRarName(f)}</span>
+      <div class="pf-txt"><b>${tr(f.nom)}</b><p>${tr(f.bonus)}</p></div>
+      ${ownsFairy('chauveSouris') ? `<button class="pf-buy own" disabled>✓ ${tr('Obtenue')}</button>` : `<button class="pf-buy" data-hwbuy="fee">${f.prix}</button>`}</div>` : ''}
+    ${open ? `<div class="card flat hw-shop"><div class="shop-list">
+      ${N ? row(`<span class="hw-pack">${TICKET_ART()}${geodeArt('lune')}</span>`, tr(N.nom), tr('{t} Tickets + {g} Géodes de lune', { t: N.tickets, g: N.geodes }), btn('pack', N)) : ''}
+      ${(P.tickets || []).map((o, i) => row(TICKET_ART(), tr(plural(o.tickets, '{n} Ticket', '{n} Tickets'), { n: o.tickets }), tr('Gardés jusqu\'à la fin de l\'événement'), btn('t' + i, o))).join('')}
+    </div></div>` : `<p class="hw-none hw-light">${tr('La mine est fermée : les Tickets ne sont plus en vente.')}</p>`}`;
+}
+function hwBuyPremium(k) {
+  const P = HW.premium, H = S.hallo;
+  if (k === 'fee') { if (ownsFairy('chauveSouris')) return; sfx('win'); giveFairy('chauveSouris'); }
+  else if (!hwMineOpen()) return;
+  else if (k === 'pack') { const N = P.packNuitHantee; H.paid += N.tickets; for (let i = 0; i < N.geodes; i++) S.bag.geodes.push('lune'); sfx('win'); toast(tr('+{t} Tickets et +{g} Géodes de lune !', { t: N.tickets, g: N.geodes }), 'good'); }
+  else { const o = (P.tickets || [])[+k.slice(1)]; if (!o) return; H.paid += o.tickets; sfx('win'); toast(tr('+{n} Tickets !', { n: o.tickets }), 'good'); }
+  renderHaunt(); save();
+}
+document.addEventListener('click', e => {
+  const v = e.target.closest('[data-hwview]'); if (v) { unlockAudio(); sfx('pick'); hwView = v.dataset.hwview; return renderHaunt(); }
+  const w = e.target.closest('[data-hwwitch]'); if (w && !w.disabled) { unlockAudio(); return hwBuyWitch(w.dataset.hwwitch); }
+  const b = e.target.closest('[data-hwbuy]'); if (b) { unlockAudio(); return hwBuyPremium(b.dataset.hwbuy); }
+  if (e.target.closest('[data-hwcol]')) { unlockAudio(); sfx('pick'); muView = HAUNTED; go('museum'); muView = HAUNTED; renderMuseum(); }
+});
+// End of the event: the Candy Corn left becomes coins (config.js > mineHantee > conversion), once, back at the village or on the event's page
+function hwConvert() {
+  if (!HW || !S.hallo || S.haunt || hwDay() <= HWCal.fin || !(S.hallo.candy > 0)) return;
+  const n = S.hallo.candy, c = Math.round(n * (HW.conversion.piecesParCandy || 0));
+  S.hallo.candy = 0; S.coins += c; save();
+  toast(tr(HW.conversion.texte, { n, p: c }), 'good'); sfx('reward');
+}
+// Temporary pictures of the event's fairies (config.js > mineHantee > fees > visuel)
+function HW_FAIRY_PH(k) {
+  const wings = '<ellipse cx="22" cy="40" rx="20" ry="13" fill="#e8f4ff" fill-opacity=".85" stroke="#3b2245" stroke-width="3" transform="rotate(-25 22 40)"/><ellipse cx="78" cy="40" rx="20" ry="13" fill="#e8f4ff" fill-opacity=".85" stroke="#3b2245" stroke-width="3" transform="rotate(25 78 40)"/>';
+  const body = k === 'chauveSouris'
+    ? '<path d="M50 34 C30 18 12 26 6 40 C16 38 20 46 22 52 C28 46 34 50 36 56 C42 50 46 54 50 60 C54 54 58 50 64 56 C66 50 72 46 78 52 C80 46 84 38 94 40 C88 26 70 18 50 34Z" fill="#6b3fa0" stroke="#3b2245" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="50" r="16" fill="#8d5ac8" stroke="#3b2245" stroke-width="4"/><path d="M38 38 L40 28 L46 36 M62 38 L60 28 L54 36" fill="#8d5ac8" stroke="#3b2245" stroke-width="3" stroke-linejoin="round"/><circle cx="44" cy="48" r="3.5" fill="#ffd23d"/><circle cx="56" cy="48" r="3.5" fill="#ffd23d"/>'
+    : wings + '<ellipse cx="50" cy="56" rx="24" ry="20" fill="#ff8a1e" stroke="#3b2245" stroke-width="4"/><path d="M42 38 C40 46 40 66 44 74 M58 38 C60 46 60 66 56 74" stroke="#b8441b" stroke-width="3" fill="none"/><path d="M48 36 C47 30 51 26 56 25" stroke="#3a7a2a" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="43" cy="54" r="3.5" fill="#3b2245"/><circle cx="57" cy="54" r="3.5" fill="#3b2245"/><path d="M44 63 Q50 68 56 63" stroke="#3b2245" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' + body + '</svg>');
+}
+function hwTimers() {
+  const now = hwNow(), next = hwNextFree();
+  document.querySelectorAll('[data-hwt]').forEach(el => { el.textContent = hwDur((el.dataset.hwt === 'end' ? hwEnd() : next || now) - now); });
+}
+// Every second: the countdowns, and the page again when new free tickets arrive
+let hwTickT = 0, hwLast = '';
+function hwTick() {
+  if (!HW || !S.hallo) return;
+  const now = performance.now(); if (now - hwTickT < 1000) return; hwTickT = now;
+  hwRefresh();
+  const k = hwDay() + '|' + S.hallo.free + '|' + S.hallo.evening;
+  if ($('scr-haunt').hidden) { hwLast = k; return; }
+  if (k !== hwLast) { hwLast = k; renderHaunt(); } else hwTimers();
+}
+// Village: the event's button, « Nouveau » until its page is opened, then the tickets left
+function hwPaintVillage() {
+  const b = $('scHaunt'); if (!b || !S.hallo) return;
+  if (!$('scr-village').hidden) hwConvert();
+  const on = hwShown(); if (b.hidden === on) b.hidden = !on;
+  if (!on) return;
+  if (!b.dataset.ready) { $('scHauntIc').innerHTML = HW_ICON(); b.dataset.ready = 1; }
+  hwRefresh();
+  const H = S.hallo, isNew = !H.seen, n = H.free + H.paid + (hwFirstFree() ? 1 : 0);
+  b.classList.toggle('new', isNew); $('badgeHaunt').classList.toggle('bnew', isNew);
+  setDot('badgeHaunt', isNew || (hwMineOpen() && n > 0), isNew ? tr('Nouveau !') : n);
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-hwad]')) { unlockAudio(); return hwAd(); }
+  const f = e.target.closest('[data-hwfrom]'); if (f) { unlockAudio(); sfx('pick'); hwFrom = +f.dataset.hwfrom; return renderHaunt(); }
+  if (e.target.closest('[data-hwgo]')) { unlockAudio(); hwGo(hwFrom); }
+});
+
+/* ---------- Going down and back up ---------- */
+// One ticket per descent (the free ones first); the very first descent is guided and free
+function hwGo(level) {
+  hwRefresh();
+  const H = S.hallo, first = hwFirstFree();
+  if (!hwMineOpen()) { sfx('deny'); return toast(tr(HW.textes.fermee), ''); }
+  if (!first) {
+    if (H.free > 0) H.free--; else if (H.paid > 0) H.paid--;
+    else { sfx('deny'); return toast(tr('Plus de Tickets pour l\'instant. Regarde une pub ou reviens plus tard !'), ''); }
+  }
+  H.first = true;
+  startHaunt(first ? 1 : level, first);
+}
+function startHaunt(level, guided) {
+  if (S.haunt) return go('mine');
+  S.hauntBack = Object.fromEntries(WIDE_KEEP.map(k => [k, S[k]]));
+  S.haunt = true; S.hwGuide = !!guided; S.level = level; S.rewardMsg = null; bagQueue.length = 0;
+  // Full energy, full watering can
+  S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges(); updateEnergy(true);
+  sfx('descend');
+  genHaunt(level); const fx = petArrive(); buildBoard(true); petArriveFx(fx);
+  go('mine'); save();
+}
+function endHaunt() {
+  if (!S.haunt) return;
+  const b = S.hauntBack || {};
+  delete S.haunt; delete S.hauntBack; delete S.hwGuide;
+  trickQueue.length = 0; $('trickModal').hidden = true;
+  for (const k of WIDE_KEEP) if (k in b) S[k] = b[k];
+  if (!Array.isArray(S.grid) || !S.grid.length) genLevel(S.level || 1);
+  else setDims(S.cols, S.rows);
+  buildBoard(false); fitBoard(); save();
+}
+function hwArrive() {
+  S.level++; S.bucketReady = 0; S.bucketCharges = maxCharges(); S.rewardMsg = null;
+  genHaunt(S.level); const fx = petArrive(); buildBoard(!DESCEND_MS); petArriveFx(fx); updateEnergy(true);
+  const dc = $('depthChip'); dc.classList.remove('bump'); void dc.offsetWidth; dc.classList.add('bump');
+  const H = S.hallo;
+  if (S.level > (H.best || 1)) {
+    H.best = S.level;
+    // A new starting point: the first level of the next setting
+    if ((HW.departs || []).includes(S.level)) {
+      S.trip.newCp = S.level; sfx('win');
+      toast(tr(HW.textes.nouveauDepart, { x: tr(hwBiome(S.level).nom), n: S.level }), 'good');
+    }
+  }
+  save();
+}
+// The guided first descent: break a Candy Corn stone, then a Pierre aux yeux
+function hwCoach() {
+  if (!S.hwGuide || S.level !== 1 || $('scr-mine').hidden) return;
+  const ic = S.grid.findIndex(c => c.t === 'hcandy'), ie = S.grid.findIndex(c => c.t === 'heyes'), steps = [];
+  if (ic >= 0) steps.push(toolStep('pickaxe'), { ...cellStep(HW.textes.guideCandy, ic), energy: true });
+  if (ie >= 0) steps.push(toolStep('pickaxe'), { ...cellStep(HW.textes.guideYeux, ie), energy: true });
+  if (steps.length) startCoach('hw-guide', steps, true);
+}
+
+/* ---------- The Haunted Mine's levels ---------- */
+// Rock tiles and the hits they take (energy), with the base pickaxe
+const HROCK = ['stone', 'hcandy', 'heyes', 'hsweet', 'hbag', 'stump', 'root'];
+const hwHits = c => HROCK.includes(c.t) ? Math.ceil((c.hp || 0) / BASE_DMG) : 0;
+function hwTile(t, coups) { return { t, hp: coups * BASE_DMG, max: coups * BASE_DMG }; }
+function genHaunt(level) {
+  const B = hwBiome(level), kind = hwKind(level), NT = HW.niveauTresor, T = HW.tuiles;
+  const n = Math.min(MAX_COLS, B.taille + (kind === 'treasure' ? NT.tailleEnPlus || 0 : 0));
+  setDims(n, n); S.cols = S.rows = n; S.tuto = 0; S.floor = kind;
+  const g = Array.from({ length: N }, () => ({ t: 'dirt', v: randInt(0, 2) }));
+  const take = list => list.splice(randInt(0, list.length - 1), 1)[0];
+  const cellsOf = test => g.map((c, i) => test(c, i) ? i : -1).filter(i => i >= 0);
+  const plain = c => c.t === 'dirt' || c.t === 'stone';
+  // Stone in small patches, up to the setting's share of the grid (more on the guardian level)
+  const want = Math.round(N * B.partPierre * (kind === 'guardian' ? HW.niveauGardien.pierreEnPlus || 1 : 1));
+  for (let tries = 0, have = 0; have < want && tries < 200; tries++) {
+    const cx = rand(-.5, COLS - .5), cy = rand(-.5, ROWS - .5), rad = rand(.8, 1.7);
+    for (let i = 0; i < N && have < want; i++) if (g[i].t === 'dirt' && Math.hypot(i % COLS - cx, (i / COLS | 0) - cy) < rad) { g[i] = tileOf('stone'); have++; }
+  }
+  // Candy Corn stones (many more on the treasure levels)
+  const chance = kind === 'treasure' ? NT.chanceCandy : B.chanceCandy;
+  cellsOf(c => c.t === 'stone').forEach(i => { if (Math.random() < chance) g[i] = hwTile('hcandy', T.pierreCandy.coups); });
+  // The setting's special tiles (config.js > mineHantee > biomes > cases)
+  const C = B.cases || {}, count = k => C[k] ? randInt(...C[k]) : 0;
+  const put = (k, make) => { for (let m = count(k); m > 0; m--) { const l = cellsOf(plain); if (l.length) g[take(l)] = make(); } };
+  put('yeux', () => ({ ...hwTile('heyes', T.yeux.coups), v: randInt(0, Math.max(0, (T.yeux.yeux || []).length - 1)) }));
+  put('grosBonbons', () => hwTile('hsweet', T.grosBonbon.coups));
+  put('sacs', () => hwTile('hbag', T.sac.coups));
+  // Spider webs: the spider in the middle, its threads around it (a stump and its roots)
+  for (let m = count('toiles'); m > 0; m--) {
+    const l = cellsOf(plain); if (!l.length) break;
+    const st = take(l), threads = []; g[st] = hwTile('stump', T.toile.coupsAraignee);
+    for (let tries = 0, w = randInt(...T.toile.filsParToile); threads.length < w && tries < 60; tries++) {
+      const from = [st, ...threads][randInt(0, threads.length)], next = nb4(from).filter(j => plain(g[j]));
+      if (!next.length) continue;
+      const j = next[randInt(0, next.length - 1)]; g[j] = { ...hwTile('root', T.toile.coupsFil), s: st }; threads.push(j);
+    }
+  }
+  // Treasures: the Halloween collection (never-found ones more often, like in the main mine)
+  const arts = Object.entries(ARTS).filter(([, o]) => o.ev === 'hantee' && !o.pieces);
+  const known = k => !!S.bag.arts[k] || S.trip.finds.some(f => f.kind === 'art' && f.key === k);
+  const picks = []; let room = N * .45;
+  for (let k = randInt(...(B.tresors || [1, 1])); k > 0; k--) {
+    const opts = Object.fromEntries(arts.filter(([key, o]) => o.w <= COLS && o.h <= ROWS && o.w * o.h <= room && !picks.some(p => p.key === key))
+      .map(([key, o]) => [key, (ART_FREQ[o.rarity] || 1) * (known(key) ? 1 : COL.chanceNonDecouvert || 1)]));
+    if (!Object.keys(opts).length) break;
+    const key = pick(opts), o = ARTS[key]; room -= o.w * o.h; picks.push({ kind: 'art', key, w: o.w, h: o.h });
+  }
+  const placed = placeAll(picks, []), under = new Set(placed.flatMap(b => b.cells));
+  hwTrim(g, placed, kind, B);
+  // Treasure levels: piles of Candy Corn, scooped up for free
+  if (kind === 'treasure') { const l = cellsOf((c, i) => c.t === 'dirt' && !under.has(i)); for (let m = randInt(...NT.tasDeBonbons); m > 0 && l.length; m--) g[take(l)] = { t: 'hpile' }; }
+  // Guided first descent: always a Candy Corn stone and a Pierre aux yeux to try, away from the treasure
+  if (S.hwGuide && level === 1) for (const [t, coups] of [['hcandy', T.pierreCandy.coups], ['heyes', T.yeux.coups]]) {
+    if (g.some(c => c.t === t)) continue;
+    const l = cellsOf((c, i) => plain(c) && !under.has(i)); if (l.length) g[take(l)] = hwTile(t, coups);
+  }
+  S.grid = g; S.rewards = placed.map(({ p, r, c }) => ({ ...p, r, c, found: false }));
+}
+/* Energy a level asks for: the hits on the tiles covering its treasures, about "cout" × the player's max energy
+   (config.js > mineHantee > biomes > cout; × energie > multiplicateurCout on the treasure and guardian levels).
+   Same rules as the main mine: too much → rock over the treasures turns into dirt; too little → dirt into stone. */
+function hwTrim(g, placed, kind, B) {
+  const E = CFG.energie, M = E.multiplicateurCout, mult = kind === 'treasure' ? M.tresor : kind === 'guardian' ? M.gardien : 1;
+  const budget = Math.max(3, Math.round(maxE() * (B.cout || .05) * mult)), cells = placed.flatMap(b => b.cells);
+  if (E.indiceTresor) for (const { cells: cs } of placed) if (!cs.some(i => g[i].t === 'dirt')) g[cs[randInt(0, cs.length - 1)]] = { t: 'dirt', v: randInt(0, 2) };
+  let total = cells.reduce((a, i) => a + hwHits(g[i]), 0);
+  for (const i of [...cells].sort(() => Math.random() - .5)) {
+    if (total <= budget) break;
+    if (!hwHits(g[i])) continue;
+    total -= hwHits(g[i]); g[i] = { t: 'dirt', v: randInt(0, 2) };
+  }
+  const floor = budget * rand(E.coutMinimum ?? 0, 1);
+  if (total < floor) {
+    const soft = placed.flatMap(({ cells: cs }) => cs.filter(i => g[i].t === 'dirt').slice(E.indiceTresor ? 1 : 0));
+    for (const i of soft.sort(() => Math.random() - .5)) { if (total >= floor) break; g[i] = tileOf('stone'); total += hwHits(g[i]); }
+  }
+  S.levelCost = total;
+}
+
+/* ---------- The Haunted Mine's tiles, once broken ---------- */
+// The Candy Corn bag breaks the stones around it (its 8 neighbours)
+const BAG_BREAKS = ['stone', 'hcandy', 'heyes', 'hsweet', 'hbag'];
+function hwCandy(i, n) {
+  S.hallo.candy += n; S.trip.candy = (S.trip.candy || 0) + n; stat('candy', n);
+  floatText(i, `+${n} ${tr(HW.candy.nom)}`, '#ffb13b'); updateBadge();
+}
+function hwBreak(i, c, t) {
+  const T = HW.tuiles, { x, y } = center(i);
+  if (t === 'hcandy') { hwCandy(i, randInt(...T.pierreCandy.candy)); burst(x, y, ['#ff8a1e', '#ffd23d', '#fff6e0'], 10, { spread: 30, up: 16, size: [3, 7] }); }
+  if (t === 'hpile') { sfx('ore'); hwCandy(i, randInt(...HW.niveauTresor.bonbonsParTas)); burst(x, y, ['#ff8a1e', '#ffd23d', '#fff6e0'], 12, { spread: 30, up: 16, size: [3, 7] }); }
+  if (t === 'hsweet') {
+    const n = T.grosBonbon.energie;
+    S.energy = Math.min(maxE(), S.energy + n); updateEnergy(true); sfx('reward');
+    burst(x, y, ['#ff5bb0', '#ffd0ec', '#fff'], 14, { spread: 32, up: 14, size: [3, 8] });
+    floatText(i, tr('+{n} énergie', { n }), '#8ff5e8');
+  }
+  if (t === 'hbag') {
+    sfx('boom');
+    burst(x, y, ['#ff8a1e', '#ffd23d', '#ff5bb0', '#9be37a', '#fff'], 34, { spread: ts() * 1.5, up: 18, size: [4, 10], dur: 900 });
+    hwCandy(i, randInt(...T.sac.candy));
+    const r0 = i / COLS | 0, c0 = i % COLS;
+    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+      const r = r0 + dr, cc = c0 + dc, j = r * COLS + cc;
+      if ((dr || dc) && r >= 0 && cc >= 0 && r < ROWS && cc < COLS && BAG_BREAKS.includes(S.grid[j].t)) breakCell(j);
+    }
+  }
+  if (t === 'heyes') hwTrick(i);
+}
+/* « Bonbon ou farce ? »: a sure little Candy Corn gain, or a gamble (a moon geode or a rain of confetti).
+   The chances are written on the buttons (config.js > mineHantee > bonbonOuFarce). */
+const trickQueue = [];
+function hwTrick(i) { trickQueue.push(i); if (trickQueue.length === 1) setTimeout(openTrick, 450); }
+function openTrick() {
+  if (!trickQueue.length || !S.haunt) return;
+  const BF = HW.bonbonOuFarce, F = BF.farce, tot = (F.geode || 0) + (F.confettis || 0) || 1;
+  sfx('pick');
+  $('trickTitle').textContent = tr(BF.titre); $('trickText').textContent = tr(BF.texte);
+  $('trickTreatIc').innerHTML = CANDY_ART(); $('trickTrickIc').innerHTML = geodeArt('lune');
+  $('trickTreatOdds').textContent = tr('Sûr : {a} à {b} {c}', { a: BF.bonbon[0], b: BF.bonbon[1], c: tr(HW.candy.nom) });
+  $('trickTrickOdds').innerHTML = tr('{p} : une {x}', { p: pct((F.geode || 0) / tot), x: GEODES.lune.name }) + '<br>' + tr('{p} : des confettis', { p: pct((F.confettis || 0) / tot) });
+  $('trickModal').hidden = false;
+}
+function resolveTrick(treat) {
+  const i = trickQueue.shift(), BF = HW.bonbonOuFarce;
+  $('trickModal').hidden = true; unlockAudio();
+  if (i == null) return;
+  if (treat) { sfx('reward'); hwCandy(i, randInt(...BF.bonbon)); }
+  else if (pick(BF.farce) === 'geode' && roomFor('geode')) {
+    S.trip.finds.push({ kind: 'geode', key: 'lune' }); updateBadge(); sfx('win');
+    floatText(i, GEODES.lune.name, '#d7c2ff'); toast(tr('Farce réussie : une {x} !', { x: GEODES.lune.name }), 'good');
+    const { x, y } = center(i); burst(x, y, ['#d7c2ff', '#fff6c4', '#fff'], 20, { spread: 40, up: 16, size: [3, 8] });
+  } else {
+    // A rain of confetti over the whole board
+    sfx('pick'); toast(tr(BF.texteConfettis), '');
+    const w = board.clientWidth;
+    for (let k = 0; k < 5; k++) setTimeout(() => burst(rand(.1, .9) * w, rand(.1, .5) * w, ['#ff5b5b', '#ffd23d', '#3dd68c', '#4b8bff', '#cf9bff', '#ff8a1e'], 24, { spread: w * .45, up: 10, size: [4, 9], dur: 1300 }), k * 140);
+  }
+  save();
+  if (trickQueue.length) setTimeout(openTrick, 350); else checkAutoNext();
+}
+$('trickTreat').addEventListener('click', () => resolveTrick(true));
+$('trickTrick').addEventListener('click', () => resolveTrick(false));
+// The Pierres aux yeux follow the finger (or the mouse)
+addEventListener('pointermove', e => {
+  if (!S.haunt || $('scr-mine').hidden) return;
+  const b = board.getBoundingClientRect(), t = ts();
+  S.grid.forEach((c, i) => {
+    if (c.t !== 'heyes' || !tileEls[i]) return;
+    const dx = e.clientX - (b.left + (i % COLS + .5) * t), dy = e.clientY - (b.top + ((i / COLS | 0) + .45) * t), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / t) * 4;
+    tileEls[i].style.setProperty('--ex', (dx / d * k).toFixed(1) + '%'); tileEls[i].style.setProperty('--ey', (dy / d * k).toFixed(1) + '%');
+  });
+}, { passive: true });
 /* Backpack: treasures and geodes found during an expedition take one slot each (ores don't) */
 /* The bag grows with the player's level (config.js > progressionJoueur > niveaux): "sac" = slots,
    "poche" = geode pocket (that many geodes take no slot) */
@@ -4859,8 +5506,8 @@ function flyCoins(i, n) {
 }
 function updateBadge() {
   const n = bagUsed(), cap = bagCap();
-  const coins = S.trip.coins || 0;
-  $('bagTxt').innerHTML = (BAG_FREE ? tr('Sac {n}', { n }) : tr('Sac {n}/{cap}', { n, cap })) + (coins ? ` · ${coins} ${COIN}` : '');
+  const coins = S.trip.coins || 0, candy = S.trip.candy || 0;
+  $('bagTxt').innerHTML = (BAG_FREE ? tr('Sac {n}', { n }) : tr('Sac {n}/{cap}', { n, cap })) + (coins ? ` · ${coins} ${COIN}` : '') + (candy ? ` · ${candy} ${CANDY_ART()}` : '');
   $('bagPill').classList.toggle('full', !BAG_FREE && n >= cap);
 }
 function item(svg, name, n, locked, extra = '') {
@@ -5151,7 +5798,7 @@ function plGive(l) {
 // The premium shop's fairies (those with a price) are only bought, never given by a reward.
 const ownsFairy = k => S.pets.some(p => p.key === k);
 const shopFairy = k => !!PETS.fees[k].prix;
-const missingFairies = () => Object.keys(PETS.fees).filter(k => !shopFairy(k) && !ownsFairy(k));
+const missingFairies = () => Object.keys(PETS.fees).filter(k => !shopFairy(k) && !PETS.fees[k].ev && !ownsFairy(k));
 const fairyReward = r => r && r.fee && !missingFairies().length ? { ...r, fee: null, gemmes: (r.gemmes || 0) + (PETS.perlesDoublon ?? 10) } : r;
 // A new fairy: the given one if the player does not have it yet, else one they do not have; none left: pearls
 function giveFairy(key) {
@@ -5278,7 +5925,7 @@ function revealBuildings() {
   S.newBuildings = []; applyUnlocks(); save();
 }
 function renderVillage() {
-  applyUnlocks(); renderPlCard(); paintPet();
+  applyUnlocks(); renderPlCard(); paintPet(); hwPaintVillage();
   $('petsSlot').hidden = !S.pets.length;   // the Pets button shows with the first fairy (Progression, level 3)
   paintFairyOffer();
   // Buildings waiting for their entrance stay hidden until the camera reaches them; "Nouveau !" until first visit
@@ -5382,14 +6029,20 @@ function openLift() {
 const liftCard = b => (CFG.biomes.cartes || [])[b - 1] || {};
 // Background of the mine screen: each mine can have its own picture (config.js > biomes > cartes > fondMine)
 function paintMineBg() {
-  const src = !S.wide && liftCard(biomeOf(S.level || 1)).fondMine;
-  document.body.style.setProperty('--mine-bg', src ? `url("${src}")` : 'none');
-  document.body.classList.toggle('mine-bg', !!src);
+  // Haunted Mine: each of its 3 settings has its own background, dirt and stone (config.js > mineHantee > biomes);
+  // no picture yet: a night sky and the usual dirt and stone, tinted (CSS #scr-mine.haunt)
+  const card = S.haunt ? hwBiome(S.level) : liftCard(biomeOf(S.level || 1));
+  const src = S.haunt ? card.fond : !S.wide && card.fondMine;
+  document.body.style.setProperty('--mine-bg', src ? `url("${src}")` : S.haunt ? HW_NIGHT[hwBiomeIdx(S.level)] : 'none');
+  document.body.classList.toggle('mine-bg', !!src || !!S.haunt);
   // Its dirt: up to 3 pictures (the 3 looks of a dirt tile); none = the brown dirt
-  const dirt = liftCard(biomeOf(S.level || 1)).terre || [], el = $('scr-mine');
+  const dirt = card.terre || [], el = $('scr-mine');
+  el.classList.toggle('haunt', !!S.haunt);
+  [1, 2, 3].forEach(n => el.classList.toggle('hb' + n, !!S.haunt && hwBiomeIdx(S.level) === n - 1));
+  el.classList.toggle('hw-own-dirt', !!S.haunt && !!dirt.length); el.classList.toggle('hw-own-stone', !!S.haunt && !!(card.pierre || []).length);
   for (let v = 0; v < 3; v++) { const f = dirt[v] || dirt[0]; if (f) el.style.setProperty('--dirt' + v, `url("${f}")`); else el.style.removeProperty('--dirt' + v); }
   // Its stone: 3 pictures (intact, cracked, very cracked); none = the grey stone
-  const stone = liftCard(biomeOf(S.level || 1)).pierre || [];
+  const stone = card.pierre || [];
   for (let v = 0; v < 3; v++) { const f = stone[v] || stone[stone.length - 1]; if (f) el.style.setProperty('--stone' + v, `url("${f}")`); else el.style.removeProperty('--stone' + v); }
 }
 // A mine opens once the player has finished config.js > biomes > niveauDeblocage of the previous one
@@ -5548,6 +6201,8 @@ function applyFind(kind, key) {
       // The series prime is no longer paid here: it waits at the Museum, to be collected there
       for (let n = tierBefore + 1; n <= tierAfter; n++) (S.pendingPrimes = S.pendingPrimes || []).push({ set, tier: n });
       gainXP((PJ.xpEtoileCollection || 0) * (tierAfter - tierBefore));
+      // Haunted Mine: the Halloween collection at 3 stars gives the Cape de chauve-souris (once)
+      if (HW && set === HW.collectionCape && tierAfter >= MAX_STARS && !S.hallo.cape) hwGiveGear('capeChauveSouris', HW.texteCape);
       if (tierAfter === 1) { r.setMsg = SETS[set].message; r.legend = SETS[set].legend; }
     }
   }
@@ -5607,10 +6262,14 @@ function openRecap() {
   const nf = n => n.toLocaleString(LANG === 'en' ? 'en-US' : 'fr-FR');
   const loot = geode => groups.filter(g => (g.kind === 'geode') === geode).map(g => tile(g.art, g.n, rarityOfFind(g.kind, g.key) || '', g.isNew));
   const oreTiles = Object.keys(ORES).filter(k => T.ores[k]).map(k => tile(resArt(k), nf(T.ores[k])));
-  const body = section(tr('Minerais'), oreTiles) + (total ? section(tr('Pièces'), [tile(COIN, 0, '', false, 'recapCount')]) : '')
+  // Haunted Mine: the Candy Corn of the descent, counted up like the coins
+  const candy = T.candy || 0;
+  const body = (candy ? section(tr(HW.candy.nom), [tile(CANDY_ART(), 0, 'hw-candy', false, 'recapCandy')]) : '')
+    + section(tr('Minerais'), oreTiles) + (total ? section(tr('Pièces'), [tile(COIN, 0, '', false, 'recapCount')]) : '')
     + section(tr('Géodes'), loot(true)) + section(tr('Artefacts'), loot(false));
   $('recapBody').innerHTML = body || `<p class="xp-empty">${tr('Tu remontes les mains vides cette fois. Ton niveau t\'attend !')}</p>`;
-  $('recapLevel').textContent = S.wide ? tr(WIDE.nom) : tr('Niveau atteint : {n}', { n: mineLv(S.level) });
+  $('recapLevel').textContent = S.wide ? tr(WIDE.nom) : S.haunt ? tr(HW.nom) + ' · ' + tr('Niveau atteint : {n}', { n: S.level }) : tr('Niveau atteint : {n}', { n: mineLv(S.level) });
+  if (candy) countUp('recapCandy', candy, 300 + i * 60);
   $('recapCp').hidden = !T.newCp;
   // The coin total counts up
   if (total) {
@@ -5625,14 +6284,30 @@ function openRecap() {
     setTimeout(() => { const el = $('recapCount'); if (el) el.textContent = nf(total); }, delay + dur + 200);
   }
   $('recapAtelier').hidden = !S.bag.geodes.length || !S.buildings.atelier;
-  endWide(); paintWide();
+  // Back from the Haunted Mine: "Retour" leads to the event's page
+  recapToHaunt = !!S.haunt;
+  endWide(); endHaunt(); paintWide();
   $('descendModal').hidden = true;
   $('recapModal').hidden = false;
   if (body) sfx('reward');
   save();
 }
 $('recapAtelier').addEventListener('click', () => { $('recapModal').hidden = true; go('atelier'); });
-$('recapVillage').addEventListener('click', () => { $('recapModal').hidden = true; go('village'); });
+let recapToHaunt = false;
+$('recapVillage').addEventListener('click', () => { $('recapModal').hidden = true; go(recapToHaunt && hwShown() ? 'haunt' : 'village'); recapToHaunt = false; });
+// A number counting up from 0 (recap screen), starting after "delay" ms
+function countUp(id, total, delay) {
+  const nf = n => n.toLocaleString(LANG === 'en' ? 'en-US' : 'fr-FR');
+  const t0 = performance.now(), dur = Math.min(1600, 500 + total * 8);
+  const step = now => {
+    const k = Math.min(1, Math.max(0, (now - t0 - delay) / dur)), el = $(id);
+    if (!el) return;
+    el.textContent = nf(Math.round(total * (1 - Math.pow(1 - k, 3))));
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+  setTimeout(() => { const el = $(id); if (el) el.textContent = nf(total); }, delay + dur + 200);
+}
 /* ---------- First steps in the village: go down, visit each new building, claim the first prime, use the lift ---------- */
 let villageCoachBusy = false;
 function villageCoach() {
@@ -5677,7 +6352,7 @@ function villageCoach() {
 }
 /* ---------- First steps in the mine: show the "next level" button once, and send the player back up at each planned return ---------- */
 function mineCoach() {
-  if (S.wide) return;
+  if (S.wide || S.haunt) return;
   if (coach || $('scr-mine').hidden || descending || bagQueue.length || !settled() || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
   if (inGuide() && S.level >= nextReturn())
     return startCoach('retour-' + nextReturn(), [{ text: TX.remonter, target: () => $('upBtn'), done: () => $('scr-mine').hidden }], true);
@@ -5703,9 +6378,9 @@ const fragWaiting = () => Object.values(ARTS).some(o => o.pieces && fragReady(o.
 // Something to do at the Museum: a star prime to collect, or a treasure to put back together
 const museumWaiting = () => museumPrimeWaiting() || fragWaiting();
 // A piece drawn at its place on the whole treasure: [centre X, centre Y, width, rotation] in % of the whole picture
-const pieceImg = (p, cls) => `<img class="${cls}" src="${TR + p.look.file}.png" alt="" draggable="false" style="left:${p.pos[0]}%; top:${p.pos[1]}%; width:${p.pos[2]}%; --r:${p.pos[3] || 0}deg">`;
+const pieceImg = (p, cls) => `<img class="${cls}" src="${artSrc(p)}" alt="" draggable="false" style="left:${p.pos[0]}%; top:${p.pos[1]}%; width:${p.pos[2]}%; --r:${p.pos[3] || 0}deg">`;
 // The whole treasure in silhouette, with the pieces found
-const fragArt = k => `<span class="frag-box"><img class="fr-sil" src="${TR + ARTS[k].look.file}.png" alt="" draggable="false">`
+const fragArt = k => `<span class="frag-box"><img class="fr-sil" src="${artSrc(ARTS[k])}" alt="" draggable="false">`
   + ARTS[k].pieces.filter(p => fragHas(k, p)).map(p => pieceImg(ARTS[p], 'fr-pc')).join('') + '</span>';
 function rebuild(k) {
   if (!ARTS[k] || !ARTS[k].pieces || !fragReady(k)) return;
@@ -5936,6 +6611,11 @@ function petArrive() {
     const rw = any(h); rw.radar = true;
     return { i: midOf(rw), txt: tr('Trésor repéré !'), col: '#ffb3e6' };
   }
+  if (f.effet === 'minerai' && S.haunt) {   // Fée orange, in the Haunted Mine: a stone becomes a Candy Corn stone
+    const s = cells(c => c.t === 'stone'); if (!s.length) return null;
+    const i = any(s); S.grid[i] = hwTile('hcandy', HW.tuiles.pierreCandy.coups);
+    return { i, txt: tr('+1 Pierre à Candy Corn'), col: '#ffb13b' };
+  }
   if (f.effet === 'minerai') {   // Fée orange: a stone becomes an ore
     const ores = Object.fromEntries(Object.entries(ORES).filter(([k]) => at(S.level, ORE_UNLOCK[k])).map(([k, o]) => [k, o.w]));
     const s = cells(c => c.t === 'stone'); if (!s.length || !Object.keys(ores).length) return null;
@@ -5977,17 +6657,19 @@ document.addEventListener('pointerdown', e => { if (!e.target.closest('#minePet'
 /* Collection button: the Museum shows one category at a time (config.js > collections > vitrines): one per mine, then
    « Pierres précieuses et Reliques » = the gems (from the geodes of every mine) and the collections spread over several
    mines (coins, keys). Each category has its own background behind the shelves and its own title bar colour. */
-const VIT = COL.vitrines || {}, PRECIOUS = 'precieux';
+// Haunted Mine: its own category « Halloween » (config.js > mineHantee > vitrine), kept after the event
+const VIT = COL.vitrines || {}, PRECIOUS = 'precieux', HAUNTED = 'hantee';
 let muView = 0;   // 0 = choose again when the Museum opens: the mine played last
 const setMines = sk => { const m = new Set(); for (const k of setKeys(sk)) { const r = ARTS[k].range; for (let b = biomeOf(r[0]); b <= biomeOf(Math.min(r[1], BIOME_NAMES.length * BIOME_LEN)); b++) m.add(b); } return m; };
 // The category of a collection: its mine, or the precious one
-const catOf = sk => { if (SETS[sk].kind === 'gem') return PRECIOUS; const m = [...setMines(sk)]; return m.length === 1 ? m[0] : PRECIOUS; };
+const catOf = sk => { if (SETS[sk].ev) return HAUNTED; if (SETS[sk].kind === 'gem') return PRECIOUS; const m = [...setMines(sk)]; return m.length === 1 ? m[0] : PRECIOUS; };
 const inView = (sk, v) => catOf(sk) === v;
-const catLook = v => (v === PRECIOUS ? VIT.precieux : (VIT.mines || [])[v - 1]) || {};
-const catName = v => v === PRECIOUS ? tr((VIT.precieux || {}).nom || 'Pierres précieuses et Reliques') : biomeName(v);
-const catIcon = v => v === PRECIOUS ? (VIT.precieux || {}).icone || 'Assets/Treasures/Gem_Purple_4.png' : liftCard(v).visuel || 'Assets/UI/Icon_Mine.png';
+const catLook = v => (v === HAUNTED ? HW.vitrine : v === PRECIOUS ? VIT.precieux : (VIT.mines || [])[v - 1]) || {};
+const catName = v => v === HAUNTED ? tr(HW.vitrine.nom) : v === PRECIOUS ? tr((VIT.precieux || {}).nom || 'Pierres précieuses et Reliques') : biomeName(v);
+const catIcon = v => v === HAUNTED ? HW.images.bouton || 'Assets/UI/Event.png' : v === PRECIOUS ? (VIT.precieux || {}).icone || 'Assets/Treasures/Gem_Purple_4.png' : liftCard(v).visuel || 'Assets/UI/Icon_Mine.png';
 // The categories shown: the mines opened, then the precious one
-const muCats = () => [...openMines(), PRECIOUS];
+// (Halloween: during the event, and afterwards once one of its treasures was found)
+const muCats = () => [...openMines(), ...(HW && (hwShown() || Object.keys(SETS).some(sk => SETS[sk].ev && setSeen(sk))) ? [HAUNTED] : []), PRECIOUS];
 const setSeen = sk => setKeys(sk).some(k => setBook(sk)[k] || setTable(sk)[k].pieces && fragFound(k));
 const openMines = () => { const out = [1]; while (out.length < BIOME_NAMES.length && mineOpen(out.length + 1)) out.push(out.length + 1); return out; };
 // Something to do in a mine's collections: a new collection to open, a star prime, a treasure to put back together
@@ -6005,11 +6687,11 @@ $('muColClose').addEventListener('click', () => $('muColModal').hidden = true);
 $('muColModal').addEventListener('click', e => {
   if (e.target.id === 'muColModal') return $('muColModal').hidden = true;
   const b = e.target.closest('[data-muview]'); if (!b) return;
-  sfx('pick'); muView = b.dataset.muview === PRECIOUS ? PRECIOUS : +b.dataset.muview; $('muColModal').hidden = true; renderMuseum(); $('scr-museum').scrollTop = 0;
+  sfx('pick'); muView = [PRECIOUS, HAUNTED].includes(b.dataset.muview) ? b.dataset.muview : +b.dataset.muview; $('muColModal').hidden = true; renderMuseum(); $('scr-museum').scrollTop = 0;
 });
 function renderMuseum() {
   setTimeout(museumCoach);
-  if (!muView || muView !== PRECIOUS && !mineOpen(muView)) muView = mineOpen(biomeOf(S.level || 1)) ? biomeOf(S.level || 1) : 1;
+  if (!muView || muView !== PRECIOUS && muView !== HAUNTED && !mineOpen(muView)) muView = mineOpen(biomeOf(S.level || 1)) ? biomeOf(S.level || 1) : 1;
   // The other categories have something waiting: a badge on the Collection button
   setDot('muColBadge', muCats().some(v => v !== muView && mineWaiting(v)));
   // The category's look: background behind the shelves, title bar colour
@@ -6070,9 +6752,17 @@ document.addEventListener('click', e => {
 /* ---------- Atelier: timing mini-game to open geodes ---------- */
 // Per geode rarity (white, pink, gold, crystal): hits needed, zone width in % of the bar, cursor sweeps per second
 // A random gem among all gems of a rarity (falls back to a lower rarity if none is defined)
-function rollGem(ri) {
+function rollGem(ri, geode) {
+  // Moon geode (Haunted Mine): a moon gem, its rarity drawn from config.js > mineHantee > geodeLune > chances
+  // (a failed one gives a Common moon gem)
+  if (geode && GEODES[geode] && GEODES[geode].ev) {
+    const moon = Object.keys(GEMS).filter(k => GEMS[k].ev === GEODES[geode].ev);
+    const r = ri < RARITIES.indexOf(GEODES[geode].rarity) ? 'common' : pick(HW.geodeLune.chances || { common: 1 });
+    const pool = moon.filter(k => RARITY_GEM[k] === r);
+    return (pool.length ? pool : moon)[randInt(0, (pool.length ? pool : moon).length - 1)];
+  }
   for (let i = ri; i >= 0; i--) {
-    const pool = Object.keys(GEMS).filter(k => RARITY_GEM[k] === RARITIES[i]);
+    const pool = Object.keys(GEMS).filter(k => RARITY_GEM[k] === RARITIES[i] && !GEMS[k].ev);
     if (pool.length) return pool[randInt(0, pool.length - 1)];
   }
   return Object.keys(GEMS)[0];
@@ -6187,7 +6877,7 @@ function finishMini(win) {
   // The geode always opens: a failure gives a gem one rarity lower (a white geode crumbles into a few coins)
   S.bag.geodes.splice(S.bag.geodes.indexOf(g), 1); S.roll = null; stat('geodes');
   const gotTier = win ? tier : tier - 1;
-  const gem = gotTier >= 0 ? rollGem(gotTier) : null;
+  const gem = gotTier >= 0 || GEODES[g].ev ? rollGem(gotTier, g) : null;
   const r = gem ? applyFind('gem', gem) : null;
   const coins = gem ? r.coins : CFG.atelier.piecesGeodeBlancheRatee;
   S.coins += coins;
@@ -6254,8 +6944,8 @@ $('resetBtn').addEventListener('click', () => {
 function levelDone() {
   stat('niveaux'); sfx('win');
   if (!reduced) board.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(1.25)' }, { filter: 'brightness(1)' }], { duration: 700 });
-  // Guardian level: the big reward, given once per guardian level, shown in the bubble
-  if ((S.floor || floorKind(S.level)) === 'guardian' && !S.tuto && !S.guardDone[S.level]) {
+  // Guardian level: the big reward, given once per guardian level, shown in the bubble (not the Haunted Mine's level 30)
+  if ((S.floor || floorKind(S.level)) === 'guardian' && !S.tuto && !S.haunt && !S.guardDone[S.level]) {
     const R = RY.niveauGardien.recompense, parts = [];
     const coins = R.pieces + R.piecesEnPlusParBiome * (biomeOf(S.level) - 1);
     S.coins += coins; parts.push(tr('+{n} pièces', { n: coins }));
@@ -6280,13 +6970,15 @@ const settled = () => !!(S.rewards && S.rewards.length && S.rewards.every(r => r
 function updateNextPill() {
   // "Next level" only once the uncovered treasures are picked up, so none is left behind by mistake
   // (first steps: at a planned return, the only way is back up)
-  const done = !S.wide && settled() && !(inGuide() && S.level >= nextReturn());
+  // (Haunted Mine: no "next level" at its bottom)
+  const done = !S.wide && settled() && !(inGuide() && S.level >= nextReturn()) && !hwBottom();
   $('nextPill').hidden = !done;
   $('nextPill').textContent = S.level >= 1000 ? tr('Mine suivante ↓') : tr('Niveau {n} ↓', { n: mineLv(S.level + 1) });
 }
 $('mine2Up').addEventListener('click', () => { $('mine2Modal').hidden = true; openRecap(); });
 // A full bag or little energy left: ask before going down
 function tryDescend() {
+  if (hwBottom()) return toast(tr(HW.textes.fondDeLaMine), '');
   if (S.level >= 1000) { S.mine2 = true; save(); $('mine2Modal').hidden = false; $('mine2Up').focus(); return; }
   // (first steps: no low-energy warning before a planned return, the guided levels are sized to the energy left)
   const guide = !upAllowed();
@@ -6311,7 +7003,7 @@ function tryDescend() {
   $('descendStats').className = 'dw-stats' + (full && low ? ' two' : '');
   $('descendStats').innerHTML = (full ? stat('Assets/UI/Bag.png', `${bagUsed()} / ${bagCap()}`) : '') + (low ? stat('Assets/UI/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
   // How far the next checkpoint is: worth going on when it is close
-  const cp = CHECKPOINTS.find(l => l > S.level);
+  const cp = S.haunt ? (HW.departs || []).find(l => l > S.level) : CHECKPOINTS.find(l => l > S.level);
   $('descendCp').textContent = cp ? tr(plural(cp - S.level, 'Prochain checkpoint : niveau {n} (dans {k} niveau)', 'Prochain checkpoint : niveau {n} (dans {k} niveaux)'), { n: cp, k: cp - S.level }) : '';
   $('descendCp').hidden = !cp;
   // First steps, before a planned return: no "Remonter" here, the player is shown how to keep going
@@ -6350,6 +7042,7 @@ function descend() {
   setTimeout(() => { frame.classList.remove('arriving'); fx.classList.remove('on'); fx.hidden = true; }, DESCEND_MS + 600);
 }
 function arriveNext() {
+  if (S.haunt) return hwArrive();
   S.level++; if (CFG.energie.rechargeEtageSuivant) S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges();
   S.rewardMsg = null; genLevel(S.level); const petFxArrive = petArrive(); buildBoard(!DESCEND_MS); petArriveFx(petFxArrive); updateEnergy(true); save();
   const dc = $('depthChip'); dc.classList.remove('bump'); void dc.offsetWidth; dc.classList.add('bump');
@@ -6526,6 +7219,9 @@ function start(data) {
     S.v3 = true; S.screen = 'village';
   }
   if (!(S.bucketCharges >= 0)) S.bucketCharges = maxCharges();
+  // Haunted Mine: saves from before the event get its fields; a descent saved after the event was removed from config.js ends
+  S.hallo = Object.assign(newHallo(), S.hallo || {});
+  if (S.haunt && !HW) { const b = S.hauntBack || {}; delete S.haunt; delete S.hauntBack; for (const k of WIDE_KEEP) if (k in b) S[k] = b[k]; if (Array.isArray(S.grid)) setDims(S.cols, S.rows); else genLevel(S.level || 1); }
   buildBoard(true); setTool(S.tool || 'shovel'); updateBombs(); updateQuick(); paintSound(); updateBadge(); updateEnergy(true);
   loop();
   go(S.screen === 'mine' ? 'mine' : 'village');
@@ -6554,6 +7250,8 @@ function loadCheats() {
     updateBombs, updateQuick, updateBadge, updateEnergy,
     EQC, ARCH, RAR_KEYS, newItem, refreshGear, archOpen, gearTotals,
     giveFairy, paintPet, paintMoney,
+    // Haunted Mine: the event's clock (test clock key), tickets and page
+    hw: HW && { CLOCK_KEY, day: hwDay, date: hwDate, now: hwNow, refresh: hwRefresh, render: renderHaunt, paintVillage: hwPaintVillage, gen: genHaunt },
     // Texts still missing an English version (shown in the console with __mine.missingEN())
     missingEN: () => [...MISSING_EN],
     cheatsOn,

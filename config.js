@@ -1187,4 +1187,257 @@ window.CONFIG = {
       largeurCase: 65,         // largeur d'une case en pixels, sur un écran de téléphone de 430 de large (s'adapte aux autres écrans)
     },
   },
+
+  /* ---------------------------------------------------------------
+     MINE HANTÉE (événement d'Halloween, temporaire)
+     Une mine à part, de 30 niveaux, avec les règles de la mine principale :
+     terre gratuite à la pelle, pierre à la pioche (1 énergie par coup), arrosoir,
+     bombes, radars et potions. Elle est tirée à nouveau à chaque descente.
+     Ta progression dans la vraie mine n'est jamais touchée : elle est mise de côté
+     pendant la descente et revient quand le joueur remonte.
+     L'événement apparaît avec les Événements (progressionJoueur > niveaux : "evenements").
+     IMAGES : laisser '' pour garder le dessin provisoire. Le nom du fichier attendu est
+     écrit en commentaire à côté : pose l'image dans Assets/Event/Halloween/ et écris son chemin.
+     --------------------------------------------------------------- */
+  mineHantee: {
+    nom: "La Mine Hantée",
+
+    // Jour 1 de l'événement (année-mois-jour). Les jours changent à minuit, à l'heure du téléphone du joueur.
+    debut: '2026-10-18',
+    // Calendrier, en jours de l'événement (J1 = le jour "debut", J14 = le soir d'Halloween)
+    calendrier: {
+      mineOuverte: [1, 14],    // la mine est ouverte du J1 au J14 (Tickets gratuits ces jours-là seulement)
+      boss: 8,                 // la Citrouille géante arrive au niveau 30 à partir de ce jour
+      promo: [13, 16],         // packs de Tickets en promo
+      fin: 16,                 // dernier jour de l'événement. J15 et J16 : la boutique seule reste ouverte
+    },
+
+    // TICKETS : 1 Ticket = 1 descente, avec l'énergie pleine
+    tickets: {
+      parJour: 3,              // Tickets gratuits par jour. Pas de cumul : ceux qui restent sont perdus à minuit
+      // true = les Tickets gratuits arrivent en deux fois : "aMinuit" à minuit, le reste à "heure" (18 = 18 h)
+      enDeuxFois: false,
+      deuxFois: { aMinuit: 2, heure: 18 },
+      pubsParJour: 2,          // Tickets en plus par jour avec une publicité (1 pub = 1 Ticket, perdu à minuit comme les gratuits)
+      // Les Tickets achetés (boutique premium) ne sont jamais perdus : ils restent jusqu'à la fin de l'événement.
+      // Ils servent après les Tickets gratuits.
+      premiereDescenteOfferte: true,   // la toute première descente est guidée et ne coûte pas de Ticket
+    },
+
+    // NIVEAUX : 30 niveaux, en 3 décors de 10 niveaux
+    niveaux: 30,
+    // Départs possibles en plus du niveau 1 : atteindre ce niveau une fois permet ensuite d'y descendre directement
+    // (11 = début de la Forêt des chauves-souris, 21 = début du Manoir des fantômes)
+    departs: [11, 21],
+    // Un décor par tranche de 10 niveaux. "depuis" = son premier niveau.
+    // "taille" = la grille (5 = 5 × 5 cases, 7 maximum) ; "tresors" = [minimum, maximum] de trésors par niveau ;
+    // "partPierre" = part des cases en pierre (0.35 = 35 %) ; "chanceCandy" = chance qu'une pierre soit une Pierre à Candy Corn.
+    // "cout" = énergie pour dégager les trésors d'un niveau, en part de l'énergie max du joueur (0.06 = 6 %) :
+    //   chaque joueur fait à peu près le même nombre de niveaux par Ticket, quelle que soit son énergie
+    //   (au moins 3 énergie par niveau, soit une pierre). Repère : environ 15 niveaux par Ticket si le joueur ne casse
+    //   que ce qui cache les trésors, moins s'il casse aussi les Pierres à Candy Corn et les Pierres aux yeux.
+    //   Comme dans la mine principale, un trésor garde une case dans la terre (energie > indiceTresor) :
+    //   un petit trésor d'une case ne coûte donc rien.
+    // "cases" = nombre de cases spéciales par niveau, [minimum, maximum] (voir "tuiles" plus bas).
+    // "fond" = image de fond de l'écran ; "terre" = 1 à 3 images de terre (variantes) ;
+    // "pierre" = 1 à 3 images de pierre (intacte, fissurée, très fissurée ; avec une seule image, des fissures sont dessinées dessus).
+    biomes: [
+      { nom: 'Potager aux citrouilles', depuis: 1, taille: 5, tresors: [1, 1], partPierre: 0.35, chanceCandy: 0.3, cout: 0.05,
+        cases: { yeux: [1, 1], toiles: [0, 0], sacs: [0, 0], grosBonbons: [0, 1] },
+        fond: '',     // Assets/Event/Halloween/Fond_Potager.png
+        terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Potager_1.png, _2, _3
+        pierre: ['Assets/Event/Halloween/Tile_Halloween_Stone.png'] }, // une image propre au décor : Assets/Event/Halloween/Pierre_Potager_1.png, _2, _3
+      { nom: 'Forêt des chauves-souris', depuis: 11, taille: 6, tresors: [1, 2], partPierre: 0.4, chanceCandy: 0.3, cout: 0.06,
+        cases: { yeux: [1, 2], toiles: [1, 1], sacs: [0, 1], grosBonbons: [0, 1] },
+        fond: '',     // Assets/Event/Halloween/Fond_Foret.png
+        terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Foret_1.png, _2, _3
+        pierre: ['Assets/Event/Halloween/Tile_Halloween_Stone.png'] }, // une image propre au décor : Assets/Event/Halloween/Pierre_Foret_1.png, _2, _3
+      { nom: 'Manoir des fantômes', depuis: 21, taille: 6, tresors: [2, 2], partPierre: 0.45, chanceCandy: 0.3, cout: 0.07,
+        cases: { yeux: [1, 2], toiles: [1, 2], sacs: [1, 1], grosBonbons: [1, 1] },
+        fond: '',     // Assets/Event/Halloween/Fond_Manoir.png
+        terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Manoir_1.png, _2, _3
+        pierre: ['Assets/Event/Halloween/Tile_Halloween_Stone.png'] }, // une image propre au décor : Assets/Event/Halloween/Pierre_Manoir_1.png, _2, _3
+    ],
+    // Niveaux trésor : remplis de Candy Corn, à chaque descente
+    niveauTresor: {
+      niveaux: [10, 20],
+      tailleEnPlus: 1,          // la grille est plus grande d'un cran (7 × 7 maximum)
+      chanceCandy: 0.75,        // chance qu'une pierre soit une Pierre à Candy Corn (au lieu de "chanceCandy" du décor)
+      tasDeBonbons: [3, 5],     // tas de Candy Corn, ramassés gratuitement d'un coup de pelle
+      bonbonsParTas: [2, 4],
+      texte: "Niveau trésor ! Des Candy Corn partout.",
+    },
+    // Niveau gardien : le dernier niveau. La Citrouille géante y arrive à partir du jour "calendrier > boss".
+    niveauGardien: {
+      niveau: 30,
+      pierreEnPlus: 1.4,        // quantité de pierre (1 = normal)
+      texte: "Niveau gardien ! Le fond de la Mine Hantée.",
+    },
+
+    // CANDY CORN : la monnaie de l'événement (pas de place dans le sac, comme les minerais)
+    candy: {
+      nom: 'Candy Corn',
+      icone: 'Assets/Event/Halloween/Icon_CandyCorn.png',
+    },
+
+    // LES TUILES. "coups" = coups de pioche avec la pioche de base (comme mine > coupsPierre).
+    tuiles: {
+      // Pierre à Candy Corn : une pierre à minerai
+      pierreCandy: { coups: 3, candy: [1, 3], image: 'Assets/Event/Halloween/Tile_Overlay_Halloween_CandyCorn.png' },   // dessin posé sur la pierre
+      // Pierre aux yeux : ses yeux clignent et suivent le doigt. Cassée, elle ouvre « Bonbon ou farce »
+      // "yeux" = les dessins des yeux, posés sur la pierre (chaque pierre en prend un au hasard)
+      yeux:        { coups: 3, yeux: ['Assets/Event/Halloween/Tile_Overlay_Halloween_Eyes1.png', 'Assets/Event/Halloween/Tile_Overlay_Halloween_Eyes1-1.png'] },
+      // Toile d'araignée : comme la souche et ses racines. Casser l'araignée fait disparaître toute la toile.
+      toile:       { coupsAraignee: 3, coupsFil: 4, filsParToile: [3, 5],
+                     imageAraignee: 'Assets/Event/Halloween/Tile_Overlay_Halloween_SpiderwebCenter.png', imageFil: 'Assets/Event/Halloween/Tile_Overlay_Halloween_Spiderweb.png' },
+      // Sac de bonbons surprise : un coup de pioche le fait éclater, ce qui casse les pierres autour (les 8 cases voisines)
+      sac:         { coups: 1, candy: [2, 4], image: 'Assets/Event/Halloween/Tile_Overlay_Halloween_ExplosiveBag.png' },
+      // Gros bonbon : se casse en 1 coup et rend un peu d'énergie (sans dépasser le maximum). Son image est une case entière.
+      grosBonbon:  { coups: 1, energie: 3, image: 'Assets/Event/Halloween/Tile_Halloween_Candy.png' },
+      // Tas de Candy Corn des niveaux trésor
+      tas:         { image: '' },                                  // Assets/Event/Halloween/Tile_TasCandy.png
+    },
+
+    // BONBON OU FARCE (après une Pierre aux yeux). Les chances sont affichées dans la fenêtre.
+    bonbonOuFarce: {
+      titre: "Bonbon ou farce ?",
+      texte: "La pierre te regarde avec de grands yeux…",
+      bonbon: [3, 5],                       // Bonbon : un petit gain sûr de Candy Corn, [minimum, maximum]
+      farce: { geode: 50, confettis: 50 },  // Farce : chances (le total fait 100) d'une Géode de lune ou d'une pluie de confettis
+      texteConfettis: "Farce ! Une pluie de confettis !",
+    },
+
+    // GÉODE DE LUNE : s'ouvre à l'Atelier (mini-jeu habituel) et donne une pierre de lune.
+    // "rarete" = sa difficulté à l'Atelier. "chances" = chance de chaque rareté de pierre (le total fait 100).
+    // Ratée (plus de cœurs) : elle donne une pierre Commune.
+    geodeLune: {
+      nom: 'Géode de lune', rarete: 'rare',
+      chances: { common: 60, rare: 30, epic: 10 },
+      image: '',                // Assets/Event/Halloween/Geode_Lune.png
+    },
+
+    // COLLECTIONS DU MUSÉE (mêmes règles que les autres : prime, étoiles, bonus de revente).
+    // "image" = le fichier dans Assets/Treasures/, sans « .png » ('' = dessin provisoire) ; "taille" = [largeur, hauteur] en cases.
+    collections: {
+      // Pierres de lune : elles sortent uniquement des Géodes de lune
+      gemmes: {
+        pierresDeLune: { nom: 'Pierres de lune', prime: 200, objets: {
+          quartzEtoile:    { nom: 'Quartz étoilé',       rarete: 'common', image: '' },   // Halloween/Gem_QuartzEtoile
+          opaleDeLune:     { nom: 'Opale de lune',       rarete: 'common', image: '' },   // Halloween/Gem_OpaleLune
+          amethysteMinuit: { nom: 'Améthyste de minuit', rarete: 'rare',   image: '' },   // Halloween/Gem_AmethysteMinuit
+          ambreCaramel:    { nom: 'Ambre caramel',       rarete: 'epic',   image: '' },   // Halloween/Gem_AmbreCaramel
+        } },
+      },
+      // Fête d'Halloween : cachée dans la Mine Hantée
+      artefacts: {
+        feteHalloween: { nom: "Fête d'Halloween", prime: 300, objets: {
+          bonbonEmballe: { nom: 'Bonbon emballé',      rarete: 'common', image: '', taille: [1, 1] },   // Halloween/Bonbon
+          chatPeluche:   { nom: 'Chat noir en peluche', rarete: 'common', image: '', taille: [1, 2] },  // Halloween/ChatPeluche
+          balai:         { nom: 'Balai de sorcière',   rarete: 'common', image: '', taille: [2, 2] },   // Halloween/Balai
+          chaudron:      { nom: 'Chaudron miniature',  rarete: 'rare',   image: '', taille: [2, 2] },   // Halloween/Chaudron
+          // En 4 morceaux à reconstituer au Musée (images des morceaux : Halloween/Citrouille_1 à _4)
+          grandeCitrouille: { nom: 'Grande citrouille sculptée', article: 'la', rarete: 'epic', image: '', morceaux: [
+            { image: '', position: [30, 30, 50, 0] },   // le haut gauche
+            { image: '', position: [70, 30, 50, 0] },   // le haut droit
+            { image: '', position: [30, 70, 50, 0] },   // le bas gauche
+            { image: '', position: [70, 70, 50, 0] },   // le bas droit
+          ] },
+        } },
+      },
+    },
+
+    /* ----- RÉCOMPENSES ----- */
+
+    // BOUTIQUE DE LA SORCIÈRE : on paie en Candy Corn. Ouverte jusqu'à la fin de l'événement (J16).
+    // "prix" en Candy Corn ; "parJour" = achats possibles par jour (absent = sans limite) ;
+    // "une fois" = les exclusivités ne s'achètent qu'une seule fois.
+    // PRIX (simulation du 14 octobre 2026, avec les vrais niveaux du jeu) : un joueur qui joue ses 3 Tickets gratuits
+    // chaque jour, sans pub, et casse tout ce qui donne des Candy Corn, en gagne par jour (et au total au jour 12) :
+    //   énergie max 40 (joueur qui vient d'ouvrir les Événements) : ~105 par jour (~1 300 au J12, ~1 550 au J14)
+    //   énergie max 60 (joueur moyen, la référence)                : ~150 par jour (~1 830 au J12, ~2 130 au J14)
+    //   énergie max 100                                            : ~230 par jour (~2 800 au J12)
+    // La Fée citrouille (1 800) tombe donc au J12 pour le joueur moyen s'il garde ses Candy Corn pour elle ;
+    // avec les 2 pubs par jour (5 Tickets), vers le J8. Un joueur à 40 d'énergie ne l'a qu'avec les pubs.
+    // Les Candy Corn dépendent de l'énergie du joueur : les Pierres à Candy Corn coûtent de l'énergie à casser.
+    boutiqueSorciere: {
+      bombe:      { prix: 25 },
+      radar:      { prix: 25 },
+      potion:     { prix: 60, parJour: 1 },
+      geodeLune:  { prix: 90 },
+      // Coffre Halloween : une pièce d'équipement à thème (voir "equipement" plus bas), avec ces chances de rareté
+      coffre:     { prix: 160, chances: { commun: 60, rare: 35, epique: 5 } },
+      // Les deux exclusivités, les objets les plus chers
+      chapeau:    { prix: 1100 },   // le Chapeau de sorcière (équipement, Épique)
+      feeCitrouille: { prix: 1800 },   // la Fée citrouille, la récompense phare
+    },
+
+    // BOUTIQUE PREMIUM (pas encore de vrai paiement : l'achat est immédiat, comme les fées rares)
+    // "prix" = texte du bouton ; "prixPromo" = texte pendant la promo (calendrier > promo), avec l'ancien prix barré.
+    // Les packs de Tickets ne sont vendus que tant que la mine est ouverte (un Ticket ne sert plus à rien après).
+    premium: {
+      tickets: [
+        { tickets: 3,  prix: "0,99 €", prixPromo: "0,49 €" },
+        { tickets: 10, prix: "2,99 €", prixPromo: "1,49 €" },
+      ],
+      // Pack « Nuit hantée »
+      packNuitHantee: { nom: "Pack Nuit hantée", tickets: 10, geodes: 3, prix: "4,99 €", prixPromo: "2,49 €" },
+      texteVieuxPrix: "Promo d'Halloween !",
+    },
+
+    // LES FÉES DE L'ÉVÉNEMENT (mêmes réglages que pets > fees). Elles ne sortent jamais d'une récompense « fée au hasard ».
+    // "visuel" = image de la fée ('' = dessin provisoire).
+    fees: {
+      // Fée citrouille : achetée dans la Boutique de la Sorcière (boutiqueSorciere > feeCitrouille)
+      citrouille: { nom: "Fée citrouille", categorie: 'fortune', visuel: '', effet: 'tasDOr', chance: 0.4, nombre: 2,
+                    rarete: 'epique',   // Assets/Event/Halloween/Pet_Fairy_Pumpkin.png
+                    bonus: "Peut faire apparaître 2 tas d'or", detail: "En arrivant dans l'étage : peut cacher 2 tas d'or dans la terre" },
+      // Fée chauve-souris : rare, achetée dans la boutique premium de l'événement (comme la Fée champignon)
+      chauveSouris: { nom: "Fée chauve-souris", categorie: 'tresor', visuel: '', effet: 'reveler', chance: 0.35,
+                    rarete: 'rare', prix: "0,00 $", couleurAccueil: "#6b3fa0",   // Assets/Event/Halloween/Pet_Fairy_Bat.png
+                    bonus: "Peut révéler un trésor caché", detail: "En arrivant dans l'étage : peut montrer où se cache un trésor" },
+    },
+
+    // ÉQUIPEMENT À THÈME. Chaque modèle va dans un emplacement du mineur (equipement > emplacements) et
+    // "commeModele" = il a le même passif que ce modèle (avec ses propres "valeurs" : Épique, Épique S, Légendaire, Légendaire S, Mythique).
+    // Ils ne sortent jamais des coffres de la Boutique : seulement du Coffre Halloween et des exclusivités.
+    // "image" = son image ('' = dessin provisoire).
+    equipement: {
+      // Les 4 pièces du Coffre Halloween (ni casque ni bottes : ces emplacements sont pour le Chapeau et la Cape)
+      piocheCitrouille:   { emplacement: 'pioche',   nom: 'Pioche-citrouille',   commeModele: 'picEclats', valeurs: [0.12, 0.17, 0.22, 0.275, 0.33], image: '' },
+      pelleBalai:         { emplacement: 'pelle',    nom: 'Pelle-balai',         commeModele: 'pelleLarge', valeurs: [0.15, 0.2, 0.25, 0.325, 0.4], image: '' },
+      gantsSquelette:     { emplacement: 'gants',    nom: 'Gants squelette',     commeModele: 'gantsDynamiteur', valeurs: [0.2, 0.225, 0.25, 0.29, 0.33], image: '' },
+      lanterneCitrouille: { emplacement: 'lanterne', nom: 'Lanterne-citrouille', commeModele: 'lanterneAncienne', valeurs: [1.5, 1.75, 2, 2.5, 3], image: '' },
+      // Exclusivités (données en Épique) : un peu plus fortes que le modèle dont elles prennent le passif
+      chapeauSorciere:    { emplacement: 'casque',   nom: 'Chapeau de sorcière', commeModele: 'casqueChantier', valeurs: [0.35, 0.5, 0.65, 0.85, 1], image: '', rarete: 'epique' },
+      capeChauveSouris:   { emplacement: 'bottes',   nom: 'Cape de chauve-souris', commeModele: 'bottesPorteBonheur', valeurs: [0.2, 0.25, 0.3, 0.375, 0.45], image: '', rarete: 'epique' },
+    },
+    coffre: { nom: "Coffre Halloween", image: '' },   // Assets/Event/Halloween/Chest_Halloween.png
+
+    // MUSÉE : la catégorie « Halloween » (bouton Collection du Musée). Elle reste au Musée après l'événement.
+    // "fond" = l'image derrière les vitrines ; "bandeau" = la couleur du bandeau de titre.
+    vitrine: { nom: "Halloween", fond: '', bandeau: '#e0701a' },
+    // La collection qui donne la Cape de chauve-souris à 3 étoiles
+    collectionCape: 'feteHalloween',
+    texteCape: "3 étoiles ! Tu gagnes la Cape de chauve-souris !",
+
+    // FIN DE L'ÉVÉNEMENT : les Candy Corn qui restent deviennent des pièces (au premier retour au village après J16)
+    conversion: { piecesParCandy: 2, texte: "L'événement est fini : tes {n} Candy Corn deviennent {p} pièces !" },
+
+    // ÉCRANS
+    images: {
+      // Bouton du village et de l'écran Événements (provisoire : la citrouille des tuiles ; idéalement Icon_MineHantee.png)
+      bouton: 'Assets/Event/Halloween/Tile_Overlay_Halloween_Pumpkin.png',
+    },
+    textes: {
+      // Première descente guidée (une phrase très courte, 8 mots maximum)
+      guideCandy: "Casse la pierre pour des Candy Corn",
+      guideYeux: "Casse la Pierre aux yeux !",
+      // Écran de l'événement
+      intro: "Une mine pleine de bonbons, ouverte pour Halloween !",
+      fermee: "La mine est fermée. La boutique reste ouverte jusqu'à la fin de l'événement.",
+      // Nouveau départ débloqué ({x} = le décor, {n} = le niveau)
+      nouveauDepart: "Nouveau départ : {x} (niveau {n}) !",
+      fondDeLaMine: "Tu es au fond de la Mine Hantée ! Remonte avec ton butin.",
+    },
+  },
 };

@@ -27,7 +27,7 @@
   #cheatPanel button.warn{background:#ffb4a8; box-shadow:0 3px 0 #e07f70}
   #cheatPanel .x{min-height:40px; width:40px; padding:0; background:#eee; box-shadow:none; font-size:20px}
   #cheatPanel .lvl{display:flex; gap:8px; margin-bottom:8px}
-  #cheatPanel input{flex:1; min-width:0; min-height:46px; border-radius:12px; border:2px solid #d9a53a; padding:0 12px; background:#fff; color:#3b2245; font:800 18px system-ui, sans-serif}
+  #cheatPanel input,#cheatPanel select{flex:1; min-width:0; min-height:46px; border-radius:12px; border:2px solid #d9a53a; padding:0 12px; background:#fff; color:#3b2245; font:800 18px system-ui, sans-serif}
   #cheatPanel .note{margin:4px 0 0; font-size:12px; color:#7a6a80}
   #cheatMsg{position:fixed; left:50%; bottom:70px; transform:translateX(-50%); z-index:10001; background:#3b2245; color:#fff; padding:8px 14px;
     border-radius:12px; font:700 14px system-ui, sans-serif; pointer-events:none; opacity:0; transition:opacity .2s}`;
@@ -207,6 +207,33 @@
       for (const k of Object.keys(b.arts)) b.arts[k] = 0;
       refresh(); msg('Musée vidé');
     },
+    // MINE HANTÉE (tests, à retirer avant la mise en ligne)
+    // The event's clock: a chosen day (J1 to J16) and hour; minutes keep running. Kept until « Vraie date ».
+    hwClock() {
+      if (!M.hw) return msg('Pas de Mine Hantée dans config.js');
+      const d = +$('cheatHwDay').value, h = +$('cheatHwHour').value;
+      const target = M.hw.date(d - 1) + h * 3600e3 + new Date().getMinutes() * 60e3;
+      localStorage.setItem(M.hw.CLOCK_KEY, String(target - Date.now()));
+      hwDone(`Jour ${d}, ${h} h`);
+    },
+    hwRealClock() { localStorage.removeItem(M.hw.CLOCK_KEY); hwDone('Vraie date et vraie heure'); },
+    hwFree() { M.hw.refresh(); S().hallo.free += 3; hwDone('+3 Tickets gratuits (perdus à minuit)'); },
+    hwPaid() { S().hallo.paid += 3; hwDone('+3 Tickets achetés (gardés jusqu\'à la fin)'); },
+    hwCandy() { S().hallo.candy += 100; hwDone('+100 Candy Corn'); },
+    hwFirst() { const s = S(); s.hallo.first = false; delete s.tutoSeen['hw-guide']; hwDone('La 1re descente guidée revient'); },
+    // Every item of the Halloween collection twice (2 stars): one more of each gives the 3rd star and the Cape
+    hwCol2() {
+      const b = S().bag.arts, set = M.CFG.mineHantee.collectionCape;
+      for (const k of Object.keys(M.ARTS)) if (M.ARTS[k].set === set && !M.ARTS[k].of) b[k] = 2;
+      hwDone('Collection Halloween à 2 étoiles (la 3e donne la Cape)');
+    },
+    hwStarts() { S().hallo.best = M.CFG.mineHantee.niveaux; hwDone('Tous les départs débloqués (niveaux 11 et 21)'); },
+    hwReset() {
+      if (!confirm('Remettre la Mine Hantée à zéro (Tickets, Candy Corn, départs) ?')) return;
+      const s = S(); s.hallo = { candy: 0, free: 0, freeDay: 0, evening: false, ads: 0, adsDay: 0, paid: 0, first: false, best: 1, seen: false };
+      s.pets = s.pets.filter(p => !['citrouille', 'chauveSouris'].includes(p.key)); if (!s.pets.some(p => p.id === s.petOn)) s.petOn = s.pets.length ? s.pets[0].id : null;
+      delete s.tutoSeen['hw-guide']; hwDone('Mine Hantée remise à zéro');
+    },
     // Save copies
     backup() { localStorage.setItem(BACKUP, JSON.stringify(S())); msg('Copie de la partie enregistrée'); },
     restore() {
@@ -244,6 +271,24 @@
       <button data-c="resetPieces" class="warn">Remettre les morceaux à zéro</button>
     </div>
     <p class="note">Niveaux de la mine 2 dans « Aller à ce niveau » : ajoute 100 (niveau 15 de la mine 2 = 115).</p>
+
+    ${M.hw ? `<h3>Mine Hantée (tests, à retirer avant la mise en ligne)</h3>
+    <p class="note" id="cheatHwNow"></p>
+    <div class="lvl">
+      <select id="cheatHwDay" aria-label="Jour de l'événement">${Array.from({ length: M.CFG.mineHantee.calendrier.fin + 2 }, (_, i) => i).map(d => `<option value="${d}">${d ? 'Jour ' + d : 'Avant (J0)'}</option>`).join('')}</select>
+      <select id="cheatHwHour" aria-label="Heure">${Array.from({ length: 24 }, (_, h) => `<option value="${h}">${h} h</option>`).join('')}</select>
+    </div>
+    <div class="row">
+      <button data-c="hwClock">Changer le jour et l'heure</button>
+      <button data-c="hwRealClock">Vraie date</button>
+      <button data-c="hwFree">+3 Tickets gratuits</button>
+      <button data-c="hwPaid">+3 Tickets achetés</button>
+      <button data-c="hwCandy">+100 Candy Corn</button>
+      <button data-c="hwCol2">Collection Halloween à 2 étoiles</button>
+      <button data-c="hwStarts">Débloquer les départs 11 et 21</button>
+      <button data-c="hwFirst">Rejouer la 1re descente</button>
+      <button data-c="hwReset" class="warn">Remettre l'event à zéro</button>
+    </div>` : ''}
 
     <h3>Ressources</h3>
     <div class="row">
@@ -306,7 +351,22 @@
   document.body.append(btn);
   const m = document.createElement('div'); m.id = 'cheatMsg'; document.body.append(m);
 
-  function paintToggles() { $('cheatInf').classList.toggle('on', localStorage.getItem(INF) === '1'); }
+  function paintToggles() { $('cheatInf').classList.toggle('on', localStorage.getItem(INF) === '1'); paintHwClock(); }
+  // Mine Hantée: the event's day and hour shown in the panel (and preselected)
+  function paintHwClock() {
+    if (!M.hw) return;
+    const t = new Date(M.hw.now()), d = M.hw.day(), fake = !!localStorage.getItem(M.hw.CLOCK_KEY);
+    $('cheatHwNow').textContent = `Horloge de l'event : jour ${d}, ${t.getHours()} h ${String(t.getMinutes()).padStart(2, '0')}` + (fake ? ' (horloge de test)' : ' (vraie date)');
+    $('cheatHwDay').value = String(Math.max(0, Math.min(M.CFG.mineHantee.calendrier.fin + 1, d)));
+    $('cheatHwHour').value = String(t.getHours());
+  }
+  // After a change to the event: tickets of the (new) day, counters, the page on screen
+  function hwDone(text) {
+    M.hw.refresh(); paintHwClock(); M.hw.paintVillage();
+    const scr = visibleScreen();
+    if (scr === 'haunt' || scr === 'events' || scr === 'village') M.go(scr); else M.save();
+    msg(text);
+  }
   function close() { panel.hidden = true; }
   btn.addEventListener('click', () => { $('cheatLvl').value = S().level; paintToggles(); panel.hidden = false; });
   panel.addEventListener('click', e => {
