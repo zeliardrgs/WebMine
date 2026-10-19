@@ -167,6 +167,23 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .dw-skip input:checked{background:#7d3c98; border-color:#7d3c98}
 .dw-skip input:checked::after{content:''; width:1.4cqw; height:2.8cqw; margin-top:-.6cqw; border:solid #fff; border-width:0 .7cqw .7cqw 0; transform:rotate(45deg)}
 .dw-skip input:focus-visible{outline:2px solid #7d3c98; outline-offset:2px}
+/* Out of energy: three ways to refill side by side (potion, ad, pearls), then "Remonter" */
+.en-opts{display:grid; grid-template-columns:repeat(3, 1fr); gap:2.5cqw}
+.en-opt{position:relative; display:flex; flex-direction:column; align-items:center; gap:1cqw; padding:3cqw 1cqw 2.5cqw; border:.7cqw solid var(--outline); border-radius:4.5cqw; cursor:pointer;
+  background:#fbf1dc; background-clip:padding-box; box-shadow:inset 0 -1.4cqw 0 #e2c89a; font-family:var(--font-display); color:var(--ink)}
+.en-opt:active{transform:translateY(2px); box-shadow:inset 0 -.5cqw 0 #e2c89a}
+.en-opt:disabled{opacity:.5; cursor:default; transform:none}
+.en-opt .en-ic{position:relative; width:15cqw; height:15cqw; display:grid; place-items:center}
+.en-opt .en-ic img{width:100%; height:100%; object-fit:contain}
+.en-opt .en-ic i{position:absolute; right:-2cqw; bottom:-1cqw; padding:0 1.6cqw; border-radius:3cqw; background:var(--outline); color:#fff; font-style:normal; font-size:3.4cqw; line-height:5cqw}
+.en-opt b{font-weight:400; font-size:4.2cqw; line-height:1.05}
+.en-opt small{display:flex; align-items:center; gap:.8cqw; font-size:3.3cqw; color:var(--ink-soft); line-height:1}
+.en-opt small img{width:4.4cqw; height:4.4cqw; object-fit:contain}
+.en-opt.ad{background:#d9f5ff; box-shadow:inset 0 -1.4cqw 0 #8fd0ea}
+.en-opt.gem{background:#ffe3ef; box-shadow:inset 0 -1.4cqw 0 #f0a3c4}
+#energyModal .dw-up{margin-top:5cqw}
+/* The pearls the player has, at the top right while the popup is open */
+.en-wallet{position:absolute; top:calc(env(safe-area-inset-top, 0px) + 14px); right:max(14px, calc(50% - 226px))}
 .dw-stay{display:block; margin:2.5cqw auto 0; padding:2cqw 4cqw; border:0; background:none; font-family:var(--font-display); font-size:3.8cqw; color:var(--ink-soft); text-decoration:underline; text-underline-offset:.8cqw; cursor:pointer}
 .bf-new{display:flex; align-items:center; gap:12px; margin:10px 0 4px; padding:10px; border-radius:16px; background:#fff; box-shadow:0 3px 0 #ecd3a8; text-align:left}
 .bf-new img{width:56px; height:56px; object-fit:contain; flex:none}
@@ -310,6 +327,8 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .find-label{position:absolute; z-index:20; transform:translate(-50%, -100%); padding:4px 12px 6px; border-radius:12px; white-space:nowrap; pointer-events:none;
   background:rgba(35,18,45,.9); color:#ffe36b; font-family:var(--font-display); font-size:16px; box-shadow:0 3px 0 rgba(0,0,0,.35)}
 .find-label small{display:block; font-family:var(--font-body); font-size:10px; color:#fff3d6; text-align:center; opacity:.85}
+.float-amt{display:inline-flex; align-items:center; gap:2px}
+.float-amt img{width:1.35em; height:1.35em; object-fit:contain; filter:drop-shadow(0 2px 0 #2a1430)}
 .float{position:absolute; font-family:var(--font-display); font-size:18px; white-space:nowrap;
   text-shadow:0 2px 0 #2a1430, 2px 0 0 #2a1430, -2px 0 0 #2a1430, 0 -2px 0 #2a1430}
 
@@ -2229,6 +2248,20 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   </div>
 </div>
 
+<!-- Out of energy in the mine: potion, ad, pearls or back up -->
+<div class="modal dw-modal" id="energyModal" hidden>
+  <div class="wallet-bar en-wallet" id="enWallet"></div>
+  <div class="dw" role="dialog" aria-labelledby="enTitle">
+    <div class="dw-hero"><img src="Assets/Characters/Miner_Tired.png" alt="" draggable="false"></div>
+    <div class="dw-card">
+      <h2 class="dw-title" id="enTitle">Plus d'énergie !</h2>
+      <p id="enText">Recharge ton énergie pour continuer à creuser.</p>
+      <div class="en-opts" id="enOpts"></div>
+      <button class="btn big dw-up" id="enUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false"><span class="dw-lbl"><b>Remonter au village</b><small id="enUpSub"></small></span></button>
+      <button class="dw-stay" id="enStay">Rester ici</button>
+    </div>
+  </div>
+</div>
 <div class="modal dw-modal" id="descendModal" hidden>
   <div class="dw" role="dialog" aria-labelledby="descendTitle">
     <div class="dw-hero" id="descendArt"></div>
@@ -2349,6 +2382,8 @@ function etInfo(level) {
     : sp || etTranche(m)[type] || etTranche(m).standard;
   return { type, ...ET.types[type], ...row };
 }
+// Normal coin piles: small, medium or big (config.js > mine > taillesTasDePieces)
+const PILE_SIZES = CFG.mine.taillesTasDePieces || { moyen: { chance: 1, valeur: 1 } };
 // Pictures of the Lucky floor (config.js > etages > lucky > images)
 if (ET && ET.lucky && ET.lucky.images) for (const [k, v] of Object.entries({ 'coin-petit': ET.lucky.images.petit, 'coin-moyen': ET.lucky.images.moyen, 'coin-grand': ET.lucky.images.grand, 'lucky-rainbow': ET.lucky.images.arcEnCiel }))
   if (v) document.documentElement.style.setProperty('--' + k, `url("${v}")`);
@@ -2843,7 +2878,7 @@ function genLevelOnce(level, kindArg) {
   const piles = kind === 'treasure' ? RY.niveauTresor.tasDePieces : ef && ef.type === 'lucky' ? null : (ef && ef.tasDePieces) || gridRow(level).tasDePieces;
   // Pelle de prospecteur: more piles on treasure levels
   const morePiles = kind === 'treasure' ? gearTotals().pas.pelleProspecteur || 0 : 0;
-  if (piles) for (let n = randInt(...piles) + morePiles, list = free(); n > 0 && list.length; n--) g[list.splice(randInt(0, list.length - 1), 1)[0]] = tileOf('coins');
+  if (piles) for (let n = randInt(...piles) + morePiles, list = free(); n > 0 && list.length; n--) g[list.splice(randInt(0, list.length - 1), 1)[0]] = { t: 'coins', sz: pick(Object.fromEntries(Object.entries(PILE_SIZES).map(([k, v]) => [k, v.chance]))) };
   // Étage Lucky: small, medium and big piles of coins (their value is set now), and one rainbow tile that gives energy back
   if (ef && ef.type === 'lucky') {
     const L = ET.lucky, list = free().filter(i => g[i].t === 'dirt'), take = () => list.splice(randInt(0, list.length - 1), 1)[0];
@@ -3178,7 +3213,7 @@ function tileClass(c, i) {
   if (c.t === 'dirt') { const v = c.v ?? i % 3; if (v) cls += ' v' + v; }
   if (c.t === 'stone' || c.t === 'ore') cls += ' s' + Math.min(3, 1 + Math.floor((c.max - c.hp) / c.max * 3));
   if (c.t === 'gkey') cls += ' k-' + (c.k || 'bois');
-  if (c.t === 'coins' && c.sz) cls += ' cz-' + c.sz;
+  if (c.t === 'coins') cls += ' cz-' + (c.sz || 'moyen');   // every pile uses the Lucky floor's pictures
   if (c.t === 'heyes' && c.v) cls += ' e' + c.v;
   if (c.t === 'ore') cls += ' o-' + c.ore + (ORE_TINT[c.ore] ? ' tint' : '');
   if (c.t === 'magma' && c.chain) cls += ' chain';
@@ -3506,9 +3541,9 @@ function steam(x, y) {
     ], { duration: rand(700, 1200), delay: k * 40, easing: 'ease-out', fill: 'backwards' }).onfinish = () => d.remove();
   }
 }
-function floatText(i, txt, color) {
+function floatText(i, txt, color, html) {
   const { x, y } = center(i);
-  const d = document.createElement('div'); d.className = 'float'; d.textContent = txt; d.style.color = color;
+  const d = document.createElement('div'); d.className = 'float'; d[html ? 'innerHTML' : 'textContent'] = txt; d.style.color = color;
   Object.assign(d.style, { left: x + 'px', top: y + 'px' });
   fx.append(d);
   d.animate([
@@ -3517,6 +3552,8 @@ function floatText(i, txt, color) {
     { transform: 'translate(-50%,-190%) scale(1)', opacity: 0 },
   ], { duration: 1100, easing: 'ease-out' }).onfinish = () => d.remove();
 }
+// "+12" followed by the icon of what was won (coins, an ore…), for floatText(…, true)
+const amountHTML = (n, icon) => `<span class="float-amt">+${n}${icon}</span>`;
 function shake(i) {
   tileEls[i].animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(-2px)' }, { transform: 'translateX(0)' }], { duration: 260 });
 }
@@ -3760,11 +3797,11 @@ function act(p, isTap) {
     if (c.t === 'magma') {
       burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, tr('Trop chaud ! Arrose le magma pour le refroidir d\'abord.'));
     }
-    if (S.energy <= 0) return deny(i, REGEN_MS > 0 ? tr('Plus d\'énergie ! +1 dans {s} s, ou bois une potion.', { s: Math.ceil((S.nextRegen - Date.now()) / 1000) }) : tr('Plus d\'énergie ! Bois une potion ou remonte au village pour recharger.'));
+    if (S.energy <= 0) { openEnergyModal(); return; }
     // Equipment: the Helmet gives free hits, the Pickaxe its damage and its model's passive
     const T = gearTotals(), free = Math.random() < T.free + (c.t === 'ore' ? T.pas.casqueVeine || 0 : 0);
     if (free) floatText(i, tr('Coup gratuit !'), '#8ff5e8');
-    else { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); }
+    else { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); if (S.energy <= 0) setTimeout(openEnergyModal, 650); }
     // Fée verte: sometimes gives a little energy back
     const fv = petFx('energie');
     if (fv && S.energy < maxE() && Math.random() < (fv.chance || 0)) {
@@ -3852,10 +3889,10 @@ function breakCell(i) {
   }
   if (t === 'coins') {
     // Coin pile (treasure levels and big grids), worth more in deeper biomes
-    const n = c.n || pileValue();
+    const n = c.n || Math.max(1, Math.round(pileValue() * ((PILE_SIZES[c.sz] || {}).valeur ?? 1)));
     S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
     sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 14, { spread: 34, up: 16, size: [3, 7] });
-    floatText(i, tr('+{n} pièces', { n }), '#ffe14d');
+    floatText(i, amountHTML(n, COIN), '#ffe14d', true);
   }
   if (t === 'rainbow') {
     let n = 0; for (let k = 0; k < (AU.arcEnCiel.tas || 1); k++) n += pileValue();
@@ -3898,7 +3935,7 @@ function goldPile(i) {
   const n = pileValue(), { x, y } = center(i);
   S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
   sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 12, { spread: 30, up: 14, size: [3, 7] });
-  floatText(i, tr('Tas d\'or ! +{n}', { n }), '#ffe14d');
+  floatText(i, amountHTML(n, COIN), '#ffe14d', true);
 }
 function digExtras(i) {
   const T = gearTotals();
@@ -3917,7 +3954,7 @@ function openKingChest(i) {
   S.kingOpened = true; S.coins += K.pieces; S.trip.coins = (S.trip.coins || 0) + K.pieces; flyCoins(i, K.pieces);
   clearCell(i); sfx('win');
   burst(x, y, ['#ffe066', '#ffc23d', '#cf9bff', '#fff'], 40, { spread: ts() * 2, up: 20, size: [4, 10], dur: 1100 });
-  floatText(i, tr('+{n} pièces', { n: K.pieces }), '#ffe14d');
+  floatText(i, amountHTML(K.pieces, COIN), '#ffe14d', true);
   toast(tr(K.message), 'good');
   save();
 }
@@ -3940,14 +3977,14 @@ function giveBonus(i, kind) {
       const ores = Object.keys(ORES).filter(k => at(S.level, ORE_UNLOCK[k]));
       if (ores.length) {
         const k = ores[randInt(0, ores.length - 1)], n = randInt(...B.minerai);
-        S.bag.ores[k] += n; S.trip.ores[k] += n; lines.push(`+${n} ${ORES[k].name}`); continue;
+        S.bag.ores[k] += n; S.trip.ores[k] += n; lines.push(amountHTML(n, resArt(k))); continue;
       }
       g = 'pieces';
     }
     if (g === 'potion') { S.potions++; updateQuick(); lines.push(tr('+1 potion')); continue; }
-    const n = randInt(...B.pieces); S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n); lines.push(tr('+{n} pièces', { n }));
+    const n = randInt(...B.pieces); S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n); lines.push(amountHTML(n, COIN));
   }
-  floatText(i, lines.join(' · '), '#ffe14d');
+  floatText(i, lines.join(' · '), '#ffe14d', true);
   save();
 }
 
@@ -3955,10 +3992,10 @@ function gainOre(i, ore) {
   // Gloves: a chance of +1 ore (above 100 %: +1 for sure and a chance of +2); Gants de fer: sometimes the best ore too
   const T = gearTotals(), n = randInt(...ORE_YIELD[ore]) + Math.floor(T.ore) + (Math.random() < T.ore % 1 ? 1 : 0);
   S.bag.ores[ore] += n; S.trip.ores[ore] += n; stat('minerais', n);
-  floatText(i, `+${n} ${ORES[ore].name}`, ORES[ore].txt);
+  floatText(i, amountHTML(n, resArt(ore)), ORES[ore].txt, true);
   if (Math.random() < (T.pas.gantsFer || 0)) {
     const best = Object.keys(ORES).filter(k => at(S.level, ORE_UNLOCK[k])).pop();
-    if (best) { S.bag.ores[best]++; S.trip.ores[best]++; setTimeout(() => floatText(i, `+1 ${ORES[best].name}`, ORES[best].txt), 350); }
+    if (best) { S.bag.ores[best]++; S.trip.ores[best]++; setTimeout(() => floatText(i, amountHTML(1, resArt(best)), ORES[best].txt, true), 350); }
   }
 }
 // "Coup en éclats" upgrade: a random neighbouring rock shatters too
@@ -4283,9 +4320,50 @@ function isStuck() {
 let stuckT = null;
 function checkStuck() {
   if (stuckT || $('scr-mine').hidden || [...document.querySelectorAll('.modal')].some(m => !m.hidden) || !isStuck()) return;
-  toast(tr(CFG.energie.texteRetourForce), 'warn'); sfx('deny');
-  stuckT = setTimeout(() => { stuckT = null; if (!$('scr-mine').hidden && isStuck()) openRecap(); }, 1800);
+  openEnergyModal(true);   // nothing left to do for free: refill or go back up (no "Rester ici")
 }
+// Out of energy (config.js > energie > panne): a potion from the bag, an ad for a few points, a full refill for pearls, or back up
+const PANNE = CFG.energie.panne || { pubEnergie: 10, pubsParJour: 5, prixRechargePerles: 30 };
+const energyAdsLeft = () => PANNE.pubsParJour - ((S.energyAds || {}).day === today() ? S.energyAds.n : 0);
+function openEnergyModal(stuck) {
+  if ($('scr-mine').hidden || S.energy > 0 || !$('energyModal').hidden || descending) return;
+  if ([...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
+  const price = PANNE.prixRechargePerles, gems = G().gems, ads = energyAdsLeft();
+  const opt = (k, icon, title, sub, on, tag) => `<button class="en-opt ${k}" data-en="${k}"${on ? '' : ' disabled'}><span class="en-ic">${icon}${tag ? `<i>${tag}</i>` : ''}</span><b>${title}</b><small>${sub}</small></button>`;
+  $('enOpts').innerHTML = opt('potion', POTION, tr('Potion'), S.potions ? tr('Énergie pleine') : tr('Aucune potion'), S.potions > 0, S.potions ? '×' + S.potions : '')
+    + opt('ad', img('Assets/UI/Energy_Yellow.png'), tr('Pub'), ads > 0 ? `+${PANNE.pubEnergie} ${BOLT}` : tr('Plus de pub aujourd\'hui'), ads > 0, ads > 0 ? '▶' : '')
+    + opt('gem', GEM_ICON, tr('Recharge'), `${price} ${GEM_ICON}`, gems >= price, '');
+  $('enUpSub').textContent = CFG.energie.rechargeAuVillage ? tr('Recharger l\'énergie') : '';
+  $('enStay').hidden = !!stuck;
+  paintEnWallet();
+  $('energyModal').hidden = false; sfx('deny');
+}
+function closeEnergyModal() { $('energyModal').hidden = true; }
+const paintEnWallet = () => { $('enWallet').innerHTML = `<span class="res" data-cur="gems" title="${tr('Perles')}">${GEM_ICON}${G().gems}</span>`; };
+$('enOpts').addEventListener('click', e => {
+  const b = e.target.closest('[data-en]'); if (!b || b.disabled) return;
+  unlockAudio();
+  if (b.dataset.en === 'potion') { closeEnergyModal(); usePotion(); }
+  else if (b.dataset.en === 'gem') {
+    const price = PANNE.prixRechargePerles; if (G().gems < price) return;
+    G().gems -= price; S.energy = maxE(); updateEnergy(true); paintMoney(); save(); closeEnergyModal();
+    sfx('reward'); toast(tr('Énergie rechargée !'), 'good');
+  } else if (b.dataset.en === 'ad') {
+    if (energyAdsLeft() <= 0) return;
+    closeEnergyModal(); sfx('pick');
+    const m = $('adModal'); m.hidden = false; $('adTxt').textContent = tr('Ton énergie arrive…');
+    let n = 3; $('adCount').textContent = n;
+    const t = setInterval(() => {
+      n--; $('adCount').textContent = n; if (n > 0) return;
+      clearInterval(t); m.hidden = true;
+      const d = today(); S.energyAds = { day: d, n: ((S.energyAds || {}).day === d ? S.energyAds.n : 0) + 1 };
+      S.energy = Math.min(maxE(), S.energy + PANNE.pubEnergie); updateEnergy(true); save();
+      sfx('reward'); toast(tr('+{n} énergie !', { n: PANNE.pubEnergie }), 'good');
+    }, 1000);
+  }
+});
+$('enUp').addEventListener('click', () => { unlockAudio(); sfx('pick'); closeEnergyModal(); openRecap(); });
+$('enStay').addEventListener('click', () => { sfx('pick'); closeEnergyModal(); });
 /* Red dots: recomputed from the game state a few times a second, so each one goes away as soon as there is nothing
    left to do (a reward claimed, a chest opened…), without waiting for a change of screen */
 let badgeT = 0;

@@ -68,6 +68,10 @@ window.CONFIG = {
     // gratuitement sur l'étage (terre, cases bonus, trésor à ramasser). Le butin du sac est gardé.
     texteRetourForce: "Plus d'énergie ! Retour au village avec ton butin.",
 
+    // À 0 énergie dans la mine, une fenêtre propose : boire une potion du sac, regarder une pub (+pubEnergie),
+    // une recharge complète contre des perles, ou remonter au village.
+    panne: { pubEnergie: 10, pubsParJour: 5, prixRechargePerles: 30 },
+
     // Une fenêtre "Es-tu sûr de vouloir descendre ?" s'affiche si l'énergie est à ce nombre ou moins
     // (elle s'affiche aussi quand le sac est plein)
     alerteDescente: 5,
@@ -659,6 +663,9 @@ window.CONFIG = {
 
     // Quantité obtenue en cassant une pierre à minerai : [minimum, maximum]
     quantiteMinerais: { fer: [1, 3], cuivre: [1, 2], or: [1, 1], mithril: [1, 1], cristalBrut: [1, 1] },
+    // Tas de pièces des étages normaux : petit, moyen ou grand (mêmes images que l'étage Lucky, etages > lucky > images).
+    // chance = poids du tirage ; valeur = multiplie la valeur d'un tas (en moyenne ≈ 1, la même économie qu'avant).
+    taillesTasDePieces: { petit: { chance: 40, valeur: 0.6 }, moyen: { chance: 40, valeur: 1 }, grand: { chance: 20, valeur: 1.6 } },
   },
 
   /* ---------------------------------------------------------------
