@@ -1585,11 +1585,13 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 .pet img{display:block; width:100%; height:auto; filter:drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 1.5) rgba(0,0,0,.18))}
 
 /* ---------- Event "Wide Mine": the board fills the screen behind the interface and can be dragged ---------- */
-#scr-mine.wide .stage{position:fixed; inset:0; z-index:0; overflow:hidden; display:block}
-#scr-mine.wide .stage .frame{position:absolute; left:0; top:0; will-change:transform}
-#scr-mine.wide > :not(.stage){position:relative; z-index:2}
-#scr-mine.wide .quick{margin-top:auto}
-#scr-mine.wide .hud,#scr-mine.wide .goals,#scr-mine.wide .quick,#scr-mine.wide .tools{transition:transform .3s ease, opacity .3s ease}
+#scr-mine:is(.wide,.bigview) .stage{position:fixed; inset:0; z-index:0; overflow:hidden; display:block}
+#scr-mine:is(.wide,.bigview) .stage .frame{position:absolute; left:0; top:0; will-change:transform}
+#scr-mine:is(.wide,.bigview) > :not(.stage){position:relative; z-index:2}
+#scr-mine:is(.wide,.bigview) .quick{margin-top:auto}
+#scr-mine:is(.wide,.bigview) .hud,#scr-mine:is(.wide,.bigview) .goals,#scr-mine:is(.wide,.bigview) .quick,#scr-mine:is(.wide,.bigview) .tools{transition:transform .3s ease, opacity .3s ease}
+/* Mini-boss band (Pioneers' mine) */
+.depth-band.k-miniboss{background:linear-gradient(#ff9a3d, #e0532a)}
 #scr-mine.moving .hud,#scr-mine.moving .goals{transform:translateY(calc(-100% - 140px)); opacity:0; pointer-events:none}
 #scr-mine.moving .quick,#scr-mine.moving .tools{transform:translateY(calc(100% + 140px)); opacity:0; pointer-events:none}
 #scr-mine.moving .stage{cursor:grab}
@@ -1846,6 +1848,20 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .hw-ic{width:58px; height:58px; display:grid; place-items:center}
 .hw-ic img{width:100%; height:100%; object-fit:contain}
 @media (prefers-reduced-motion: reduce){ .tile.t-heyes::before,.hw-trick-eyes i{animation:none} }
+/* ---------- Étage Lucky (config.js > etages > lucky) ---------- */
+.t-coins.cz-petit::before{background-image:var(--coin-petit)} .t-coins.cz-moyen::before{background-image:var(--coin-moyen)} .t-coins.cz-grand::before{background-image:var(--coin-grand)}
+.t-lrainbow{background-image:var(--lucky-rainbow, linear-gradient(135deg, #ff5b5b, #ffd23d, #3dd68c, #4b8bff, #cf9bff))}
+.lucky-fx{position:absolute; inset:0; z-index:9; display:flex; align-items:center; justify-content:center; pointer-events:none}
+.lucky-fx[hidden]{display:none}
+.lucky-fx b{padding:10px 26px; border-radius:22px; font-family:var(--font-display); font-weight:400; font-size:36px; color:#fff; white-space:nowrap;
+  background:linear-gradient(90deg, #ff5b5b, #ff9a3d, #ffd23d, #3dd68c, #4b8bff, #9b6cff, #ff5bd1); background-size:200% 100%;
+  -webkit-text-stroke:6px var(--outline); paint-order:stroke fill; box-shadow:0 0 0 4px var(--outline), 0 10px 26px rgba(0,0,0,.4)}
+.lucky-fx.on b{animation:luckyPop 2.4s cubic-bezier(.3,1.5,.5,1) both, luckySlide 1.2s linear infinite}
+@keyframes luckyPop{0%{transform:scale(.2) rotate(-8deg); opacity:0} 18%{transform:scale(1.1) rotate(2deg); opacity:1} 30%{transform:scale(1)} 85%{transform:scale(1); opacity:1} 100%{transform:scale(.9); opacity:0}}
+@keyframes luckySlide{to{background-position:200% 0}}
+@media (prefers-reduced-motion: reduce){ .lucky-fx.on b{animation:none} }
+.depth-band.k-lucky{background:linear-gradient(90deg, #ff5b5b, #ffd23d, #3dd68c, #4b8bff, #cf9bff); color:#fff}
+.recap-lucky{font-size:4cqw; line-height:1.1; color:#d13d9b}
 </style>
 
 <div class="screen" id="scr-village" hidden>
@@ -2015,6 +2031,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   </section>
 
   <main class="stage">
+    <div class="lucky-fx" id="luckyFx" hidden aria-hidden="true"><b id="luckyFxTxt"></b></div>
     <div class="descend-fx" id="descendFx" hidden aria-hidden="true"><b id="descendFxTxt"></b><svg viewBox="0 0 100 110" aria-hidden="true"><defs><linearGradient id="dfGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14e82a"/><stop offset="1" stop-color="#d8ff3a"/></linearGradient></defs><path d="M34 8 H66 V50 H90 L50 100 L10 50 H34 Z" fill="url(#dfGrad)" stroke="#111" stroke-width="8" stroke-linejoin="round"/></svg></div>
     <div class="frame">
       <div class="board" id="board">
@@ -2094,7 +2111,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <div class="xp" role="dialog" aria-labelledby="recapTitle">
     <div class="xp-paper">
       <h2 class="xp-ribbon" id="recapTitle"><span class="xp-out">Fin de l'expédition</span></h2>
-      <div class="xp-level"><b class="xp-out" id="recapLevel"></b><span class="xp-out" id="recapCp" hidden>Nouveau checkpoint !</span></div>
+      <div class="xp-level"><b class="xp-out" id="recapLevel"></b><span class="xp-out" id="recapCp" hidden>Nouveau checkpoint !</span><span class="xp-out recap-lucky" id="recapLucky" hidden></span></div>
       <div class="xp-body" id="recapBody"></div>
     </div>
     <div class="xp-actions">
@@ -2270,7 +2287,83 @@ const gridRow = level => PROG.grilles.reduce((row, g) => level >= g.depuis ? g :
    100, 200… 900 = guardian levels; 1000 = the Miner King's treasure room */
 const RY = CFG.rythme;
 const GUARD_EXTRA = RY.niveauGardien.niveauxEnPlus || [];
-const baseKind = level => level >= 1000 ? 'king' : level % 100 === 0 || GUARD_EXTRA.includes(level) ? 'guardian' : level % 10 === 0 ? 'treasure' : level % 10 === 9 ? 'hard' : 'easy';
+/* ---------- Floor types (config.js > etages): the Pioneers' mine ----------
+   Each level of the mine has a type (Respiration, Standard, Fouille, Défi, Mini-boss, Étage trésor, and the
+   guardians of levels 50 and 100), from a cycle of 10 levels. The type sets the grid, the treasures and the ground. */
+const ET = CFG.etages || null;
+const etOn = level => !!(ET && ET.actif) && !S.wide && !S.haunt && Math.ceil(level / CFG.biomes.niveauxParBiome) === (ET.mine || 1);
+// A small seeded random: a player always gets the same mix of a given cycle
+function seeded(seed) {
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const etRow = (list, lv) => list.reduce((row, t) => lv >= t.depuis ? t : row, list[0]);
+const etTranche = lv => etRow(ET.tranches, lv), etDepth = lv => etRow(ET.profondeur, lv);
+// Levels (of the mine) where something new arrives: tutorial levels and the novelties of config.js > etages > nouveautes
+let etNewSet = null;
+const etNews = () => etNewSet || (etNewSet = new Set([...PROG.tutoriels.map(t => t.niveau), ...(ET.nouveautes || []).map(k => UNLOCK[k]).filter(Boolean)]
+  .filter(l => Math.ceil(l / CFG.biomes.niveauxParBiome) === (ET.mine || 1)).map(l => (l - 1) % CFG.biomes.niveauxParBiome + 1)));
+// The 10 types of cycle c (c = 0 for levels 1-10, 1 for 11-20…): mixed from position 2 to 8 if asked,
+// never two Défi in a row, and a novelty always on a Respiration level (swapped with one of the same cycle)
+const etCycles = {};
+const noDefiPair = t => !t.some((x, i) => x === 'defi' && t[i + 1] === 'defi');
+function etCycle(c) {
+  if (ET.melanger && !S.etSeed) S.etSeed = Math.floor(Math.random() * 1e9) + 1;
+  const key = c + ':' + (S.etSeed || 0); if (etCycles[key]) return etCycles[key];
+  const base = ET.cycle.slice(0, 10), first = c * 10 + 1;
+  let types = base.slice();
+  if (ET.melanger) {
+    const r = seeded(S.etSeed * 31 + c);
+    for (let tries = 0; tries < 60; tries++) {
+      const mid = base.slice(1, 8);
+      for (let i = mid.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [mid[i], mid[j]] = [mid[j], mid[i]]; }
+      const cand = [base[0], ...mid, base[8], base[9]];
+      if (noDefiPair(cand)) { types = cand; break; }
+    }
+  }
+  if (ET.nouveauteSurRespiration) for (let p = 1; p <= 7; p++) {
+    if (!etNews().has(first + p) || types[p] === 'respiration') continue;
+    const swaps = [1, 2, 3, 4, 5, 6, 7].filter(q => q !== p && types[q] === 'respiration' && !etNews().has(first + q));
+    const q = swaps.find(q => { const t = types.slice(); [t[p], t[q]] = [t[q], t[p]]; return noDefiPair(t); }) ?? swaps[0];
+    if (q != null) [types[p], types[q]] = [types[q], types[p]];
+  }
+  return etCycles[key] = types;
+}
+const etLv = level => (level - 1) % CFG.biomes.niveauxParBiome + 1;
+function etType(level) {
+  const m = etLv(level), sp = (ET.speciaux || {})[m];
+  // An étage Lucky drawn at the descent (config.js > etages > lucky)
+  if (S.luckyAt === level) return 'lucky';
+  if (sp) return sp.type;
+  let t = etCycle(Math.floor((m - 1) / 10))[(m - 1) % 10];
+  if (t === 'defi' && !etTranche(m).defi) t = 'standard';
+  // A treasure level is only one the first time (replayed from its checkpoint, it is a Standard level)
+  if (t === 'tresor' && (S.treasureDone || {})[level]) t = 'standard';
+  return t;
+}
+// Everything about a level's type: composition and cost (etages > types), grid and treasures (tranche or special level)
+function etInfo(level) {
+  const m = etLv(level), type = etType(level), sp = (ET.speciaux || {})[m];
+  const L = ET.lucky || {};
+  const row = type === 'lucky' ? { grille: (etTranche(m)[L.tailleComme || 'fouille'] || etTranche(m).standard).grille, tresors: [0, 0] }
+    : sp || etTranche(m)[type] || etTranche(m).standard;
+  return { type, ...ET.types[type], ...row };
+}
+// Pictures of the Lucky floor (config.js > etages > lucky > images)
+if (ET && ET.lucky && ET.lucky.images) for (const [k, v] of Object.entries({ 'coin-petit': ET.lucky.images.petit, 'coin-moyen': ET.lucky.images.moyen, 'coin-grand': ET.lucky.images.grand, 'lucky-rainbow': ET.lucky.images.arcEnCiel }))
+  if (v) document.documentElement.style.setProperty('--' + k, `url("${v}")`);
+function luckyRoll(level) {
+  const L = ET && ET.lucky, wasForced = S.forceLucky;
+  S.luckyAt = 0; S.forceLucky = false;
+  if (!L || !L.actif || !etOn(level) || isTuto(level) || guaranteeFor(level) || inGuide()) return;
+  const t = etType(level), next = etType(level + 1);
+  if (['miniboss', 'tresor', 'demiGardien', 'gardien'].includes(t) || S.lastLucky === level - 1) return;
+  if (L.pasAvantMiniboss && next === 'miniboss') return;
+  if (wasForced || Math.random() < (L.chance || 0)) { S.luckyAt = level; S.lastLucky = level; }
+}
+const KIND_OF_TYPE = { tresor: 'treasure', miniboss: 'hard', gardien: 'guardian', demiGardien: 'guardian' };
+const baseKind = level => etOn(level) ? KIND_OF_TYPE[etType(level)] || 'easy'
+  : level >= 1000 ? 'king' : level % 100 === 0 || GUARD_EXTRA.includes(level) ? 'guardian' : level % 10 === 0 ? 'treasure' : level % 10 === 9 ? 'hard' : 'easy';
 // A treasure level is only a treasure level the first time: replayed later (from its checkpoint), it is a normal level
 const floorKind = level => { const k = baseKind(level); return k === 'treasure' && (S.treasureDone || {})[level] ? 'easy' : k; };
 // A tutorial level is a tutorial only until the player has gone past it: replayed later (starting again from the top
@@ -2287,7 +2380,10 @@ const nextReturn = () => GUIDE.retours.find(r => r > (S.guideBack || 0)) ?? Infi
 const guided = () => inGuide() && S.level >= (S.reached || 1) && S.level < nextReturn();
 const upAllowed = () => !guided();
 // Treasure levels (10, 20, 30…) are one size bigger than the levels around them, the first time
-const levelDims = (level, kind) => { if (S.wide) return [WIDE.taille, WIDE.taille]; const n = isTuto(level) ? 3 : Math.min(MAX_COLS, gridRow(level).taille + (kind === 'treasure' ? RY.niveauTresor.tailleEnPlus || 0 : 0)); return [n, n]; };
+const levelDims = (level, kind) => { if (S.wide) return [WIDE.taille, WIDE.taille];
+  // Pioneers' mine: the grid of the level's type (config.js > etages), tutorial levels and the fixed ones excepted
+  if (etOn(level) && !isTuto(level)) return (ET.grillesFixes || {})[etLv(level)] || etInfo(level).grille;
+  const n = isTuto(level) ? 3 : Math.min(MAX_COLS, gridRow(level).taille + (kind === 'treasure' ? RY.niveauTresor.tailleEnPlus || 0 : 0)); return [n, n]; };
 function setDims(cols, rows) {
   COLS = cols; ROWS = rows; N = cols * rows;
   document.documentElement.style.setProperty('--cols', cols);
@@ -2539,7 +2635,15 @@ function claimedBest(key) {
   for (const l in pc) { const r = pc[l] && (rows[l - 2] || {}).recompense; if (r && r[key] > v) v = r[key]; }
   return v;
 }
-const maxE = () => Math.max(MAX_E, claimedBest('energie'));
+// + a little energy for every miner level (config.js > progressionJoueur > energieParNiveau), on top of the level rewards
+const maxE = () => Math.max(MAX_E, claimedBest('energie')) + Math.round((CFG.progressionJoueur.energieParNiveau || 0) * (minerLevel() - 1));
+// The miner's level from the XP (same rule as the Progression page; written here so it can be used early)
+function minerLevel() {
+  const P = CFG.progressionJoueur, X = P.xp || { depart: 40, enPlus: 20 };
+  let lv = 1, xp = (S && S.pxp) || 0;
+  for (; lv < 500; lv++) { const row = P.niveaux[lv - 1], st = row && row.xp != null ? row.xp : X.depart + X.enPlus * (lv - 1); if (xp < st) break; xp -= st; }
+  return lv;
+}
 // Pickaxe damage: 1, plus the equipped Pickaxe's bonus (see Equipment)
 const pickPower = () => BASE_DMG + gearTotals().dmg;
 // Watering can: 5 s and 1 watering without runes (Rune de la Source, Rune du Torrent at the Altar)
@@ -2598,7 +2702,14 @@ const GEODE_UNLOCK = { white: 'geodes', pink: 'geodeRose', gold: 'geodeDoree', c
 const artsAt = level => Object.entries(ARTS).filter(([, o]) => !o.pieces && !o.ev && level >= o.range[0] && level <= o.range[1]);
 const geodesAt = level => Object.entries(GEODES).filter(([k]) => GEODE_UNLOCK[k] && at(level, GEODE_UNLOCK[k]));
 // Cover a treasure with the ground its series asks for
-const tileOf = t => HP[t] ? { t, hp: HP[t], max: HP[t] } : { t };
+// Toughness on the level being played: in the Pioneers' mine, stone needs more hits deeper down (config.js > etages > profondeur)
+let LV_HP = HP;
+function hpAt(level) {
+  if (!etOn(level)) return HP;
+  const k = etDepth(etLv(level)).coupsPierre;
+  return k ? { ...HP, stone: k * BASE_DMG, ore: k * BASE_DMG } : HP;
+}
+const tileOf = t => LV_HP[t] ? { t, hp: LV_HP[t], max: LV_HP[t] } : { t };
 function coverSoil(g, cells, soil, level) {
   if (soil === 'terre') cells.forEach(i => g[i] = { t: 'dirt', v: randInt(0, 2) });
   if (soil === 'pierre') cells.forEach(i => { if (g[i].t !== 'stone' && g[i].t !== 'ore') g[i] = tileOf('stone'); });
@@ -2661,6 +2772,8 @@ function genLevel(level) {
   S.lastSig = levelSig();
   // The kind of this visit (shown in the HUD and the bubble); a treasure level is used up once generated
   S.floor = S.tuto ? 'easy' : kind;
+  if (S.tuto) S.ftype = 'respiration';
+  wideView.x = wideView.y = null;   // a big board starts centred
   if (kind === 'treasure') (S.treasureDone = S.treasureDone || {})[level] = true;
   if (S.tuto) tutoEnergy(); else if (inGuide() && level < nextReturn() && level >= (S.reached || 1)) guideStone();
 }
@@ -2697,6 +2810,9 @@ function genLevelOnce(level, kindArg) {
   S.tuto = isTuto(level) ? level : 0;
   if (S.tuto) return genTutorial(level, TUTO[level]);
   const kind = kindArg || floorKind(level);
+  // Pioneers' mine: the level's type (config.js > etages) decides the ground and the treasures
+  const ef = etOn(level) ? etInfo(level) : null;
+  S.ftype = ef ? ef.type : null; LV_HP = hpAt(level);
   // How much stone and magma: easier on most levels, a bit more on the 9th, much more on guardian levels
   const D = kind === 'easy' ? RY.difficulte.facile : kind === 'hard' ? RY.difficulte.niveau9 : kind === 'guardian' ? RY.niveauGardien.pierreEnPlus : 1;
   const area = N, scale = area / 70;
@@ -2710,12 +2826,13 @@ function genLevelOnce(level, kindArg) {
   };
   // Stone from the pickaxe level on, magma from the watering-can level on; both scale with the grid
   const small = Math.min(1, .55 + scale * .45), lv = Math.min(level, 60) / 10;
-  if (at(level, 'pioche')) blob(Math.max(1, Math.round((3 + Math.min(lv, 6)) * scale * D)), 1.1 * small * Math.sqrt(D), (2.2 + Math.min(lv, 5) * .08) * small * Math.sqrt(D), i => g[i].t = 'stone');
-  if (at(level, 'magma')) blob(Math.max(1, Math.round(Math.min(1 + Math.floor(lv / 2), 4) * scale * Math.min(D, 1.3))) + (special(level, 'magmaChaine') ? SP.magmaChaine.magmaEnPlus : 0), .7 * small, 1.5 * small, i => g[i].t = 'magma');
+  if (ef) etGround(g, level, ef);
+  else if (at(level, 'pioche')) blob(Math.max(1, Math.round((3 + Math.min(lv, 6)) * scale * D)), 1.1 * small * Math.sqrt(D), (2.2 + Math.min(lv, 5) * .08) * small * Math.sqrt(D), i => g[i].t = 'stone');
+  if (!ef && at(level, 'magma')) blob(Math.max(1, Math.round(Math.min(1 + Math.floor(lv / 2), 4) * scale * Math.min(D, 1.3))) + (special(level, 'magmaChaine') ? SP.magmaChaine.magmaEnPlus : 0), .7 * small, 1.5 * small, i => g[i].t = 'magma');
   const ores = Object.fromEntries(Object.entries(ORES).filter(([k]) => at(level, ORE_UNLOCK[k])).map(([k, o]) => [k, o.w]));
   for (const c of g) {
-    if (c.t === 'stone' && Object.keys(ores).length && Math.random() < (kind === 'treasure' ? RY.niveauTresor.chanceMinerai : gridRow(level).chanceMinerai ?? CFG.mine.chanceMinerai)) { c.t = 'ore'; c.ore = pick(ores); }
-    if (HP[c.t]) c.hp = c.max = HP[c.t];
+    if (c.t === 'stone' && Object.keys(ores).length && Math.random() < (kind === 'treasure' ? RY.niveauTresor.chanceMinerai : ef && ef.type === 'lucky' ? (ET.lucky.chanceMinerai ?? .85) : gridRow(level).chanceMinerai ?? CFG.mine.chanceMinerai)) { c.t = 'ore'; c.ore = pick(ores); }
+    if (LV_HP[c.t]) c.hp = c.max = LV_HP[c.t];
   }
   addSpecials(g, level, kind === 'guardian' ? RY.niveauGardien.casesDuBiomeEnPlus : 1);
   // Guardian level: more hard stone (once it exists)
@@ -2723,15 +2840,24 @@ function genLevelOnce(level, kindArg) {
   // Treasure level: piles of coins to scoop up with the shovel
   const free = () => g.map((c, i) => c.t !== 'magma' && c.t !== 'stump' && c.t !== 'root' && c.t !== 'coins' ? i : -1).filter(i => i >= 0);
   // Treasure level: many piles; bigger grids also hold a few (config.js > progression > grilles > tasDePieces)
-  const piles = kind === 'treasure' ? RY.niveauTresor.tasDePieces : gridRow(level).tasDePieces;
+  const piles = kind === 'treasure' ? RY.niveauTresor.tasDePieces : ef && ef.type === 'lucky' ? null : (ef && ef.tasDePieces) || gridRow(level).tasDePieces;
   // Pelle de prospecteur: more piles on treasure levels
   const morePiles = kind === 'treasure' ? gearTotals().pas.pelleProspecteur || 0 : 0;
   if (piles) for (let n = randInt(...piles) + morePiles, list = free(); n > 0 && list.length; n--) g[list.splice(randInt(0, list.length - 1), 1)[0]] = tileOf('coins');
+  // Étage Lucky: small, medium and big piles of coins (their value is set now), and one rainbow tile that gives energy back
+  if (ef && ef.type === 'lucky') {
+    const L = ET.lucky, list = free().filter(i => g[i].t === 'dirt'), take = () => list.splice(randInt(0, list.length - 1), 1)[0];
+    for (const sz of ['grand', 'moyen', 'petit']) {
+      const T = (L.tas || {})[sz]; if (!T) continue;
+      for (let n = randInt(...T.nombre); n > 0 && list.length; n--) g[take()] = { t: 'coins', sz, n: randInt(...T.pieces) };
+    }
+    if (list.length) g[take()] = { t: 'lrainbow' };
+  }
   // Level 1000: the King's chest in the middle (until it has been opened)
   const reserved = [];
   if (kind === 'king' && !S.kingOpened) { const mid = (ROWS >> 1) * COLS + (COLS >> 1); g[mid] = tileOf('king'); reserved.push(mid); }
   // Treasures: count from config.js > progression > grilles; artefacts of this level's series, geodes once unlocked
-  const [tmin, tmax] = S.wide ? WIDE.tresors : gridRow(level).tresors, count = randInt(tmin, tmax);
+  const [tmin, tmax] = S.wide ? WIDE.tresors : ef ? ef.tresors : gridRow(level).tresors, count = randInt(tmin, tmax);
   const geodes = geodesAt(level), arts = artsAt(level);
   const kinds = [];
   // One treasure: sometimes a geode; several: every other one is a geode
@@ -2771,6 +2897,8 @@ function genLevelOnce(level, kindArg) {
   const best = placeAll(picks, reserved);
   // Some series lie only in dirt, under stone or under magma: cover them accordingly
   for (const { p, cells } of best) coverSoil(g, cells, p.kind === 'art' ? ARTS[p.key].soil : 'tout', level);
+  // Pioneers' mine: a share of the treasures lies under stone or magma, the others in the dirt (config.js > etages > profondeur)
+  if (ef) etCover(g, best, level, ef);
   trimCost(g, best, level, kind);
   // A chest key: on a treasure level every X levels (the first time), sometimes on a normal level (once the equipment is open)
   // (multiples of 100 are guardian levels: the key goes on the first treasure level after the interval, e.g. 410, 810)
@@ -2787,6 +2915,89 @@ function genLevelOnce(level, kindArg) {
     if (list.length) g[list[randInt(0, list.length - 1)]] = { t: 'rainbow' };
   }
   S.grid = g; S.rewards = best.map(({ p, r, c }) => ({ ...p, r, c, found: false }));
+}
+/* Pioneers' mine: the ground of a level = its type's share of stone and magma (the rest is dirt), in small patches.
+   No stone before the pickaxe; before the magma level, magma becomes stone. */
+function etGround(g, level, ef) {
+  if (!at(level, 'pioche')) return;
+  const magmaOk = at(level, 'magma');
+  const want = { stone: Math.round(N * ((ef.pierre || 0) + (magmaOk ? 0 : ef.magma || 0))), magma: magmaOk ? Math.round(N * (ef.magma || 0)) : 0 };
+  for (const t of ['magma', 'stone']) {
+    let left = want[t];
+    for (let tries = 0; left > 0 && tries < 200; tries++) {
+      const free = g.map((c, i) => c.t === 'dirt' ? i : -1).filter(i => i >= 0); if (!free.length) break;
+      // A patch of 1 to 4 tiles grows from a random dirt tile
+      const patch = [free[randInt(0, free.length - 1)]];
+      for (let size = Math.min(left, randInt(1, 4)); patch.length < size;) {
+        const next = patch.flatMap(nb4).filter(j => g[j].t === 'dirt' && !patch.includes(j)); if (!next.length) break;
+        patch.push(next[randInt(0, next.length - 1)]);
+      }
+      patch.forEach(i => { g[i].t = t; left--; });
+    }
+  }
+}
+/* Pioneers' mine: what hides each treasure (config.js > etages > recouvrement).
+   ouvert = only dirt · indice = one dirt tile, the rest stone or magma (treasures of 2 tiles or more) ·
+   mixte = half dirt · cache = only stone · scelle = stone and magma.
+   Chance = parRarete × parType × the depth's durete (cache and scelle only). The level's energy cap
+   (profondeur > energie × the type's cout) softens the most expensive cover one notch at a time. */
+const COVERS = ['ouvert', 'indice', 'mixte', 'cache', 'scelle'], HARD_COVER = ['cache', 'scelle'];
+function etCover(g, placed, level, ef) {
+  const R = ET.recouvrement || {}, T = (R.parType || {})[ef.type] || {}, lv = etLv(level), dur = etDepth(lv).durete ?? 1;
+  const magmaOk = at(level, 'magma'), magmaPart = (ef.magma || 0) / Math.max(.01, (ef.pierre || 0) + (ef.magma || 0));
+  const rarity = p => p.kind === 'geode' ? GEODES[p.key].rarity : ARTS[p.key].rarity;
+  const soilOf = p => p.kind === 'art' ? ARTS[p.key].soil : 'tout';
+  // Treasures in a bonus chest keep their chest; Fossils (dirt series) are always open
+  const list = placed.filter(b => soilOf(b.p) !== 'coffre');
+  const fixed = b => !at(level, 'pioche') || soilOf(b.p) === 'terre' || !!T.toujours;
+  for (const b of list) {
+    if (fixed(b)) { b.cov = at(level, 'pioche') && T.toujours ? T.toujours : 'ouvert'; continue; }
+    const base = (R.parRarete || {})[rarity(b.p)] || (R.parRarete || {}).common || { ouvert: 1 }, w = {};
+    for (const cv of COVERS) w[cv] = (base[cv] || 0) * (T[cv] ?? 1) * (HARD_COVER.includes(cv) ? dur : 1);
+    if (b.cells.length < 2) w.indice = 0;   // a one-tile treasure can't show a single dirt tile
+    b.cov = Object.values(w).some(v => v > 0) ? pick(w) : 'ouvert';
+  }
+  // Mini-boss and guardians: at least one treasure under stone (Caché) or stone and magma (Scellé)
+  // (one hard treasure is kept as such, whether it was drawn so or forced: the energy cap never softens it below Caché)
+  const free = list.filter(b => !fixed(b));
+  let forced = T.auMoinsUnDur ? list.find(b => HARD_COVER.includes(b.cov)) || null : null;
+  if (T.auMoinsUnDur && !forced && free.length) {
+    // (the rarest treasure; among equals the smallest, so the forced cover stays affordable)
+    forced = free.sort((a, b) => RARITIES.indexOf(rarity(b.p)) - RARITIES.indexOf(rarity(a.p)) || a.cells.length - b.cells.length)[0];
+    forced.cov = magmaOk && Math.random() < .5 ? 'scelle' : 'cache';
+  }
+  // The tiles of each treasure for its cover. Rock = magma for magma series, stone for stone series,
+  // otherwise like the level's ground (Caché = stone only, Scellé = some of each)
+  const rockFor = (b, k, n) => {
+    const soil = soilOf(b.p);
+    if (b.cov === 'cache') return soil === 'pierreDure' && at(level, 'pierreDure') ? tileOf('hard') : tileOf('stone');
+    if (b.cov === 'scelle') return magmaOk && (k % 2 === 1 || n === 1) ? { t: 'magma' } : tileOf('stone');
+    if (soil === 'magma' && magmaOk) return { t: 'magma' };
+    if (soil === 'pierre' || soil === 'pierreDure') return soil === 'pierreDure' && at(level, 'pierreDure') ? tileOf('hard') : tileOf('stone');
+    return magmaOk && Math.random() < magmaPart ? { t: 'magma' } : tileOf('stone');
+  };
+  const apply = b => {
+    const n = b.cells.length, cells = b.cells.slice().sort(() => Math.random() - .5);
+    const dirt = b.cov === 'ouvert' ? n : b.cov === 'indice' ? 1 : b.cov === 'mixte' ? Math.floor(n / 2) : 0;
+    cells.forEach((i, k) => { g[i] = k < dirt ? { t: 'dirt', v: randInt(0, 2) } : rockFor(b, k - dirt, n - dirt); });
+    b.cost = b.cells.reduce((a, i) => a + tileCost(g[i]), 0);
+  };
+  list.forEach(apply);
+  // Energy cap: soften the most expensive cover (the forced hard one last) until the level fits
+  const cap = etDepth(lv).energie * (ef.cout ?? 1), softer = { scelle: 'cache', cache: 'mixte', mixte: 'indice', indice: 'ouvert' };
+  // (a type with "plafond: false", like Défi and Mini-boss, keeps the covers it drew, whatever they cost)
+  for (let guard = 0; ef.plafond !== false && guard < 60; guard++) {
+    if (list.reduce((a, b) => a + b.cost, 0) <= cap) break;
+    // (the forced hard cover of a mini-boss goes last, and never softer than Caché)
+    const can = list.filter(b => !fixed(b) && softer[b.cov] && (b !== forced || b.cov === 'scelle')).sort((a, b) => (a === forced) - (b === forced) || b.cost - a.cost);
+    if (!can.length) break;
+    const b = can[0];
+    b.cov = softer[b.cov]; if (b.cov === 'indice' && b.cells.length < 2) b.cov = 'ouvert';
+    apply(b);
+  }
+  S.levelCost = list.reduce((a, b) => a + b.cost, 0);
+  // What each treasure is under (shown by the cheat « Types d'étages »)
+  S.covers = list.map(b => ({ key: b.p.key, kind: b.p.kind, cov: b.cov }));
 }
 // Places the treasures on the grid, biggest first; if one has no room left, starts the placement over (keeps the best attempt).
 // reserved = cells already taken. Returns [{ p, r, c, cells }].
@@ -2813,15 +3024,20 @@ function placeAll(picks, reserved) {
 }
 /* Energy a level asks for = pickaxe hits (at base strength) on the tiles covering its treasures.
    Above the biome's budget, rock over the treasures turns into dirt, starting with treasures that have no ground rule. */
+// (in hits of the base pickaxe, like the energy budgets: toughness is counted ×10 since the whole-number damages)
 function tileCost(c) {
-  if (c.t === 'magma') return HP.cool;
-  if (c.t === 'ice') return (c.hp || 0) * 2;
-  return ['stone', 'ore', 'hard', 'cool', 'root', 'stump'].includes(c.t) ? c.hp || 0 : 0;
+  if (c.t === 'magma') return HP.cool / BASE_DMG;
+  if (c.t === 'ice') return (c.hp || 0) * 2 / BASE_DMG;
+  return ['stone', 'ore', 'hard', 'cool', 'root', 'stump'].includes(c.t) ? (c.hp || 0) / BASE_DMG : 0;
 }
 function trimCost(g, placed, level, kind) {
   const E = CFG.energie, M = E.multiplicateurCout;
   const mult = { easy: M.facile, hard: M.niveau9, treasure: M.tresor, guardian: M.gardien, king: M.gardien }[kind] ?? 1;
-  const budget = E.coutNiveau[Math.min(E.coutNiveau.length, biomeOf(level)) - 1] * mult;
+  // Pioneers' mine: the energy of the depth (config.js > etages > profondeur) × the cost of the level's type
+  const ef = S.ftype && etOn(level) && ET.types[S.ftype];
+  // (the Pioneers' mine: the covers already fit the level's energy cap, see etCover)
+  if (ef && ET.recouvrement) return;
+  const budget = ef ? etDepth(etLv(level)).energie * (ef.cout ?? 1) : E.coutNiveau[Math.min(E.coutNiveau.length, biomeOf(level)) - 1] * mult;
   const shuffle = a => a.sort(() => Math.random() - .5);
   // Every treasure keeps at least one cell in the dirt: digging the free dirt always shows where to break
   // (config.js > energie > indiceTresor; relics inside bonus chests excepted)
@@ -2962,6 +3178,7 @@ function tileClass(c, i) {
   if (c.t === 'dirt') { const v = c.v ?? i % 3; if (v) cls += ' v' + v; }
   if (c.t === 'stone' || c.t === 'ore') cls += ' s' + Math.min(3, 1 + Math.floor((c.max - c.hp) / c.max * 3));
   if (c.t === 'gkey') cls += ' k-' + (c.k || 'bois');
+  if (c.t === 'coins' && c.sz) cls += ' cz-' + c.sz;
   if (c.t === 'heyes' && c.v) cls += ' e' + c.v;
   if (c.t === 'ore') cls += ' o-' + c.ore + (ORE_TINT[c.ore] ? ' tint' : '');
   if (c.t === 'magma' && c.chain) cls += ' chain';
@@ -3011,7 +3228,11 @@ function buildBoard(animate) {
   $('depthLbl').textContent = S.wide ? tr('Événement') : tr('Niveau');
   $('depthChip').classList.toggle('wide', !!S.wide);
   const special = !S.wide && ['treasure', 'guardian', 'king'].includes(fk);
-  $('depthBand').hidden = !special; $('depthBand').className = 'depth-band k-' + fk;
+  // A mini-boss gets its band too
+  const boss = !S.wide && !S.tuto && S.ftype === 'miniboss';
+  const lucky = !S.wide && S.ftype === 'lucky';
+  $('depthBand').hidden = !special && !boss && !lucky; $('depthBand').className = 'depth-band k-' + (lucky ? 'lucky' : boss ? 'miniboss' : fk);
+  $('depthBand').textContent = lucky ? tr('Étage chanceux') : tr('Niveau spécial');
   paintRadar();
   updateGoals();
   if (animate && !reduced) { board.classList.remove('enter'); void board.offsetWidth; board.classList.add('enter'); }
@@ -3046,6 +3267,9 @@ function bubbleInfo() {
   const k = S.floor || floorKind(S.level);
   // Haunted Mine: its own treasure and guardian texts (each shown once)
   if (S.haunt) { const t = k === 'treasure' ? HW.niveauTresor.texte : k === 'guardian' ? HW.niveauGardien.texte : null; return t ? { key: 'hw-' + k, text: tr(t) } : null; }
+  // Pioneers' mine: the text of the level's type first (config.js > etages > types > texte)
+  const ft = S.ftype && ET && ET.types[S.ftype];
+  if (ft && ft.texte) return { key: 'f' + S.level, text: tr(ft.texte) };
   const text = k === 'treasure' ? RY.niveauTresor.texte : k === 'guardian' ? RY.niveauGardien.texte : k === 'king' ? RY.niveau1000.texte : null;
   return text ? { key: 'f' + S.level, text: tr(text) } : null;
 }
@@ -3490,7 +3714,7 @@ function deny(i, msg, kind = 'warn') { shake(i); sfx('deny'); toast(msg, kind); 
 
 let digLock = false;
 // Tiles a simple tap removes for free, with the shovel or the pickaxe
-const SOFT = ['spring', 'mystery', 'gas', 'chest', 'coins', 'gkey', 'rainbow', 'hpile'];
+const SOFT = ['spring', 'mystery', 'gas', 'chest', 'coins', 'gkey', 'rainbow', 'hpile', 'lrainbow'];
 function nb4(i) {
   const r = i / COLS | 0, c = i % COLS;
   return [[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dr, dc]) => [r + dr, c + dc]).filter(([y, x]) => y >= 0 && x >= 0 && y < ROWS && x < COLS).map(([y, x]) => y * COLS + x);
@@ -3628,7 +3852,7 @@ function breakCell(i) {
   }
   if (t === 'coins') {
     // Coin pile (treasure levels and big grids), worth more in deeper biomes
-    const n = pileValue();
+    const n = c.n || pileValue();
     S.coins += n; S.trip.coins = (S.trip.coins || 0) + n; flyCoins(i, n);
     sfx('ore'); burst(x, y, ['#ffe066', '#ffc23d', '#fff'], 14, { spread: 34, up: 16, size: [3, 7] });
     floatText(i, tr('+{n} pièces', { n }), '#ffe14d');
@@ -3639,6 +3863,13 @@ function breakCell(i) {
     sfx('win'); burst(x, y, ['#ff5b5b', '#ffd23d', '#3dd68c', '#4b8bff', '#cf9bff', '#fff'], 46, { spread: ts() * 2.2, up: 22, size: [4, 10], dur: 1200 });
     floatText(i, tr('Arc-en-ciel ! +{n}', { n }), '#ffe14d');
     toast(tr('Case arc-en-ciel ! +{n} pièces', { n }), 'good');
+  }
+  if (t === 'lrainbow') {
+    // Étage Lucky's rainbow tile (config.js > etages > lucky > arcEnCiel)
+    const L = ET.lucky, n = Math.max(0, Math.min((L.arcEnCiel || {}).energie || 0, maxE() - S.energy));
+    S.energy += n; updateEnergy(true);
+    sfx('win'); burst(x, y, ['#ff5b5b', '#ffd23d', '#3dd68c', '#4b8bff', '#cf9bff', '#fff'], 40, { spread: ts() * 2, up: 22, size: [4, 10], dur: 1100 });
+    floatText(i, tr(L.texteArcEnCiel || '+{n} énergie', { n }), '#ffe14d');
   }
   if (t === 'gkey') {
     sfx('reward'); burst(x, y, ['#ffe066', '#c08a50', '#fff'], 16, { spread: 36, up: 14, size: [3, 8] });
@@ -4885,6 +5116,10 @@ function renderEvents() {
 const WIDE = (CFG.evenements || {}).mineLarge || { nom: 'Wide Mine', taille: 20, tresors: [8, 12], largeurCase: 88 };
 const WIDE_KEEP = ['level', 'grid', 'rewards', 'cols', 'rows', 'floor', 'tuto', 'lastSig', 'rewardMsg'];
 const wideView = { x: 0, y: 0, moving: false };
+// Pioneers' mine: a mini-boss or guardian grid too big for the screen is shown like the Wide Mine (config.js > etages > grandeGrille)
+let panBig = false;
+const bigFloor = () => !S.wide && !S.haunt && !S.tuto && ['miniboss', 'demiGardien', 'gardien'].includes(S.ftype) && !$('scr-mine').hidden;
+const panView = () => !!S.wide || panBig;
 function startWide() {
   if (S.wide) return go('mine');
   S.wideBack = Object.fromEntries(WIDE_KEEP.map(k => [k, S[k]]));
@@ -4914,7 +5149,7 @@ function wideArea() {
   return wideView.acc;
 }
 function panWide(dx, dy) {
-  const fr = document.querySelector('#scr-mine .frame'); if (!S.wide || !fr) return;
+  const fr = document.querySelector('#scr-mine .frame'); if (!panView() || !fr) return;
   const W = fr.offsetWidth, H = fr.offsetHeight, a = wideArea(), aw = a.r - a.l, ah = a.b - a.t;
   if (wideView.x == null) { wideView.x = a.l + (aw - W) / 2; wideView.y = a.t + (ah - H) / 2; }
   // Any edge of the mine can be brought inside the reachable area; a mine smaller than the area stays centred in it
@@ -4930,10 +5165,11 @@ function setMoving(on) {
   $('moveBtn').classList.toggle('on', wideView.moving); $('moveBtn').setAttribute('aria-pressed', wideView.moving ? 'true' : 'false');
 }
 function paintWide() {
-  const on = !!S.wide && !$('scr-mine').hidden;
+  const on = panView() && !$('scr-mine').hidden;
   $('scr-mine').classList.toggle('wide', !!S.wide);
+  $('scr-mine').classList.toggle('bigview', !S.wide && panBig);
   $('moveBtn').hidden = !on; $('wideVeil').hidden = !on; wideView.acc = null;
-  if (!S.wide) { setMoving(false); const fr = document.querySelector('#scr-mine .frame'); if (fr) fr.style.transform = ''; }
+  if (!panView()) { setMoving(false); const fr = document.querySelector('#scr-mine .frame'); if (fr) fr.style.transform = ''; }
   // The button sits just above the tools
   $('scr-mine').style.setProperty('--tools-h', document.querySelector('#scr-mine .tools').offsetHeight + 'px');
 }
@@ -4941,7 +5177,7 @@ $('moveBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); setMo
 // In move mode, dragging anywhere moves the mine and never digs
 let widePan = null;
 document.querySelector('#scr-mine .stage').addEventListener('pointerdown', e => {
-  if (!S.wide || !wideView.moving) return;
+  if (!panView() || !wideView.moving) return;
   e.preventDefault(); e.stopPropagation();
   widePan = { x: e.clientX, y: e.clientY, id: e.pointerId };
 }, true);
@@ -6244,7 +6480,7 @@ function openRecap() {
   S.newBuildings = [...(S.newBuildings || []), ...opened];
   const rows = [...T.finds, ...(T.bonus || []), ...(T.dupes || [])].map(f => { const r = applyFind(f.kind, f.key); coins += r.coins; return r; });
   const total = coins + (T.coins || 0);
-  S.coins += coins; S.trip = newTrip(); updateBadge();
+  S.coins += coins; S.trip = newTrip(); updateBadge(); S.luckyAt = 0;
   if (CFG.energie.rechargeAuVillage) { S.energy = maxE(); updateEnergy(true); }
   // Rune de l'Herboriste: sometimes a potion on the way back up
   if (has('potions') && Math.random() < runeVal('herboriste')) { S.potions++; setTimeout(() => toast(tr('Rune de l\'Herboriste : +1 potion !'), 'good'), 1200); }
@@ -6271,6 +6507,7 @@ function openRecap() {
   $('recapLevel').textContent = S.wide ? tr(WIDE.nom) : S.haunt ? tr(HW.nom) + ' · ' + tr('Niveau atteint : {n}', { n: S.level }) : tr('Niveau atteint : {n}', { n: mineLv(S.level) });
   if (candy) countUp('recapCandy', candy, 300 + i * 60);
   $('recapCp').hidden = !T.newCp;
+  $('recapLucky').hidden = !T.lucky; $('recapLucky').textContent = tr(ET && ET.lucky ? ET.lucky.recap : 'Tu as trouvé un étage chanceux !');
   // The coin total counts up
   if (total) {
     const t0 = performance.now(), dur = Math.min(1600, 500 + total * 4), delay = 300 + i * 60;
@@ -6946,8 +7183,9 @@ function levelDone() {
   if (!reduced) board.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(1.25)' }, { filter: 'brightness(1)' }], { duration: 700 });
   // Guardian level: the big reward, given once per guardian level, shown in the bubble (not the Haunted Mine's level 30)
   if ((S.floor || floorKind(S.level)) === 'guardian' && !S.tuto && !S.haunt && !S.guardDone[S.level]) {
-    const R = RY.niveauGardien.recompense, parts = [];
-    const coins = R.pieces + R.piecesEnPlusParBiome * (biomeOf(S.level) - 1);
+    const R = RY.niveauGardien.recompense, parts = [], demi = S.ftype === 'demiGardien';
+    // A demi-guardian (level 50) gives a share of the guardian's coins (config.js > etages > types > demiGardien > recompense)
+    const coins = Math.round((R.pieces + R.piecesEnPlusParBiome * (biomeOf(S.level) - 1)) * (demi ? ET.types.demiGardien.recompense ?? .5 : 1));
     S.coins += coins; parts.push(tr('+{n} pièces', { n: coins }));
     if (R.potions && has('potions')) { S.potions += R.potions; updateQuick(); parts.push(tr(plural(R.potions, '+{n} potion', '+{n} potions'), { n: R.potions })); }
     if (R.geode) {
@@ -6960,7 +7198,7 @@ function levelDone() {
     const nextMine = biomeOf(S.level) + 1, opens = nextMine <= BIOME_NAMES.length && !mineOpen(nextMine);
     S.guardDone[S.level] = true;
     if (opens && mineOpen(nextMine)) parts.push(`<b>${tr(CFG.biomes.texteDeblocage || 'Nouvelle mine débloquée : {x} !', { x: biomeName(nextMine) })}</b>`);
-    S.rewardMsg = { level: S.level, html: `<b>${tr('Gardien vaincu !')}</b> ${parts.join(' · ')}` };
+    S.rewardMsg = { level: S.level, html: `<b>${demi ? tr('Demi-gardien vaincu !') : tr('Gardien vaincu !')}</b> ${parts.join(' · ')}` };
     showTuto();
   }
   updateNextPill(); save();
@@ -6971,7 +7209,7 @@ function updateNextPill() {
   // "Next level" only once the uncovered treasures are picked up, so none is left behind by mistake
   // (first steps: at a planned return, the only way is back up)
   // (Haunted Mine: no "next level" at its bottom)
-  const done = !S.wide && settled() && !(inGuide() && S.level >= nextReturn()) && !hwBottom();
+  const done = !S.wide && (settled() || S.ftype === 'lucky') && !(inGuide() && S.level >= nextReturn()) && !hwBottom();
   $('nextPill').hidden = !done;
   $('nextPill').textContent = S.level >= 1000 ? tr('Mine suivante ↓') : tr('Niveau {n} ↓', { n: mineLv(S.level + 1) });
 }
@@ -7044,15 +7282,28 @@ function descend() {
 function arriveNext() {
   if (S.haunt) return hwArrive();
   S.level++; if (CFG.energie.rechargeEtageSuivant) S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges();
-  S.rewardMsg = null; genLevel(S.level); const petFxArrive = petArrive(); buildBoard(!DESCEND_MS); petArriveFx(petFxArrive); updateEnergy(true); save();
+  S.rewardMsg = null; luckyRoll(S.level); genLevel(S.level); const petFxArrive = petArrive(); buildBoard(!DESCEND_MS); petArriveFx(petFxArrive); updateEnergy(true); save();
   const dc = $('depthChip'); dc.classList.remove('bump'); void dc.offsetWidth; dc.classList.add('bump');
   const newRecord = S.level > S.reached;
   if (newRecord) S.reached = S.level;
+  if (S.ftype === 'lucky') luckyArrive();
   // Miner XP: every level finished (replays too, after the first steps), plus the new record bonus
   gainXP((inGuide() ? 0 : PJ.xpNiveau || 0) + (newRecord ? recordXP(S.level) : 0));
   if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (keyEvery(S.level, r.tousLes)) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: mineLv(S.level) })), 900);
   if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: mineLv(S.level) }) : tr('Checkpoint niveau {n} débloqué !', { n: mineLv(S.level) }), 'good'); }
   save();
+}
+// Étage Lucky: a rainbow banner, a little sound and sparkles; counted for the end-of-expedition screen
+function luckyArrive() {
+  // (it counts as a level finished: there is no treasure to find)
+  S.trip.lucky = (S.trip.lucky || 0) + 1; stat('niveaux');
+  const fx = $('luckyFx'); $('luckyFxTxt').textContent = tr(ET.lucky.banniere || 'Étage chanceux !');
+  fx.hidden = false; fx.classList.remove('on'); void fx.offsetWidth; fx.classList.add('on');
+  setTimeout(() => { sfx('reward'); setTimeout(() => sfx('win'), 180); }, 150);
+  const r = fx.getBoundingClientRect();
+  if (!reduced) for (let k = 0; k < 5; k++) setTimeout(() => petSparkles(tapFx, r.left + r.width * rand(.15, .85), r.top + r.height * rand(.35, .65)), 120 * k);
+  setTimeout(() => { fx.classList.remove('on'); fx.hidden = true; }, reduced ? 1600 : 2400);
+  updateNextPill();
 }
 $('nextPill').addEventListener('click', () => { unlockAudio(); sfx('pick'); tryDescend(); });
 // Session only (not saved): reloading the game asks again
@@ -7072,9 +7323,14 @@ function fitBoard() {
   const w = (LAND.matches ? innerWidth * .55 : st.clientWidth) - frame;
   const h = st.clientHeight - frame - 8;
   if (h <= 0 || w <= 0) return;
-  const t = S.wide ? Math.round(Math.min(innerWidth, 480) * WIDE.largeurCase / 430) : Math.floor(Math.max(22, Math.min(w / COLS, h / (ROWS + lip), 96)));
+  const fit = Math.floor(Math.max(22, Math.min(w / COLS, h / (ROWS + lip), 96)));
+  // A big mini-boss or guardian grid: tiles never smaller than etages > grandeGrille > caseMin, and the board can be moved
+  const min = Math.round(Math.min(innerWidth, 480) * ((ET && ET.grandeGrille && ET.grandeGrille.caseMin) || 44) / 430);
+  const big = bigFloor() && fit < min;
+  if (big !== panBig) { panBig = big; paintWide(); }
+  const t = S.wide ? Math.round(Math.min(innerWidth, 480) * WIDE.largeurCase / 430) : panBig ? min : fit;
   document.documentElement.style.setProperty('--tile', t + 'px');
-  if (S.wide) requestAnimationFrame(() => panWide(0, 0));
+  if (panView()) requestAnimationFrame(() => panWide(0, 0));
 }
 try { new ResizeObserver(fitBoard).observe(document.querySelector('.stage')); } catch (e) {}
 addEventListener('resize', fitBoard);
@@ -7250,6 +7506,10 @@ function loadCheats() {
     updateBombs, updateQuick, updateBadge, updateEnergy,
     EQC, ARCH, RAR_KEYS, newItem, refreshGear, archOpen, gearTotals,
     giveFairy, paintPet, paintMoney,
+    // Floor types of the Pioneers' mine (cheat « Types d'étages »)
+    etType: level => ET && etType(level), etInfo: level => ET && etInfo(level), etOn: level => ET && etOn(level),
+    // Étage Lucky (cheat « Étage Lucky maintenant »): turns the current level into one
+    makeLucky() { if (!ET || !etOn(S.level)) return false; S.luckyAt = S.level; S.lastLucky = S.level; genLevel(S.level); buildBoard(true); go('mine'); luckyArrive(); save(); return true; },
     // Haunted Mine: the event's clock (test clock key), tickets and page
     hw: HW && { CLOCK_KEY, day: hwDay, date: hwDate, now: hwNow, refresh: hwRefresh, render: renderHaunt, paintVillage: hwPaintVillage, gen: genHaunt },
     // Texts still missing an English version (shown in the console with __mine.missingEN())

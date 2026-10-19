@@ -414,6 +414,203 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
+     TYPES D'ÉTAGES (Mine des pionniers, niveaux 1 à 100)
+     Chaque étage a un type, qui décide de la taille de la grille, du nombre de trésors
+     et de la composition du sol. Les étages tutoriels (progression > tutoriels) gardent leur
+     grille de 3 × 3 ; les niveaux 1 et 2 gardent leur petite grille (voir grillesFixes).
+     Les autres mines utilisent encore l'ancien système (progression > grilles et rythme).
+     --------------------------------------------------------------- */
+  etages: {
+    actif: true,        // false = la Mine des pionniers revient à l'ancien système
+    mine: 1,            // la mine concernée (1 = Mine des pionniers)
+
+    // Le cycle de 10 niveaux, répété sur toute la mine (1er niveau du cycle = 1, 11, 21…).
+    // Types : 'respiration', 'standard', 'fouille', 'defi', 'miniboss', 'tresor'.
+    cycle: ['respiration', 'standard', 'standard', 'fouille', 'respiration', 'defi', 'respiration', 'defi', 'miniboss', 'tresor'],
+
+    // true = les niveaux 2 à 8 de chaque cycle sont mélangés (toujours le même mélange pour un même joueur),
+    // sans jamais mettre deux étages Défi d'affilée. Le 1er, le mini-boss (9) et l'étage trésor (10) ne bougent pas.
+    melanger: true,
+
+    // true = un niveau où arrive une nouveauté (une case, un minerai, une géode, un tutoriel) est toujours
+    // un étage Respiration : son type est échangé avec un étage Respiration du même cycle
+    nouveauteSurRespiration: true,
+    // Ce qui compte comme une nouveauté de la mine (les noms de progression > deblocages) ;
+    // les niveaux tutoriels (progression > tutoriels) comptent aussi
+    nouveautes: ['pioche', 'cuivre', 'fer', 'or', 'geodes', 'geodeRose', 'geodeDoree', 'geodeCristal', 'magma', 'bombes'],
+
+    // Niveaux qui gardent une grille à part : [colonnes, lignes]
+    // (niveau 1 : une seule case pour apprendre à toucher ; niveau 2 : 2 × 2 pour apprendre à glisser)
+    grillesFixes: { 1: [1, 1], 2: [2, 2] },
+
+    // Composition du sol de chaque type : "pierre" et "magma" = part des cases (le reste est de la terre).
+    // Avant le niveau du magma (progression > deblocages > magma), le magma est remplacé par de la pierre ;
+    // avant la pioche, il n'y a que de la terre.
+    // "cout" = l'énergie que l'étage demande au plus pour dégager ses trésors, en multiple de
+    // profondeur > energie : au-delà, le recouvrement le plus dur est adouci d'un cran (le "plafond").
+    // "plafond: false" = pas de plafond : les recouvrements suivent toujours les probabilités (etages > recouvrement),
+    // même si l'étage coûte cher et termine parfois l'expédition (Défi et Mini-boss).
+    // "texte" = la bulle affichée en arrivant sur l'étage (une fois par niveau). Vide = pas de bulle.
+    types: {
+      respiration: { nom: 'Respiration',   pierre: 0.15, magma: 0,    cout: 0.5 },
+      standard:    { nom: 'Standard',      pierre: 0.40, magma: 0.08, cout: 1 },
+      fouille:     { nom: 'Fouille',       pierre: 0.20, magma: 0.03, cout: 0.9 },
+      defi:        { nom: 'Défi',          pierre: 0.50, magma: 0.22, cout: 1.4, plafond: false },
+      miniboss:    { nom: 'Mini-boss',     pierre: 0.45, magma: 0.20, cout: 2,   plafond: false,
+        texte: "Mini-boss ! Plus de roche… et plus de trésors à trouver." },
+      // Étage trésor : pièces et minerai, réglés dans rythme > niveauTresor (comme avant)
+      tresor:      { nom: 'Étage trésor',  pierre: 0.30, magma: 0,    cout: 0.6 },
+      // Demi-gardien (niveau 50) : sa récompense = celle du gardien (rythme > niveauGardien) × "recompense"
+      demiGardien: { nom: 'Demi-gardien',  pierre: 0.45, magma: 0.20, cout: 2.2, recompense: 0.5,
+        texte: "Demi-gardien ! Une grande mine pleine de trésors… et une récompense à la fin." },
+      gardien:     { nom: 'Gardien',       pierre: 0.50, magma: 0.22, cout: 1.5 },
+      // Étage Lucky (voir "lucky" plus bas) : surtout de la terre, la pierre est presque toujours à minerai
+      lucky:       { nom: 'Lucky',         pierre: 0.15, magma: 0,    cout: 0.3 },
+    },
+
+    // Taille de la grille [colonnes, lignes] et nombre de trésors [minimum, maximum] de chaque type, par tranche de niveaux.
+    // "depuis" = premier niveau de la tranche. defi: null = pas d'étage Défi dans la tranche (remplacé par Standard).
+    // Un type peut aussi changer sa composition dans une tranche (ex. un mini-boss plus doux : pierre, magma).
+    tranches: [
+      { depuis: 1,
+        respiration: { grille: [2, 2], tresors: [1, 1] },
+        standard:    { grille: [3, 3], tresors: [1, 1] },
+        fouille:     { grille: [4, 4], tresors: [2, 2] },
+        defi:        null,
+        miniboss:    { grille: [4, 4], tresors: [3, 3], pierre: 0.25, magma: 0 },   // doux
+        tresor:      { grille: [4, 4], tresors: [1, 1] } },
+      { depuis: 11,
+        respiration: { grille: [3, 3], tresors: [1, 1] },
+        standard:    { grille: [4, 4], tresors: [2, 2] },
+        fouille:     { grille: [5, 5], tresors: [3, 3] },
+        defi:        { grille: [4, 4], tresors: [2, 2] },
+        miniboss:    { grille: [6, 5], tresors: [4, 4] },
+        tresor:      { grille: [5, 5], tresors: [1, 1] } },
+      { depuis: 21,
+        respiration: { grille: [3, 3], tresors: [1, 1] },
+        standard:    { grille: [4, 4], tresors: [2, 2] },
+        fouille:     { grille: [6, 5], tresors: [3, 3] },
+        defi:        { grille: [5, 5], tresors: [2, 3] },
+        miniboss:    { grille: [7, 6], tresors: [4, 4] },
+        tresor:      { grille: [5, 5], tresors: [2, 2] } },
+      { depuis: 31,
+        respiration: { grille: [4, 4], tresors: [1, 1] },
+        standard:    { grille: [5, 5], tresors: [2, 2] },
+        fouille:     { grille: [6, 6], tresors: [4, 4] },
+        defi:        { grille: [5, 5], tresors: [3, 3] },
+        miniboss:    { grille: [8, 6], tresors: [5, 5] },
+        tresor:      { grille: [6, 6], tresors: [2, 2] } },
+      { depuis: 51,
+        respiration: { grille: [4, 4], tresors: [1, 2] },
+        standard:    { grille: [5, 5], tresors: [2, 3] },
+        fouille:     { grille: [7, 6], tresors: [4, 4] },
+        defi:        { grille: [6, 6], tresors: [3, 3] },
+        miniboss:    { grille: [8, 7], tresors: [5, 5] },
+        tresor:      { grille: [6, 6], tresors: [2, 2] } },
+      { depuis: 71,
+        respiration: { grille: [4, 4], tresors: [2, 2] },
+        standard:    { grille: [6, 5], tresors: [3, 3] },
+        fouille:     { grille: [7, 7], tresors: [5, 5] },
+        defi:        { grille: [6, 6], tresors: [4, 4] },
+        miniboss:    { grille: [9, 7], tresors: [5, 5] },
+        tresor:      { grille: [7, 7], tresors: [2, 2] } },
+    ],
+
+    // Étages à part, qui remplacent l'étage prévu par le cycle
+    speciaux: {
+      50:  { type: 'demiGardien', grille: [10, 8],  tresors: [5, 5] },
+      100: { type: 'gardien',     grille: [12, 10], tresors: [6, 6] },
+    },
+
+    // Ce qui monte avec la profondeur, par tranche de niveaux ("depuis" = premier niveau) :
+    // "coupsPierre" = coups de pioche de base pour casser une pierre (et une pierre à minerai) ;
+    // "energie" = énergie de base qu'un étage peut demander au plus pour ses trésors (multipliée par le "cout" du type) :
+    //   si les recouvrements tirés coûtent plus, le plus dur est adouci d'un cran (Scellé → Caché → Mixte → Indice → Ouvert) ;
+    // "durete" = multiplie les chances des recouvrements durs (Caché et Scellé) : plus il est grand, plus ils sont fréquents.
+    // Réglé par simulation (16 octobre 2026) pour environ 1 à 2 expéditions par checkpoint au début et 2 vers la fin,
+    // avec un joueur qui améliore sa pioche et son casque à la Forge (~25 XP de missions par expédition).
+    // La pierre devient plus résistante en profondeur pour que la pioche améliorée reste utile ;
+    // "energie" ne plafonne plus que les étages Respiration, Standard, Fouille et les gardiens (types > plafond).
+    profondeur: [
+      { depuis: 1,  coupsPierre: 3, energie: 3,    durete: 0.6 },
+      { depuis: 11, coupsPierre: 3, energie: 3.5,  durete: 0.8 },
+      { depuis: 21, coupsPierre: 3, energie: 5,    durete: 0.8 },
+      { depuis: 31, coupsPierre: 4, energie: 6.5,  durete: 1 },
+      { depuis: 51, coupsPierre: 5, energie: 14,   durete: 1.4 },
+      { depuis: 61, coupsPierre: 7, energie: 18,   durete: 1.6 },
+      { depuis: 71, coupsPierre: 8, energie: 24,   durete: 1.8 },
+      { depuis: 91, coupsPierre: 9, energie: 24,   durete: 1.8 },
+    ],
+
+    // RECOUVREMENT DES TRÉSORS : ce qui cache chaque trésor.
+    //   ouvert = uniquement de la terre ;
+    //   indice = une seule case de terre, le reste en pierre ou magma (seulement pour les trésors de plus d'une case) ;
+    //   mixte  = moitié terre, moitié pierre ou magma ;
+    //   cache  = uniquement de la pierre ;
+    //   scelle = pierre et magma.
+    // Chance d'un recouvrement = parRarete × parType × (durete de la profondeur, pour cache et scelle seulement).
+    // Les séries "sol: 'terre'" (Fossiles) sont toujours ouvertes ; "sol: 'pierre'" et "sol: 'magma'" choisissent
+    // la matière (pierre ou magma) de leurs cases couvertes. Avant la pioche : tout est ouvert ;
+    // avant le magma : le magma est remplacé par de la pierre.
+    recouvrement: {
+      // Poids de base selon la rareté du trésor (les géodes ont aussi une rareté)
+      parRarete: {
+        common:    { ouvert: 55, indice: 35, mixte: 10, cache: 3,  scelle: 1 },
+        rare:      { ouvert: 8,  indice: 40, mixte: 35, cache: 12, scelle: 5 },
+        epic:      { ouvert: 0,  indice: 8,  mixte: 17, cache: 40, scelle: 35 },
+        legendary: { ouvert: 0,  indice: 5,  mixte: 15, cache: 40, scelle: 40 },
+      },
+      // Multiplicateurs selon le type d'étage (1 = sans changement, 0 = jamais).
+      // toujours = ce recouvrement, quoi qu'il arrive ; auMoinsUnDur = au moins un trésor Caché ou Scellé sur l'étage.
+      parType: {
+        respiration: { ouvert: 12, indice: 1,   mixte: 0.2, cache: 0.05, scelle: 0 },
+        fouille:     { ouvert: 12, indice: 1,   mixte: 0.2, cache: 0.05, scelle: 0 },
+        standard:    { ouvert: 0.2, indice: 2,  mixte: 2,   cache: 0.3,  scelle: 0.1 },
+        defi:        { ouvert: 0,  indice: 0.2, mixte: 2,   cache: 3,    scelle: 3 },
+        miniboss:    { ouvert: 1,  indice: 1,   mixte: 1,   cache: 1.5,  scelle: 1.5, auMoinsUnDur: true },
+        demiGardien: { ouvert: 1,  indice: 1,   mixte: 1,   cache: 1.5,  scelle: 1.5, auMoinsUnDur: true },
+        gardien:     { ouvert: 0.5, indice: 1,  mixte: 1,   cache: 2,    scelle: 2,   auMoinsUnDur: true },
+        tresor:      { toujours: 'ouvert' },
+        lucky:       { toujours: 'ouvert' },
+      },
+    },
+
+    // Grandes grilles (mini-boss, demi-gardien, gardien) : si les cases deviennent plus petites que
+    // "caseMin" pixels (sur un téléphone de 430 de large), la mine s'affiche comme la Wide Mine :
+    // cases de cette taille, et un bouton « Déplacer » pour faire glisser la grille.
+    grandeGrille: { caseMin: 44 },
+
+    // ÉTAGE LUCKY : à chaque descente, petite chance que l'étage prévu soit remplacé par un étage chanceux.
+    // Il compte comme un niveau normal. Pas de trésor à trouver : on peut descendre tout de suite.
+    // Jamais sur un mini-boss, un étage trésor, les gardiens (50 et 100), un étage tutoriel, un niveau à trésor garanti
+    // ou pendant les premiers pas ; jamais deux d'affilée.
+    lucky: {
+      actif: true,
+      chance: 0.06,              // chance à chaque descente (0.06 ≈ 1 étage sur 17)
+      pasAvantMiniboss: false,   // true = jamais sur l'étage juste avant un mini-boss
+      tailleComme: 'fouille',    // la grille est celle de ce type d'étage, dans la tranche de niveaux (etages > tranches)
+      chanceMinerai: 0.85,       // chance qu'une pierre de l'étage contienne du minerai
+      // Tas de pièces : "nombre" = [minimum, maximum] de tas, "pieces" = [minimum, maximum] de pièces dans chaque tas
+      tas: {
+        petit: { nombre: [3, 5], pieces: [3, 6] },
+        moyen: { nombre: [2, 3], pieces: [8, 14] },
+        grand: { nombre: [1, 2], pieces: [20, 30] },
+      },
+      // La tuile arc-en-ciel (une par étage) : l'énergie rendue quand on la creuse (sans dépasser le maximum)
+      arcEnCiel: { energie: 15 },
+      images: {
+        petit: 'Assets/Ground/Tile_Overlay_CoinSmall-1.png',   // 1 pièce
+        moyen: 'Assets/Ground/Tile_Overlay_CoinSmall.png',     // 2 pièces
+        grand: 'Assets/Ground/Tile_Overlay_CoinBig.png',       // 3 pièces et plus
+        arcEnCiel: 'Assets/Ground/Tile_Rainbow.png',
+      },
+      banniere: "Étage chanceux !",                      // à l'arrivée, aux couleurs de l'arc-en-ciel
+      recap: "Tu as trouvé un étage chanceux !",         // sur l'écran de fin d'expédition
+      texteArcEnCiel: "+{n} énergie",                    // au-dessus de la tuile arc-en-ciel creusée
+    },
+  },
+
+  /* ---------------------------------------------------------------
      CHECKPOINTS (ASCENSEUR)
      Niveaux où le joueur peut redescendre directement depuis le village.
      Un checkpoint se débloque dès que le joueur atteint ce niveau.
@@ -586,6 +783,7 @@ window.CONFIG = {
     // Un objet peut aussi avoir ses propres "niveaux" (ex. un objet rare qui n'arrive qu'en fin de mine) :
     // ils passent avant son biome et avant les niveaux de la série.
     // Mine des pionniers = niveaux 1 à 100.
+    // "taille" = [largeur, hauteur] du trésor en cases (ex. [2, 1] = 2 cases côte à côte, [1, 2] = 2 cases l'une sur l'autre).
     // "mine" (sur une série ou sur un objet) : les "niveaux" sont ceux de CETTE mine, de 1 à 100
     // (ex. mine: 2, niveaux: [10, 60] = niveaux 10 à 60 de la Grotte des Marées). Sans "mine" : mine 1.
     // Sols possibles : 'terre', 'pierre', 'pierreDure', 'magma', 'coffre' ou 'tout'.
@@ -606,13 +804,13 @@ window.CONFIG = {
     // "article" = le petit mot devant le nom dans le tutoriel (« reconstituer LA Longue-vue »).
     artefacts: {
       fossiles: { nom: 'Fossiles de surface', prime: 50, niveaux: [1, 30], sol: 'terre', objets: {
-        coquillage: { nom: 'Coquillage fossile', rarete: 'common' },
-        feuille:    { nom: 'Feuille fossile',    rarete: 'common' },
-        ammonite:   { nom: 'Petite ammonite',    rarete: 'common' },
+        coquillage: { nom: 'Coquillage fossile', rarete: 'common', taille: [1, 1] },
+        feuille:    { nom: 'Feuille fossile',    rarete: 'common', taille: [1, 1] },
+        ammonite:   { nom: 'Petite ammonite',    rarete: 'common', taille: [1, 1] },
       } },
       // Une pièce par mine : le Sou de cuivre dans la Mine des pionniers, les autres dans les mines suivantes
       monnaies: { nom: 'Monnaies du royaume perdu', prime: 200, sol: 'tout', objets: {
-        sou:     { nom: 'Sou de cuivre',     rarete: 'common', niveaux: [5, 100] },
+        sou:     { nom: 'Sou de cuivre',     rarete: 'common', niveaux: [5, 100], taille: [1, 1] },
         denier:  { nom: "Denier d'argent",   rarete: 'common', mine: 2, niveaux: [5, 100] },
         ecu:     { nom: 'Écu de bronze',     rarete: 'common', biome: 3 },
         ducat:   { nom: "Ducat d'or",        rarete: 'common', biome: 4 },
@@ -620,29 +818,29 @@ window.CONFIG = {
         pieceDuRoi: { nom: 'Pièce du roi',   rarete: 'epic',   biome: 6 },
       } },
       celestes: { nom: 'Cartes célestes', prime: 50, niveaux: [10, 70], sol: 'tout', objets: {
-        lion:     { nom: 'Plaque du Lion',     rarete: 'common' },
-        taureau:  { nom: 'Plaque du Taureau',  rarete: 'common' },
-        scorpion: { nom: 'Plaque du Scorpion', rarete: 'common' },
-        dragon:   { nom: 'Plaque du Dragon',   rarete: 'rare' },
+        lion:     { nom: 'Plaque du Lion',     rarete: 'common', taille: [2, 2] },
+        taureau:  { nom: 'Plaque du Taureau',  rarete: 'common', taille: [2, 2] },
+        scorpion: { nom: 'Plaque du Scorpion', rarete: 'common', taille: [2, 2] },
+        dragon:   { nom: 'Plaque du Dragon',   rarete: 'rare', taille: [2, 2] },
       } },
       outils: { nom: 'Outils du mineur oublié', prime: 100, niveaux: [20, 80], sol: 'pierre', objets: {
-        lampe:   { nom: 'Lampe rouillée',          rarete: 'common' },
-        gourde:  { nom: 'Vieille gourde',          rarete: 'common' },
-        casque:  { nom: 'Casque cabossé',          rarete: 'common' },
-        pioche:  { nom: 'Pioche du premier mineur', rarete: 'rare' },
+        lampe:   { nom: 'Lampe rouillée',          rarete: 'common', taille: [1, 2] },
+        gourde:  { nom: 'Vieille gourde',          rarete: 'common', taille: [1, 1] },
+        casque:  { nom: 'Casque cabossé',          rarete: 'common', taille: [1, 1] },
+        pioche:  { nom: 'Pioche du premier mineur', rarete: 'rare', taille: [3, 1] },
       } },
       feu: { nom: 'Pierres de feu', prime: 200, niveaux: [30, 100], sol: 'magma', objets: {
-        obsidienne:   { nom: 'Obsidienne',     rarete: 'common' },
-        pierreDeLave: { nom: 'Pierre de lave', rarete: 'common' },
-        coeurDeBraise: { nom: 'Cœur de braise', rarete: 'epic', niveaux: [70, 100] },
+        obsidienne:   { nom: 'Obsidienne',     rarete: 'common', taille: [1, 1] },
+        pierreDeLave: { nom: 'Pierre de lave', rarete: 'common', taille: [2, 1] },
+        coeurDeBraise: { nom: 'Cœur de braise', rarete: 'epic', niveaux: [70, 100], taille: [2, 2] },
       } },
       tablette: { nom: 'Tablette ancienne', prime: 100, niveaux: [50, 100], sol: 'pierre',
         // Texte affiché quand la tablette est complète
         legende: "« Sous la montagne dort le trésor du Roi Mineur. Cinq clés, cachées de plus en plus profond, ouvrent son coffre. »",
         objets: {
-          fragmentGauche:  { nom: 'Fragment gauche',  rarete: 'common' },
-          fragmentCentral: { nom: 'Fragment central', rarete: 'common' },
-          fragmentDroit:   { nom: 'Fragment droit',   rarete: 'common' },
+          fragmentGauche:  { nom: 'Fragment gauche',  rarete: 'common', taille: [1, 2] },
+          fragmentCentral: { nom: 'Fragment central', rarete: 'common', taille: [1, 2] },
+          fragmentDroit:   { nom: 'Fragment droit',   rarete: 'common', taille: [1, 2] },
         } },
 
       /* ----- GROTTE DES MARÉES (mine 2) -----
@@ -796,7 +994,9 @@ window.CONFIG = {
       },
       casque: {
         nom: 'Casque', deblocage: 'casque',
-        stat: { court: 'Coup gratuit', texte: '{v} de chance de coup gratuit (sans énergie)', depart: 0.02, parNiveau: 0.0025, max: 0.4 },
+        // Endurance = chance qu'un coup de pioche ne coûte pas d'énergie (un « coup gratuit »). Source principale
+        // d'énergie de la mine avec les niveaux de la pioche (réglé par simulation le 16 octobre 2026).
+        stat: { court: 'Endurance', texte: 'Endurance : {v} de chance qu\'un coup de pioche ne coûte pas d\'énergie', depart: 0.09, parNiveau: 0.015, max: 0.45 },
         modeles: {
           casqueChantier: { nom: 'Casque de chantier', biome: 1, passif: 'Un coup gratuit casse le bloc d\'un coup : {v} de chance', valeurs: [0.25, 0.375, 0.5, 0.75, 1] },
           casqueVeine:    { nom: 'Casque de veine', biome: 2, passif: '+{v} de chance de coup gratuit sur le minerai', valeurs: [0.1, 0.15, 0.2, 0.25, 0.3] },
@@ -969,6 +1169,9 @@ window.CONFIG = {
     xpParMission: 20,                 // par mission réussie ("xp" dans missions > liste pour une valeur à part)
     xpRecord: 12,                     // par nouveau niveau atteint dans la mine (record)…
     xpRecordParBiome: 2,              // … + ça par biome au-delà du 1er (biome 2 : 14, biome 10 : 30)
+    // Énergie maximum en plus à chaque niveau du mineur, en complément des récompenses « energie » ci-dessous
+    // (0 = seulement les récompenses ; réglé par simulation le 16 octobre 2026)
+    energieParNiveau: 1,
     xpNiveau: 6,                      // par niveau terminé, même déjà joué (hors premiers pas) : un joueur bloqué progresse quand même
     xpNouveauTresor: 5,               // par trésor jamais vu ramené au Musée (peu : au début, presque tout est nouveau)
     xpEtoileCollection: 15,           // par nouvelle étoile de collection au Musée

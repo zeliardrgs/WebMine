@@ -767,6 +767,8 @@ window.TEXTES_EN = {
   "Pièces par tas": "Coins per pile",
   "Minerai en plus": "Extra ore",
   "Coup gratuit": "Free hit",
+  "Endurance": "Stamina",
+  "Endurance : {v} de chance qu'un coup de pioche ne coûte pas d'énergie": "Stamina: {v} chance that a pickaxe hit costs no energy",
   "Géodes rares": "Rare geodes",
   "Tas d'or caché": "Hidden gold pile",
   "Fusionner avec": "Merge with",

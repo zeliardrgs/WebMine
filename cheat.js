@@ -69,6 +69,21 @@
   /* ---------- Actions ---------- */
   const A = {
     // Progression
+    // Floor types of the Pioneers' mine: the current level's, and the 10 of its cycle
+    floorTypes() {
+      const s = S(), lv = s.level, n = Math.floor((lv - 1) / 10) * 10;
+      if (!M.etOn(lv)) return msg('Pas de types d\'étages ici (Mine des pionniers seulement)');
+      const names = t => (M.CFG.etages.types[t] || {}).nom || t;
+      const info = M.etInfo(lv), list = Array.from({ length: 10 }, (_, i) => (n + i + 1) + ' ' + names(M.etType(n + i + 1))).join(' · ');
+      // What hides each treasure of this floor (étape 2 : recouvrements)
+      const COV = { ouvert: 'Ouvert', indice: 'Indice', mixte: 'Mixte', cache: 'Caché', scelle: 'Scellé' };
+      const covers = (s.covers || []).map(c => '- ' + ((c.kind === 'geode' ? M.GEODES : M.ARTS)[c.key] || {}).name + ' : ' + (COV[c.cov] || c.cov)).join('\n');
+      alert('Niveau ' + lv + ' : ' + names(info.type) + ' (' + info.grille.join(' × ') + ', ' + info.tresors.join(' à ') + ' trésor(s))'
+        + (covers ? '\n\nTrésors de cet étage :\n' + covers + '\nÉnergie demandée : ' + Math.round(s.levelCost || 0) : '') + '\n\nCe cycle : ' + list);
+    },
+    // Étage Lucky: the current level becomes one (and « Lucky à la prochaine descente » for the real draw)
+    luckyNow() { close(); if (!M.makeLucky()) msg('Va d\'abord dans la Mine des pionniers'); },
+    luckyNext() { S().forceLucky = true; M.save(); msg('La prochaine descente donnera un étage Lucky (si l\'étage le permet)'); },
     goLevel() {
       const n = level(), s = S();
       s.level = n; s.reached = Math.max(s.reached, n); s.stayLevel = 0;
@@ -259,6 +274,9 @@
     <div class="lvl"><input id="cheatLvl" type="number" min="1" max="1000" inputmode="numeric" placeholder="Niveau (1 à 1000)"></div>
     <div class="row">
       <button data-c="goLevel">Aller à ce niveau</button>
+      <button data-c="floorTypes">Types d'étages</button>
+      <button data-c="luckyNow">Étage Lucky maintenant</button>
+      <button data-c="luckyNext">Lucky à la prochaine descente</button>
       <button data-c="unlock">Débloquer jusqu'à ce niveau</button>
       <button data-c="finishFloor">Dégager tout l'étage</button>
       <button data-c="skipFtue">Passer la FTUE</button>
