@@ -1321,6 +1321,13 @@ window.CONFIG = {
     // Si le joueur perd tous ses cœurs, la géode s'ouvre quand même mais donne une gemme
     // d'une rareté en dessous. Une géode verte ratée donne ce nombre de pièces à la place :
     piecesGeodeBlancheRatee: 15,
+
+    // Ouvrir plusieurs géodes d'un coup : tailles de groupe possibles. Le jeu prend automatiquement le plus
+    // grand groupe possible avec le stock. Seulement des géodes de la même rareté, et seulement une fois
+    // qu'une géode de cette rareté a déjà été ouverte seule.
+    // Le mini-jeu se joue une fois pour tout le groupe : réussi, chaque géode donne une gemme de sa rareté ;
+    // raté, chaque géode donne une gemme d'une rareté en dessous (ou des pièces pour les vertes).
+    groupes: [5, 10, 20],
   },
 
   /* ---------------------------------------------------------------

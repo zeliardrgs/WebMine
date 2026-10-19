@@ -542,6 +542,11 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .geo-btn.on{background:#ffd94d; box-shadow:0 1cqw 0 #b98a12}
 .geo-btn i{position:absolute; right:-1.6cqw; bottom:-1.6cqw; min-width:5.5cqw; padding:0 1cqw; box-sizing:border-box; border-radius:3cqw; background:var(--ink); color:#fff;
   font-style:normal; font-family:var(--font-display); font-size:3.4cqw; line-height:5.5cqw}
+.ws-top{flex-direction:column; align-items:center; gap:2cqw}
+.mg-geode .mg-n{position:absolute; z-index:1; right:-4%; top:2%; padding:0 2cqw; border-radius:3cqw; background:var(--ink); color:#fff;
+  font-family:var(--font-display); font-size:5cqw; line-height:8cqw; pointer-events:none}
+.ws-result{max-height:66%; overflow-y:auto; box-sizing:border-box}
+.ws-tiles{margin-top:3cqw} .ws-tiles .xp-tile{width:16cqw} .ws-result p.ws-sum{margin:2.4cqw 0 0; font-size:3.2cqw}
 .ws-info{position:absolute; left:50%; top:20%; transform:translateX(-50%); display:flex; align-items:center; gap:3cqw; padding:1.4cqw 3.4cqw; border-radius:5cqw;
   background:rgba(40,22,10,.6); color:#fff3d6; font-size:3.4cqw; white-space:nowrap}
 .ws-rule{position:absolute; z-index:5; left:7%; right:7%; top:25.5%; padding:2cqw 3cqw; border-radius:3.5cqw; background:rgba(255,243,214,.95); color:var(--ink);
@@ -2692,7 +2697,7 @@ const newTrip = () => ({ finds: [], dupes: [], bonus: [], coins: 0, ores: zeroOr
 
 function freshState() {
   return {
-    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goalsClosed: false, guideBack: 0,
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, geoSolo: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goalsClosed: false, guideBack: 0,
     bag: {
       ores: zeroOres(),
       gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
@@ -7084,6 +7089,13 @@ function rollGem(ri, geode) {
 }
 const ZONE = CFG.atelier.largeurZoneVerte, SPEED = CFG.atelier.vitesseCurseur, HITS = CFG.atelier.coupsNecessaires;
 let MG = null, mgRaf = 0;
+/* Several geodes at once (config.js > atelier > groupes): only geodes of the same kind, and only once
+   one of that kind has been opened alone (S.geoSolo). Automatic: the biggest group the stock allows.
+   One mini-game for the whole group. */
+const GROUPS = CFG.atelier.groupes || [];
+const geoCount = g => S.bag.geodes.filter(x => x === g).length;
+const groupsFor = g => S.geoSolo[g] ? GROUPS.filter(n => n <= geoCount(g)) : [];
+const batchFor = g => Math.max(1, ...groupsFor(g));
 function renderAtelier() {
   renderGeoStock();
   const has = S.bag.geodes.length > 0;
@@ -7105,17 +7117,22 @@ document.addEventListener('click', e => {
 });
 function startMini(g) {
   if (!S.bag.geodes.includes(g)) return;
+  const n = batchFor(g);
   // The geode's rarity sets the difficulty; the gem is drawn when it opens
   const tier = RARITIES.indexOf(GEODES[g].rarity);
-  MG = { g, tier, hits: 0, need: HITS[tier], lives: CFG.atelier.vies, zone: ZONE[tier], speed: SPEED[tier], t0: performance.now(), pos: 0, busy: false };
+  MG = { g, n, tier, hits: 0, need: HITS[tier], lives: CFG.atelier.vies, zone: ZONE[tier], speed: SPEED[tier], t0: performance.now(), pos: 0, busy: false };
   $('mgResult').hidden = true; $('wsEmpty').hidden = true;
   $('mini').hidden = false; $('mgHit').disabled = false;
-  $('mgGeode').innerHTML = geodeArt(g); $('mgGeode').dataset.crack = 0;
+  $('mgGeode').innerHTML = geodeArt(g) + (n > 1 ? `<b class="mg-n">×${n}</b>` : ''); $('mgGeode').dataset.crack = 0;
   $('mgResist').innerHTML = rarTag(GEODES[g].rarity) + ' ' + '●'.repeat(tier + 1) + '<span class="off">' + '●'.repeat(3 - tier) + '</span>';
   $('mgResist').setAttribute('aria-label', tr('Géode {r}, résistance {n} sur 4', { r: RARITY_FR[GEODES[g].rarity], n: tier + 1 }));
   // Tell the rule for running out of hearts before the first strike
   const lives = CFG.atelier.vies;
-  $('mgRule').innerHTML = tier > 0
+  $('mgRule').innerHTML = n > 1
+    ? (tier > 0
+      ? tr('Un seul essai pour les {k} géodes : si tu perds tes {n} cœurs, chacune donne une pierre précieuse {a} au lieu de {b}.', { k: n, n: lives, a: rarTag(RARITIES[tier - 1]), b: rarTag(RARITIES[tier]) })
+      : tr('Un seul essai pour les {k} géodes : si tu perds tes {n} cœurs, elles s\'effritent et ne donnent que <b>{c} pièces</b> chacune.', { k: n, n: lives, c: CFG.atelier.piecesGeodeBlancheRatee }))
+    : tier > 0
     ? tr('Si tu perds tes {n} cœurs, la géode s\'ouvre quand même, mais donne une pierre précieuse {a} au lieu de {b}.', { n: lives, a: rarTag(RARITIES[tier - 1]), b: rarTag(RARITIES[tier]) })
     : tr('Si tu perds tes {n} cœurs, la géode verte s\'effrite et ne donne que <b>{c} pièces</b>.', { n: lives, c: CFG.atelier.piecesGeodeBlancheRatee });
   $('mgRule').hidden = false;
@@ -7188,30 +7205,64 @@ $('mgHit').addEventListener('click', mgHit);
 $('mgGeode').addEventListener('pointerdown', e => { e.preventDefault(); mgHit(); });
 function stopMini() { cancelAnimationFrame(mgRaf); MG = null; $('mini').hidden = true; $('mgRule').hidden = true; $('mgHit').disabled = true; $('mgResult').hidden = true; }
 function finishMini(win) {
-  const g = MG.g, tier = MG.tier; MG.busy = true; cancelAnimationFrame(mgRaf);
+  const g = MG.g, tier = MG.tier, n = MG.n || 1; MG.busy = true; cancelAnimationFrame(mgRaf);
   // The geode always opens: a failure gives a gem one rarity lower (a white geode crumbles into a few coins)
-  S.bag.geodes.splice(S.bag.geodes.indexOf(g), 1); S.roll = null; stat('geodes');
-  const gotTier = win ? tier : tier - 1;
-  const gem = gotTier >= 0 || GEODES[g].ev ? rollGem(gotTier, g) : null;
-  const r = gem ? applyFind('gem', gem) : null;
-  const coins = gem ? r.coins : CFG.atelier.piecesGeodeBlancheRatee;
-  S.coins += coins;
+  // A group: every geode of it gives its own gem, all with the result of the one mini-game
+  const gotTier = win ? tier : tier - 1, finds = [];
+  let coins = 0;
+  for (let i = 0; i < n; i++) {
+    S.bag.geodes.splice(S.bag.geodes.indexOf(g), 1);
+    const gem = gotTier >= 0 || GEODES[g].ev ? rollGem(gotTier, g) : null;
+    const r = gem ? applyFind('gem', gem) : null;
+    if (r) finds.push(r);
+    coins += gem ? r.coins : CFG.atelier.piecesGeodeBlancheRatee;
+  }
+  S.roll = null; stat('geodes', n); S.coins += coins;
+  // Opened alone once: this kind of geode can now be opened by groups
+  if (n === 1) S.geoSolo[g] = true;
   setTimeout(() => {
     sfx(win ? 'reward' : 'break'); stopMini();
+    const gem = finds.length ? finds.slice().sort((a, b) => RARITIES.indexOf(RARITY_GEM[b.key]) - RARITIES.indexOf(RARITY_GEM[a.key]) || (b.tag === 'new') - (a.tag === 'new'))[0].key : null;
     $('mgGeode').innerHTML = gem ? gemArt(gem) : ''; $('mgGeode').dataset.crack = 0;
     const next = S.bag.geodes[0];
     const gemTxt = gem ? GEMS[gem].art + ' ' + rarName(GEMS[gem].name, RARITY_GEM[gem]) : '';
-    const text = win ? tr('{x} : {gem} !', { x: GEODES[g].name, gem: gemTxt })
-      : gem ? tr('Plus de cœurs : la {x} s\'ouvre quand même, mais donne {gem}.', { x: GEODES[g].name.toLowerCase(), gem: gemTxt })
-      : tr('Plus de cœurs : la géode verte s\'effrite. Tu récupères {n} pièces.', { n: coins });
-    $('mgResult').innerHTML = `<h2>${win ? tr('Géode ouverte !') : tr('Raté…')}</h2>
+    let text, list;
+    if (n === 1) {
+      text = win ? tr('{x} : {gem} !', { x: GEODES[g].name, gem: gemTxt })
+        : gem ? tr('Plus de cœurs : la {x} s\'ouvre quand même, mais donne {gem}.', { x: GEODES[g].name.toLowerCase(), gem: gemTxt })
+        : tr('Plus de cœurs : la géode verte s\'effrite. Tu récupères {n} pièces.', { n: coins });
+      list = finds.length ? `<div class="recap-list">${findRow(finds[0])}</div>` : `<div class="recap-total">+${coins} ${COIN}</div>`;
+    } else {
+      text = win ? tr('{k} × {x} : {k} pierres précieuses {a} !', { k: n, x: GEODES[g].name, a: rarTag(GEODES[g].rarity) })
+        : finds.length ? tr('Plus de cœurs : les {k} géodes s\'ouvrent quand même, mais donnent des pierres précieuses {a}.', { k: n, a: rarTag(RARITIES[gotTier] || 'common') })
+        : tr('Plus de cœurs : les {k} géodes vertes s\'effritent. Tu récupères {n} pièces.', { k: n, n: coins });
+      list = finds.length ? `${batchRows(finds)}<div class="recap-total">+${coins} ${COIN}</div>` : `<div class="recap-total">+${coins} ${COIN}</div>`;
+    }
+    const nextN = next ? batchFor(next) : 1;
+    $('mgResult').innerHTML = `<h2>${win ? (n > 1 ? tr('{k} géodes ouvertes !', { k: n }) : tr('Géode ouverte !')) : tr('Raté…')}</h2>
       <div class="duo">${gem ? gemArt(gem) : COIN}</div>
       <p>${text}</p>
-      ${r ? `<div class="recap-list">${findRow(r)}</div>` : `<div class="recap-total">+${coins} ${COIN}</div>`}
-      ${next ? `<button class="btn big" data-geo="${next}">${tr('Géode suivante')}</button>` : `<button class="btn big" data-go="village">${tr('Retour au village')}</button>`}`;
+      ${list}
+      ${next ? `<button class="btn big" data-geo="${next}">${nextN > 1 ? tr('Géodes suivantes (×{k})', { k: nextN }) : tr('Géode suivante')}</button>` : `<button class="btn big" data-go="village">${tr('Retour au village')}</button>`}`;
     $('mgResult').hidden = false;
     renderGeoStock(); save();
   }, 420);
+}
+// A group's gems as tiles, like the end-of-expedition recap: one per gem, how many, « Nouveau » on new ones
+// (then the stars and completed collections, as rows)
+function batchRows(finds) {
+  const by = {};
+  for (const r of finds) (by[r.key] = by[r.key] || []).push(r);
+  const groups = Object.values(by).sort((a, b) => RARITIES.indexOf(RARITY_GEM[b[0].key]) - RARITIES.indexOf(RARITY_GEM[a[0].key]) || (b[0].tag === 'new') - (a[0].tag === 'new'));
+  const tiles = groups.map((rs, i) => `<div class="xp-tile ${RARITY_GEM[rs[0].key]}" style="animation-delay:${i * 60}ms" title="${GEMS[rs[0].key].name}">${rs[0].art}${rs[0].tag === 'new' ? `<span class="xp-new">${tr('Nouveau')}</span>` : ''}<b class="xp-n">×${rs.length}</b></div>`).join('');
+  const sold = finds.filter(r => r.tag === 'sold').length, fresh = finds.length - sold;
+  const sum = [fresh ? tr(plural(fresh, '{n} ajoutée à ta collection', '{n} ajoutées à ta collection'), { n: fresh }) : '', sold ? tr(plural(sold, '{n} doublon vendu', '{n} doublons vendus'), { n: sold }) : ''].filter(Boolean).join(' · ');
+  const rows = [];
+  for (const r of finds) {
+    if (r.tierUp) rows.push(`<div class="rrow">${r.art}<div><b>${tr('{x} : nouvelle étoile !', { x: r.setName })} ${starsHTML(r.tierUp)}</b><span>${tr('Prime à récupérer au Musée')}</span></div></div>`);
+    if (r.setMsg) rows.push(`<div class="rrow">${r.art}<div><b>${r.setMsg}</b><span>${tr('{x} réunies !', { x: r.setName })}</span></div></div>`);
+  }
+  return `<div class="xp-tiles ws-tiles">${tiles}</div><p class="ws-sum">${sum}</p>` + (rows.length ? `<div class="recap-list">${rows.join('')}</div>` : '');
 }
 
 /* ---------- Help & reset ---------- */
@@ -7541,6 +7592,11 @@ function start(data) {
   S.bag.geodes = S.bag.geodes.map(g => GEODES[g] ? g : OLD_GEODE[g] || 'white');
   S.trip.finds = S.trip.finds.filter(f => f.kind !== 'geode' || GEODES[f.key] || OLD_GEODE[f.key]).map(f => f.kind === 'geode' && !GEODES[f.key] ? { kind: 'geode', key: OLD_GEODE[f.key] } : f);
   S.roll = null;   // older saves: deepest gallery reached = current one
+  // Saves from before the groups of geodes: a kind of geode counts as opened alone if a gem of its rarity is in the museum
+  if (saved && !saved.geoSolo) {
+    S.geoSolo = {};
+    for (const [k, o] of Object.entries(GEODES)) if (Object.keys(S.bag.gems).some(m => S.bag.gems[m] && GEMS[m] && (o.ev ? GEMS[m].ev === o.ev : !GEMS[m].ev && RARITY_GEM[m] === o.rarity))) S.geoSolo[k] = true;
+  }
   if (!S.trip || !Array.isArray(S.trip.finds)) S.trip = newTrip();
   if (!Array.isArray(S.trip.dupes)) S.trip.dupes = [];
   S.trip.finds = S.trip.finds.map(f => f.kind === 'gem' && !GEMS[f.key] ? { kind: 'gem', key: OLD_GEM[f.key] } : f.kind === 'art' && !ARTS[f.key] ? { kind: 'art', key: OLD_ART[f.key] } : f)
