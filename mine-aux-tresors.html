@@ -322,8 +322,6 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .rar-common{--rc:var(--rar-common)} .rar-rare{--rc:var(--rar-rare)} .rar-epic{--rc:var(--rar-epic)} .rar-legendary{--rc:var(--rar-legendary)} .rar-mythic{--rc:var(--rar-mythic)}
 .find-label .rar-common, .ws-info .rar-common{--rc:#6ee893} .find-label .rar-rare, .ws-info .rar-rare{--rc:#7db5ff}
 .find-label .rar-epic, .ws-info .rar-epic{--rc:#cf9bff} .find-label .rar-legendary, .ws-info .rar-legendary{--rc:#ffb35c}
-.geo-btn.on[class*="rar-"]{box-shadow:0 0 0 .9cqw var(--rc), 0 0 0 1.9cqw #ffd94d, 0 1.4cqw 0 rgba(0,0,0,.25)}
-.geo-btn.rar-common, .geo-btn.rar-rare, .geo-btn.rar-epic, .geo-btn.rar-legendary{box-shadow:0 0 0 .9cqw var(--rc), 0 1.4cqw 0 rgba(0,0,0,.25)}
 .find-label{position:absolute; z-index:20; transform:translate(-50%, -100%); padding:4px 12px 6px; border-radius:12px; white-space:nowrap; pointer-events:none;
   background:rgba(35,18,45,.9); color:#ffe36b; font-family:var(--font-display); font-size:16px; box-shadow:0 3px 0 rgba(0,0,0,.35)}
 .find-label small{display:block; font-family:var(--font-body); font-size:10px; color:#fff3d6; text-align:center; opacity:.85}
@@ -536,12 +534,18 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .ws{position:absolute; left:50%; top:50%; width:min(100cqw, calc(100cqh * 1282 / 2778)); aspect-ratio:1282 / 2778; transform:translate(-50%, -50%);
   background:url("Assets/Shops/WorkshopBackground.png") center / 100% 100%; container-type:inline-size; overflow:hidden}
 .ws-top{position:absolute; left:4%; right:4%; top:5%; display:flex; justify-content:center}
-.geo-stock{display:flex; flex-wrap:wrap; justify-content:center; gap:2.4cqw; padding:2cqw 3cqw; border-radius:5cqw; background:rgba(40,22,10,.55)}
-.geo-btn{position:relative; width:14cqw; height:14cqw; padding:1.6cqw; border:0; border-radius:3.5cqw; background:#fff3d6; box-shadow:0 1cqw 0 #c99b5c; cursor:pointer}
+.geo-stock{display:flex; flex-wrap:wrap; justify-content:center; gap:2.2cqw}
+/* Stock: one square per kind of geode, in its rarity's colours (like the recap tiles), the count in outlined white */
+.geo-btn{--b:#9a7a62; --t:#f8ece3; --f:#efdccf; position:relative; width:18cqw; height:18cqw; padding:2.4cqw 2.4cqw 3.6cqw; box-sizing:border-box; border:.9cqw solid var(--b); border-radius:3cqw;
+  background:linear-gradient(var(--t), var(--f)); box-shadow:inset 0 0 0 .6cqw rgba(255,255,255,.35); cursor:pointer}
+.geo-btn.rar-common{--b:#22a33a; --t:#d2ee9e; --f:#a9d877}
+.geo-btn.rar-rare{--b:#1d9ccb; --t:#a8ebf2; --f:#6fcfe3}
+.geo-btn.rar-epic{--b:#a23fc4; --t:#f3c0f6; --f:#d98ced}
+.geo-btn.rar-legendary{--b:#ee9b10; --t:#fff0b6; --f:#ffd76a}
 .geo-btn img{width:100%; height:100%; object-fit:contain}
-.geo-btn.on{background:#ffd94d; box-shadow:0 1cqw 0 #b98a12}
-.geo-btn i{position:absolute; right:-1.6cqw; bottom:-1.6cqw; min-width:5.5cqw; padding:0 1cqw; box-sizing:border-box; border-radius:3cqw; background:var(--ink); color:#fff;
-  font-style:normal; font-family:var(--font-display); font-size:3.4cqw; line-height:5.5cqw}
+.geo-btn.on{box-shadow:inset 0 0 0 .6cqw rgba(255,255,255,.35), 0 0 0 1cqw #ffd94d}
+.geo-btn i{position:absolute; right:1.2cqw; bottom:.4cqw; font-style:normal; font-family:var(--font-display); font-weight:900; font-size:5cqw; line-height:1; color:#fff;
+  -webkit-text-stroke:1.1cqw #1d1a2b; paint-order:stroke fill}
 .ws-top{flex-direction:column; align-items:center; gap:2cqw}
 .mg-geode .mg-n{position:absolute; z-index:1; right:-4%; top:2%; padding:0 2cqw; border-radius:3cqw; background:var(--ink); color:#fff;
   font-family:var(--font-display); font-size:5cqw; line-height:8cqw; pointer-events:none}
@@ -549,9 +553,6 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .ws-tiles{margin-top:3cqw} .ws-tiles .xp-tile{width:16cqw} .ws-result p.ws-sum{margin:2.4cqw 0 0; font-size:3.2cqw}
 .ws-info{position:absolute; left:50%; top:20%; transform:translateX(-50%); display:flex; align-items:center; gap:3cqw; padding:1.4cqw 3.4cqw; border-radius:5cqw;
   background:rgba(40,22,10,.6); color:#fff3d6; font-size:3.4cqw; white-space:nowrap}
-.ws-rule{position:absolute; z-index:5; left:7%; right:7%; top:25.5%; padding:2cqw 3cqw; border-radius:3.5cqw; background:rgba(255,243,214,.95); color:var(--ink);
-  font-size:3.3cqw; line-height:1.35; text-align:center; box-shadow:0 1cqw 0 #c99b5c}
-.ws-rule b{color:#7d3c98}
 .hearts{display:flex; gap:.8cqw}
 .hearts svg{width:5.6cqw; height:5.6cqw}
 .hearts .lost{filter:grayscale(1) opacity(.35)}
@@ -564,22 +565,25 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .mg-geode[data-crack="2"]::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M52 8 L46 34 L58 48 L50 68 M58 48 L80 56 M46 34 L24 30 M50 68 L38 84' fill='none' stroke='%231e1628' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .mg-geode[data-crack="3"]::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M52 8 L46 34 L58 48 L50 68 M58 48 L80 56 L90 76 M46 34 L24 30 L12 46 M50 68 L38 84 M50 68 L64 90 M80 56 L92 44 M24 30 L20 12' fill='none' stroke='%231e1628' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .ws-hammer{position:absolute; left:47%; top:25%; width:36cqw; pointer-events:none; transform-origin:82% 72%}
-.mg-bar{position:absolute; left:6%; right:6%; top:72%; height:8.5cqw; box-sizing:border-box; border:1.3cqw solid #2b1608; border-radius:99px;
-  background:linear-gradient(#8a5530, #6e3f1f); box-shadow:inset 0 1.2cqw 0 rgba(255,220,170,.18)}
-.mg-zone{position:absolute; top:12%; bottom:12%; border-radius:1cqw; background:#4fe066; box-shadow:inset 0 0 0 .6cqw rgba(255,255,255,.25); transition:left .2s, width .2s}
+.mg-bar{position:absolute; left:6%; right:6%; top:78%; height:12cqw; box-sizing:border-box; border:1.1cqw solid #1d1a2b; border-radius:99px;
+  background:#fdf3dc; box-shadow:inset 0 0 0 1.2cqw #d9c9a0}
+.mg-zone{position:absolute; top:1.2cqw; bottom:1.2cqw; background:#4fd94f; transition:left .2s, width .2s}
 .mg-zone.ok{background:#ffe14d; box-shadow:0 0 3cqw 1cqw rgba(255,225,77,.9), inset 0 0 0 .6cqw #fff; transition:none}
 .mg-zone.miss{background:#ff5a4e; box-shadow:0 0 2.5cqw rgba(255,70,60,.8); transition:none}
 .mg-bar.ok{border-color:#a87b00}
 .mg-bar.miss{border-color:#7a0f0f}
 .hits{color:#fff3d6; letter-spacing:.4cqw}
 .hits b{font-weight:400; color:#4fe066}
-.mg-cursor{position:absolute; top:50%; height:250%; transform:translate(-50%, -50%); pointer-events:none}
-.ws-tap{position:absolute; left:50%; top:83%; width:42cqw; height:13cqw; transform:translateX(-50%); border:1.2cqw solid #2b1608; border-radius:4cqw; cursor:pointer;
-  background:linear-gradient(#ffe45c, #ffc61a); box-shadow:inset 0 -1.6cqw 0 #e09b00, 0 1.2cqw 0 #2b1608; color:var(--ink); font-family:var(--font-display); font-size:6cqw}
-.ws-tap:active{transform:translateX(-50%) translateY(.8cqw); box-shadow:inset 0 -.8cqw 0 #e09b00, 0 .4cqw 0 #2b1608}
+.mg-cursor{position:absolute; top:50%; height:190%; transform:translate(-50%, -50%); pointer-events:none}
+/* Tap (yellow) and Skip (blue): flat buttons with a dark outline, a darker lip below, outlined white text */
+.ws-tap, .ws-skip{position:absolute; left:50%; transform:translateX(-50%); box-sizing:border-box; border:1cqw solid #1d1a2b; cursor:pointer;
+  font-family:var(--font-display); font-weight:900; color:#fff; -webkit-text-stroke:1.2cqw #1d1a2b; paint-order:stroke fill}
+.ws-tap{bottom:3%; width:46cqw; height:17cqw; border-radius:5cqw; background:#ffdd00; box-shadow:inset 0 -1.8cqw 0 #f0a400; font-size:7.5cqw}
+.ws-skip{top:69.5%; width:37cqw; height:12cqw; border-radius:5cqw; background:#0ca6f5; box-shadow:inset 0 -1.6cqw 0 #0a6fd6; font-size:6.6cqw}
+.ws-tap:active, .ws-skip:active{transform:translateX(-50%) translateY(.6cqw); box-shadow:none}
 .ws-tap:disabled{filter:grayscale(.7); opacity:.7; cursor:default}
-.ws-back{position:absolute; left:0; bottom:3.5%; width:20cqw; height:13cqw; border:1.2cqw solid #2b0a0a; border-left:0; border-radius:0 4cqw 4cqw 0; cursor:pointer;
-  background:linear-gradient(#ff4b4b, #d61f2c); box-shadow:inset 0 -1.4cqw 0 #a50f1b; display:grid; place-items:center}
+.ws-back{position:absolute; left:0; bottom:4%; width:20cqw; height:15cqw; box-sizing:border-box; border:1cqw solid #1d1a2b; border-left:0; border-radius:0 5cqw 5cqw 0; cursor:pointer;
+  background:#ff4141; box-shadow:inset 0 -1.6cqw 0 #d1162a; display:grid; place-items:center}
 .ws-back svg{width:9cqw; height:9cqw}
 .ws-msg{position:absolute; z-index:10; left:10%; right:10%; top:36%; padding:3cqw 4cqw; border-radius:4cqw; background:rgba(255,243,214,.95); color:var(--ink); text-align:center; font-size:3.8cqw; box-shadow:0 1.2cqw 0 #c99b5c}
 .ws-result{position:absolute; z-index:10; left:6%; right:6%; top:26%; padding:4cqw; border-radius:6cqw; background:var(--panel); color:var(--ink); text-align:center;
@@ -2021,11 +2025,11 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 <div class="screen" id="scr-atelier" hidden>
   <div class="ws">
     <div class="ws-top"><div class="geo-stock" id="geoStock"></div></div>
-    <div class="ws-rule" id="mgRule" hidden></div>
     <div class="ws-info" id="mini" hidden><span class="hearts" id="mgHearts"></span><span class="resist" id="mgResist"></span><span class="hits" id="mgHits"></span></div>
     <div class="mg-geode" id="mgGeode"></div>
     <img class="ws-hammer" id="mgHammer" src="Assets/Shops/HammerWorkshop.png" alt="" draggable="false">
     <div class="mg-bar" id="mgBar"><i class="mg-zone" id="mgZone"></i><img class="mg-cursor" id="mgCursor" src="Assets/Shops/Cursor%20workshop.png" alt="" draggable="false"></div>
+    <button class="ws-skip" id="mgSkip" hidden>Passer</button>
     <button class="ws-tap" id="mgHit">Frapper</button>
     <button class="ws-back" data-go="museum" aria-label="Retour au musée"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4 L3 12 L11 20 V15 H21 V9 H11Z" fill="#fff" stroke="#2b0a0a" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
     <div class="ws-msg" id="wsEmpty" hidden>Aucune géode à ouvrir. Trouve-en dans la mine !</div>
@@ -2697,7 +2701,7 @@ const newTrip = () => ({ finds: [], dupes: [], bonus: [], coins: 0, ores: zeroOr
 
 function freshState() {
   return {
-    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, geoSolo: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goalsClosed: false, guideBack: 0,
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, geoSolo: {}, geoOpened: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goalsClosed: false, guideBack: 0,
     bag: {
       ores: zeroOres(),
       gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
@@ -7096,6 +7100,8 @@ const GROUPS = CFG.atelier.groupes || [];
 const geoCount = g => S.bag.geodes.filter(x => x === g).length;
 const groupsFor = g => S.geoSolo[g] ? GROUPS.filter(n => n <= geoCount(g)) : [];
 const batchFor = g => Math.max(1, ...groupsFor(g));
+// « Passer » (config.js > atelier > passer): once this kind of geode has been opened that many times (never for Legendary)
+const canSkip = g => { const need = (CFG.atelier.passer || {})[GEODES[g].rarity]; return !!need && (S.geoOpened[g] || 0) >= need && !!S.tutoSeen.atelier; };
 function renderAtelier() {
   renderGeoStock();
   const has = S.bag.geodes.length > 0;
@@ -7122,20 +7128,10 @@ function startMini(g) {
   const tier = RARITIES.indexOf(GEODES[g].rarity);
   MG = { g, n, tier, hits: 0, need: HITS[tier], lives: CFG.atelier.vies, zone: ZONE[tier], speed: SPEED[tier], t0: performance.now(), pos: 0, busy: false };
   $('mgResult').hidden = true; $('wsEmpty').hidden = true;
-  $('mini').hidden = false; $('mgHit').disabled = false;
+  $('mini').hidden = false; $('mgHit').disabled = false; $('mgSkip').hidden = !canSkip(g);
   $('mgGeode').innerHTML = geodeArt(g) + (n > 1 ? `<b class="mg-n">×${n}</b>` : ''); $('mgGeode').dataset.crack = 0;
   $('mgResist').innerHTML = rarTag(GEODES[g].rarity) + ' ' + '●'.repeat(tier + 1) + '<span class="off">' + '●'.repeat(3 - tier) + '</span>';
   $('mgResist').setAttribute('aria-label', tr('Géode {r}, résistance {n} sur 4', { r: RARITY_FR[GEODES[g].rarity], n: tier + 1 }));
-  // Tell the rule for running out of hearts before the first strike
-  const lives = CFG.atelier.vies;
-  $('mgRule').innerHTML = n > 1
-    ? (tier > 0
-      ? tr('Un seul essai pour les {k} géodes : si tu perds tes {n} cœurs, chacune donne une pierre précieuse {a} au lieu de {b}.', { k: n, n: lives, a: rarTag(RARITIES[tier - 1]), b: rarTag(RARITIES[tier]) })
-      : tr('Un seul essai pour les {k} géodes : si tu perds tes {n} cœurs, elles s\'effritent et ne donnent que <b>{c} pièces</b> chacune.', { k: n, n: lives, c: CFG.atelier.piecesGeodeBlancheRatee }))
-    : tier > 0
-    ? tr('Si tu perds tes {n} cœurs, la géode s\'ouvre quand même, mais donne une pierre précieuse {a} au lieu de {b}.', { n: lives, a: rarTag(RARITIES[tier - 1]), b: rarTag(RARITIES[tier]) })
-    : tr('Si tu perds tes {n} cœurs, la géode verte s\'effrite et ne donne que <b>{c} pièces</b>.', { n: lives, c: CFG.atelier.piecesGeodeBlancheRatee });
-  $('mgRule').hidden = false;
   placeZone(); paintHearts(); paintHits(); renderGeoStock();
   cancelAnimationFrame(mgRaf); mgRaf = requestAnimationFrame(mgTick);
   save();
@@ -7164,7 +7160,6 @@ function mgTick(t) {
 function mgHit() {
   if (!MG || MG.busy) return;
   unlockAudio();
-  $('mgRule').hidden = true;
   const now = performance.now(); MG.pos = mgPos(now);
   const geo = $('mgGeode'), ok = MG.pos >= MG.zoneAt - 1.5 && MG.pos <= MG.zoneAt + MG.zone + 1.5;
   swingHammer();
@@ -7202,10 +7197,11 @@ function swingHammer() {
   ], { duration: 320, easing: 'ease-out' });
 }
 $('mgHit').addEventListener('click', mgHit);
+$('mgSkip').addEventListener('click', () => { if (!MG || MG.busy || !canSkip(MG.g)) return; unlockAudio(); swingHammer(); sfx('break'); finishMini(true); });
 $('mgGeode').addEventListener('pointerdown', e => { e.preventDefault(); mgHit(); });
-function stopMini() { cancelAnimationFrame(mgRaf); MG = null; $('mini').hidden = true; $('mgRule').hidden = true; $('mgHit').disabled = true; $('mgResult').hidden = true; }
+function stopMini() { cancelAnimationFrame(mgRaf); MG = null; $('mini').hidden = true; $('mgSkip').hidden = true; $('mgHit').disabled = true; $('mgResult').hidden = true; }
 function finishMini(win) {
-  const g = MG.g, tier = MG.tier, n = MG.n || 1; MG.busy = true; cancelAnimationFrame(mgRaf);
+  const g = MG.g, tier = MG.tier, n = MG.n || 1; MG.busy = true; cancelAnimationFrame(mgRaf); $('mgSkip').hidden = true;
   // The geode always opens: a failure gives a gem one rarity lower (a white geode crumbles into a few coins)
   // A group: every geode of it gives its own gem, all with the result of the one mini-game
   const gotTier = win ? tier : tier - 1, finds = [];
@@ -7220,6 +7216,7 @@ function finishMini(win) {
   S.roll = null; stat('geodes', n); S.coins += coins;
   // Opened alone once: this kind of geode can now be opened by groups
   if (n === 1) S.geoSolo[g] = true;
+  S.geoOpened[g] = (S.geoOpened[g] || 0) + n;
   setTimeout(() => {
     sfx(win ? 'reward' : 'break'); stopMini();
     const gem = finds.length ? finds.slice().sort((a, b) => RARITIES.indexOf(RARITY_GEM[b.key]) - RARITIES.indexOf(RARITY_GEM[a.key]) || (b.tag === 'new') - (a.tag === 'new'))[0].key : null;
@@ -7593,6 +7590,11 @@ function start(data) {
   S.trip.finds = S.trip.finds.filter(f => f.kind !== 'geode' || GEODES[f.key] || OLD_GEODE[f.key]).map(f => f.kind === 'geode' && !GEODES[f.key] ? { kind: 'geode', key: OLD_GEODE[f.key] } : f);
   S.roll = null;   // older saves: deepest gallery reached = current one
   // Saves from before the groups of geodes: a kind of geode counts as opened alone if a gem of its rarity is in the museum
+  // Saves from before « Passer »: each kind of geode counts as opened as many times as there are gems of its rarity in the museum
+  if (saved && !saved.geoOpened) {
+    S.geoOpened = {};
+    for (const [k, o] of Object.entries(GEODES)) S.geoOpened[k] = Object.keys(S.bag.gems).filter(m => GEMS[m] && (o.ev ? GEMS[m].ev === o.ev : !GEMS[m].ev && RARITY_GEM[m] === o.rarity)).reduce((a, m) => a + (S.bag.gems[m] || 0), 0);
+  }
   if (saved && !saved.geoSolo) {
     S.geoSolo = {};
     for (const [k, o] of Object.entries(GEODES)) if (Object.keys(S.bag.gems).some(m => S.bag.gems[m] && GEMS[m] && (o.ev ? GEMS[m].ev === o.ev : !GEMS[m].ev && RARITY_GEM[m] === o.rarity))) S.geoSolo[k] = true;

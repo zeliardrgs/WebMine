@@ -1328,6 +1328,10 @@ window.CONFIG = {
     // Le mini-jeu se joue une fois pour tout le groupe : réussi, chaque géode donne une gemme de sa rareté ;
     // raté, chaque géode donne une gemme d'une rareté en dessous (ou des pièces pour les vertes).
     groupes: [5, 10, 20],
+
+    // Bouton « Passer » : ouvre la géode tout de suite (comme réussie), une fois que ce type de géode a déjà été
+    // ouvert ce nombre de fois (les géodes d'un groupe comptent chacune). Rareté absente = jamais (Légendaire).
+    passer: { common: 3, rare: 5, epic: 10 },
   },
 
   /* ---------------------------------------------------------------

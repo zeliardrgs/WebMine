@@ -356,11 +356,10 @@ window.TEXTES_EN = {
 
   /* ---------- Atelier ---------- */
   "Frapper": "Strike",
+  "Passer": "Skip",
   "Aucune géode à ouvrir. Trouve-en dans la mine !": "No geodes to open. Find some in the mine!",
   "Ouvrir : {x}": "Open: {x}",
   "Géode {r}, résistance {n} sur 4": "{r} geode, toughness {n} out of 4",
-  "Si tu perds tes {n} cœurs, la géode s'ouvre quand même, mais donne une pierre précieuse {a} au lieu de {b}.": "If you lose your {n} hearts, the geode still opens, but gives a {a} gemstone instead of {b}.",
-  "Si tu perds tes {n} cœurs, la géode verte s'effrite et ne donne que <b>{c} pièces</b>.": "If you lose your {n} hearts, the green geode crumbles and only gives <b>{c} coins</b>.",
   "Coups": "Hits",
   "{a} coup(s) réussi(s) sur {b}": "{a} successful hit(s) out of {b}",
   "{x} : {gem} !": "{x}: {gem}!",
@@ -378,8 +377,6 @@ window.TEXTES_EN = {
   "{n} doublons vendus": "{n} duplicates sold",
   "Plus de cœurs : les {k} géodes s'ouvrent quand même, mais donnent des pierres précieuses {a}.": "Out of hearts: the {k} geodes still open, but give {a} gems.",
   "Plus de cœurs : les {k} géodes vertes s'effritent. Tu récupères {n} pièces.": "Out of hearts: the {k} green geodes crumble. You get {n} coins.",
-  "Un seul essai pour les {k} géodes : si tu perds tes {n} cœurs, chacune donne une pierre précieuse {a} au lieu de {b}.": "One try for all {k} geodes: if you lose your {n} hearts, each gives a {a} gem instead of {b}.",
-  "Un seul essai pour les {k} géodes : si tu perds tes {n} cœurs, elles s'effritent et ne donnent que <b>{c} pièces</b> chacune.": "One try for all {k} geodes: if you lose your {n} hearts, they crumble and give only <b>{c} coins</b> each.",
   "Retour au village": "Back to the village",
   "Retour au musée": "Back to the museum",
 
