@@ -1495,6 +1495,55 @@ window.CONFIG = {
       texte: "Niveau gardien ! Le fond de la Mine Hantée.",
     },
 
+    /* ----- LES TWISTS ----- */
+
+    // NUIT D'HALLOWEEN : on ne voit que les cases à côté des cases déjà creusées (et la rangée du bas).
+    // Les Pierres aux yeux brillent dans le noir ; la Citrouille géante aussi. Le radar marche comme d'habitude.
+    // On peut creuser une case dans le noir : on ne sait juste pas ce qu'elle cache.
+    nuit: {
+      depuis: 11,              // la nuit tombe à partir de ce niveau (11 = la Forêt et le Manoir ; 1 = toute la mine ; 0 = jamais)
+      rangeesEclairees: 1,     // rangées du bas toujours visibles (on part du bas pour remonter dans le noir)
+      image: '',               // Assets/Event/Halloween/Tile_Nuit.png (une case dans le noir, 134 × 152 comme les autres cases)
+    },
+
+    // L'HEURE DES BONBONS : chaque soir, à l'heure du téléphone du joueur, tant que la mine est ouverte
+    heureDesBonbons: {
+      de: 20, a: 21,           // de 20 h à 21 h
+      multiplicateur: 2,       // Candy Corn × 2 (pierres, sacs, tas, Bonbon ou farce)
+      yeuxEnPlus: 2,           // Pierres aux yeux en plus dans chaque niveau
+      texte: "Heure des bonbons : Candy Corn ×{x} !",
+      texteBientot: "Heure des bonbons à {h} h : Candy Corn ×{x} !",
+    },
+
+    // LA CITROUILLE GÉANTE : le boss du niveau 30, à partir du jour "calendrier > boss".
+    // Elle prend 2 × 2 cases. Ses dégâts restent d'une descente à l'autre : on l'use petit à petit.
+    // "vie" = sa vie en coups de pioche de base, en part de l'énergie max du joueur, fixée quand elle apparaît
+    //   (1.2 : avec 60 d'énergie max, 72 coups ; une meilleure pioche frappe plus fort, donc va plus vite).
+    //   Repère : en partant du niveau 21, un joueur arrive au niveau 30 avec environ un tiers de son énergie,
+    //   il lui faut donc 3 à 4 descentes jusqu'au fond pour la vaincre.
+    // "bombe" = coups de pioche que vaut une bombe sur elle.
+    // Vaincue, elle repousse à la descente suivante avec "vieRetour" et donne alors "recompenseRetour".
+    boss: {
+      nom: 'Citrouille géante',
+      vie: 1.2, vieRetour: 0.6, bombe: 5,
+      // 1re victoire : comme la récompense d'un gardien (pièces, potion), des Géodes de lune (à l'Atelier),
+      // des Candy Corn et l'exclusivité (un modèle de "equipement" plus bas)
+      recompense: { pieces: 500, potions: 1, geodesLune: 3, candy: 100, exclusif: 'fauxCitrouille' },
+      recompenseRetour: { candy: 60, geodesLune: 1 },
+      image: '',               // Assets/Event/Halloween/Boss_Citrouille.png (carrée, couvre 2 × 2 cases)
+      texte: "La Citrouille géante ! Tes coups restent d'une descente à l'autre.",
+      texteAvant: "La Citrouille géante arrive au niveau 30 dans {t}.",
+      titreVaincu: "Citrouille géante vaincue !",
+      texteRetour: "Elle repoussera à ta prochaine descente au niveau 30…",
+    },
+
+    // MISSION D'HALLOWEEN : tant que la mine est ouverte, une des missions du jour est une mission d'Halloween.
+    // Mêmes réglages que missions > liste ; "candy" = Candy Corn gagnés en plus des pièces.
+    missions: [
+      { type: 'candy', texte: 'Trouve {n} Candy Corn', choix: [30, 50], pieces: 50, candy: 20 },
+      { type: 'yeux',  texte: ['Casse une Pierre aux yeux', 'Casse {n} Pierres aux yeux'], choix: [3, 5], pieces: 50, candy: 20 },
+    ],
+
     // CANDY CORN : la monnaie de l'événement (pas de place dans le sac, comme les minerais)
     candy: {
       nom: 'Candy Corn',
@@ -1631,6 +1680,8 @@ window.CONFIG = {
       // Exclusivités (données en Épique) : un peu plus fortes que le modèle dont elles prennent le passif
       chapeauSorciere:    { emplacement: 'casque',   nom: 'Chapeau de sorcière', commeModele: 'casqueChantier', valeurs: [0.35, 0.5, 0.65, 0.85, 1], image: '', rarete: 'epique' },
       capeChauveSouris:   { emplacement: 'bottes',   nom: 'Cape de chauve-souris', commeModele: 'bottesPorteBonheur', valeurs: [0.2, 0.25, 0.3, 0.375, 0.45], image: '', rarete: 'epique' },
+      // Exclusivité de la Citrouille géante (boss > recompense > exclusif)
+      fauxCitrouille:     { emplacement: 'pioche',   nom: 'Faux de la Citrouille', commeModele: 'picLourd', valeurs: [0.16, 0.2, 0.25, 0.31, 0.37], image: '', rarete: 'epique' },
     },
     coffre: { nom: "Coffre Halloween", image: '' },   // Assets/Event/Halloween/Chest_Halloween.png
 

@@ -227,7 +227,8 @@
     hwClock() {
       if (!M.hw) return msg('Pas de Mine Hantée dans config.js');
       const d = +$('cheatHwDay').value, h = +$('cheatHwHour').value;
-      const target = M.hw.date(d - 1) + h * 3600e3 + new Date().getMinutes() * 60e3;
+      // (hours set on the date itself: the night of the time change has 23 or 25 hours)
+      const t = new Date(M.hw.date(d - 1)); t.setHours(h, new Date().getMinutes()); const target = t.getTime();
       localStorage.setItem(M.hw.CLOCK_KEY, String(target - Date.now()));
       hwDone(`Jour ${d}, ${h} h`);
     },
@@ -243,6 +244,21 @@
       hwDone('Collection Halloween à 2 étoiles (la 3e donne la Cape)');
     },
     hwStarts() { S().hallo.best = M.CFG.mineHantee.niveaux; hwDone('Tous les départs débloqués (niveaux 11 et 21)'); },
+    // Step 3: the candy hour now (same day), straight down to the boss, the boss almost beaten / back to full life
+    hwHour() {
+      const d = Math.max(1, M.hw.day()), h = M.CFG.mineHantee.heureDesBonbons.de;
+      const t = new Date(M.hw.date(d - 1)); t.setHours(h, 1); localStorage.setItem(M.hw.CLOCK_KEY, String(t.getTime() - Date.now()));
+      hwDone(`Jour ${d}, ${h} h 01 : heure des bonbons`);
+    },
+    hwDeep() {
+      if (S().haunt) return msg('Remonte d\'abord de la Mine Hantée');
+      close(); M.hw.start(M.CFG.mineHantee.niveaux);
+    },
+    hwBossLow() {
+      const b = S().hallo.boss; if (!b || b.hp <= 0) return msg('Pas de Citrouille géante pour l\'instant (descends au niveau 30 à partir du jour 8)');
+      b.hp = M.CFG.mine.degatsPioche || 10; M.hw.bossPaint(); M.save(); msg('Citrouille géante : plus qu\'un coup !');
+    },
+    hwBossReset() { delete S().hallo.boss; M.save(); msg('Citrouille géante remise à zéro (jamais vaincue, vie pleine à la prochaine descente)'); },
     hwReset() {
       if (!confirm('Remettre la Mine Hantée à zéro (Tickets, Candy Corn, départs) ?')) return;
       const s = S(); s.hallo = { candy: 0, free: 0, freeDay: 0, evening: false, ads: 0, adsDay: 0, paid: 0, first: false, best: 1, seen: false };
@@ -305,6 +321,10 @@
       <button data-c="hwCol2">Collection Halloween à 2 étoiles</button>
       <button data-c="hwStarts">Débloquer les départs 11 et 21</button>
       <button data-c="hwFirst">Rejouer la 1re descente</button>
+      <button data-c="hwHour">Heure des bonbons maintenant</button>
+      <button data-c="hwDeep">Descendre au niveau 30 (boss)</button>
+      <button data-c="hwBossLow">Boss : plus qu'un coup</button>
+      <button data-c="hwBossReset">Boss remis à zéro</button>
       <button data-c="hwReset" class="warn">Remettre l'event à zéro</button>
     </div>` : ''}
 
