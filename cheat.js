@@ -28,7 +28,12 @@
   #cheatPanel .x{min-height:40px; width:40px; padding:0; background:#eee; box-shadow:none; font-size:20px}
   #cheatPanel .lvl{display:flex; gap:8px; margin-bottom:8px}
   #cheatPanel input,#cheatPanel select{flex:1; min-width:0; min-height:46px; border-radius:12px; border:2px solid #d9a53a; padding:0 12px; background:#fff; color:#3b2245; font:800 18px system-ui, sans-serif}
-  #cheatPanel .note{margin:4px 0 0; font-size:12px; color:#7a6a80}
+  #cheatPanel .note{margin:4px 0 8px; font-size:12px; color:#7a6a80}
+  #cheatPanel h2 span{flex:1; margin:0 8px}
+  #cheatPanel .x[hidden]{display:none}
+  #cheatPanel .cats{display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:8px}
+  #cheatPanel .cats button{min-height:76px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:#fff; box-shadow:0 3px 0 #d9a53a; border:2px solid #ffd36b}
+  #cheatPanel .cats button span{font-size:24px; line-height:1}
   #cheatMsg{position:fixed; left:50%; bottom:70px; transform:translateX(-50%); z-index:10001; background:#3b2245; color:#fff; padding:8px 14px;
     border-radius:12px; font:700 14px system-ui, sans-serif; pointer-events:none; opacity:0; transition:opacity .2s}`;
   document.head.append(css);
@@ -282,31 +287,51 @@
   const g = M.GEODES;
   const panel = document.createElement('div');
   panel.id = 'cheatPanel'; panel.hidden = true;
+  // Categories: the home page shows one tile per category, a tile opens its sub-menu (« ‹ » goes back)
+  const CATS = [
+    ['niveaux', '⛏️', 'Niveaux et mine'], ['pionniers', '🍀', 'Mine des pionniers'], ['ressources', '💰', 'Ressources'],
+    ['mineur', '⭐', 'Mineur et Autel'], ['equipement', '🛡️', 'Équipement'], ['fees', '🧚', 'Fées'], ['geodes', '💎', 'Géodes'],
+    ['sac', '🎒', 'Sac et Musée'], ['marees', '🌊', 'Grotte des Marées'], ...(M.hw ? [['hantee', '🎃', 'Mine Hantée']] : []), ['partie', '💾', 'Partie'],
+  ];
   panel.innerHTML = `<div class="cp" role="dialog" aria-label="Menu cheat">
-    <h2>Menu cheat <button class="x" data-c="close" aria-label="Fermer">×</button></h2>
-    <p class="note">Visible uniquement en local, jamais sur le site en ligne.</p>
+    <h2><button class="x" data-c="home" id="cheatBack" aria-label="Retour" hidden>‹</button><span id="cheatTitle">Menu cheat</span>
+      <button class="x" data-c="close" aria-label="Fermer">×</button></h2>
 
-    <h3>Progression</h3>
+    <div class="cat" data-cat="home">
+      <p class="note">Visible uniquement en local, jamais sur le site en ligne.</p>
+      <div class="cats">${CATS.map(([id, ic, nom]) => `<button data-open="${id}"><span>${ic}</span>${nom}</button>`).join('')}</div>
+    </div>
+
+    <div class="cat" data-cat="niveaux" hidden>
     <div class="lvl"><input id="cheatLvl" type="number" min="1" max="1000" inputmode="numeric" placeholder="Niveau (1 à 1000)"></div>
     <div class="row">
       <button data-c="goLevel">Aller à ce niveau</button>
-      <button data-c="floorTypes">Types d'étages</button>
-      <button data-c="luckyNow">Étage Lucky maintenant</button>
-      <button data-c="luckyNext">Lucky à la prochaine descente</button>
       <button data-c="unlock">Débloquer jusqu'à ce niveau</button>
       <button data-c="finishFloor">Dégager tout l'étage</button>
       <button data-c="skipFtue">Passer la FTUE</button>
     </div>
+    </div>
 
-    <h3>Grotte des Marées (tests, à retirer avant la mise en ligne)</h3>
+    <div class="cat" data-cat="pionniers" hidden>
+    <div class="row">
+      <button data-c="floorTypes">Types d'étages</button>
+      <button data-c="luckyNow">Étage Lucky maintenant</button>
+      <button data-c="luckyNext">Lucky à la prochaine descente</button>
+    </div>
+    </div>
+
+    <div class="cat" data-cat="marees" hidden>
+    <p class="note">Tests, à retirer avant la mise en ligne.</p>
     <div class="row">
       <button data-c="openMine2">Débloquer la Grotte des Marées</button>
       <button data-c="allPieces">Tous les morceaux au Musée</button>
       <button data-c="resetPieces" class="warn">Remettre les morceaux à zéro</button>
     </div>
     <p class="note">Niveaux de la mine 2 dans « Aller à ce niveau » : ajoute 100 (niveau 15 de la mine 2 = 115).</p>
+    </div>
 
-    ${M.hw ? `<h3>Mine Hantée (tests, à retirer avant la mise en ligne)</h3>
+    ${M.hw ? `<div class="cat" data-cat="hantee" hidden>
+    <p class="note">Tests, à retirer avant la mise en ligne.</p>
     <p class="note" id="cheatHwNow"></p>
     <div class="lvl">
       <select id="cheatHwDay" aria-label="Jour de l'événement">${Array.from({ length: M.CFG.mineHantee.calendrier.fin + 2 }, (_, i) => i).map(d => `<option value="${d}">${d ? 'Jour ' + d : 'Avant (J0)'}</option>`).join('')}</select>
@@ -326,9 +351,10 @@
       <button data-c="hwBossLow">Boss : plus qu'un coup</button>
       <button data-c="hwBossReset">Boss remis à zéro</button>
       <button data-c="hwReset" class="warn">Remettre l'event à zéro</button>
+    </div>
     </div>` : ''}
 
-    <h3>Ressources</h3>
+    <div class="cat" data-cat="ressources" hidden>
     <div class="row">
       <button data-c="coins">+1000 pièces</button>
       <button data-c="ores">+50 de chaque minerai</button>
@@ -336,8 +362,9 @@
       <button data-c="infinite" id="cheatInf">Énergie infinie</button>
       <button data-c="items">+5 bombes, radars, potions</button>
     </div>
+    </div>
 
-    <h3>Niveau du mineur et Autel</h3>
+    <div class="cat" data-cat="mineur" hidden>
     <div class="row">
       <button data-c="xp">+500 XP de mineur</button>
       <button data-c="minerMax">Niveau du mineur au max (énergie, sac)</button>
@@ -345,8 +372,9 @@
       <button data-c="altarRunes">Toutes les runes à 5★</button>
       <button data-c="altarReset" class="warn">Remettre l'Autel à zéro</button>
     </div>
+    </div>
 
-    <h3>Équipement</h3>
+    <div class="cat" data-cat="equipement" hidden>
     <div class="row">
       <button data-c="gems">+500 perles</button>
       <button data-c="keys">+5 clés de chaque</button>
@@ -355,33 +383,38 @@
       ${M.RAR_KEYS.map(r => `<button data-c="gearItem" data-g="${r}">+1 ${M.EQC.raretes[r].nom}</button>`).join('')}
       <button data-c="gearReset" class="warn">Remettre l'équipement à zéro</button>
     </div>
+    </div>
 
-    <h3>Fées</h3>
+    <div class="cat" data-cat="fees" hidden>
     <div class="row">
       <button data-c="fairy">+1 fée au hasard</button>
       ${Object.keys(PC).map(c => `<button data-c="fairyCat" data-g="${c}">+1 fée ${PC[c].nom}</button>`).join('')}
       <button data-c="fairyAll">Toutes les fées</button>
       <button data-c="fairyNone" class="warn">Retirer toutes les fées</button>
     </div>
+    </div>
 
-    <h3>Géodes</h3>
+    <div class="cat" data-cat="geodes" hidden>
     <div class="row">${Object.keys(g).map(k => `<button data-c="geode" data-g="${k}">+1 ${g[k].name}</button>`).join('')}</div>
+    </div>
 
-    <h3>Sac et musée</h3>
+    <div class="cat" data-cat="sac" hidden>
     <div class="row">
       <button data-c="fillBag">Remplir le sac</button>
       <button data-c="emptyBag">Vider le sac</button>
       <button data-c="fullMuseum">Compléter le musée</button>
       <button data-c="emptyMuseum" class="warn">Vider le musée</button>
     </div>
+    </div>
 
-    <h3>Partie</h3>
+    <div class="cat" data-cat="partie" hidden>
     <div class="row">
       <button data-c="backup">Enregistrer une copie</button>
       <button data-c="restore">Revenir à la copie</button>
       <button data-c="reset" class="warn">Recommencer à zéro</button>
     </div>
     <p class="note">Astuce : « Enregistrer une copie » avant de tricher, puis « Revenir à la copie » pour retrouver ta vraie partie.</p>
+    </div>
   </div>`;
   document.body.append(panel);
   const btn = document.createElement('button');
@@ -406,11 +439,28 @@
     msg(text);
   }
   function close() { panel.hidden = true; }
-  btn.addEventListener('click', () => { $('cheatLvl').value = S().level; paintToggles(); panel.hidden = false; });
+  // Shows one category (or the home page); the last one opened comes back when the menu reopens
+  const LAST = 'mine-cheat-categorie';
+  function openCat(id) {
+    if (!CATS.some(c => c[0] === id)) id = 'home';
+    panel.querySelectorAll('.cat').forEach(el => el.hidden = el.dataset.cat !== id);
+    const c = CATS.find(c => c[0] === id);
+    $('cheatTitle').textContent = c ? c[1] + ' ' + c[2] : 'Menu cheat';
+    $('cheatBack').hidden = !c;
+    panel.querySelector('.cp').scrollTop = 0;
+    try { sessionStorage.setItem(LAST, id); } catch (e) {}
+  }
+  btn.addEventListener('click', () => {
+    $('cheatLvl').value = S().level; paintToggles();
+    let last = 'home'; try { last = sessionStorage.getItem(LAST) || 'home'; } catch (e) {}
+    openCat(last); panel.hidden = false;
+  });
   panel.addEventListener('click', e => {
     if (e.target === panel) return close();
+    const o = e.target.closest('[data-open]'); if (o) return openCat(o.dataset.open);
     const b = e.target.closest('[data-c]'); if (!b) return;
     if (b.dataset.c === 'close') return close();
+    if (b.dataset.c === 'home') return openCat('home');
     A[b.dataset.c](b.dataset.g);
   });
 
