@@ -1184,6 +1184,7 @@ window.CONFIG = {
     xpEtoileCollection: 15,           // par nouvelle étoile de collection au Musée
     xpEquipement: { nouveau: 5, amelioration: 2, fusion: 10 },  // l'équipement compte, mais moins
     xpParPriere: 5,                   // par prière à l'Autel
+    xpGeode: 3,                       // par géode ouverte à l'Atelier (en plus des trésors nouveaux qu'elle donne)
 
     // ---- XP à gagner pour passer chaque niveau ----
     // Niveau 2 : "depart" ; chaque niveau suivant demande "enPlus" de plus (niveau 3 : 120, niveau 10 : 260…).

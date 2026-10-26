@@ -1333,6 +1333,26 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
   background:linear-gradient(#ffe100, #ffb400); color:#fff; font-weight:400; font-size:12px; line-height:18px; text-align:center; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill}
 .pl-info{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px}
 .pl-info > b{font-weight:400; font-size:14px; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pl-gauge{position:relative; display:block; padding-left:20px}
+.pl-xpic{position:absolute; z-index:1; left:0; top:50%; width:30px; height:30px; margin-top:-15px; object-fit:contain; filter:drop-shadow(0 1px 0 rgba(0,0,0,.3))}
+.pl-face.lvup{animation:depthBump .5s cubic-bezier(.3,1.6,.5,1)}
+/* XP icons flying to the gauge, and the "+N" under it */
+.xpg-fly{position:fixed; z-index:9998; left:0; top:0; width:34px; height:34px; margin:-17px 0 0 -17px; pointer-events:none}
+.xpg-fly img{width:100%; height:100%; object-fit:contain}
+.xpg-plus{position:fixed; z-index:9998; display:flex; align-items:center; gap:3px; pointer-events:none; font-family:var(--font-display); font-size:20px; color:#fff; -webkit-text-stroke:5px var(--outline); paint-order:stroke fill}
+.xpg-plus img{width:26px; height:26px; object-fit:contain}
+/* The lines "+N [XP] reason" (end of the expedition, Atelier) */
+.xpg{margin-top:10px}
+.xpg-card{display:flex; align-items:center; gap:12px; max-width:340px; margin:6px auto 0; padding:8px 12px 8px 14px; border-radius:14px; background:#dff7fa; box-shadow:inset 0 -3px 0 #a9e3ea; text-align:left;
+  font-family:var(--font-display); font-weight:400; color:var(--ink)}
+.xpg-card ul{flex:1; min-width:0; margin:0; padding:0; list-style:none; font-size:14px; line-height:1.3}
+.xpg-card li{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.xpg-total{flex:none; display:inline-flex; align-items:center; gap:3px; padding-left:10px; border-left:2px solid #a9e3ea; font-size:22px; color:#0d8fa0}
+.xpg-total img{width:28px; height:28px; object-fit:contain}
+.vg-xp{display:inline-flex; align-items:center; gap:2px}
+.vg-xp img,.prog-xp img{width:15px; height:15px; object-fit:contain; vertical-align:-3px}
+.prog-note img{width:18px; height:18px; margin-right:4px; vertical-align:-4px}
+.toast img{width:20px; height:20px; object-fit:contain; vertical-align:-4px; margin-left:2px}
 .pl-bar{position:relative; display:block; height:16px; border:2px solid var(--outline); border-radius:9px; background:#5a3f6b; overflow:hidden}
 .pl-bar i{position:absolute; inset:0 auto 0 0; background:linear-gradient(#9fd4ff, #3d8ff0); transition:width .3s}
 .pl-bar span{position:absolute; inset:0; display:grid; place-items:center; font-size:10px; color:#fff; -webkit-text-stroke:2.5px var(--outline); paint-order:stroke fill; white-space:nowrap}
@@ -1945,7 +1965,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <button class="home-sc hw-sc" data-go="haunt" id="scHaunt" aria-label="Mine Hantée" hidden><span id="scHauntIc"></span><b>Mine Hantée</b><span class="badge" id="badgeHaunt" hidden>!</span></button>
   </div>
   <header class="v-hud">
-    <button class="pl-card" id="plCard" aria-label="Progression" hidden><span class="pl-face"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b id="plLv">1</b></span><span class="pl-info"><b id="plName"></b><span class="pl-bar"><i id="plFill"></i><span id="plTxt"></span></span></span><span class="badge" id="plBadge" hidden>!</span></button>
+    <button class="pl-card" id="plCard" aria-label="Progression" hidden><span class="pl-face"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b id="plLv">1</b></span><span class="pl-info"><b id="plName"></b><span class="pl-gauge"><img class="pl-xpic" src="Assets/UI/Icon_XP.png" alt="XP" draggable="false"><span class="pl-bar"><i id="plFill"></i><span id="plTxt"></span></span></span></span><span class="badge" id="plBadge" hidden>!</span></button>
     <div class="wallet-bar" data-money></div>
     <button class="iconbtn" id="settingsBtn" aria-label="Paramètres"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M26.0 12.9 L30.3 13.5 L30.3 18.5 L26.0 19.1 L25.3 20.9 L27.9 24.3 L24.3 27.9 L20.9 25.3 L19.1 26.0 L18.5 30.3 L13.5 30.3 L12.9 26.0 L11.1 25.3 L7.7 27.9 L4.1 24.3 L6.7 20.9 L6.0 19.1 L1.7 18.5 L1.7 13.5 L6.0 12.9 L6.7 11.1 L4.1 7.7 L7.7 4.1 L11.1 6.7 L12.9 6.0 L13.5 1.7 L18.5 1.7 L19.1 6.0 L20.9 6.7 L24.3 4.1 L27.9 7.7 L25.3 11.1Z" fill="#7d3c98" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="4.6" fill="#fff4dc" stroke="#3b2245" stroke-width="2"/></svg></button>
   </header>
@@ -1998,7 +2018,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <header class="scr-head"><h1>Progression</h1><div class="wallet-bar" data-money></div></header>
   <div class="prog-card">
     <div class="prog-head" id="progHead"></div>
-    <p class="prog-note">Missions, records de profondeur, Musée, équipement et Autel : tout donne de l'XP.</p>
+    <p class="prog-note"><img src="Assets/UI/Icon_XP.png" alt="" draggable="false">Missions, records de profondeur, Musée, géodes, équipement et Autel : tout donne de l'XP.</p>
   </div>
   <div class="prog-list" id="progList"></div>
   <button class="btn big prog-all" id="progAll" hidden>Tout récupérer</button>
@@ -2620,6 +2640,7 @@ const artArt = k => itemArt(ARTS[k]);
 const SALE = CFG.economie.venteDoublons;
 const OPEN_VAL = { o11: 30, o12: 30, o13: 30, o14: 40, o15: 40 };
 const COIN = img('Assets/UI/Icon_Coin.png', tr('pièces'));
+const XP_ICON = img('Assets/UI/Icon_XP.png', 'XP');
 const RES_ICON = { coin: 'Assets/UI/Icon_Coin.png', iron: 'Assets/UI/Icon_Iron.png', copper: 'Assets/UI/Icon_Cooper.png', gold: 'Assets/UI/Icon_Gold.png', mithril: 'Assets/UI/Icon_Iron.png', crystal: 'Assets/UI/Icon_Cooper.png' };
 // Mithril and raw crystal: recoloured iron/copper icons until their own art exists
 const RES_FILTER = { mithril: 'hue-rotate(140deg) saturate(1.6)', crystal: 'hue-rotate(250deg) saturate(1.4)' };
@@ -2750,7 +2771,7 @@ function freshState() {
       arts: Object.fromEntries(Object.keys(ARTS).map(k => [k, 0])),
     },
     coins: CFG.depart.pieces, reached: 1, pxp: 0, pclaim: {}, altar: { n: 0, runes: {} }, trip: newTrip(), screen: 'village', roll: null,
-    grid: null, rewards: null, gear: newGear(), pets: newPets(), hpX10: true, hallo: newHallo(),
+    grid: null, rewards: null, gear: newGear(), pets: newPets(), hpX10: true, xpSeen: 0, hallo: newHallo(),
   };
 }
 /* Haunted Mine (config.js > mineHantee): what the event keeps between two descents.
@@ -3561,8 +3582,8 @@ addEventListener('keydown', e => {
 
 /* ---------- Toast & FX ---------- */
 let toastT;
-function toast(msg, kind = '') {
-  const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + kind;
+function toast(msg, kind = '', html) {
+  const t = $('toast'); t[html ? 'innerHTML' : 'textContent'] = msg; t.className = 'toast show ' + kind;
   clearTimeout(toastT); toastT = setTimeout(() => t.className = 'toast', 2000);
 }
 function ts() { return board.clientWidth / COLS; }
@@ -6127,7 +6148,7 @@ function rwChips(r) {
   const f = r.fee && PETS.fees[r.fee];
   return (r.fee ? chip(img(f ? f.visuel : 'Assets/UI/Icon_Fairy.png'), f ? tr(f.nom) : tr('Une fée')) : '')
     + (r.pieces ? chip(COIN, r.pieces) : '') + (r.ore ? chip(resArt(r.ore), r.oreN) : '') + (r.gemmes ? chip(GEM_ICON, r.gemmes) : '')
-    + Object.entries(r.cles || {}).map(([k, n]) => chip(keyArt(k), '×' + n)).join('') + (r.xp ? `<span class="vg-xp">+${r.xp} XP</span>` : '');
+    + Object.entries(r.cles || {}).map(([k, n]) => chip(keyArt(k), '×' + n)).join('') + (r.xp ? `<span class="vg-xp">+${r.xp}${XP_ICON}</span>` : '');
 }
 // Day shown on the Missions page: today, or an earlier day of the week touched in the strip
 let missionDay = 7;   // 7 = today
@@ -6190,7 +6211,7 @@ function renderGoals() {
   $('vgList').innerHTML = S.daily.goals.map((g, i) => {
     const cur = goalValue(g.type) - g.start, done = goalDone(g);
     const rw = `+${g.reward}${COIN}${g.ore ? ` +${g.oreN}${resArt(g.ore)}` : ''}${g.candy && HW ? ` +${g.candy}${CANDY_ART()}` : ''}`;
-    const xp = goalXP(g) ? `<span class="vg-xp">+${goalXP(g)} XP</span>` : '';
+    const xp = goalXP(g) ? `<span class="vg-xp">+${goalXP(g)}${XP_ICON}</span>` : '';
     const side = g.claimed ? `<span class="vg-got">${CHECK_ICON}</span>`
       : `<div class="vg-side">${done ? `<button class="btn sm" data-claim="${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">${rw}</button>` : `<span class="vg-rw">${rw}</span>`}${xp}</div>`;
     const reroll = canReroll && !done && !g.claimed ? `<button class="vg-reroll" data-reroll="${i}" aria-label="${tr('Changer de mission')}">${REROLL_ICON}</button>` : '';
@@ -6217,8 +6238,8 @@ document.addEventListener('click', e => {
   if (g.ore) S.bag.ores[g.ore] += g.oreN;
   if (g.candy && S.hallo) S.hallo.candy += g.candy;
   const xp = goalXP(g);
-  gainXP(xp);
-  toast(xp ? tr('Mission réussie : +{n} pièces, +{x} XP !', { n: g.reward, x: xp }) : tr('Mission réussie : +{n} pièces !', { n: g.reward }), 'good');
+  gainXP(xp, 'missions');
+  toast(tr('Mission réussie !') + ` +${g.reward}${COIN}` + (xp ? ` +${xp}${XP_ICON}` : ''), 'good', true);
   renderGoals(); save();
 });
 // ↻ : a mission not done yet is swapped for another kind, a few times a day
@@ -6267,26 +6288,82 @@ const goalXP = g => { const o = goalDef(g.type); return (o && o.xp != null ? o.x
 // XP to go from level l to l + 1: config.js > progressionJoueur > xp (a row can have its own "xp"); what level l gives (l >= 2)
 const plStep = l => { const row = PJ.niveaux[l - 1], X = PJ.xp || { depart: 40, enPlus: 20 }; return row && row.xp != null ? row.xp : X.depart + X.enPlus * (l - 1); };
 const plRow = l => PJ.niveaux[l - 2];
-function plInfo() {
-  let lv = 1, xp = S.pxp || 0;
+function plInfoOf(total) {
+  let lv = 1, xp = Math.floor(total || 0);
   while (xp >= plStep(lv)) { xp -= plStep(lv); lv++; }
   return { lv, xp, need: plStep(lv) };
 }
+const plInfo = () => plInfoOf(S.pxp);
 const plLevel = () => plInfo().lv;
 // Level that opens a feature (1 = open from the start)
 const plUnlockAt = k => { const i = PJ.niveaux.findIndex(r => r.deblocage === k); return i < 0 ? 1 : i + 2; };
 const eventsOpen = () => plLevel() >= plUnlockAt('evenements');
 const plReady = l => l <= plLevel() && !!plRow(l) && !!plRow(l).recompense && !(S.pclaim || {})[l];
 const plWaiting = () => { let n = 0; for (let l = 2; l <= plLevel(); l++) if (plReady(l)) n++; return n; };
-function gainXP(n) {
+// XP is never silent: each gain says why. During a descent (levels, records) it is written in the trip, shown at the
+// end of the expedition; xpSink collects the gains of one action (the recap, a geode opened) to list them there.
+let xpSink = null;
+const TRIP_XP = ['niveaux', 'records'];
+function gainXP(n, why, count = 1) {
   n = Math.round((n || 0) * (1 + runeVal('savoir')));
   if (!n) return;
+  const sink = xpSink || (TRIP_XP.includes(why) && S.trip ? (S.trip.xp = S.trip.xp || {}) : null);
+  if (sink && why) { const e = sink[why] = sink[why] || { xp: 0, n: 0 }; e.xp += n; e.n += count; }
   const before = plLevel();
   S.pxp = (S.pxp || 0) + n;
   const lv = plLevel();
   if (lv > before && !inGuide()) setTimeout(() => { sfx('win'); toast(tr('Niveau {n} atteint ! Ta récompense t\'attend dans Progression.', { n: lv }), 'good'); }, 900);
-  if (!$('scr-village').hidden) renderPlCard();
+  if (!$('scr-village').hidden) { renderPlCard(); setTimeout(animatePlXp, 350); }
   refreshNav();
+}
+// "+12 [XP]  3 niveaux terminés": one line per reason
+const XP_WHY = {
+  niveaux: ['{n} niveau terminé', '{n} niveaux terminés'], records: ['{n} nouveau record', '{n} nouveaux records'],
+  tresors: ['{n} nouveau trésor', '{n} nouveaux trésors'], etoiles: ['{n} étoile de collection', '{n} étoiles de collection'],
+  geodes: ['{n} géode ouverte', '{n} géodes ouvertes'],
+};
+// One card: the reasons one under the other, then the total ("5 niveaux terminés / 3 nouveaux trésors = +45 XP")
+function xpLinesHTML(log, title) {
+  const keys = Object.keys(XP_WHY).filter(k => log && log[k] && log[k].xp);
+  if (!keys.length) return '';
+  const total = keys.reduce((a, k) => a + log[k].xp, 0);
+  return `<div class="xpg">${title ? `<p class="xp-sec xp-out">${title}</p>` : ''}<div class="xpg-card">
+    <ul>${keys.map(k => `<li>${tr(plural(log[k].n, ...XP_WHY[k]), { n: log[k].n })}</li>`).join('')}</ul>
+    <span class="xpg-total">+${total}${XP_ICON}</span></div></div>`;
+}
+/* Home: the XP won since the last visit flies into the gauge, which fills up (level after level) */
+let plAnim = null;
+function animatePlXp() {
+  if (plAnim || $('scr-village').hidden) return;
+  const from = S.xpSeen ?? S.pxp, to = S.pxp || 0;
+  if (to <= from || inGuide() || $('plCard').hidden) { S.xpSeen = to; return; }
+  if (coach || revealing || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) { setTimeout(animatePlXp, 700); return; }
+  plAnim = { v: from };
+  const card = $('plCard'), r = card.querySelector('.pl-gauge').getBoundingClientRect(), tx = r.left + 14, ty = r.top + r.height / 2;
+  const N = Math.min(8, 3 + Math.floor((to - from) / 15)), x0 = innerWidth / 2, y0 = innerHeight * .5;
+  for (let k = 0; k < N; k++) {
+    const d = document.createElement('span'); d.className = 'xpg-fly'; d.innerHTML = XP_ICON; document.body.append(d);
+    const sx = x0 + rand(-70, 70), sy = y0 + rand(-50, 50);
+    d.animate([{ transform: `translate(${sx}px, ${sy}px) scale(.3)`, opacity: 0 }, { transform: `translate(${sx}px, ${sy - 30}px) scale(1.2)`, opacity: 1, offset: .25 },
+      { transform: `translate(${tx}px, ${ty}px) scale(.7)`, opacity: 1 }], { duration: 800, delay: k * 80, easing: 'cubic-bezier(.5,0,.7,1)', fill: 'both' }).onfinish = () => { d.remove(); sfx('pick'); };
+  }
+  const plus = document.createElement('span'); plus.className = 'xpg-plus'; plus.innerHTML = `+${to - from}${XP_ICON}`;
+  Object.assign(plus.style, { left: r.left + r.width / 2 + 'px', top: r.bottom + 6 + 'px' }); document.body.append(plus);
+  plus.animate([{ opacity: 0, transform: 'translate(-50%, 6px) scale(.6)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1.1)', offset: .2 }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)', offset: .8 }, { opacity: 0, transform: 'translate(-50%, -8px)' }],
+    { duration: 2400, delay: 300 }).onfinish = () => plus.remove();
+  const start = 800 + N * 80 - 250, dur = Math.min(2200, 900 + (to - from) * 8);
+  setTimeout(() => {
+    const t0 = performance.now(); let lv = plInfoOf(from).lv;
+    const step = now => {
+      const k = Math.min(1, (now - t0) / dur), v = from + (to - from) * (1 - Math.pow(1 - k, 2));
+      plAnim.v = v; const p = plInfoOf(v); paintPlCard(p);
+      if (p.lv > lv) { lv = p.lv; const f = card.querySelector('.pl-face'); f.classList.remove('lvup'); void f.offsetWidth; f.classList.add('lvup'); sfx('win'); }
+      if (k < 1) return requestAnimationFrame(step);
+      plAnim = null; S.xpSeen = to; renderPlCard(); save();
+      if (S.pxp > to) setTimeout(animatePlXp, 300);
+    };
+    requestAnimationFrame(step);
+  }, start);
 }
 const refreshNav = () => { const scr = SCREENS.find(n => !$('scr-' + n).hidden); if (scr) updateNav(scr); };
 const PL_FEAT_ICON = { evenements: 'Assets/UI/Event.png' };
@@ -6371,19 +6448,21 @@ $('fairyBtns').addEventListener('click', e => {
 });
 // The card on the village: face with the level, name, XP gauge (hidden during the first steps, like the missions)
 function renderPlCard() {
-  const p = plInfo();
   $('plCard').hidden = inGuide();
-  $('plLv').textContent = p.lv;
   $('plName').textContent = tr(EQC.nomPersonnage || '');
-  $('plFill').style.width = Math.min(100, p.xp / p.need * 100) + '%';
-  $('plTxt').textContent = `${p.xp} / ${p.need} XP`;
+  paintPlCard(plInfoOf(plAnim ? plAnim.v : S.xpSeen ?? S.pxp));
   $('plBadge').hidden = !plWaiting();
+}
+function paintPlCard(p) {
+  $('plLv').textContent = p.lv;
+  $('plFill').style.width = Math.min(100, p.xp / p.need * 100) + '%';
+  $('plTxt').textContent = `${p.xp} / ${p.need}`;
 }
 function renderProg() {
   const p = plInfo(), last = Math.max(PJ.niveaux.length + 1, p.lv + 1);
   $('progHead').innerHTML = `<span class="pl-face big"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b>${p.lv}</b></span>
     <div class="prog-who"><b>${tr(EQC.nomPersonnage || '')}</b><span>${tr('Niveau {n}', { n: p.lv })}</span>
-    <span class="pl-bar"><i style="width:${Math.min(100, p.xp / p.need * 100)}%"></i><span>${p.xp} / ${p.need} XP</span></span></div>`;
+    <span class="pl-gauge"><img class="pl-xpic" src="Assets/UI/Icon_XP.png" alt="XP" draggable="false"><span class="pl-bar"><i style="width:${Math.min(100, p.xp / p.need * 100)}%"></i><span>${p.xp} / ${p.need}</span></span></span></div>`;
   // Horizontal track from level 1 to the right: each level's badge sits on a gauge that fills up to the player's XP
   // (--f = how full the stretch to the next level is), with the level's reward card beside it
   let html = '';
@@ -6394,7 +6473,7 @@ function renderProg() {
     const act = l === 1 ? ''
       : state === 'ready' ? `<button class="btn sm" data-plclaim="${l}">${tr('Récupérer')}</button>`
       : state === 'done' ? `<span class="prog-ok" aria-label="${tr('Récupéré')}">✓</span>`
-      : state === 'next' ? `<span class="prog-xp">${tr('encore {n} XP', { n: p.need - p.xp })}</span>` : '';
+      : state === 'next' ? `<span class="prog-xp">${tr('encore {n}', { n: p.need - p.xp })}${XP_ICON}</span>` : '';
     const rw = l === 1 ? `<span class="prog-none">${tr('Début de l\'aventure')}</span>` : plRewardHTML(row) || '<span class="prog-none">–</span>';
     html += `<div class="prog-row ${state}${l === p.lv ? ' here' : ''}${l === last ? ' end' : ''}" style="--f:${fill}">
       <div class="prog-node"><span class="prog-lv">${l}</span></div>
@@ -6455,6 +6534,7 @@ function revealBuildings() {
 }
 function renderVillage() {
   applyUnlocks(); renderPlCard(); paintPet(); hwPaintVillage();
+  setTimeout(animatePlXp, 600);
   $('petsSlot').hidden = !S.pets.length;   // the Pets button shows with the first fairy (Progression, level 3)
   paintFairyOffer();
   // Buildings waiting for their entrance stay hidden until the camera reaches them; "Nouveau !" until first visit
@@ -6719,7 +6799,7 @@ function applyFind(kind, key) {
   if (!book[key] && kind === 'art' && ARTS[key].of) r.tag = 'piece';
   else if (!book[key]) {
     r.tag = 'new'; r.coins = kind === 'crystal' ? 0 : PRIME[rarityOf(kind, key)] || 0; r.prime = r.coins;
-    if (kind !== 'crystal') gainXP(PJ.xpNouveauTresor);
+    if (kind !== 'crystal') gainXP(PJ.xpNouveauTresor, 'tresors');
   } else { r.tag = 'sold'; r.coins = findValue(kind, key); }
   book[key] = (book[key] || 0) + 1;
   if (set) {
@@ -6729,7 +6809,6 @@ function applyFind(kind, key) {
       // First completion: the series prime, plus its message or legend
       // The series prime is no longer paid here: it waits at the Museum, to be collected there
       for (let n = tierBefore + 1; n <= tierAfter; n++) (S.pendingPrimes = S.pendingPrimes || []).push({ set, tier: n });
-      gainXP((PJ.xpEtoileCollection || 0) * (tierAfter - tierBefore));
       // Haunted Mine: the Halloween collection at 3 stars gives the Cape de chauve-souris (once)
       if (HW && set === HW.collectionCape && tierAfter >= MAX_STARS && !S.hallo.cape) hwGiveGear('capeChauveSouris', HW.texteCape);
       if (tierAfter === 1) { r.setMsg = SETS[set].message; r.legend = SETS[set].legend; }
@@ -6771,7 +6850,9 @@ function openRecap() {
   const opened = Object.entries(BUILDINGS).filter(([k, b]) => !S.buildings[k] && (!b.key || has(b.key))).map(([k]) => k);
   opened.forEach(k => { S.buildings[k] = true; (S.bldNew = S.bldNew || {})[k] = true; });
   S.newBuildings = [...(S.newBuildings || []), ...opened];
+  xpSink = T.xp = T.xp || {};   // new treasures and collection stars brought back count with the levels of the descent
   const rows = [...T.finds, ...(T.bonus || []), ...(T.dupes || [])].map(f => { const r = applyFind(f.kind, f.key); coins += r.coins; return r; });
+  xpSink = null;
   const total = coins + (T.coins || 0);
   S.coins += coins; S.trip = newTrip(); updateBadge(); S.luckyAt = 0;
   if (CFG.energie.rechargeAuVillage) { S.energy = maxE(); updateEnergy(true); }
@@ -6795,7 +6876,8 @@ function openRecap() {
   const candy = T.candy || 0;
   const body = (candy ? section(tr(HW.candy.nom), [tile(CANDY_ART(), 0, 'hw-candy', false, 'recapCandy')]) : '')
     + section(tr('Minerais'), oreTiles) + (total ? section(tr('Pièces'), [tile(COIN, 0, '', false, 'recapCount')]) : '')
-    + section(tr('Géodes'), loot(true)) + section(tr('Artefacts'), loot(false));
+    + section(tr('Géodes'), loot(true)) + section(tr('Artefacts'), loot(false))
+    + xpLinesHTML(T.xp, tr('Expérience'));
   $('recapBody').innerHTML = body || `<p class="xp-empty">${tr('Tu remontes les mains vides cette fois. Ton niveau t\'attend !')}</p>`;
   $('recapLevel').textContent = S.wide ? tr(WIDE.nom) : S.haunt ? tr(HW.nom) + ' · ' + tr('Niveau atteint : {n}', { n: S.level }) : tr('Niveau atteint : {n}', { n: mineLv(S.level) });
   if (candy) countUp('recapCandy', candy, 300 + i * 60);
@@ -6958,8 +7040,10 @@ document.addEventListener('click', e => {
   if (!list.length) return;
   const due = list.reduce((a, p) => a + starPrime(sk, p.tier), 0);
   S.coins += due; S.pendingPrimes = S.pendingPrimes.filter(p => p.set !== sk);
+  // The XP of the new stars is collected here, with their prime
+  const xp0 = S.pxp || 0; gainXP((PJ.xpEtoileCollection || 0) * list.length, 'etoiles', list.length); const xp = (S.pxp || 0) - xp0;
   unlockAudio(); sfx('reward'); flyMoney(b.getBoundingClientRect(), due, 0);
-  toast(tr('{x} : +{n} pièces !', { x: SETS[sk].name, n: due }), 'good');
+  toast(`${SETS[sk].name} : +${due}${COIN}` + (xp ? ` +${xp}${XP_ICON}` : ''), 'good', true);
   starPop = sk; renderMuseum(); starPop = null; save();
 });
 function museumCoach() {
@@ -7412,6 +7496,7 @@ function finishMini(win) {
   // A group: every geode of it gives its own gem, all with the result of the one mini-game
   const gotTier = win ? tier : tier - 1, finds = [];
   let coins = 0;
+  xpSink = {};   // the XP of this opening (geodes, new gems, collection stars), listed on the result
   for (let i = 0; i < n; i++) {
     S.bag.geodes.splice(S.bag.geodes.indexOf(g), 1);
     const gem = gotTier >= 0 || GEODES[g].ev ? rollGem(gotTier, g) : null;
@@ -7419,6 +7504,8 @@ function finishMini(win) {
     if (r) finds.push(r);
     coins += gem ? r.coins : CFG.atelier.piecesGeodeBlancheRatee;
   }
+  gainXP((PJ.xpGeode || 0) * n, 'geodes', n);
+  const xpGot = xpSink; xpSink = null;
   S.roll = null; stat('geodes', n); S.coins += coins;
   // Opened alone once: this kind of geode can now be opened by groups
   if (n === 1) S.geoSolo[g] = true;
@@ -7446,6 +7533,7 @@ function finishMini(win) {
       <div class="duo">${gem ? gemArt(gem) : COIN}</div>
       <p>${text}</p>
       ${list}
+      ${xpLinesHTML(xpGot)}
       ${next ? `<button class="btn big" data-geo="${next}">${nextN > 1 ? tr('Géodes suivantes (×{k})', { k: nextN }) : tr('Géode suivante')}</button>` : `<button class="btn big" data-go="village">${tr('Retour au village')}</button>`}`;
     $('mgResult').hidden = false;
     renderGeoStock(); save();
@@ -7620,7 +7708,8 @@ function arriveNext() {
   if (newRecord) S.reached = S.level;
   if (S.ftype === 'lucky') luckyArrive();
   // Miner XP: every level finished (replays too, after the first steps), plus the new record bonus
-  gainXP((inGuide() ? 0 : PJ.xpNiveau || 0) + (newRecord ? recordXP(S.level) : 0));
+  gainXP(inGuide() ? 0 : PJ.xpNiveau || 0, 'niveaux');
+  if (newRecord) gainXP(recordXP(S.level), 'records');
   if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (keyEvery(S.level, r.tousLes)) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: mineLv(S.level) })), 900);
   if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: mineLv(S.level) }) : tr('Checkpoint niveau {n} débloqué !', { n: mineLv(S.level) }), 'good'); }
   save();
@@ -7758,6 +7847,8 @@ function start(data) {
   // Levels saved before toughness × 10: scale the rocks' hit points too
   if (saved && !saved.hpX10) for (const g of [S.grid, S.wideBack && S.wideBack.grid]) if (Array.isArray(g)) g.forEach(c => { if (c && c.max) { c.hp *= BASE_DMG; c.max *= BASE_DMG; } });
   S.hpX10 = true;
+  // XP earned before the gauge animation existed is already shown
+  if (saved && saved.xpSeen === undefined) S.xpSeen = S.pxp || 0;
   // Collections found before the museum curtains existed are already open
   if (!S.muOpened) S.muOpened = Object.fromEntries(Object.keys(SETS).filter(sk => setKeys(sk).some(k => setBook(sk)[k])).map(sk => [sk, true]));
   // A fairy removed from config.js (e.g. the old dark green one) becomes the first fairy of the list
