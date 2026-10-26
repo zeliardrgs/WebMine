@@ -1836,6 +1836,53 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 
 /* Event page (hub) */
 .screen.menu.hw-screen{background:linear-gradient(#2c1a4f, #4a1f4f 45%, #24102f)}
+/* Haunted Mine home (Figma « Spooky Mine », 1282 px wide = 100 u): everything sized in u so the proportions hold */
+#scr-haunt{--u:calc(min(100vw, 480px) / 100); position:fixed; inset:0; max-width:none; height:auto; padding:0; overflow:hidden; background:#211d45}
+.hwh-scene{position:absolute; inset:0; background:center / auto 138% no-repeat}   /* the forest fills 138 % of the height, centred */
+.hwh-logo{position:absolute; left:50%; top:calc(env(safe-area-inset-top, 0px) + var(--u) * 12.6); width:calc(var(--u) * 81.4); transform:translateX(-50%); pointer-events:none}
+.hwh-entry{position:absolute; left:50%; top:calc(env(safe-area-inset-top, 0px) + var(--u) * 53.4); width:min(calc(var(--u) * 87.8), 46dvh); transform:translateX(-50%); pointer-events:none}
+.hwh-top{position:absolute; z-index:2; left:0; right:0; top:calc(env(safe-area-inset-top, 0px) + var(--u) * 3.4); display:flex; flex-direction:column; align-items:flex-end; gap:calc(var(--u) * 2); padding-right:calc(var(--u) * 3.7)}
+.hwh-top .wallet-bar{justify-content:flex-end; flex-wrap:nowrap; gap:calc(var(--u) * 1.4)}
+/* Wallet pills (Figma): 26.3 × 6.9 u, cream #fff3d6, brown outline #936b42, icon 5.1 u at the left, number centred in the pill */
+.hwh-top .wallet-bar .res{position:relative; width:calc(var(--u) * 26.3); min-width:0; height:calc(var(--u) * 6.9); padding:0 0 0 calc(var(--u) * 4); box-sizing:border-box; justify-content:center; gap:0;
+  border:calc(var(--u) * .47) solid #936b42; border-radius:calc(var(--u) * 2.83); background:#fff3d6; box-shadow:none; font-family:var(--font-display); font-size:calc(var(--u) * 3.9); line-height:1; color:#61451d}
+.hwh-top .wallet-bar .res img,.hwh-top .wallet-bar .res svg{position:absolute; left:calc(var(--u) * .7); top:50%; width:calc(var(--u) * 5.1); height:calc(var(--u) * 5.1); margin-top:calc(var(--u) * -2.55); object-fit:contain}
+.hwh-chips{position:absolute; z-index:3; left:calc(var(--u) * 24); right:calc(var(--u) * 24); bottom:calc(env(safe-area-inset-bottom, 0px) + var(--u) * 22.4); display:flex; flex-direction:column; align-items:center; gap:calc(var(--u) * .8); pointer-events:none}   /* a tag sitting on top of « Descendre » */
+.hwh-chip{display:flex; align-items:center; gap:calc(var(--u) * 1); white-space:nowrap; padding:calc(var(--u) * .5) calc(var(--u) * 2.2) calc(var(--u) * .5) calc(var(--u) * .7); border:calc(var(--u) * .5) solid #000; border-radius:calc(var(--u) * 3);
+  background:#ff8a1e; font-family:var(--font-display); font-weight:900; font-size:calc(var(--u) * 2.9); color:#fff; -webkit-text-stroke:calc(var(--u) * .7) #000; paint-order:stroke fill}
+.hwh-chip img,.hwh-chip svg{width:calc(var(--u) * 4.6); height:calc(var(--u) * 4.6); object-fit:contain}
+/* Square buttons (Museum, Witch): 18.9 × 17.8 u, blue, black outline, inner bottom edge; their icon overflows the top */
+.hwh-sq{position:relative; width:calc(var(--u) * 18.9); height:calc(var(--u) * 17.8); padding:0; border:calc(var(--u) * .7) solid #000; border-radius:calc(var(--u) * 4.3); cursor:pointer;
+  background:#00b2ff; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.56) 0 rgba(0,0,0,.25)}
+.hwh-sq:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.5) 0 rgba(0,0,0,.25)}
+.hwh-sq img,.hwh-sq svg{position:absolute; left:50%; transform:translateX(-50%); object-fit:contain; pointer-events:none}
+.hwh-museum img{top:calc(var(--u) * -3); width:calc(var(--u) * 17.8); height:calc(var(--u) * 17.8)}
+.hwh-shop img,.hwh-shop svg{top:calc(var(--u) * -1.8); width:calc(var(--u) * 15.7); height:calc(var(--u) * 15.7)}
+.hwh-museum{position:absolute; z-index:2; left:calc(var(--u) * 3.9); bottom:calc(env(safe-area-inset-bottom, 0px) + var(--u) * 29.6)}
+/* Bottom row, centred 14.4 u above the bottom: back (19.9 × 14.3 u), Descendre (44.6 × 17.8 u), Witch */
+.hwh-bottom{position:absolute; z-index:2; left:0; right:0; bottom:calc(env(safe-area-inset-bottom, 0px) + var(--u) * 5.5); height:calc(var(--u) * 17.8); display:flex; align-items:center}
+.hwh-bottom .hwh-back{position:static; flex:none; display:grid; place-items:center; width:calc(var(--u) * 19.9); height:calc(var(--u) * 14.3); padding:0; border:calc(var(--u) * .7) solid var(--outline); border-left:0;
+  border-radius:0 calc(var(--u) * 4.3) calc(var(--u) * 4.3) 0; border-color:#000; background:#ff4646; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.56) 0 rgba(0,0,0,.25); cursor:pointer}
+.hwh-bottom .hwh-back svg{width:calc(var(--u) * 8.6); height:calc(var(--u) * 8.6); margin-left:calc(var(--u) * 1.5)}
+.hwh-down{position:absolute; left:calc(var(--u) * 27.8); width:calc(var(--u) * 44.6); height:100%; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--u) * .2);
+  border:calc(var(--u) * .7) solid #000; border-radius:calc(var(--u) * 4.3); cursor:pointer; background:#ffd900; background-clip:padding-box; box-shadow:inset 0 calc(var(--u) * -1.56) 0 rgba(0,0,0,.25); font-family:var(--font-display); color:#fff}
+/* Texts of the button (Figma): Montserrat Black 5.5 u, white, black outline and a 0.5 u black drop */
+.hwh-down > b{font-weight:900; font-size:calc(var(--u) * 4.7); line-height:1; -webkit-text-stroke:calc(var(--u) * .9) #000; paint-order:stroke fill; text-shadow:0 calc(var(--u) * .5) 0 #000; margin-top:calc(var(--u) * .4)}
+.hwh-down:active{transform:translateY(2px); box-shadow:inset 0 calc(var(--u) * -.5) 0 rgba(0,0,0,.25)}
+.hwh-down.off{filter:saturate(.45) brightness(.9)}
+.hwh-tk{display:flex; align-items:center; gap:calc(var(--u) * 1.5)}
+.hwh-tk img,.hwh-tk svg{width:calc(var(--u) * 7.8); height:calc(var(--u) * 6.6); object-fit:contain}
+.hwh-tk b{font-weight:900; font-size:calc(var(--u) * 4.7); line-height:1; -webkit-text-stroke:calc(var(--u) * .9) #000; paint-order:stroke fill; text-shadow:0 calc(var(--u) * .5) 0 #000}
+.hwh-bottom .hwh-shop{position:absolute; right:calc(var(--u) * 3.7)}
+/* The sheet: Tickets & departures, the Witch, Premium */
+.hwh-sheet{position:absolute; z-index:5; left:0; right:0; bottom:0; max-height:84%; overflow-y:auto; padding:calc(var(--u) * 4) calc(var(--u) * 4) calc(env(safe-area-inset-bottom, 0px) + var(--u) * 6); box-sizing:border-box;
+  border-radius:calc(var(--u) * 6) calc(var(--u) * 6) 0 0; background:linear-gradient(#3a2363, #241338); box-shadow:0 -10px 30px rgba(0,0,0,.5); animation:hwhUp .25s ease-out}
+.hwh-sheet[hidden]{display:none}
+@keyframes hwhUp{from{transform:translateY(40%); opacity:0}}
+.hwh-sheet h2{margin:0 0 calc(var(--u) * 1); text-align:center; font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 7); color:#ffd9a0}
+.hwh-sheet .hwh-x{position:sticky; float:right; top:0; margin:0; width:calc(var(--u) * 11); height:calc(var(--u) * 11)}
+.hwh-sheet .hwh-x svg{width:55%; height:55%}
+.hwh-days{margin:0 0 calc(var(--u) * 3); text-align:center; font-family:var(--font-display); font-size:calc(var(--u) * 3.6); color:#e6cdf5}
 .hw-screen .scr-head h1{color:#ffd9a0}
 .pm-hero.hw-hero,.pm-hero.hw-ev{background:linear-gradient(135deg, #ff9a2a, #b8441b 55%, #4a1f4f); box-shadow:0 5px 0 #2a0f20, 0 10px 22px rgba(0,0,0,.35)}
 .hw-card{display:flex; flex-direction:column; gap:10px; padding:14px; border-radius:20px; background:var(--card-bg); color:var(--ink); box-shadow:0 4px 0 var(--card-edge)}
@@ -2038,9 +2085,23 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 </div>
 
 <!-- Haunted Mine (Halloween event): tickets, the way down, the event's shops and collection, the end countdown -->
-<div class="screen menu hw-screen" id="scr-haunt" hidden>
-  <header class="scr-head"><button class="back back-red" data-go="village" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button><h1 id="hwTitle">Mine Hantée</h1><div class="wallet-bar" id="hwWallet"></div></header>
-  <div id="hwBody" class="pm-body"></div>
+<!-- Haunted Mine home (mockup): the night forest and the mine entrance, the wallet on top, the Museum on the left,
+     then « back », « Descendre » (with the Tickets) and the Witch's shop at the bottom. Tickets, shops and twists open in a sheet. -->
+<div class="screen hw-screen hw-home" id="scr-haunt" hidden>
+  <div class="hwh-scene" id="hwScene"><img class="hwh-logo" id="hwLogo" alt="" draggable="false"><img class="hwh-entry" id="hwEntry" alt="" draggable="false"></div>
+  <header class="hwh-top"><div class="wallet-bar" id="hwWallet"></div></header>
+  <div class="hwh-chips" id="hwChips"></div>
+  <button class="hwh-sq hwh-museum" data-hwcol aria-label="Collection d'Halloween"><img src="Assets/Event/Halloween/Icon_Museum_Btn.png" alt="" draggable="false"></button>
+  <div class="hwh-bottom">
+    <button class="back back-red hwh-back" data-go="village" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#000" stroke-width="3.4" stroke-linejoin="round" paint-order="stroke fill"/></svg></button>
+    <button class="hwh-down" data-hwdown><span class="hwh-tk" id="hwDownTk"></span><b>Descendre</b></button>
+    <button class="hwh-sq hwh-shop" data-hwsheet="witch" aria-label="Sorcière" id="hwShopBtn"></button>
+  </div>
+  <section class="hwh-sheet" id="hwSheet" hidden>
+    <button class="gs-close hwh-x" data-hwclose aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#1d1a2b" stroke-width="7" stroke-linecap="round"/><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></button>
+    <h2 id="hwTitle">Mine Hantée</h2>
+    <div id="hwBody" class="pm-body"></div>
+  </section>
 </div>
 
 <div class="screen menu" id="scr-shop" hidden>
@@ -5173,7 +5234,7 @@ function go(name) {
 /* ---------- Bottom navigation bar ----------
    Shown on the village (World), the museum and the character screen, and on the shop and forge (World stays lit).
    Hidden in the mine and at the workshop. Premium shop and Events are coming later. */
-const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village', missions: 'village', haunt: 'events' };
+const NAV_OF = { lift: 'village', village: 'village', shop: 'premium', altar: 'village', museum: 'museum', hero: 'hero', premium: 'premium', events: 'events', progress: 'village', missions: 'village' };
 function updateNav(name) {
   const tab = NAV_OF[name];
   $('navBar').hidden = !tab; document.body.classList.toggle('nav-on', !!tab);
@@ -5398,7 +5459,7 @@ const PUMPKIN = '<ellipse cx="50" cy="58" rx="42" ry="34" fill="#ff8a1e" stroke=
 const TICKET = '<path d="M8 28 H92 V42 A8 8 0 0 0 92 58 V72 H8 V58 A8 8 0 0 0 8 42Z" fill="#ff9a2a" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><path d="M66 30 V70" stroke="#3b2245" stroke-width="3" stroke-dasharray="5 4"/><g transform="translate(36 50) scale(.32) translate(-50 -56)">' + PUMPKIN + '</g>';
 const CANDY_ART = () => HW.candy.icone ? img(HW.candy.icone, tr(HW.candy.nom)) : svgImg(CORN, tr(HW.candy.nom));
 const HW_ICON = () => HW.images.bouton ? img(HW.images.bouton, tr(HW.nom)) : svgImg(PUMPKIN, tr(HW.nom));
-const TICKET_ART = () => svgImg(TICKET, tr('Ticket'));
+const TICKET_ART = () => HW.iconeTicket ? img(HW.iconeTicket, tr('Ticket')) : svgImg(TICKET, tr('Ticket'));
 // Night skies behind the board until the settings' pictures exist (Potager, Forêt, Manoir)
 const HW_NIGHT = ['linear-gradient(#2c1a4f, #5a2d4a 70%, #8a3c1c)', 'linear-gradient(#14213d, #24304f 55%, #1a2a22)', 'linear-gradient(#24102f, #45204e 55%, #160a1e)'];
 if (HW) {
@@ -5465,20 +5526,31 @@ function renderHaunt() {
   if (!H.seen) { H.seen = true; save(); }
   $('hwTitle').textContent = tr(HW.nom);
   $('hwWallet').innerHTML = `<span class="res" title="${tr(HW.candy.nom)}">${CANDY_ART()}${H.candy}</span>` + moneyHTML();
+  // The home: the scene, the Tickets on « Descendre », the Candy Corn on the Witch's button, the twists as small chips
+  const A = HW.accueil || {};
+  if (A.fond) $('hwScene').style.backgroundImage = `url("${A.fond}")`;
+  if (A.logo && $('hwLogo').getAttribute('src') !== A.logo) $('hwLogo').src = A.logo;
+  if (A.entree && $('hwEntry').getAttribute('src') !== A.entree) $('hwEntry').src = A.entree;
+  $('hwLogo').hidden = !A.logo; $('hwEntry').hidden = !A.entree;
+  const tickets = H.free + H.paid, first = hwFirstFree();
+  $('hwDownTk').innerHTML = first ? `<b>${tr('Offerte !')}</b>` : `${TICKET_ART()}<b>${tickets}</b>`;
+  document.querySelector('#scr-haunt .hwh-down').classList.toggle('off', !hwMineOpen() || (!first && !tickets));
+  $('hwShopBtn').innerHTML = CANDY_ART();
+  $('hwChips').innerHTML = (hwCandyHour() ? `<span class="hwh-chip">${CANDY_ART()}${tr('Heure des bonbons !')}</span>` : '')
+    + (HW.boss && hwBossDay() && !(S.hallo.boss && S.hallo.boss.wins) ? `<span class="hwh-chip">${BOSS_ART()}${tr('La Citrouille géante t\'attend !')}</span>` : '');
   const open = hwMineOpen();
   const tab = (k, label) => `<button data-hwview="${k}" aria-pressed="${hwView === k}">${label}</button>`;
+  // (the sheet: Tickets and departures, the Witch, Premium)
   $('hwBody').innerHTML = `
-    <div class="pm-hero hw-hero"><span class="pm-art">${HW_ICON()}</span>
-      <span class="pm-tag">${tr('Jour {d} / {n}', { d: hwDay(), n: HWCal.fin })} · ${tr('Fin dans {t}', { t: '<span data-hwt="end"></span>' })}</span>
-      <div class="pm-txt"><b>${tr(HW.nom)}</b><p>${tr(open ? HW.textes.intro : HW.textes.fermee)}</p></div></div>
-    <div class="seg hw-tabs">${tab('mine', tr('La mine'))}${tab('witch', tr('Sorcière'))}${tab('premium', tr('Premium'))}</div>
+    <p class="hwh-days">${tr('Jour {d} / {n}', { d: hwDay(), n: HWCal.fin })} · ${tr('Fin dans {t}', { t: '<span data-hwt="end"></span>' })}</p>
+    <div class="seg hw-tabs">${tab('mine', tr('Tickets'))}${tab('witch', tr('Sorcière'))}${tab('premium', tr('Premium'))}</div>
     ${hwView === 'witch' ? hwWitchHTML() : hwView === 'premium' ? hwPremiumHTML() : hwMineHTML()}`;
   hwTimers();
 }
 function hwMineHTML() {
   const H = S.hallo, open = hwMineOpen(), tickets = H.free + H.paid, first = hwFirstFree(), adMax = HWT.pubsParJour || 0, next = hwNextFree();
   const starts = hwStarts(); if (!starts.includes(hwFrom)) hwFrom = starts[starts.length - 1];
-  const collection = `<button class="hw-card hw-col" data-hwcol><span class="hw-link-ic">${svgImg(PH_SHAPES.pumpkin.split('"C"').join('"#ff8a1e"'))}</span>
+  const collection = `<button class="hw-card hw-col" data-hwcol><span class="hw-link-ic">${HW_ICON()}</span>
     <span><b>${tr('Collection « {x} »', { x: tr(HW.vitrine.nom) })}</b><small>${tr('Au Musée. 3 étoiles : la Cape de chauve-souris !')}</small></span></button>`;
   if (!open) return collection;
   return `<div class="hw-card">
@@ -5620,7 +5692,16 @@ function hwPaintVillage() {
 document.addEventListener('click', e => {
   if (e.target.closest('[data-hwad]')) { unlockAudio(); return hwAd(); }
   const f = e.target.closest('[data-hwfrom]'); if (f) { unlockAudio(); sfx('pick'); hwFrom = +f.dataset.hwfrom; return renderHaunt(); }
-  if (e.target.closest('[data-hwgo]')) { unlockAudio(); hwGo(hwFrom); }
+  if (e.target.closest('[data-hwgo]')) { unlockAudio(); $('hwSheet').hidden = true; hwGo(hwFrom); }
+  // « Descendre » on the home: straight down with a Ticket; several departures or no Ticket left: the Tickets sheet
+  if (e.target.closest('[data-hwdown]')) {
+    unlockAudio(); hwRefresh();
+    const H = S.hallo, first = hwFirstFree(), starts = hwStarts();
+    if (hwMineOpen() && (first || ((H.free + H.paid) > 0 && starts.length <= 1))) return hwGo(starts[starts.length - 1] || 1);
+    sfx('pick'); hwView = 'mine'; $('hwSheet').hidden = false; return renderHaunt();
+  }
+  const sh = e.target.closest('[data-hwsheet]'); if (sh) { unlockAudio(); sfx('pick'); hwView = sh.dataset.hwsheet; $('hwSheet').hidden = false; return renderHaunt(); }
+  if (e.target.closest('[data-hwclose]')) { sfx('pick'); $('hwSheet').hidden = true; }
 });
 
 /* ---------- Going down and back up ---------- */

@@ -1423,6 +1423,13 @@ window.CONFIG = {
      --------------------------------------------------------------- */
   mineHantee: {
     nom: "La Mine Hantée",
+    // Écran d'accueil de l'événement (maquette Figma « Spooky Mine ») : fond, logo, entrée de la mine
+    accueil: {
+      fond: 'Assets/Event/Halloween/HauntedMine_BG.jpg',
+      logo: 'Assets/Event/Halloween/SpookyMine_Logo.png',
+      entree: 'Assets/Event/Halloween/HauntedMine_Entrance.png',
+    },
+    iconeTicket: 'Assets/Event/Halloween/Icon_Ticket.png',
 
     // Jour 1 de l'événement (année-mois-jour). Les jours changent à minuit, à l'heure du téléphone du joueur.
     debut: '2026-10-18',
@@ -1531,7 +1538,7 @@ window.CONFIG = {
       // des Candy Corn et l'exclusivité (un modèle de "equipement" plus bas)
       recompense: { pieces: 500, potions: 1, geodesLune: 3, candy: 100, exclusif: 'fauxCitrouille' },
       recompenseRetour: { candy: 60, geodesLune: 1 },
-      image: '',               // Assets/Event/Halloween/Boss_Citrouille.png (carrée, couvre 2 × 2 cases)
+      image: 'Assets/Event/Halloween/Boss_Citrouille.png',   // couvre 2 × 2 cases
       texte: "La Citrouille géante ! Tes coups restent d'une descente à l'autre.",
       texteAvant: "La Citrouille géante arrive au niveau 30 dans {t}.",
       titreVaincu: "Citrouille géante vaincue !",
@@ -1602,12 +1609,12 @@ window.CONFIG = {
       // Fête d'Halloween : cachée dans la Mine Hantée
       artefacts: {
         feteHalloween: { nom: "Fête d'Halloween", prime: 300, objets: {
-          bonbonEmballe: { nom: 'Bonbon emballé',      rarete: 'common', image: '', taille: [1, 1] },   // Halloween/Bonbon
-          chatPeluche:   { nom: 'Chat noir en peluche', rarete: 'common', image: '', taille: [1, 2] },  // Halloween/ChatPeluche
-          balai:         { nom: 'Balai de sorcière',   rarete: 'common', image: '', taille: [2, 2] },   // Halloween/Balai
-          chaudron:      { nom: 'Chaudron miniature',  rarete: 'rare',   image: '', taille: [2, 2] },   // Halloween/Chaudron
+          bonbonEmballe: { nom: 'Bonbon emballé',      rarete: 'common', image: 'Halloween/Bonbon', taille: [1, 1] },   // Halloween/Bonbon
+          chatPeluche:   { nom: 'Chat noir en peluche', rarete: 'common', image: 'Halloween/ChatPeluche', taille: [1, 2] },  // Halloween/ChatPeluche
+          balai:         { nom: 'Balai de sorcière',   rarete: 'common', image: 'Halloween/Balai', taille: [2, 2] },   // Halloween/Balai
+          chaudron:      { nom: 'Chaudron miniature',  rarete: 'rare',   image: 'Halloween/Chaudron', taille: [2, 2] },   // Halloween/Chaudron
           // En 4 morceaux à reconstituer au Musée (images des morceaux : Halloween/Citrouille_1 à _4)
-          grandeCitrouille: { nom: 'Grande citrouille sculptée', article: 'la', rarete: 'epic', image: '', morceaux: [
+          grandeCitrouille: { nom: 'Grande citrouille sculptée', article: 'la', rarete: 'epic', image: 'Halloween/GrandeCitrouille', morceaux: [
             { image: '', position: [30, 30, 50, 0] },   // le haut gauche
             { image: '', position: [70, 30, 50, 0] },   // le haut droit
             { image: '', position: [30, 70, 50, 0] },   // le bas gauche
@@ -1698,8 +1705,8 @@ window.CONFIG = {
 
     // ÉCRANS
     images: {
-      // Bouton du village et de l'écran Événements (provisoire : la citrouille des tuiles ; idéalement Icon_MineHantee.png)
-      bouton: 'Assets/Event/Halloween/Tile_Overlay_Halloween_Pumpkin.png',
+      // Bouton du village (widget), de l'écran Événements et de la catégorie Halloween du Musée : la citrouille sculptée
+      bouton: 'Assets/Event/Halloween/Icon_MineHantee.png',
     },
     textes: {
       // Première descente guidée (une phrase très courte, 8 mots maximum)
