@@ -1333,9 +1333,60 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
   background:linear-gradient(#ffe100, #ffb400); color:#fff; font-weight:400; font-size:12px; line-height:18px; text-align:center; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill}
 .pl-info{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px}
 .pl-info > b{font-weight:400; font-size:14px; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* Hexagonal level badge */
+.hexb{position:relative; display:inline-grid; place-items:center; width:120px; aspect-ratio:423 / 482; flex:none; padding-bottom:calc(var(--hexw, 120px) * .1); box-sizing:border-box}
+.hexb img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none}
+.hexb b{position:relative; font-family:var(--font-display); font-weight:900; font-size:calc(var(--hexw, 120px) * .36); line-height:1; color:#fff; -webkit-text-stroke:calc(var(--hexw, 120px) * .06) #1d1a2b; paint-order:stroke fill}
+.hexb.mini{--hexw:26px; width:26px}
+.hexb.prog-hex{--hexw:50px; width:50px; position:relative; z-index:1}
+.hexb.stone b{color:#e3e6f5}
+.prog-row.locked .hexb.prog-hex{opacity:.8}
+.prog-row.here .hexb.prog-hex{--hexw:58px; width:58px}
+/* The level on the miner's face: only the hexagonal badge (no yellow circle under it) */
+.pl-face > b#plLv,.pl-face > b.pl-hex{right:-10px; bottom:-10px; min-width:0; height:auto; padding:0; border:0; border-radius:0; background:none; box-shadow:none; line-height:0; -webkit-text-stroke:0}
+.pl-face .hexb b{position:relative; right:auto; bottom:auto; min-width:0; height:auto; padding:0; border:0; border-radius:0; background:none; line-height:1; font-weight:900; font-size:calc(var(--hexw, 120px) * .42); -webkit-text-stroke:calc(var(--hexw, 120px) * .1) #1d1a2b}
+.pl-face.big > b.pl-hex .hexb{--hexw:32px; width:32px}
+/* Level up: break the stone around the badge */
+.modal.lvup-modal{background:radial-gradient(circle at 50% 42%, rgba(80,55,120,.95), rgba(14,8,24,.96))}
+.lvup{position:relative; display:flex; flex-direction:column; align-items:center; gap:14px; width:min(360px, 100%); text-align:center}
+.lvup-title{margin:0; font-family:var(--font-display); font-weight:900; font-size:34px; color:#fff; -webkit-text-stroke:7px #1d1a2b; paint-order:stroke fill; animation:cmPop .5s cubic-bezier(.2,1.6,.4,1)}
+.lvup-stage{position:relative; width:230px; height:230px; display:grid; place-items:center}
+.lvup-rays{position:absolute; left:50%; top:50%; width:420px; height:420px; margin:-210px 0 0 -210px; border-radius:50%; opacity:0; pointer-events:none;
+  background:repeating-conic-gradient(from 0deg, #fff3b0 0 10deg, transparent 10deg 30deg); -webkit-mask:radial-gradient(circle, #000 18%, transparent 68%); mask:radial-gradient(circle, #000 18%, transparent 68%); transition:opacity .4s}
+.lvup-stage.open .lvup-rays{opacity:.55; animation:rays 9s linear infinite}
+.lvup-badge{position:relative; z-index:1}
+.lvup-stage:not(.open) .lvup-badge{visibility:hidden}   /* hidden until the stone breaks (the stone shakes when hit) */
+.lvup-badge .hexb{--hexw:150px; width:150px}
+.lvup-stage.open .lvup-badge{animation:lvupPop .7s cubic-bezier(.2,1.7,.4,1)}
+.lvup-stage.open .lvup-badge::before{content:""; position:absolute; inset:-30%; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.95), rgba(255,240,170,.4) 40%, transparent 70%); animation:lvupFlash .8s ease-out forwards; pointer-events:none}
+@keyframes lvupPop{0%{transform:scale(.55) rotate(-12deg)} 55%{transform:scale(1.18) rotate(4deg)} 100%{transform:none}}
+@keyframes lvupFlash{0%{opacity:1; transform:scale(.4)} 100%{opacity:0; transform:scale(1.4)}}
+/* The stone: 6 wedges of a hexagon (the mine's stone), cracks appear hit after hit */
+.lvup-rock{position:absolute; z-index:2; left:calc(50% - 75px); top:calc(50% - 85.5px); width:150px; aspect-ratio:423 / 482; padding:0; border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent; filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}
+/* the stone badge (Assets/UI/Badge_Hexagon_Stone.png) cut in 6 wedges that fly away on the 4th hit */
+.lvup-rock .w{position:absolute; inset:0; background:url("Assets/UI/Badge_Hexagon_Stone.png") center / 100% 100% no-repeat}
+/* the whole stone under the wedges hides the hairlines between them, until it breaks */
+.lvup-rock::before{content:""; position:absolute; inset:0; background:url("Assets/UI/Badge_Hexagon_Stone.png") center / 100% 100% no-repeat}
+.lvup-rock.burst::before{display:none}
+.lvup-rock .w:nth-child(1){clip-path:polygon(50% 50%, 50% -3%, 103% 24%)} .lvup-rock .w:nth-child(2){clip-path:polygon(50% 50%, 103% 24%, 103% 79%)}
+.lvup-rock .w:nth-child(3){clip-path:polygon(50% 50%, 103% 79%, 50% 103%)} .lvup-rock .w:nth-child(4){clip-path:polygon(50% 50%, 50% 103%, -3% 79%)}
+.lvup-rock .w:nth-child(5){clip-path:polygon(50% 50%, -3% 79%, -3% 24%)} .lvup-rock .w:nth-child(6){clip-path:polygon(50% 50%, -3% 24%, 50% -3%)}
+.lvup-cracks{position:absolute; inset:0; width:100%; height:100%; overflow:visible; fill:none; stroke:#3d4166; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; pointer-events:none}
+.lvup-cracks g{opacity:0; transition:opacity .12s}
+.lvup-rock.h1 .c1,.lvup-rock.h2 .c1,.lvup-rock.h2 .c2,.lvup-rock.h3 .c1,.lvup-rock.h3 .c2,.lvup-rock.h3 .c3{opacity:1}
+.lvup-rock.h3 .w{filter:brightness(1.08)}
+.lvup-rock.burst .lvup-cracks{opacity:0}
+.lvup-hint{min-height:42px; display:flex; align-items:center; justify-content:center; margin:0; font-family:var(--font-display); font-weight:900; font-size:17px; color:#fff; -webkit-text-stroke:4px #1d1a2b; paint-order:stroke fill; animation:twinkle 1.4s ease-in-out infinite}
+.lvup-hint[hidden]{display:none}
+.lvup-rw[hidden]{display:none}
+.lvup-ok[hidden]{display:block; visibility:hidden; animation:none}   /* its room is kept (and the hint has the rewards' height): the badge does not move */
+.lvup-rw{min-height:42px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; animation:cmPop .45s cubic-bezier(.2,1.6,.4,1)}
+.lvup-rw .prog-chip{font-size:16px; padding:6px 12px}
+.lvup-chip{position:fixed; z-index:9999; border-radius:3px; pointer-events:none; box-shadow:inset 0 -2px 0 rgba(0,0,0,.25)}
+.lvup-ok{width:min(260px, 100%); border:3px solid #000; background-clip:padding-box; box-shadow:inset 0 -6px 0 rgba(0,0,0,.25); animation:cmPop .45s cubic-bezier(.2,1.6,.4,1)}
 .pl-gauge{position:relative; display:block; padding-left:20px}
 .pl-xpic{position:absolute; z-index:1; left:0; top:50%; width:30px; height:30px; margin-top:-15px; object-fit:contain; filter:drop-shadow(0 1px 0 rgba(0,0,0,.3))}
-.pl-face.lvup{animation:depthBump .5s cubic-bezier(.3,1.6,.5,1)}
+.pl-face.lvbump{animation:depthBump .5s cubic-bezier(.3,1.6,.5,1)}
 /* XP icons flying to the gauge, and the "+N" under it */
 .xpg-fly{position:fixed; z-index:9998; left:0; top:0; width:34px; height:34px; margin:-17px 0 0 -17px; pointer-events:none}
 .xpg-fly img{width:100%; height:100%; object-fit:contain}
@@ -1411,7 +1462,7 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
   background:var(--card-bg); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge), 0 calc(var(--u) * .8) 0 var(--card-edge)}
 .wk-day{display:flex; flex-direction:column; align-items:center; gap:calc(var(--u) * 1.2); min-width:0; padding:0; border:0; background:none; font:inherit; color:inherit; cursor:pointer}
 .wk-day.locked{cursor:default}
-.wk-day b{font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 3.3); color:var(--ink-soft)}
+.wk-day b{font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 2.9); white-space:nowrap; letter-spacing:-.02em; color:var(--ink-soft)}   /* « Jour 1 »… on one line */
 .wk-ic{position:relative; width:100%; aspect-ratio:1; display:grid; place-items:center; border-radius:50%; background:#fbf1dc; box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge)}
 .wk-ic .dr-art{width:66%; height:66%}
 .dr-art{position:relative; display:grid; place-items:center}
@@ -1478,6 +1529,8 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .dd-art .dr-art b{font-size:28px; -webkit-text-stroke:6px var(--outline)}
 .chap-done .chap-rw{justify-content:center; margin:12px 0 16px}
 .chap-done .prog-chip img{width:24px; height:24px}
+.vg-hard{display:inline-block; margin-bottom:2px; padding:1px 7px; border-radius:7px; background:#e0553a; color:#fff; font-style:normal; font-size:10px; letter-spacing:.02em; text-transform:uppercase}
+.vg-row.hard{box-shadow:0 0 0 2px #e0553a inset}
 .vg-xp{flex:none; margin-left:4px; padding:2px 6px; border-radius:8px; background:#3d8ff0; color:#fff; font-family:var(--font-display); font-size:11px; white-space:nowrap}
 
 /* ---------- Home (replaces the village map): the Character tab's scene, the miner in the middle, shortcuts on the right,
@@ -2065,10 +2118,9 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <header class="scr-head"><h1>Progression</h1><div class="wallet-bar" data-money></div></header>
   <div class="prog-card">
     <div class="prog-head" id="progHead"></div>
-    <p class="prog-note"><img src="Assets/UI/Icon_XP.png" alt="" draggable="false">Missions, records de profondeur, Musée, géodes, équipement et Autel : tout donne de l'XP.</p>
+    <p class="prog-note"><img src="Assets/UI/Icon_XP.png" alt="" draggable="false">Nouveaux trésors, collections complétées et checkpoints de la mine donnent de l'XP.</p>
   </div>
   <div class="prog-list" id="progList"></div>
-  <button class="btn big prog-all" id="progAll" hidden>Tout récupérer</button>
 </div>
 
 <div class="screen menu" id="scr-missions" hidden>
@@ -2108,7 +2160,6 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <header class="scr-head"><h1>Boutique</h1><div class="wallet-bar" id="shopWallet"></div></header>
   <div class="seg shop-tabs" id="shopTabs"></div>
   <div id="chestList" class="ch-list"></div>
-  <div class="card flat" id="conCard"><p>Des articles pour tes descentes, payés en pièces.</p><div class="shop-list" id="conList"></div></div>
   <div id="premiumBody" class="pm-body"></div>
 </div>
 
@@ -2367,6 +2418,27 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <p class="pd-bonus" id="pdBonus"></p>
     <p class="pd-detail" id="pdDetail"></p>
     <button class="gs-btn blue pd-btn" id="pdEquip"></button>
+  </div>
+</div>
+<!-- New miner level: the hexagonal badge is stuck in a stone, 4 taps break it, then the level's rewards -->
+<div class="modal lvup-modal" id="lvupModal" hidden>
+  <div class="lvup" role="dialog" aria-labelledby="lvupTitle">
+    <p class="lvup-title" id="lvupTitle"></p>
+    <div class="lvup-stage" id="lvupStage">
+      <div class="lvup-rays"></div>
+      <div class="lvup-badge" id="lvupBadge"></div>
+      <button class="lvup-rock" id="lvupRock" aria-label="Casser la pierre">
+        <i class="w"></i><i class="w"></i><i class="w"></i><i class="w"></i><i class="w"></i><i class="w"></i>
+        <svg class="lvup-cracks" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <g class="c1"><path d="M50 50 L38 30 L42 18"/><path d="M50 50 L66 58 L80 54"/></g>
+          <g class="c2"><path d="M50 50 L48 72 L58 86"/><path d="M38 30 L22 34 L14 28"/><path d="M66 58 L70 74"/></g>
+          <g class="c3"><path d="M50 50 L62 34 L76 30 L86 36"/><path d="M48 72 L30 70 L20 78"/><path d="M42 18 L54 12"/><path d="M22 34 L26 52 L12 60"/></g>
+        </svg>
+      </button>
+    </div>
+    <p class="lvup-hint" id="lvupHint">Touche la pierre pour la casser !</p>
+    <div class="lvup-rw" id="lvupRw" hidden></div>
+    <button class="btn big lvup-ok" id="lvupOk" hidden>Récupérer</button>
   </div>
 </div>
 <div class="modal" id="dayDoneModal" hidden>
@@ -3973,7 +4045,7 @@ function act(p, isTap) {
     return;
   }
   if (S.tool === 'bomb') {
-    if (S.bombs <= 0) return deny(i, tr('Plus de bombes ! Achètes-en à la boutique du village.'), '');
+    if (S.bombs <= 0) return deny(i, tr('Plus de bombes ! Gagne-en avec les missions difficiles.'), '');
     if (Math.random() < (gearTotals().pas.gantsDynamiteur || 0) + runeVal('artificier')) floatText(i, tr('Bombe gratuite !'), '#ffd23d'); else S.bombs--;
     updateBombs(); stat('bombes'); explode(i); disarm();
     return;
@@ -4523,7 +4595,7 @@ function refreshBadges() {
   setDot('plBadge', plWaiting() > 0);
   setDot('badgeAltar', canPray() && !bn.altar);
   setDot('badgeMuseum', museumWaiting() && !bn.museum);
-  setDot('badgeShop', !!S.buildings.shop && (shopNew() || chestReady()) && !bn.shop);
+  setDot('badgeShop', !!S.buildings.shop && chestReady() && !bn.shop);
   hwPaintVillage();
   if (S.daily && S.daily.goals) {
     const ready = S.daily.goals.filter(g => !g.claimed && goalDone(g)).length + (dayChestReady() ? 1 : 0);
@@ -4564,37 +4636,19 @@ const walletHTML = keys => keys.filter(k => k === 'coin' || has(ORE_UNLOCK[k]) |
 // Each shop article appears at its own level (config.js > progression > deblocages)
 const CONS_UNLOCK = { bomb: 'bombes', potion: 'potions', radar: 'radar' };
 const SHOP_ITEMS = ['bombes', 'potions', 'radar'];
-const shopNew = () => SHOP_ITEMS.some(k => has(k) && !(S.shopSeen || {})[k]);
-let shopTab = 'articles';
+let shopTab = 'coffres';
 function renderShopScreen() {
-  // Sub-tabs like Dicero: equipment chests (once the Forge is open), articles in coins, premium packs
-  if (shopTab === 'coffres' && !gearOpen()) shopTab = 'articles';
+  // Sub-tabs like Dicero: equipment chests (once the Forge is open) and premium packs.
+  // No « Articles » any more: potions and bombs come only from the hard missions.
+  if (shopTab !== 'premium' && !gearOpen()) shopTab = 'premium';
   const stab = (k, label, dot) => `<button data-stab="${k}" id="stab-${k}" aria-pressed="${shopTab === k}">${label}${dot ? '<span class="badge">!</span>' : ''}</button>`;
-  $('shopTabs').innerHTML = (gearOpen() ? stab('coffres', tr('Coffres'), chestReady()) : '') + stab('articles', tr('Articles'), shopNew()) + stab('premium', tr('Premium'));
-  $('chestList').hidden = shopTab !== 'coffres'; $('conCard').hidden = shopTab !== 'articles'; $('premiumBody').hidden = shopTab !== 'premium';
+  $('shopTabs').innerHTML = (gearOpen() ? stab('coffres', tr('Coffres'), chestReady()) : '') + stab('premium', tr('Premium'));
+  $('chestList').hidden = shopTab !== 'coffres'; $('premiumBody').hidden = shopTab !== 'premium';
   if (shopTab === 'premium') renderPremium();
-  // Visiting the articles marks the new ones as seen
-  S.shopSeen = S.shopSeen || {};
-  if (shopTab === 'articles') SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; });
   $('shopWallet').innerHTML = moneyHTML() + keysWallet();
   $('chestList').innerHTML = shopTab === 'coffres' ? chestsHTML() : '';
-  const cons = Object.entries(CONSUMABLES).filter(([k]) => has(CONS_UNLOCK[k]));
   setTimeout(gearCoach);
-  if (!cons.length) $('conList').innerHTML = `<p class="eq-soon">${tr('Les articles arrivent plus profond dans la mine.')}</p>`;
-  else $('conList').innerHTML = cons.map(([k, c]) =>
-    `<div class="srow"><div class="sic">${c.icon()}<i>${c.have()}</i></div>
-      <div class="stxt"><b>${c.name}</b><span>${c.desc()}</span></div>
-      <div class="sbuy">${priceHTML(c.cost)}<button class="btn sm" data-con="${k}" ${canPay(c.cost) && !(c.limit && c.limit()) ? '' : 'disabled'}>${tr('Acheter')}</button></div></div>`).join('');
 }
-document.addEventListener('click', e => {
-  const b = e.target.closest('button[data-con]'); if (!b || b.disabled) return;
-  const c = CONSUMABLES[b.dataset.con];
-  if (!canPay(c.cost) || (c.limit && c.limit())) return;
-  pay(c.cost); c.give();
-  toast(`+1 ${c.name}`, 'good');
-  renderShopScreen();
-  sfx('reward'); updateEnergy(true); updateQuick(); save();
-});
 function updateQuick() { if (!$('bagViewModal').hidden) renderCons(); }
 function paintRadar() {
   fx.querySelectorAll('.radar').forEach(e => e.remove());
@@ -4606,7 +4660,7 @@ function paintRadar() {
   });
 }
 function useRadar() {
-  if (!S.radars) return toast(tr('Pas de radar. Achètes-en à la boutique du village.'), '');
+  if (!S.radars) return toast(tr('Pas de radar. La Sorcière en vend pendant la Mine Hantée.'), '');
   const hidden = S.rewards.filter(r => !r.found && !r.radar);
   if (!hidden.length) return toast(tr('Tous les trésors restants sont déjà repérés.'), '');
   const rw = hidden[randInt(0, hidden.length - 1)]; rw.radar = true; S.radars--;
@@ -4615,7 +4669,7 @@ function useRadar() {
   toast(rw.kind === 'art' ? tr('Radar : artefact repéré !') : tr('Radar : géode repérée !'), 'good');
 }
 function usePotion() {
-  if (!S.potions) return toast(tr('Pas de potion. Achètes-en à la boutique du village.'), '');
+  if (!S.potions) return toast(tr('Pas de potion. Gagne-en avec les missions difficiles.'), '');
   if (S.energy >= maxE()) return toast(tr('Ton énergie est déjà pleine.'), '');
   S.potions--; S.energy = maxE(); updateEnergy(true); updateQuick(); save();
   sfx('reward'); toast(tr('Énergie rechargée !'), 'good');
@@ -4992,7 +5046,7 @@ document.addEventListener('click', e => {
     if (!slotOpen(sk)) return toast(tr('Se débloque au niveau {n}.', { n: UNLOCK[d] }), '');
     return toast(tr('Trouve un objet {s} dans les coffres de la Boutique.', { s: slotName(sk) }), '');
   }
-  const op = t.closest('[data-open]'); if (op) return askOpen(op.dataset.open, +op.dataset.n);
+  const op = t.closest('[data-open][data-n]'); if (op) return askOpen(op.dataset.open, +op.dataset.n);   // (the cheat menu's categories use data-open too)
   const ad = t.closest('[data-ad]'); if (ad && !ad.disabled) return watchAd(ad.dataset.ad);
   const st = t.closest('[data-stab]'); if (st) { shopTab = st.dataset.stab; sfx('pick'); renderShopScreen(); return; }
 });
@@ -5218,7 +5272,7 @@ function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
   if (name === 'premium') { shopTab = gearOpen() ? 'coffres' : 'premium'; name = 'shop'; }
-  else if (name === 'shop' && $('scr-shop').hidden) shopTab = gearOpen() && !G().firstFree ? 'coffres' : 'articles';
+  else if (name === 'shop' && $('scr-shop').hidden) shopTab = gearOpen() ? 'coffres' : 'premium';
   SCREENS.forEach(n => $('scr-' + n).hidden = n !== name);
   document.body.classList.toggle('in-mine', name === 'mine');
   if (name !== 'mine') dropBoardCoaches();
@@ -6149,10 +6203,17 @@ const stat = (k, n = 1) => { if (S.daily && S.daily.day !== today()) dailyMissio
 const tierSum = () => Object.keys(SETS).reduce((a, k) => a + setTier(k), 0);
 const goalValue = type => type === 'collection' ? tierSum() : S.stats[type] || 0;
 const goalOpen = o => !o.deblocage || (o.deblocage === 'musee' ? !!S.buildings.museum : has(o.deblocage));
-const WEEK = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-const WEEK_NAMES = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
-const weekDay = () => (new Date().getDay() + 6) % 7;   // 0 = Monday
-const weekStart = () => { const d = new Date(); d.setDate(d.getDate() - weekDay()); return d.toDateString(); };
+// Cycles of 7 days: day 1 is the first day the player has the missions (not a day of the week); after day 7, a new cycle
+const dayLabel = i => tr('Jour {n}', { n: i + 1 });
+const dayName = i => tr('jour {n}', { n: i + 1 });
+const daysSince = d => Math.round((new Date(today()) - new Date(d)) / 864e5);
+const weekDay = () => S.week && S.week.cycle ? Math.max(0, Math.min(6, daysSince(S.week.start))) : 0;   // 0 = day 1
+// Start of the current cycle (a new one after day 7, counted from the old start so missed days still count)
+function weekStart() {
+  if (!S.week || !S.week.cycle) return today();
+  const n = daysSince(S.week.start); if (n < 7) return S.week.start;
+  const d = new Date(S.week.start); d.setDate(d.getDate() + Math.floor(n / 7) * 7); return d.toDateString();
+}
 // Mission rewards and amounts grow with the player level
 const goalScale = k => 1 + k * (plLevel() - 1);
 function newGoal(exclude, list = OBJ.liste) {
@@ -6162,22 +6223,27 @@ function newGoal(exclude, list = OBJ.liste) {
   const o = opts[randInt(0, opts.length - 1)], start = goalValue(o.type), ch = o.choix || [1];
   // A round number picked among the choices of config.js; the big ones grow with the player level (rounded to 5)
   let n = ch[randInt(0, ch.length - 1)];
+  // The biggest of several choices: a hard mission, which also gives a consumable (the only way to get potions and bombs)
+  const hard = ch.length > 1 && n === Math.max(...ch);
+  const consOpts = Object.keys(OBJ.consommables || {}).filter(k => has(k === 'potion' ? 'potions' : 'bombes'));
+  const cons = hard && consOpts.length ? consOpts[randInt(0, consOpts.length - 1)] : null;
   if (n >= 5) n = Math.round(n * goalScale(OBJ.quantiteParNiveau) / 5) * 5;
   const reward = Math.round(o.pieces * goalScale(OBJ.bonusParNiveau) / 5) * 5;
   // A few of the best ore already unlocked
   const ore = Object.keys(ORES).filter(k => has(ORE_UNLOCK[k])).pop();
   const oreN = ore ? Math.round(((OBJ.minerais || {})[ORE_UNLOCK[ore]] || 0) * goalScale(OBJ.bonusParNiveau)) : 0;
   // (a Halloween mission also gives Candy Corn)
-  return { type: o.type, n, start, target: start + n, reward, ore: oreN ? ore : null, oreN, claimed: false, ...(list === HW_GOALS ? { hw: true, candy: o.candy || 0 } : {}) };
+  return { type: o.type, n, start, target: start + n, reward, ore: oreN ? ore : null, oreN, claimed: false, ...(hard ? { hard: true } : {}), ...(cons ? { cons, consN: OBJ.consommables[cons] } : {}), ...(list === HW_GOALS ? { hw: true, candy: o.candy || 0 } : {}) };
 }
 // A day's missions as they ended, to be looked at later in the week (they can no longer be claimed)
-const freezeDay = d => ({ goals: d.goals.map(g => ({ type: g.type, n: g.n, reward: g.reward, ore: g.ore, oreN: g.oreN, claimed: g.claimed,
+const freezeDay = d => ({ goals: d.goals.map(g => ({ type: g.type, n: g.n, reward: g.reward, ore: g.ore, oreN: g.oreN, cons: g.cons, consN: g.consN, hard: g.hard, claimed: g.claimed,
   got: Math.max(0, Math.min(g.n, goalValue(g.type) - g.start)) })) });
 // A new day brings new missions (yesterday's are kept, frozen, for the week strip); a new week empties the strip.
 // Early in the game there may be fewer kinds than missions: the day fills up as new kinds open (until its chest is opened).
 function dailyMissions() {
-  if (!S.week || S.week.start !== weekStart()) S.week = { start: weekStart(), done: [], past: {} };
+  if (!S.week || !S.week.cycle || S.week.start !== weekStart()) S.week = { start: weekStart(), cycle: true, done: [], past: {} };
   if (!S.week.past) S.week.past = {};
+  if (S.daily && S.daily.day === today() && S.daily.wk !== S.week.start) { S.daily.wk = S.week.start; S.daily.wd = weekDay(); }   // (saves of the Monday-Sunday weeks)
   if (!S.daily || S.daily.day !== today()) {
     if (S.daily && S.daily.wk === S.week.start) S.week.past[S.daily.wd] = freezeDay(S.daily);
     S.daily = { day: today(), wk: S.week.start, wd: weekDay(), goals: [], rerolls: 0, chest: false };
@@ -6199,6 +6265,7 @@ function hwDailyGoal() {
   }
 }
 const goalDone = g => goalValue(g.type) >= g.target;
+const CONS_ART = k => k === 'potion' ? POTION : TOOLS.bomb;
 const goalsClaimed = () => S.daily.goals.filter(g => g.claimed).length;
 const dayChestReady = () => !S.daily.chest && S.daily.goals.length > 0 && goalsClaimed() === S.daily.goals.length;
 // The reward of a day, drawn by its main gift (a fairy, else its best key, else pearls, else coins) with its amount;
@@ -6239,13 +6306,13 @@ function renderWeek() {
   return OBJ.recompenses.map(r => fairyReward(r)).map((r, i) => {
     const st = S.week.done[i] ? 'done' : i === t ? 'today' : i < t ? 'missed' : 'locked';
     const tag = st === 'done' ? CHECK_ICON : st === 'locked' ? LOCK_ICON : '';
-    return `<button class="wk-day ${st}${i === t ? ' now' : ''}${i === sel ? ' sel' : ''}" data-wkday="${i}" aria-pressed="${i === sel}" aria-label="${tr(WEEK_NAMES[i])}">
-      <b>${tr(WEEK[i])}</b><span class="wk-ic">${giftHTML(dayGift(r))}${tag ? `<i>${tag}</i>` : ''}</span></button>`;
+    return `<button class="wk-day ${st}${i === t ? ' now' : ''}${i === sel ? ' sel' : ''}" data-wkday="${i}" aria-pressed="${i === sel}" aria-label="${dayLabel(i)}">
+      <b>${dayLabel(i)}</b><span class="wk-ic">${giftHTML(dayGift(r))}${tag ? `<i>${tag}</i>` : ''}</span></button>`;
   }).join('');
 }
 // An earlier day: its reward (collected or missed) and its missions as they ended
 function renderPastDay(i) {
-  const r = fairyReward(OBJ.recompenses[i]), day = tr(WEEK_NAMES[i]), open = !!S.week.done[i], past = S.week.past[i];
+  const r = fairyReward(OBJ.recompenses[i]), day = dayName(i), open = !!S.week.done[i], past = S.week.past[i];
   const goals = past ? past.goals : [], n = goals.filter(g => g.claimed).length, gift = dayGift(r);
   $('dayChestBox').innerHTML = `<div class="dc-card past${open ? ' open' : ' missed'}">
     <div class="vg-txt"><span>${open ? tr('Récompense du {d} récupérée', { d: day }) : tr('Récompense du {d} manquée', { d: day })}</span>
@@ -6263,12 +6330,12 @@ function renderPastDay(i) {
 // One mission card: icon, text, progress bar, then what goes on the right
 function goalRow(g, cls, cur, side, extra) {
   const o = goalDef(g.type) || { texte: '' }, pct = Math.max(0, Math.min(100, cur / g.n * 100));
-  return `<div class="vg-row${cls ? ' ' + cls : ''}">${extra}<span class="vg-ic">${(GOAL_ICON[g.type] || (() => ''))()}</span><div class="vg-txt"><span>${tr(Array.isArray(o.texte) ? plural(g.n, ...o.texte) : o.texte, { n: g.n })}</span>
+  return `<div class="vg-row${cls ? ' ' + cls : ''}">${extra}<span class="vg-ic">${(GOAL_ICON[g.type] || (() => ''))()}</span><div class="vg-txt">${g.hard ? `<em class="vg-hard">${tr('Difficile')}</em>` : ''}<span>${tr(Array.isArray(o.texte) ? plural(g.n, ...o.texte) : o.texte, { n: g.n })}</span>
     <div class="bar mini"><i style="width:${pct}%"></i><span>${Math.max(0, Math.min(cur, g.n))} / ${g.n}</span></div></div>
     ${side}</div>`;
 }
 function renderDayChest() {
-  const r = fairyReward(OBJ.recompenses[weekDay()]), day = tr(WEEK_NAMES[weekDay()]), n = goalsClaimed(), tot = S.daily.goals.length;
+  const r = fairyReward(OBJ.recompenses[weekDay()]), day = dayName(weekDay()), n = goalsClaimed(), tot = S.daily.goals.length;
   const ready = dayChestReady(), open = S.daily.chest, gift = dayGift(r);
   const txt = open ? tr('Récompense du {d} récupérée ! Reviens demain.', { d: day }) : ready ? tr('La récompense du {d} est à toi !', { d: day })
     : tr('Récupère toutes les missions pour gagner la récompense du {d}', { d: day });
@@ -6291,12 +6358,12 @@ function renderGoals() {
   const canReroll = S.daily.rerolls < (OBJ.relances || 0);
   $('vgList').innerHTML = S.daily.goals.map((g, i) => {
     const cur = goalValue(g.type) - g.start, done = goalDone(g);
-    const rw = `+${g.reward}${COIN}${g.ore ? ` +${g.oreN}${resArt(g.ore)}` : ''}${g.candy && HW ? ` +${g.candy}${CANDY_ART()}` : ''}`;
+    const rw = `+${g.reward}${COIN}${g.ore ? ` +${g.oreN}${resArt(g.ore)}` : ''}${g.cons ? ` +${g.consN}${CONS_ART(g.cons)}` : ''}${g.candy && HW ? ` +${g.candy}${CANDY_ART()}` : ''}`;
     const xp = goalXP(g) ? `<span class="vg-xp">+${goalXP(g)}${XP_ICON}</span>` : '';
     const side = g.claimed ? `<span class="vg-got">${CHECK_ICON}</span>`
       : `<div class="vg-side">${done ? `<button class="btn sm" data-claim="${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">${rw}</button>` : `<span class="vg-rw">${rw}</span>`}${xp}</div>`;
     const reroll = canReroll && !done && !g.claimed ? `<button class="vg-reroll" data-reroll="${i}" aria-label="${tr('Changer de mission')}">${REROLL_ICON}</button>` : '';
-    return goalRow(g, g.claimed ? 'claimed' : done ? 'done' : '', g.claimed ? g.n : cur, side, reroll);
+    return goalRow(g, (g.claimed ? 'claimed' : done ? 'done' : '') + (g.hard ? ' hard' : ''), g.claimed ? g.n : cur, side, reroll);
   }).join('');
   $('vgNext').textContent = tr('Nouvelles missions dans {t}', { t: untilTomorrow() });
 }
@@ -6305,7 +6372,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-wkday]'); if (!b) return;
   const i = +b.dataset.wkday;
   unlockAudio();
-  if (i > weekDay()) { sfx('deny'); return toast(tr('Reviens {d} pour ces missions !', { d: tr(WEEK_NAMES[i]) })); }
+  if (i > weekDay()) { sfx('deny'); const k = i - weekDay(); return toast(tr(plural(k, 'Ces missions arrivent demain !', 'Ces missions arrivent dans {k} jours !'), { k })); }
   sfx('pick'); missionDay = i; renderGoals();
 });
 // The missions of another day can't be claimed: the window shows the new ones instead
@@ -6318,9 +6385,11 @@ document.addEventListener('click', e => {
   S.coins += g.reward; flyMoney(b.getBoundingClientRect(), g.reward, 0);
   if (g.ore) S.bag.ores[g.ore] += g.oreN;
   if (g.candy && S.hallo) S.hallo.candy += g.candy;
+  if (g.cons === 'potion') { S.potions += g.consN; updateQuick(); }
+  if (g.cons === 'bombe') { S.bombs += g.consN; updateBombs(); }
   const xp = goalXP(g);
   gainXP(xp, 'missions');
-  toast(tr('Mission réussie !') + ` +${g.reward}${COIN}` + (xp ? ` +${xp}${XP_ICON}` : ''), 'good', true);
+  toast(tr('Mission réussie !') + ` +${g.reward}${COIN}` + (g.cons ? ` +${g.consN}${CONS_ART(g.cons)}` : '') + (xp ? ` +${xp}${XP_ICON}` : ''), 'good', true);
   renderGoals(); save();
 });
 // ↻ : a mission not done yet is swapped for another kind, a few times a day
@@ -6348,7 +6417,7 @@ document.addEventListener('click', e => {
   // A fairy has its own reward page; anything else shows in a small window
   if (r.fee) giveFairy(r.fee);
   else {
-    $('dayDoneTitle').textContent = tr('Récompense du {d} !', { d: tr(WEEK_NAMES[d]) });
+    $('dayDoneTitle').textContent = tr('Récompense du {d} !', { d: dayName(d) });
     $('dayDoneArt').innerHTML = giftHTML(dayGift(r));
     $('dayDoneRw').innerHTML = rwChips(r);
     $('dayDoneModal').hidden = false;
@@ -6375,6 +6444,9 @@ function plInfoOf(total) {
   return { lv, xp, need: plStep(lv) };
 }
 const plInfo = () => plInfoOf(S.pxp);
+/* Each level has a hexagonal badge (Assets/UI/Badge_Hexagon.png) with its number on the top face */
+// (stone = still in its stone: the levels not revealed yet in Progression)
+const hexBadge = (lv, cls = '', stone) => `<span class="hexb ${cls}${stone ? ' stone' : ''}"><img src="Assets/UI/Badge_Hexagon${stone ? '_Stone' : ''}.png" alt="" draggable="false"><b>${lv}</b></span>`;
 const plLevel = () => plInfo().lv;
 // Level that opens a feature (1 = open from the start)
 const plUnlockAt = k => { const i = PJ.niveaux.findIndex(r => r.deblocage === k); return i < 0 ? 1 : i + 2; };
@@ -6384,7 +6456,7 @@ const plWaiting = () => { let n = 0; for (let l = 2; l <= plLevel(); l++) if (pl
 // XP is never silent: each gain says why. During a descent (levels, records) it is written in the trip, shown at the
 // end of the expedition; xpSink collects the gains of one action (the recap, a geode opened) to list them there.
 let xpSink = null;
-const TRIP_XP = ['niveaux', 'records'];
+const TRIP_XP = ['niveaux', 'records', 'checkpoints'];
 function gainXP(n, why, count = 1) {
   n = Math.round((n || 0) * (1 + runeVal('savoir')));
   if (!n) return;
@@ -6393,12 +6465,13 @@ function gainXP(n, why, count = 1) {
   const before = plLevel();
   S.pxp = (S.pxp || 0) + n;
   const lv = plLevel();
-  if (lv > before && !inGuide()) setTimeout(() => { sfx('win'); toast(tr('Niveau {n} atteint ! Ta récompense t\'attend dans Progression.', { n: lv }), 'good'); }, 900);
+  if (lv > before && !inGuide() && $('scr-village').hidden) setTimeout(() => { sfx('win'); toast(tr('Niveau {n} atteint ! Ton badge t\'attend à l\'accueil.', { n: lv }), 'good'); }, 900);
   if (!$('scr-village').hidden) { renderPlCard(); setTimeout(animatePlXp, 350); }
   refreshNav();
 }
 // "+12 [XP]  3 niveaux terminés": one line per reason
 const XP_WHY = {
+  checkpoints: ['{n} checkpoint atteint', '{n} checkpoints atteints'],
   niveaux: ['{n} niveau terminé', '{n} niveaux terminés'], records: ['{n} nouveau record', '{n} nouveaux records'],
   tresors: ['{n} nouveau trésor', '{n} nouveaux trésors'], etoiles: ['{n} étoile de collection', '{n} étoiles de collection'],
   geodes: ['{n} géode ouverte', '{n} géodes ouvertes'],
@@ -6417,7 +6490,7 @@ let plAnim = null;
 function animatePlXp() {
   if (plAnim || $('scr-village').hidden) return;
   const from = S.xpSeen ?? S.pxp, to = S.pxp || 0;
-  if (to <= from || inGuide() || $('plCard').hidden) { S.xpSeen = to; return; }
+  if (to <= from || inGuide() || $('plCard').hidden) { S.xpSeen = to; setTimeout(levelUpFlow, 300); return; }
   if (coach || revealing || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) { setTimeout(animatePlXp, 700); return; }
   plAnim = { v: from };
   const card = $('plCard'), r = card.querySelector('.pl-gauge').getBoundingClientRect(), tx = r.left + 14, ty = r.top + r.height / 2;
@@ -6438,14 +6511,80 @@ function animatePlXp() {
     const step = now => {
       const k = Math.min(1, (now - t0) / dur), v = from + (to - from) * (1 - Math.pow(1 - k, 2));
       plAnim.v = v; const p = plInfoOf(v); paintPlCard(p);
-      if (p.lv > lv) { lv = p.lv; const f = card.querySelector('.pl-face'); f.classList.remove('lvup'); void f.offsetWidth; f.classList.add('lvup'); sfx('win'); }
+      if (p.lv > lv) { lv = p.lv; const f = card.querySelector('.pl-face'); f.classList.remove('lvbump'); void f.offsetWidth; f.classList.add('lvbump'); sfx('win'); }
       if (k < 1) return requestAnimationFrame(step);
       plAnim = null; S.xpSeen = to; renderPlCard(); save();
-      if (S.pxp > to) setTimeout(animatePlXp, 300);
+      if (S.pxp > to) setTimeout(animatePlXp, 300); else setTimeout(levelUpFlow, 350);
     };
     requestAnimationFrame(step);
   }, start);
 }
+// Levels whose badge has not been broken out yet (their rewards wait), lowest first
+const lvupNext = () => { for (let l = 2; l <= plLevel(); l++) if (plReady(l)) return l; return 0; };
+let lvupL = 0, lvupHits = 0;
+// On the home screen, once the XP gauge has filled up: one stone per new level
+function levelUpFlow() {
+  if (lvupL || plAnim || $('scr-village').hidden || inGuide() || coach || revealing) return;
+  const l = lvupNext(); if (!l) return;
+  if ([...document.querySelectorAll('.modal')].some(m => !m.hidden)) { setTimeout(levelUpFlow, 700); return; }
+  lvupL = l; lvupHits = 0;
+  $('lvupTitle').textContent = tr('Niveau {n} !', { n: l });
+  $('lvupBadge').innerHTML = hexBadge(l);
+  $('lvupStage').className = 'lvup-stage'; $('lvupRock').className = 'lvup-rock'; $('lvupRock').hidden = false;
+  $('lvupRock').querySelectorAll('.w').forEach(w => { w.getAnimations().forEach(a => a.cancel()); });
+  $('lvupHint').hidden = false; $('lvupRw').hidden = true; $('lvupOk').hidden = true;
+  $('lvupRw').innerHTML = plRewardHTML(plRow(l) || {});
+  $('lvupModal').hidden = false; unlockAudio(); sfx('pick');
+}
+// Little stone chips flying from the rock
+function rockChips(x, y, n, far) {
+  for (let k = 0; k < n; k++) {
+    const d = document.createElement('i'), a = rand(0, 6.283), dist = rand(far * .4, far), sz = rand(5, 12);
+    d.className = 'lvup-chip';
+    Object.assign(d.style, { left: x + 'px', top: y + 'px', width: sz + 'px', height: sz * rand(.6, 1) + 'px', background: ['#8d8a99', '#6c6878', '#b4b0c0', '#57536a'][k % 4] });
+    tapFx.append(d);
+    d.animate([{ transform: 'translate(-50%, -50%) rotate(0)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(a) * dist}px), calc(-50% + ${Math.sin(a) * dist * .7 + far * .5}px)) rotate(${rand(-300, 300)}deg)`, opacity: 0 }],
+      { duration: rand(500, 850), easing: 'cubic-bezier(.2,.7,.4,1)' }).onfinish = () => d.remove();
+  }
+}
+$('lvupRock').addEventListener('click', () => {
+  if (!lvupL || lvupHits >= 4) return;
+  lvupHits++;
+  const rock = $('lvupRock'), r = rock.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+  if (navigator.vibrate) try { navigator.vibrate(lvupHits < 4 ? 15 : 40); } catch (e) {}
+  if (lvupHits < 4) {
+    rock.classList.add('h' + lvupHits);
+    sfx('hit'); rockChips(x, y, 6 + lvupHits * 3, r.width * .55);
+    rock.animate([{ transform: 'none' }, { transform: `translate(${rand(-7, 7)}px, 4px) rotate(${rand(-4, 4)}deg) scale(.95)` }, { transform: `translate(${rand(-4, 4)}px, -2px) rotate(${rand(-2, 2)}deg)` }, { transform: 'none' }], { duration: 260, easing: 'ease-out' });
+    $('lvupStage').animate([{ transform: 'none' }, { transform: 'translate(3px, -2px)' }, { transform: 'translate(-3px, 2px)' }, { transform: 'none' }], { duration: 160 });
+    return;
+  }
+  // 4th hit: the stone bursts, the badge appears in a flash
+  sfx('break'); rockChips(x, y, 26, r.width * .9);
+  rock.querySelectorAll('.w').forEach((w, k) => {
+    const a = (k * 60 + 60) * Math.PI / 180, dx = Math.sin(a) * r.width * rand(.7, 1.1), dy = -Math.cos(a) * r.width * rand(.7, 1.1) + r.width * .35;
+    w.animate([{ transform: 'none', opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) rotate(${rand(-160, 160)}deg) scale(.7)`, opacity: 0 }],
+      { duration: 650, easing: 'cubic-bezier(.15,.6,.35,1)', fill: 'forwards' });
+  });
+  rock.classList.add('burst'); $('lvupStage').classList.add('open'); $('lvupHint').hidden = true;
+  setTimeout(() => { rock.hidden = true; }, 650);
+  setTimeout(() => {
+    sfx('win');
+    [0, 160, 340].forEach(t => setTimeout(() => petSparkles(tapFx, x + rand(-r.width * .35, r.width * .35), y + rand(-r.height * .35, r.height * .35)), t));
+  }, 120);
+  setTimeout(() => { $('lvupRw').hidden = false; $('lvupOk').hidden = false; }, 900);
+});
+// « Récupérer »: the level's rewards are given now (they are no longer collected in the Progression page)
+$('lvupOk').addEventListener('click', () => {
+  if (!lvupL) return;
+  const l = lvupL, c0 = S.coins, g0 = G().gems, from = $('lvupOk').getBoundingClientRect();
+  unlockAudio(); sfx('reward');
+  plGive(l); flyMoney(from, S.coins - c0, G().gems - g0);
+  $('lvupModal').hidden = true; lvupL = 0;
+  renderPlCard(); save();
+  setTimeout(levelUpFlow, 600);
+});
 const refreshNav = () => { const scr = SCREENS.find(n => !$('scr-' + n).hidden); if (scr) updateNav(scr); };
 const PL_FEAT_ICON = { evenements: 'Assets/UI/Event.png' };
 // A level's reward and unlock, as small chips
@@ -6535,13 +6674,13 @@ function renderPlCard() {
   $('plBadge').hidden = !plWaiting();
 }
 function paintPlCard(p) {
-  $('plLv').textContent = p.lv;
+  if ($('plLv').dataset.lv !== String(p.lv)) { $('plLv').dataset.lv = p.lv; $('plLv').innerHTML = hexBadge(p.lv, 'mini'); }
   $('plFill').style.width = Math.min(100, p.xp / p.need * 100) + '%';
   $('plTxt').textContent = `${p.xp} / ${p.need}`;
 }
 function renderProg() {
   const p = plInfo(), last = Math.max(PJ.niveaux.length + 1, p.lv + 1);
-  $('progHead').innerHTML = `<span class="pl-face big"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b>${p.lv}</b></span>
+  $('progHead').innerHTML = `<span class="pl-face big"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b class="pl-hex">${hexBadge(p.lv, 'mini')}</b></span>
     <div class="prog-who"><b>${tr(EQC.nomPersonnage || '')}</b><span>${tr('Niveau {n}', { n: p.lv })}</span>
     <span class="pl-gauge"><img class="pl-xpic" src="Assets/UI/Icon_XP.png" alt="XP" draggable="false"><span class="pl-bar"><i style="width:${Math.min(100, p.xp / p.need * 100)}%"></i><span>${p.xp} / ${p.need}</span></span></span></div>`;
   // Horizontal track from level 1 to the right: each level's badge sits on a gauge that fills up to the player's XP
@@ -6552,19 +6691,15 @@ function renderProg() {
     const state = l === 1 ? 'done' : !reached ? (l === p.lv + 1 ? 'next' : 'locked') : plReady(l) ? 'ready' : 'done';
     const fill = l < p.lv ? 1 : l === p.lv ? p.xp / p.need : 0;
     const act = l === 1 ? ''
-      : state === 'ready' ? `<button class="btn sm" data-plclaim="${l}">${tr('Récupérer')}</button>`
+      : state === 'ready' ? `<span class="prog-xp">${tr('Badge à révéler à l\'accueil')}</span>`
       : state === 'done' ? `<span class="prog-ok" aria-label="${tr('Récupéré')}">✓</span>`
       : state === 'next' ? `<span class="prog-xp">${tr('encore {n}', { n: p.need - p.xp })}${XP_ICON}</span>` : '';
     const rw = l === 1 ? `<span class="prog-none">${tr('Début de l\'aventure')}</span>` : plRewardHTML(row) || '<span class="prog-none">–</span>';
     html += `<div class="prog-row ${state}${l === p.lv ? ' here' : ''}${l === last ? ' end' : ''}" style="--f:${fill}">
-      <div class="prog-node"><span class="prog-lv">${l}</span></div>
+      <div class="prog-node">${hexBadge(l, 'prog-hex', state === 'locked' || state === 'next' || state === 'ready')}</div>
       <div class="prog-box"><div class="prog-rw">${rw}</div>${act}</div></div>`;
   }
   $('progList').innerHTML = html;
-  // "Tout récupérer" at the bottom, while at least one level reward waits
-  const n = plWaiting();
-  $('progAll').hidden = !n;
-  $('progAll').textContent = n > 1 ? tr('Tout récupérer ({n})', { n }) : tr('Tout récupérer');
 }
 function openProg() {
   unlockAudio(); sfx('pick'); go('progress');
@@ -6573,25 +6708,6 @@ function openProg() {
   if (row) row.scrollIntoView({ block: 'nearest', inline: 'center' });
 }
 $('plCard').addEventListener('click', openProg);
-$('progAll').addEventListener('click', () => {
-  let n = 0;
-  const from = $('progAll').getBoundingClientRect(), c0 = S.coins, g0 = G().gems;
-  for (let l = 2; l <= plLevel(); l++) if (plReady(l)) { plGive(l); n++; }
-  if (!n) return;
-  flyMoney(from, S.coins - c0, G().gems - g0);
-  unlockAudio(); sfx('reward');
-  toast(n > 1 ? tr('{n} récompenses récupérées !', { n }) : tr('Récompense récupérée !'), 'good');
-  renderProg(); renderPlCard(); refreshNav(); save();
-});
-$('scr-progress').addEventListener('click', e => {
-  const b = e.target.closest('[data-plclaim]'); if (!b) return;
-  const l = +b.dataset.plclaim; if (!plReady(l)) return;
-  const from = b.getBoundingClientRect(), c0 = S.coins, g0 = G().gems;
-  plGive(l); unlockAudio(); sfx('reward');
-  flyMoney(from, S.coins - c0, G().gems - g0);
-  toast(tr('Récompense du niveau {n} récupérée !', { n: l }), 'good');
-  renderProg(); renderPlCard(); refreshNav(); save();
-});
 // Camera slides to a building (keeps the map inside the screen)
 function panTo(el, done) {
   const w = world.getBoundingClientRect(), r = el.getBoundingClientRect();
@@ -6633,7 +6749,7 @@ function renderVillage() {
   $('subAtelier').textContent = g ? tr(plural(g, '{n} géode', '{n} géodes'), { n: g }) : tr('Aucune géode');
   $('badgeAltar').hidden = !canPray() || !!(S.bldNew || {}).altar;
   $('badgeMuseum').hidden = !museumWaiting() || !!(S.bldNew || {}).museum;
-  $('badgeShop').hidden = !S.buildings.shop || (!shopNew() && !chestReady()) || !!(S.bldNew || {}).shop;
+  $('badgeShop').hidden = !S.buildings.shop || !chestReady() || !!(S.bldNew || {}).shop;
   const cps = CHECKPOINTS.filter(l => l <= S.reached).length;
   // Each mine has its own levels 1 to 100: the record shows the deepest mine and its level
   $('mineDepth').textContent = tr('Record : {x}, niveau {n}', { x: biomeName(biomeOf(S.reached || 1)), n: mineLv(S.reached || 1) }) + (cps ? ' · ' + tr(plural(cps, '{n} checkpoint', '{n} checkpoints'), { n: cps }) : '');
@@ -7792,6 +7908,7 @@ function arriveNext() {
   gainXP(inGuide() ? 0 : PJ.xpNiveau || 0, 'niveaux');
   if (newRecord) gainXP(recordXP(S.level), 'records');
   if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (keyEvery(S.level, r.tousLes)) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: mineLv(S.level) })), 900);
+  if (newRecord && CHECKPOINTS.includes(S.level)) gainXP(PJ.xpCheckpoint || 0, 'checkpoints');
   if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: mineLv(S.level) }) : tr('Checkpoint niveau {n} débloqué !', { n: mineLv(S.level) }), 'good'); }
   save();
 }

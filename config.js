@@ -1130,6 +1130,11 @@ window.CONFIG = {
     // Minerais gagnés en plus des pièces : le meilleur minerai déjà débloqué, en cette quantité (au niveau 1)
     minerais: { cuivre: 5, fer: 4, or: 2, mithril: 1, cristalBrut: 1 },
 
+    // MISSIONS DIFFICILES : une mission tirée avec la plus grande quantité de ses "choix" est difficile.
+    // Elle donne en plus un consommable (au hasard parmi ceux déjà débloqués), en cette quantité.
+    // C'est le seul moyen d'obtenir des potions et des bombes (la Boutique n'en vend plus).
+    consommables: { potion: 1, bombe: 2 },
+
     // Liste des missions possibles (une même mission ne revient pas deux fois le même jour).
     // "texte" : {n} est remplacé par la quantité ; [singulier, pluriel] quand la quantité peut valoir 1.
     // "choix" : la quantité est tirée au hasard parmi ces nombres ronds (ceux de 5 et plus grandissent avec le niveau du joueur).
@@ -1150,18 +1155,19 @@ window.CONFIG = {
       { type: 'bombes',     texte: 'Utilise {n} bombes',                 choix: [3, 5],           pieces: 50, deblocage: 'bombes' },
     ],
 
-    // Récompense du jour, du lundi au dimanche, gagnée quand toutes les missions du jour sont récupérées :
+    // Récompense du jour, du jour 1 au jour 7, gagnée quand toutes les missions du jour sont récupérées.
+    // Le jour 1 est le premier jour où le joueur a les missions ; après le jour 7, un nouveau cycle recommence au jour 1.
     // gemmes (perles), cles = { bois, argent, or, etoile : combien }, fee ('hasard' = une couleur que le joueur
     // n'a pas encore, ou une couleur de pets > fees), pieces, xp. La page montre le cadeau principal en grand
     // (la fée, sinon la meilleure clé, sinon les perles) et le reste à côté.
     recompenses: [
-      { gemmes: 15, xp: 40 },             // lundi
-      { cles: { bois: 1 }, xp: 40 },      // mardi
-      { gemmes: 20, xp: 50 },             // mercredi
-      { cles: { argent: 1 }, xp: 40 },    // jeudi
-      { gemmes: 25, xp: 50 },             // vendredi
-      { cles: { or: 1 }, xp: 60 },        // samedi
-      { fee: 'hasard', xp: 100 },         // dimanche : une fée
+      { gemmes: 15 },             // jour 1
+      { cles: { bois: 1 } },      // jour 2
+      { gemmes: 20 },             // jour 3
+      { cles: { argent: 1 } },    // jour 4
+      { gemmes: 25 },             // jour 5
+      { cles: { or: 1 } },        // jour 6
+      { fee: 'hasard' },         // jour 7 : une fée
     ],
   },
 
@@ -1173,18 +1179,21 @@ window.CONFIG = {
      --------------------------------------------------------------- */
   progressionJoueur: {
     // ---- D'où vient l'XP ----
-    xpParMission: 20,                 // par mission réussie ("xp" dans missions > liste pour une valeur à part)
-    xpRecord: 12,                     // par nouveau niveau atteint dans la mine (record)…
-    xpRecordParBiome: 2,              // … + ça par biome au-delà du 1er (biome 2 : 14, biome 10 : 30)
+    // Seuls les nouveaux trésors, les collections complétées (étoiles, récupérées au Musée) et les checkpoints de la mine
+    // donnent de l'XP. Tout le reste est à 0.
+    xpCheckpoint: 50,                 // par nouveau checkpoint de mine atteint (tous les 10 niveaux)
+    xpParMission: 0,                  // missions : plus d'XP
+    xpRecord: 0,                      // records de profondeur : plus d'XP (seuls les checkpoints en donnent)
+    xpRecordParBiome: 0,
     // Énergie maximum en plus à chaque niveau du mineur, en complément des récompenses « energie » ci-dessous
     // (0 = seulement les récompenses ; réglé par simulation le 16 octobre 2026)
     energieParNiveau: 1,
-    xpNiveau: 6,                      // par niveau terminé, même déjà joué (hors premiers pas) : un joueur bloqué progresse quand même
-    xpNouveauTresor: 5,               // par trésor jamais vu ramené au Musée (peu : au début, presque tout est nouveau)
-    xpEtoileCollection: 15,           // par nouvelle étoile de collection au Musée
-    xpEquipement: { nouveau: 5, amelioration: 2, fusion: 10 },  // l'équipement compte, mais moins
-    xpParPriere: 5,                   // par prière à l'Autel
-    xpGeode: 3,                       // par géode ouverte à l'Atelier (en plus des trésors nouveaux qu'elle donne)
+    xpNiveau: 0,                      // niveaux terminés : plus d'XP
+    xpNouveauTresor: 15,              // par trésor jamais vu ramené au Musée
+    xpEtoileCollection: 40,           // par collection complétée (chaque étoile), récupérée au Musée
+    xpEquipement: { nouveau: 0, amelioration: 0, fusion: 0 },  // équipement : plus d'XP
+    xpParPriere: 0,                   // Autel : plus d'XP
+    xpGeode: 0,                       // géodes ouvertes : plus d'XP (la pierre nouvelle qu'elle donne compte comme un nouveau trésor)
 
     // ---- XP à gagner pour passer chaque niveau ----
     // Niveau 2 : "depart" ; chaque niveau suivant demande "enPlus" de plus (niveau 3 : 120, niveau 10 : 260…).

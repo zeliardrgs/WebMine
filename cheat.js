@@ -147,6 +147,11 @@
     items() { const s = S(); s.bombs += 5; s.radars += 5; s.potions += 5; refresh(); msg('+5 bombes, radars et potions'); },
     // Miner level (energy and bag come from its rewards, to claim in Progression)
     xp() { M.gainXP(500); refresh(); msg('+500 XP de mineur'); },
+    // Just enough XP for the next level, then the home screen: the gauge fills up and the badge's stone appears
+    nextLevel() {
+      const s = S(), p = M.plInfo(); s.pxp = (s.pxp || 0) + (p.need - p.xp);
+      panel.hidden = true; M.go('village'); M.save();
+    },
     minerMax() {
       const s = S(), n = M.CFG.progressionJoueur.niveaux.length + 1;
       while (M.plInfo().lv < n) s.pxp = (s.pxp || 0) + 1000;
@@ -366,6 +371,7 @@
 
     <div class="cat" data-cat="mineur" hidden>
     <div class="row">
+      <button data-c="nextLevel">Passer au niveau suivant</button>
       <button data-c="xp">+500 XP de mineur</button>
       <button data-c="minerMax">Niveau du mineur au max (énergie, sac)</button>
       <button data-c="altarOpen">Ouvrir l'Autel</button>
