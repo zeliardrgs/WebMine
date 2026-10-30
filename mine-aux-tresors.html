@@ -2770,7 +2770,7 @@ const SOIL_FR = { terre: tr('dans la terre'), pierre: tr('sous la pierre'), pier
 const ART_FREQ = COL.frequenceArtefacts;
 // Rarities, from most common to rarest
 const RARITIES = ['common', 'rare', 'epic', 'legendary'];
-const RARITY_FR = { common: 'Common', rare: 'Rare', epic: 'Epic', legendary: 'Legendary' };
+const RARITY_FR = { common: tr('Commun'), rare: tr('Rare'), epic: tr('Épique'), legendary: tr('Légendaire') };
 // Coloured rarity badge (colours in the CSS: --rar-common / rare / epic / legendary)
 const rarTag = r => r ? `<span class="rar rar-${r}">${RARITY_FR[r]}</span>` : '';
 // A name written in its rarity colour
@@ -5288,7 +5288,7 @@ function runeCard(k) {
   return `<button class="rn${n ? '' : ' empty'}${max ? ' max' : ''}" data-rune="${k}" aria-label="${tr(RUNES[k].nom)}">
     <span class="rn-lv">${max ? tr('MAX') : tr('Niv. {n}', { n })}</span>
     <span class="rn-art">${runeArt(k)}</span>
-    <b class="rn-name">${tr(RUNES[k].nom).replace(/^Rune (de la |du |de l'|de )/, '')}</b>
+    <b class="rn-name">${tr(RUNES[k].nom).replace(/^Rune (de la |du |de l'|de )/, '').replace(/ Rune$/, '')}</b>
     <span class="rn-eff">${n ? runeTxt(k, runeVal(k)) : tr('Pas encore')}</span></button>`;
 }
 function renderAltar() {
