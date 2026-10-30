@@ -1292,32 +1292,29 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .goals-label small{color:#fff3d6; -webkit-text-stroke:0}
 #scr-mine .slot.found{border:2px solid var(--outline); background:#fbf1dc; background-clip:padding-box; box-shadow:none}
 /* ---------- Mountain altar: prayer card on top, then the runes by rarity (cards on the rarity backgrounds) ---------- */
-.al-top{display:grid; grid-template-columns:auto 1fr; gap:10px 14px; align-items:center; padding:14px 16px}
-.al-art{width:84px; height:84px}
+.al-top{display:grid; grid-template-columns:auto 1fr; gap:10px 14px; align-items:center; padding:12px 16px}
+.al-art{width:72px; height:72px}
 .al-art img{width:100%; height:100%}
 .al-txt{display:flex; flex-direction:column; gap:4px; min-width:0}
 .al-txt b{font-family:var(--font-display); font-weight:400; font-size:18px; line-height:1.1}
 .al-txt span{font-size:13px; color:var(--ink-soft)}
-.al-txt .al-count{font-weight:800; color:var(--ink)}
-.al-pray{grid-column:1 / -1; display:flex; justify-content:center; align-items:center; gap:12px}
+.al-pray{display:flex; justify-content:center; align-items:center; gap:12px; width:100%; margin-top:14px}
 .al-price{display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border-radius:12px; background:rgba(0,0,0,.18); font-size:16px}
 .al-price img{width:20px; height:20px}
 .al-price.short{color:#ffb4a8}
-.al-runes{display:flex; flex-direction:column; gap:8px}
-.al-h{margin:6px 0 0; font-family:var(--font-display); font-size:16px; color:var(--rc)}
+.al-runes{display:flex; flex-direction:column; padding-bottom:64px}   /* room for the « Village » button at the bottom left */
+/* The runes: one grid, like Archero 2's talents (level on top, the rune, its name, what it gives) */
 .rn-grid{display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px}
-.rn{position:relative; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 6px 8px; border:0; border-radius:14px; cursor:pointer;
-  background:var(--card, url("Assets/UI/ItemCard_BG_Base.png")) center / 100% 100% no-repeat; color:#fff; font:inherit; transition:transform .12s}
-.rn-art{width:58px; height:58px; display:grid; place-items:center}
+.rn{position:relative; display:flex; flex-direction:column; align-items:center; gap:3px; padding:22px 6px 8px; border:0; border-radius:14px; cursor:pointer;
+  background:linear-gradient(#5b4f78, #3f3557); box-shadow:inset 0 0 0 3px #2b1d33, 0 4px 0 #2b1d33; color:#fff; transition:transform .12s, box-shadow .12s}
+.rn-lv{position:absolute; top:5px; left:50%; transform:translateX(-50%); padding:0 8px; border-radius:9px; background:#2b1d33; font-family:var(--font-display); font-size:12px; line-height:17px; white-space:nowrap}
+.rn.max .rn-lv{background:linear-gradient(#ffe100, #ffb400); color:var(--ink)}
+.rn-art{width:54px; height:54px; display:grid; place-items:center}
 .rn-art img{width:100%; height:100%}
-.rn-name{font-family:var(--font-display); font-weight:400; font-size:12px; line-height:1.1; text-align:center; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill; min-height:2.2em; display:grid; place-items:center}
-.rn-stars{font-size:13px; letter-spacing:1px; color:#ffd23d; -webkit-text-stroke:2.5px var(--outline); paint-order:stroke fill}
-.rn-stars i{font-style:normal; color:rgba(255,255,255,.35)}
-.rn-stars.inf{color:#ffe14d}
-.rn-none{font-size:11px; font-weight:800; color:#fff; -webkit-text-stroke:2.5px var(--outline); paint-order:stroke fill; text-align:center}
-.rn.empty .rn-art{filter:grayscale(.9) brightness(.85); opacity:.7}
-.rn.locked{filter:grayscale(.8) brightness(.8)}
-.rn-lock{font-family:var(--font-display); font-weight:400; font-size:40px; color:#fff; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
+.rn-name{font-family:var(--font-display); font-weight:400; font-size:13px; line-height:1.1; text-align:center; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill}
+.rn-eff{font-size:11px; font-weight:800; line-height:1.15; text-align:center; color:#bfe9ff; min-height:2.3em}
+.rn.empty .rn-art{filter:grayscale(.9) brightness(.85); opacity:.6}
+.rn.empty .rn-eff{color:rgba(255,255,255,.55)}
 .rn.spin{transform:scale(1.08); box-shadow:0 0 0 4px #ffe100, 0 0 18px 6px rgba(255,225,0,.7)}
 .rn.got{animation:rnGot .9s ease-out}
 @keyframes rnGot{0%{transform:scale(1.25); box-shadow:0 0 0 5px #fff, 0 0 30px 12px rgba(255,225,0,.9)} 100%{transform:scale(1); box-shadow:0 0 0 0 transparent}}
@@ -5239,37 +5236,27 @@ function renderHero() {
   ]);
 }
 
-/* ---------- Mountain altar: runes (config.js > autel), like Archero 2's talent cards ----------
-   Each prayer costs coins (a bit more each time) and draws a rune: a new one (1 star) or one more star on a rune
-   already engraved (5 stars max). Rarer runes join the draw as the prayers add up. The Miner King's rune has no
-   star limit: once every other rune is full, every prayer goes to it. */
-const AU = CFG.autel, RUNES = AU.runes, RUNE_KEYS = Object.keys(RUNES);
-const RUNE_RAR = ['commun', 'rare', 'epique', 'legendaire'];
-const RUNE_CSS = { commun: 'common', rare: 'rare', epique: 'epic', legendaire: 'legendary' };
-const RUNE_RAR_FR = { commun: 'Commune', rare: 'Rare', epique: 'Épique', legendaire: 'Légendaire' };
-const RUNE_RAR_PL = { commun: 'Runes communes', rare: 'Runes rares', epique: 'Runes épiques', legendaire: 'Runes légendaires' };
+/* ---------- Mountain altar: runes (config.js > autel), like Archero 2's talents ----------
+   Every rune is there from the start, at level 0. Each prayer costs coins (a bit more each time): a light runs over the
+   runes and stops on one at random, which gains a level (up to niveauMax). A maxed rune is no longer drawn. */
+const AU = CFG.autel, RUNES = AU.runes, RUNE_KEYS = Object.keys(RUNES), RUNE_MAX = AU.niveauMax || 10;
 const altarOpen = () => !!(S.buildings && S.buildings.altar);
-const runeStars = k => (S && S.altar && S.altar.runes[k]) || 0;
-// What a rune gives with n stars (0 without the rune)
+const runeLv = k => (S && S.altar && S.altar.runes[k]) || 0;
+// What a rune gives at level n (0 at level 0: the game's default applies)
 function runeAt(k, n) {
   const R = RUNES[k]; if (!R || !n) return 0;
-  return R.sansLimite ? R.parEtoile * n : R.valeurs[Math.min(n, R.valeurs.length) - 1];
+  const v = (R.base || 0) + R.parNiveau * n;
+  return R.arrondi === 'bas' ? Math.floor(v) : Math.round(v * 1000) / 1000;
 }
-function runeVal(k) { return runeAt(k, runeStars(k)); }
-const runeMax = k => RUNES[k].sansLimite ? Infinity : AU.etoilesMax;
+function runeVal(k) { return runeAt(k, runeLv(k)); }
 const runeShown = k => !RUNES[k].deblocage || has(RUNES[k].deblocage);   // a rune for a novelty not met yet doesn't exist
-const rarOpen = r => S.altar.n >= (AU.ouverture[r] || 0);
 const prayerCost = () => AU.prix.depart + AU.prix.parPriere * S.altar.n;
-const canPray = () => altarOpen() && S.coins >= prayerCost();
+const runeDrawable = k => runeShown(k) && runeLv(k) < RUNE_MAX;
+const canPray = () => altarOpen() && S.coins >= prayerCost() && RUNE_KEYS.some(runeDrawable);
 const runeTxt = (k, v) => { const R = RUNES[k]; return tr(R.texte, { v: R.pourcent ? pctG(v) : nfG(v) }); };
-// Draw: a rarity (among those with a rune that can still gain a star), then one of its runes
-function drawRune() {
-  const pool = RUNE_KEYS.filter(k => runeShown(k) && rarOpen(RUNES[k].rarete) && runeStars(k) < runeMax(k));
-  if (!pool.length) return null;
-  const w = {}; for (const k of pool) w[RUNES[k].rarete] = AU.chances[RUNES[k].rarete] || 1;
-  const r = pick(w), list = pool.filter(k => RUNES[k].rarete === r);
-  return list[randInt(0, list.length - 1)];
-}
+// What a rune shows at level n (level 0: what the first level gives)
+const runeShort = (k, n) => n ? runeTxt(k, runeAt(k, n)) : tr('Niveau 1 : {e}', { e: runeTxt(k, runeAt(k, 1)) });
+const drawRune = () => { const pool = RUNE_KEYS.filter(runeDrawable); return pool.length ? pool[randInt(0, pool.length - 1)] : null; };
 // Rune pictures: a carved stone with a glyph in the rarity's colour (config.js > autel > runes > image to use a real picture)
 const RUNE_GLYPH = {
   source: 'M50 22 V78 M50 40 L70 28 M50 58 L70 46', torrent: 'M36 78 V24 L64 44 V78', fortune: 'M40 22 V78 M40 36 L62 50 L40 64',
@@ -5280,7 +5267,7 @@ const RUNE_GLYPH = {
 };
 function runeArt(k) {
   const R = RUNES[k]; if (R.image) return img(R.image, tr(R.nom));
-  const c = RAR_HEX[RUNE_CSS[R.rarete]] || '#888', glow = k === 'arcEnCiel' ? 'url(#rb)' : c;
+  const glow = '#6ad8ff';
   return svgImg(`<defs><linearGradient id="rb" x1="0" x2="1"><stop offset="0" stop-color="#ff5b5b"/><stop offset=".33" stop-color="#ffd23d"/><stop offset=".66" stop-color="#3dd68c"/><stop offset="1" stop-color="#4b8bff"/></linearGradient></defs>
     <path d="M22 14 Q50 4 78 14 L88 80 Q50 96 12 80Z" fill="#8c8697" stroke="#2b1d33" stroke-width="5" stroke-linejoin="round"/>
     <path d="M26 20 Q50 12 74 20 L80 74 Q50 86 20 74Z" fill="#a49daf"/>
@@ -5294,27 +5281,21 @@ const ALTAR_ART = AU.image ? img(AU.image, tr('Autel')) : svgImg(`<ellipse cx="5
   <path d="M22 36 H78 L74 28 H26Z" fill="#b6aec2" stroke="#2b1d33" stroke-width="3.5" stroke-linejoin="round"/>
   <circle cx="50" cy="18" r="12" fill="#8fe7ff" opacity=".35"/><path d="M50 8 L58 18 L50 28 L42 18Z" fill="#6ad8ff" stroke="#2b1d33" stroke-width="3"/>
   <path d="M42 46 V62 M42 50 L56 44 M42 58 L56 52" stroke="#6ad8ff" stroke-width="4" stroke-linecap="round" fill="none"/>`, tr('Autel'));
-const starRow = (n, max) => max === Infinity ? `<span class="rn-stars inf">★ ${n}</span>` : `<span class="rn-stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0, max - n))}</i></span>`;
 function runeCard(k) {
-  const R = RUNES[k], n = runeStars(k), open = rarOpen(R.rarete), cls = RUNE_CSS[R.rarete];
-  return `<button class="rn r-${cls}${n ? '' : ' empty'}${open ? '' : ' locked'}" data-rune="${k}" aria-label="${tr(R.nom)}">
-    <span class="rn-art">${open ? runeArt(k) : '<b class="rn-lock">?</b>'}</span>
-    <b class="rn-name">${open ? tr(R.nom) : tr(RUNE_RAR_FR[R.rarete])}</b>
-    ${open ? (n ? starRow(n, runeMax(k)) : `<span class="rn-none">${tr('Pas encore gravée')}</span>`) : `<span class="rn-none">${tr('Après {n} prières', { n: AU.ouverture[R.rarete] })}</span>`}</button>`;
+  const n = runeLv(k), max = n >= RUNE_MAX;
+  return `<button class="rn${n ? '' : ' empty'}${max ? ' max' : ''}" data-rune="${k}" aria-label="${tr(RUNES[k].nom)}">
+    <span class="rn-lv">${max ? tr('MAX') : tr('Niv. {n}', { n })}</span>
+    <span class="rn-art">${runeArt(k)}</span>
+    <b class="rn-name">${tr(RUNES[k].nom).replace(/^Rune (de la |du |de l'|de )/, '')}</b>
+    <span class="rn-eff">${n ? runeTxt(k, runeVal(k)) : tr('Pas encore')}</span></button>`;
 }
 function renderAltar() {
-  const A = S.altar, cost = prayerCost(), pool = !!drawRune();
-  const nextR = RUNE_RAR.find(r => !rarOpen(r) && RUNE_KEYS.some(k => RUNES[k].rarete === r && runeShown(k)));
+  const A = S.altar, cost = prayerCost(), left = RUNE_KEYS.some(runeDrawable), shown = RUNE_KEYS.filter(runeShown);
+  const total = shown.reduce((a, k) => a + runeLv(k), 0);
   $('altarTop').innerHTML = `<div class="al-art">${ALTAR_ART}</div>
-    <div class="al-txt"><b>${tr('Prie l\'Autel pour graver des runes')}</b>
-      <span>${tr('Chaque prière grave une nouvelle rune ou ajoute une étoile à une rune déjà gravée.')}</span>
-      <span class="al-count">${tr(plural(A.n, '{n} prière', '{n} prières'), { n: A.n })}${nextR ? ' · ' + tr('{r} après {n} prières', { r: tr(RUNE_RAR_PL[nextR]), n: AU.ouverture[nextR] }) : ''}</span></div>
-    <button class="btn big al-pray" id="prayBtn" ${pool && S.coins >= cost && !praying ? '' : 'disabled'}>${tr('Prier')}<span class="al-price${S.coins < cost ? ' short' : ''}">${COIN}${nfG(cost)}</span></button>`;
-  const shown = RUNE_KEYS.filter(runeShown);
-  $('altarRunes').innerHTML = RUNE_RAR.map(r => {
-    const ks = shown.filter(k => RUNES[k].rarete === r); if (!ks.length) return '';
-    return `<p class="al-h rar rar-${RUNE_CSS[r]}">${tr(RUNE_RAR_PL[r])}</p><div class="rn-grid">${ks.map(runeCard).join('')}</div>`;
-  }).join('');
+    <div class="al-txt"><b>${tr('Niveau de l\'Autel : {n}', { n: total })}</b><span>${tr('Chaque prière fait monter une rune au hasard.')}</span></div>`;
+  $('altarRunes').innerHTML = `<div class="rn-grid">${shown.map(runeCard).join('')}</div>
+    <button class="btn big al-pray" id="prayBtn" ${left && S.coins >= cost && !praying ? '' : 'disabled'}>${left ? `${tr('Prier')}<span class="al-price${S.coins < cost ? ' short' : ''}">${COIN}${nfG(cost)}</span>` : tr('Toutes les runes sont au maximum !')}</button>`;
   // First visit: the first prayer is shown
   if (!A.n && !S.tutoSeen.priere && S.coins >= cost) startCoach('priere', [{ text: TX.priere, target: () => $('prayBtn'), done: () => S.altar.n > 0 || $('scr-altar').hidden }]);
 }
@@ -5325,40 +5306,39 @@ function pray() {
   praying = true; unlockAudio();
   S.coins -= prayerCost(); S.altar.n++; stat('prieres');
   renderAltar(); paintMoney();
-  // The light runs over the runes that could come out, slows down, then stops on the drawn one
-  const cards = [...document.querySelectorAll('#altarRunes .rn:not(.locked)')].filter(c => { const kk = c.dataset.rune; return runeStars(kk) < runeMax(kk); });
-  const target = document.querySelector(`#altarRunes .rn[data-rune="${k}"]`);
-  const steps = reduced || cards.length < 2 ? 0 : 14 + randInt(0, cards.length - 1);
-  let i = randInt(0, cards.length - 1), t = 0;
+  // The light runs over the runes that can still level up, slows down, then stops on the drawn one
+  const cards = [...document.querySelectorAll('#altarRunes .rn')].filter(c => runeDrawable(c.dataset.rune));
+  // (two full turns, then the drawn rune is the last one lit)
+  const ti = cards.findIndex(c => c.dataset.rune === k), steps = reduced || cards.length < 2 || ti < 0 ? 0 : 2 * cards.length + ti + 1;
+  let i = 0, t = 0;
   const hop = () => {
     document.querySelectorAll('#altarRunes .rn.spin').forEach(c => c.classList.remove('spin'));
     if (t >= steps) return land();
-    const c = cards[i++ % cards.length]; c.classList.add('spin'); sfx('pick');
-    t++; setTimeout(hop, 50 + t * t * .6);
+    cards[i++ % cards.length].classList.add('spin'); sfx('pick');
+    t++; setTimeout(hop, 45 + t * t * .35);
   };
   const land = () => {
-    const isNew = !runeStars(k);
-    S.altar.runes[k] = runeStars(k) + 1;
+    const was = runeLv(k);
+    S.altar.runes[k] = was + 1;
     if (k === 'torrent') S.bucketCharges = maxCharges();
     gainXP(PJ.xpParPriere);
     praying = false; renderAltar(); save();
-    const c = document.querySelector(`#altarRunes .rn[data-rune="${k}"]`);
-    if (c) { c.classList.add('got'); c.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' }); }
-    sfx(isNew ? 'win' : 'reward');
-    toast(isNew ? tr('Nouvelle rune : {x} ! {e}', { x: tr(RUNES[k].nom), e: runeTxt(k, runeVal(k)) }) : tr('{x} : {n} étoiles ! {e}', { x: tr(RUNES[k].nom), n: runeStars(k), e: runeTxt(k, runeVal(k)) }), 'good');
-    updateBadge();
+    const c = document.querySelector(`#altarRunes .rn[data-rune="${k}"]`); if (c) c.classList.add('got');
+    sfx('win'); updateBadge();
+    // Archero 2 style: the rune, its level before → after, what it gives now
+    $('dayDoneTitle').textContent = tr(RUNES[k].nom);
+    $('dayDoneArt').innerHTML = `<span class="dr-art">${runeArt(k)}</span>`;
+    $('dayDoneRw').innerHTML = `<span class="prog-chip">${tr('Niv. {n}', { n: was })} → ${tr('Niv. {n}', { n: was + 1 })}</span><span class="prog-chip">${runeTxt(k, runeVal(k))}</span>`;
+    $('dayDoneModal').hidden = false;
   };
-  if (target) hop(); else land();
+  if (steps) hop(); else land();
 }
 document.addEventListener('click', e => {
   if (e.target.closest('#prayBtn')) return pray();
   const c = e.target.closest('[data-rune]'); if (!c || praying) return;
-  const k = c.dataset.rune, R = RUNES[k], n = runeStars(k);
+  const k = c.dataset.rune, n = runeLv(k);
   unlockAudio(); sfx('pick');
-  if (!rarOpen(R.rarete)) return toast(tr('{r} : dans le tirage après {n} prières.', { r: tr(RUNE_RAR_PL[R.rarete]), n: AU.ouverture[R.rarete] }), '');
-  const now = n ? runeTxt(k, runeVal(k)) : tr('Pas encore gravée');
-  const next = n < runeMax(k) ? ' · ' + tr('Étoile suivante : {e}', { e: runeTxt(k, runeAt(k, n + 1)) }) : ' · ' + tr('Maximum atteint');
-  toast(`${tr(R.nom)} · ${now}${next}`);
+  toast(`${tr(RUNES[k].nom)} · ${n >= RUNE_MAX ? runeTxt(k, runeVal(k)) + ' · ' + tr('Maximum atteint') : n ? runeTxt(k, runeVal(k)) + ' · ' + tr('Niveau suivant : {e}', { e: runeTxt(k, runeAt(k, n + 1)) }) : runeShort(k, 0)}`);
 });
 
 /* ---------- Shop: equipment chests ---------- */
@@ -8312,6 +8292,8 @@ function start(data) {
   }
   S.minerV1 = true;
   S.altar = Object.assign({ n: 0, runes: {} }, S.altar || {});
+  // (saves from the star runes: each kept rune's stars become levels, 1 star = 2 levels; the removed runes are dropped)
+  if (!S.altar.v2) { const old = S.altar.runes; S.altar.runes = {}; for (const k of RUNE_KEYS) if (old[k]) S.altar.runes[k] = Math.min(RUNE_MAX, old[k] * 2); S.altar.v2 = true; }
   // Saves from before: the bag and the shop articles already met are known
   if (!saved || saved.bagSeen === undefined) S.bagSeen = S.reached > 3 || S.trip.finds.length >= bagCap();
   if (!saved || !saved.shopSeen) { S.shopSeen = {}; if (S.buildings && S.buildings.shop) SHOP_ITEMS.forEach(k => { if (has(k)) S.shopSeen[k] = true; }); }

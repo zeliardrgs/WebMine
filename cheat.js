@@ -162,8 +162,8 @@
     altarOpen() { S().buildings.altar = true; refresh(); msg('Autel ouvert au village'); },
     altarRunes() {
       const s = S(); s.buildings.altar = true;
-      for (const k of Object.keys(M.RUNES)) s.altar.runes[k] = 5;
-      s.altar.n = Math.max(s.altar.n, 60); refresh(); msg('Toutes les runes à 5 étoiles');
+      for (const k of Object.keys(M.RUNES)) s.altar.runes[k] = M.CFG.autel.niveauMax || 10;
+      s.altar.n = Math.max(s.altar.n, 60); refresh(); msg('Toutes les runes au niveau max');
     },
     altarReset() { const s = S(); s.altar = { n: 0, runes: {} }; delete s.tutoSeen.priere; refresh(); msg('Autel remis à zéro'); },
     // Equipment (the gear opens with the Forge: "Débloquer jusqu'au niveau 11" then go back to the village)
@@ -375,7 +375,7 @@
       <button data-c="xp">+500 XP de mineur</button>
       <button data-c="minerMax">Niveau du mineur au max (énergie, sac)</button>
       <button data-c="altarOpen">Ouvrir l'Autel</button>
-      <button data-c="altarRunes">Toutes les runes à 5★</button>
+      <button data-c="altarRunes">Toutes les runes au max</button>
       <button data-c="altarReset" class="warn">Remettre l'Autel à zéro</button>
     </div>
     </div>

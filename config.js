@@ -1312,47 +1312,35 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
-     AUTEL DE LA MONTAGNE : LES RUNES (façon cartes de talent d'Archero 2)
+     AUTEL DE LA MONTAGNE : LES RUNES (comme les talents d'Archero 2)
      L'Autel apparaît au village au retour qui suit le niveau progression > deblocages > autel.
-     Chaque prière coûte des pièces (de plus en plus cher) et tire une rune au hasard :
-     une nouvelle rune (1 étoile) ou une étoile de plus sur une rune déjà gravée (5 étoiles max).
-     Les runes plus rares entrent dans le tirage au fil des prières. Pas d'autre limite que le prix.
-     La Rune du Roi Mineur n'a pas de limite d'étoiles : une fois les autres au maximum, chaque prière va sur elle.
+     Toutes les runes sont là dès le début, au niveau 0. Chaque prière coûte des pièces (de plus en plus cher) :
+     une lumière passe sur les runes et s'arrête sur l'une d'elles au hasard, qui gagne un niveau (jusqu'à "niveauMax").
+     Une rune au maximum ne sort plus. Pas de rareté, pas d'étoiles : un niveau, un bonus.
      --------------------------------------------------------------- */
   autel: {
     nom: "Autel de la montagne",
     image: '',                        // image du bâtiment (vide = dessin provisoire)
 
-    // Prix de la prière n° n (en commençant à 0) = depart + parPriere × n  →  150, 210, 270… 3 690 à la 60e
+    // Prix de la prière n° n (en commençant à 0) = depart + parPriere × n  →  150, 210, 270… (80 prières pour tout finir)
     prix: { depart: 150, parPriere: 60 },
 
-    // Chances de tirer chaque rareté (parmi les runes qui peuvent encore gagner une étoile)
-    chances: { commun: 55, rare: 28, epique: 13, legendaire: 4 },
-    // Nombre de prières déjà faites pour que la rareté entre dans le tirage
-    // (simulation : ~10 prières le 2e jour, ~20 vers le 6e, ~35 vers le 11e, ~42 à la fin de la mine 1)
-    ouverture: { commun: 0, rare: 8, epique: 20, legendaire: 35 },
-    etoilesMax: 5,
+    niveauMax: 10,
 
-    // "valeurs" = l'effet à 1, 2, 3, 4 et 5 étoiles ; {v} dans "texte" est remplacé par la valeur.
-    // "pourcent" : la valeur s'affiche en %. "deblocage" : la rune n'entre dans le tirage qu'une fois la nouveauté débloquée.
-    // Certaines doublent un bonus d'équipement (Pelle, Gants, Casque, Lanterne, Bottes) : ils s'additionnent.
+    // Effet d'une rune au niveau N = base + parNiveau × N ("pourcent" : affiché en %, "arrondi: 'bas'" : nombre entier).
+    // "deblocage" : la rune n'apparaît qu'une fois la nouveauté débloquée. Certaines s'ajoutent aux bonus de l'équipement.
     runes: {
-      source:       { nom: 'Rune de la Source',     rarete: 'commun',     texte: 'L\'arrosoir se recharge en {v} s (5 s sans rune)', valeurs: [4.5, 4, 3.5, 3, 2.5], deblocage: 'magma' },
-      torrent:      { nom: 'Rune du Torrent',       rarete: 'commun',     texte: '{v} arrosages avant de recharger (1 sans rune)', valeurs: [2, 2, 3, 3, 4], deblocage: 'magma' },
-      fortune:      { nom: 'Rune de Fortune',       rarete: 'commun',     texte: '+{v} de pièces par tas', valeurs: [0.05, 0.1, 0.15, 0.2, 0.3], pourcent: true },
-      filon:        { nom: 'Rune du Filon',         rarete: 'commun',     texte: '+{v} de chance d\'un minerai en plus', valeurs: [0.05, 0.1, 0.15, 0.2, 0.3], pourcent: true },
-      artificier:   { nom: 'Rune de l\'Artificier', rarete: 'rare',       texte: '{v} de chance qu\'une bombe ne soit pas utilisée', valeurs: [0.05, 0.1, 0.15, 0.2, 0.25], pourcent: true, deblocage: 'bombes' },
-      herboriste:   { nom: 'Rune de l\'Herboriste', rarete: 'rare',       texte: '{v} de chance de recevoir une potion en remontant', valeurs: [0.1, 0.2, 0.3, 0.4, 0.5], pourcent: true, deblocage: 'potions' },
-      conservateur: { nom: 'Rune du Conservateur',  rarete: 'rare',       texte: '+{v} sur les primes de collection du Musée', valeurs: [0.05, 0.1, 0.15, 0.2, 0.25], pourcent: true },
-      savoir:       { nom: 'Rune du Savoir',        rarete: 'rare',       texte: '+{v} d\'XP de mineur', valeurs: [0.05, 0.1, 0.15, 0.2, 0.3], pourcent: true },
-      souffle:      { nom: 'Rune du Souffle',       rarete: 'epique',     texte: '+{v} de chance de coup gratuit', valeurs: [0.02, 0.04, 0.06, 0.08, 0.1], pourcent: true },
-      lueur:        { nom: 'Rune de la Lueur',      rarete: 'epique',     texte: '+{v} de géodes rares', valeurs: [0.05, 0.1, 0.15, 0.2, 0.25], pourcent: true },
-      orpailleur:   { nom: 'Rune de l\'Orpailleur', rarete: 'epique',     texte: '{v} de chance de trouver un tas d\'or en creusant la terre', valeurs: [0.01, 0.02, 0.03, 0.04, 0.05], pourcent: true },
-      arcEnCiel:    { nom: 'Rune Arc-en-ciel',      rarete: 'legendaire', texte: '{v} de chance par niveau d\'une case arc-en-ciel', valeurs: [0.005, 0.0075, 0.01, 0.0125, 0.015], pourcent: true },
-      roi:          { nom: 'Rune du Roi Mineur',    rarete: 'legendaire', texte: '+{v} de pièces par tas (sans limite d\'étoiles)', parEtoile: 0.01, pourcent: true, sansLimite: true },
+      fortune:      { nom: 'Rune de Fortune',       texte: '+{v} de pièces par tas',            parNiveau: 0.03, pourcent: true },
+      filon:        { nom: 'Rune du Filon',         texte: '+{v} de chance d\'un minerai en plus', parNiveau: 0.03, pourcent: true },
+      souffle:      { nom: 'Rune du Souffle',       texte: '+{v} de chance de coup gratuit',     parNiveau: 0.01, pourcent: true },
+      lueur:        { nom: 'Rune de la Lueur',      texte: '+{v} de géodes rares',               parNiveau: 0.03, pourcent: true },
+      conservateur: { nom: 'Rune du Conservateur',  texte: '+{v} sur les primes du Musée',       parNiveau: 0.03, pourcent: true },
+      savoir:       { nom: 'Rune du Savoir',        texte: '+{v} d\'XP de mineur',               parNiveau: 0.03, pourcent: true },
+      source:       { nom: 'Rune de la Source',     texte: 'L\'arrosoir se recharge en {v} s',   base: 5, parNiveau: -0.25, deblocage: 'magma' },
+      torrent:      { nom: 'Rune du Torrent',       texte: '{v} arrosages avant de recharger',   base: 1, parNiveau: 0.3, arrondi: 'bas', deblocage: 'magma' },
     },
 
-    // Case arc-en-ciel (Rune Arc-en-ciel) : se creuse à la pelle, vaut ce nombre de tas de pièces d'un coup
+    // Case arc-en-ciel (anciennes sauvegardes seulement : la rune qui la faisait apparaître a été retirée)
     arcEnCiel: { tas: 60 },
   },
 
