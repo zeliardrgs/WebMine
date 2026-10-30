@@ -204,6 +204,7 @@ window.CONFIG = {
       or: 116,           // minerai d'or
       geodeDoree: 131,   // géodes violettes (Épiques)
       // (161, 176, 191 : nouveautés à créer)
+      petrole: 106,      // Grotte des Marées (la plage) : le pétrole qui s'étend
       source: 201,       // biome 3 : source
       radar: 216,        // le radar arrive en boutique
       magmaChaine: 301,  // biome 4 : magma en chaîne
@@ -229,6 +230,13 @@ window.CONFIG = {
       glace:       { biomes: [7, 10], part: 0.5 },          // part des pierres qui deviennent de la glace
       gaz:         { biomes: [8, 10], nombre: [1, 2] },
       coffre:      { biomes: [9, 10], nombre: [1, 1] },
+      // PÉTROLE (la plage) : une flaque posée SUR une case, sans la casser. Tant qu'elle est là, la case dessous ne se creuse pas.
+      // Les cases de pétrole qui se touchent forment une flaque : elle demande autant de coups de pioche qu'elle a de cases
+      // (1 énergie par coup, sur n'importe laquelle de ses cases ; la puissance ne compte pas), puis disparaît d'un coup.
+      // Tous les "tapsParExtension" coups sur la grille (pelle, pioche, arrosoir, bombe), chaque flaque prend une case
+      // à côté au hasard, trésors compris (jamais une case déjà vide). Pas de limite de taille. Une bombe la souffle.
+      // "chance" = chance qu'un niveau ait du pétrole ; "nombre" = flaques de départ (1 case chacune).
+      petrole:     { biomes: [2, 10], nombre: [1, 2], chance: 0.6, tapsParExtension: 2 },
     },
 
     // Ce que donnent la case mystère et le coffre bonus (toujours positif !)
@@ -306,6 +314,7 @@ window.CONFIG = {
       { niveau: 36,  nouveaute: 'fer',         outil: 'pickaxe', texte: "Casse le minerai de fer" },
       { niveau: 56,  nouveaute: 'bombe',       outil: 'bomb',    texte: "Touche une case pour exploser" },
       { niveau: 206, nouveaute: 'pierreDure',  outil: 'pickaxe', texte: "La pierre dure demande plus de coups" },
+      { niveau: 106, nouveaute: 'petrole',     outil: 'pickaxe', texte: "Casse vite le pétrole à la pioche : il s'étend !" },
       { niveau: 201, nouveaute: 'source',      outil: 'shovel',  texte: "Creuse la source" },
       { niveau: 301, nouveaute: 'magmaChaine', outil: 'bucket',  texte: "Arrose une case : tout refroidit" },
       { niveau: 401, nouveaute: 'mystere',     outil: 'shovel',  texte: "Creuse la case mystère" },
