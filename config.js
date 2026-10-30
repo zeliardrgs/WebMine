@@ -43,6 +43,10 @@ window.CONFIG = {
     // Un checkpoint tous les 10 niveaux : une expédition doit en faire au moins 10 pour avancer.
     coutNiveau: [3.4, 5, 6.3, 7.8, 9.2, 10.6, 12, 13.4, 14.8, 16],
 
+    // Mines suivantes (après la Mine des pionniers) : résistance de toutes les roches, par mine (1re valeur = mine 1).
+    // Le coût "coutNiveau" ci-dessus est multiplié d'autant. Au-delà de la liste, la dernière valeur.
+    resistanceParMine: [1, 20, 26, 32],
+
     // Ce coût moyen est multiplié selon le type de niveau (voir aussi "rythme")
     multiplicateurCout: { facile: 0.8, niveau9: 1.3, tresor: 0.6, gardien: 2 },
 
@@ -527,23 +531,25 @@ window.CONFIG = {
     },
 
     // Ce qui monte avec la profondeur, par tranche de niveaux ("depuis" = premier niveau) :
-    // "coupsPierre" = coups de pioche de base pour casser une pierre (et une pierre à minerai) ;
-    // "energie" = énergie de base qu'un étage peut demander au plus pour ses trésors (multipliée par le "cout" du type) :
-    //   si les recouvrements tirés coûtent plus, le plus dur est adouci d'un cran (Scellé → Caché → Mixte → Indice → Ouvert) ;
+    // "resistance" = multiplie la résistance de TOUTES les roches (pierre, minerai, magma refroidi, pierre dure…) :
+    //   une pierre demande mine > coupsPierre coups à la puissance 0, × resistance. La puissance de l'équipement
+    //   fait baisser le nombre de coups : un joueur sous-équipé paie beaucoup plus d'énergie en profondeur ;
+    // "energie" = énergie de base (coups à la puissance 0) qu'un étage peut demander au plus pour ses trésors
+    //   (multipliée par le "cout" du type) : si les recouvrements tirés coûtent plus, le plus dur est adouci d'un cran
+    //   (Scellé → Caché → Mixte → Indice → Ouvert) ;
     // "durete" = multiplie les chances des recouvrements durs (Caché et Scellé) : plus il est grand, plus ils sont fréquents.
-    // Réglé par simulation (16 octobre 2026) pour environ 1 à 2 expéditions par checkpoint au début et 2 vers la fin,
-    // avec un joueur qui améliore sa pioche et son casque à la Forge (~25 XP de missions par expédition).
-    // La pierre devient plus résistante en profondeur pour que la pioche améliorée reste utile ;
-    // "energie" ne plafonne plus que les étages Respiration, Standard, Fouille et les gardiens (types > plafond).
+    // Refonte du 30 octobre 2026 (puissance de l'équipement) : la difficulté ne monte qu'avec la profondeur, jamais avec l'équipement.
+    // Simulation (WebMine/.sim/gearsim.js) : un joueur à 3 × 10 min par jour, qui met ses pièces dans l'équipement,
+    // finit la mine vers le jour 15 en dépensant 5 à 10 énergie par étage.
     profondeur: [
-      { depuis: 1,  coupsPierre: 3, energie: 3,    durete: 0.6 },
-      { depuis: 11, coupsPierre: 3, energie: 3.5,  durete: 0.8 },
-      { depuis: 21, coupsPierre: 3, energie: 5,    durete: 0.8 },
-      { depuis: 31, coupsPierre: 4, energie: 6.5,  durete: 1 },
-      { depuis: 51, coupsPierre: 5, energie: 14,   durete: 1.4 },
-      { depuis: 61, coupsPierre: 7, energie: 18,   durete: 1.6 },
-      { depuis: 71, coupsPierre: 8, energie: 24,   durete: 1.8 },
-      { depuis: 91, coupsPierre: 9, energie: 24,   durete: 1.8 },
+      { depuis: 1,  resistance: 1,  energie: 3,   durete: 0.6 },
+      { depuis: 11, resistance: 2,  energie: 10,   durete: 0.8 },
+      { depuis: 21, resistance: 3,  energie: 21,  durete: 0.8 },
+      { depuis: 31, resistance: 5,  energie: 35,  durete: 1 },
+      { depuis: 51, resistance: 8,  energie: 94,  durete: 1.4 },
+      { depuis: 61, resistance: 11, energie: 119,  durete: 1.6 },
+      { depuis: 71, resistance: 14, energie: 175, durete: 1.8 },
+      { depuis: 91, resistance: 17, energie: 189, durete: 1.8 },
     ],
 
     // RECOUVREMENT DES TRÉSORS : ce qui cache chaque trésor.
@@ -944,31 +950,38 @@ window.CONFIG = {
     nomPersonnage: 'Bidule',
 
     // Les 7 raretés (échelle Habby), de la plus courante à la plus rare.
-    // "niveauMax" = niveau maximum d'un objet de cette rareté ;
-    // "multiplicateur" = la stat principale de l'objet est multipliée par ce nombre ;
+    // "niveauMax" = niveau maximum de l'EMPLACEMENT quand un objet de cette rareté y est équipé (null = sans limite).
+    //   Le niveau appartient à l'emplacement, pas à l'objet (comme dans les jeux Habby) : changer d'objet garde le niveau,
+    //   mais un objet de rareté plus basse le limite à son niveauMax tant qu'il est équipé ;
+    // "multiplicateur" = la puissance et la stat secondaire de l'objet sont multipliées par ce nombre ;
     // "S" = palier « S » : même couleur que la rareté, avec un badge S.
     // "fusion" = ce qu'il faut pour passer à la rareté suivante, avec l'objet + 2 autres de la même rareté :
     //   'identique'   = 2 objets du même modèle (ex. 3 Pics lourds) ;
     //   'emplacement' = 2 objets du même emplacement, n'importe quel modèle (ex. 3 pioches).
     raretes: {
-      commun:      { nom: 'Commun',       niveauMax: 10, multiplicateur: 1,   fusion: 'identique' },
-      rare:        { nom: 'Rare',         niveauMax: 20, multiplicateur: 1.4, fusion: 'identique' },
-      epique:      { nom: 'Épique',       niveauMax: 30, multiplicateur: 2,   fusion: 'emplacement' },
-      epiqueS:     { nom: 'Épique S',     niveauMax: 40, multiplicateur: 2.5, fusion: 'identique', S: true },
-      legendaire:  { nom: 'Légendaire',   niveauMax: 50, multiplicateur: 3,   fusion: 'identique' },
-      legendaireS: { nom: 'Légendaire S', niveauMax: 60, multiplicateur: 3.6, fusion: 'identique', S: true },
-      mythique:    { nom: 'Mythique',     niveauMax: 70, multiplicateur: 4.5 },
+      commun:      { nom: 'Commun',       niveauMax: 10,   multiplicateur: 1,   fusion: 'identique' },
+      rare:        { nom: 'Rare',         niveauMax: 30,   multiplicateur: 1.4, fusion: 'identique' },
+      epique:      { nom: 'Épique',       niveauMax: 75,   multiplicateur: 2,   fusion: 'emplacement' },
+      epiqueS:     { nom: 'Épique S',     niveauMax: 75,   multiplicateur: 2.5, fusion: 'identique', S: true },
+      legendaire:  { nom: 'Légendaire',   niveauMax: 100,  multiplicateur: 3,   fusion: 'identique' },
+      legendaireS: { nom: 'Légendaire S', niveauMax: 100,  multiplicateur: 3.6, fusion: 'identique', S: true },
+      mythique:    { nom: 'Mythique',     niveauMax: null, multiplicateur: 4.5 },
     },
 
     // Fusion (bouton en haut à droite de la fiche de l'objet) : l'objet + 2 autres de la même rareté donnent
-    // 1 objet de la rareté suivante (voir "fusion" dans chaque rareté). L'objet choisi garde son niveau ;
-    // tout ce qui a été dépensé pour améliorer les deux autres est rendu.
+    // 1 objet de la rareté suivante (voir "fusion" dans chaque rareté). Le niveau reste celui de l'emplacement.
     fusion: { nombre: 3 },
+    // Bouton « Fusion auto » (écran Personnage) : fait d'un coup toutes les fusions dont le résultat est au plus de cette rareté
+    // (Commun → Rare, Rare → Épique). Au-dessus, les fusions restent à la main.
+    fusionAuto: 'epique',
 
     // Les 6 emplacements. "deblocage" = la nouveauté qui le fait apparaître dans les coffres
     // (mêmes noms que progression > deblocages ; null = dès l'ouverture de l'équipement).
-    // "court" = nom court de la stat, affiché avec sa valeur dans la fiche de l'objet.
-    // Stat principale = (depart + parNiveau × (niveau − 1)) × multiplicateur de la rareté, sans dépasser "max".
+    // PUISSANCE : chaque objet équipé donne de la puissance ; les dégâts d'un coup de pioche = mine > degatsPioche + la puissance
+    // de tout l'équipement. Puissance d'un objet = (depart + parNiveau × (niveau de l'emplacement − 1)) × multiplicateur de la rareté.
+    // "stat" = la STAT SECONDAIRE de l'emplacement (l'ancienne stat principale), calculée de la même façon, sans dépasser "max".
+    // "court" = nom court de la stat, affiché avec sa valeur dans la fiche de l'objet. La Pioche n'a pas de stat secondaire :
+    // elle donne plus de puissance que les autres.
     // Les pourcentages sont écrits en décimal : 0.1 = 10 % ("nombre: true" = un nombre, pas un pourcentage).
     // "modeles" = les archétypes de l'emplacement. "biome" = biome à partir duquel il sort des coffres.
     // Chaque modèle a un passif qui s'active à Épique et grandit à chaque rareté au-dessus :
@@ -976,7 +989,8 @@ window.CONFIG = {
     emplacements: {
       pioche: {
         nom: 'Pioche', deblocage: 'pioche',
-        stat: { court: 'Dégâts', texte: '+{v} dégâts par coup', depart: 3, parNiveau: 0.5, nombre: true },   // arrondi à l'entier
+        puissance: { depart: 3, parNiveau: 1 },
+        stat: null,
         modeles: {
           picLourd:  { nom: 'Pic lourd',  biome: 1, passif: '{v} de chance de frapper deux fois plus fort', valeurs: [0.12, 0.16, 0.2, 0.25, 0.3] },
           picEclats: { nom: 'Pic à éclats', biome: 2, passif: '{v} de chance de casser aussi une roche voisine', valeurs: [0.12, 0.17, 0.22, 0.275, 0.33] },
@@ -985,6 +999,7 @@ window.CONFIG = {
       },
       pelle: {
         nom: 'Pelle', deblocage: null,
+        puissance: { depart: 1, parNiveau: 0.4 },
         stat: { court: 'Pièces par tas', texte: '+{v} de pièces par tas', depart: 0.1, parNiveau: 0.02 },
         modeles: {
           pelleProspecteur: { nom: 'Pelle de prospecteur', biome: 1, passif: '+{v} tas de pièces sur les niveaux trésor', valeurs: [1, 1.5, 2, 2.5, 3], nombre: true },
@@ -993,6 +1008,7 @@ window.CONFIG = {
       },
       gants: {
         nom: 'Gants', deblocage: 'cuivre',
+        puissance: { depart: 1, parNiveau: 0.4 },
         stat: { court: 'Minerai en plus', texte: '{v} de chance de +1 minerai par bloc', depart: 0.1, parNiveau: 0.03, max: 2 },
         modeles: {
           gantsFer:        { nom: 'Gants de fer', biome: 1, passif: '{v} de chance de trouver aussi le meilleur minerai', valeurs: [0.05, 0.075, 0.1, 0.15, 0.2] },
@@ -1001,6 +1017,7 @@ window.CONFIG = {
       },
       casque: {
         nom: 'Casque', deblocage: 'casque',
+        puissance: { depart: 1, parNiveau: 0.4 },
         // Endurance = chance qu'un coup de pioche ne coûte pas d'énergie (un « coup gratuit »). Source principale
         // d'énergie de la mine avec les niveaux de la pioche (réglé par simulation le 16 octobre 2026).
         stat: { court: 'Endurance', texte: 'Endurance : {v} de chance qu\'un coup de pioche ne coûte pas d\'énergie', depart: 0.09, parNiveau: 0.015, max: 0.45 },
@@ -1011,6 +1028,7 @@ window.CONFIG = {
       },
       lanterne: {
         nom: 'Lanterne', deblocage: 'geodes',
+        puissance: { depart: 1, parNiveau: 0.4 },
         stat: { court: 'Géodes rares', texte: 'Géodes rares {v} plus fréquentes', depart: 0.1, parNiveau: 0.03 },
         modeles: {
           lanterneProspecteur: { nom: 'Lanterne de prospecteur', biome: 1, passif: '{v} de chance qu\'une géode monte d\'une rareté', valeurs: [0.1, 0.15, 0.2, 0.275, 0.35] },
@@ -1019,6 +1037,7 @@ window.CONFIG = {
       },
       bottes: {
         nom: 'Bottes', deblocage: 'bottes',
+        puissance: { depart: 1, parNiveau: 0.4 },
         stat: { court: "Tas d'or caché", texte: '{v} de chance qu\'une case de terre cache un tas d\'or', depart: 0.02, parNiveau: 0.003, max: 0.5 },
         modeles: {
           bottesProspecteur:  { nom: 'Bottes de prospecteur', biome: 1, passif: '+{v} de tas d\'or en plus', valeurs: [0.25, 0.375, 0.5, 0.75, 1] },
@@ -1027,12 +1046,12 @@ window.CONFIG = {
       },
     },
 
-    // Améliorer un objet d'un niveau (depuis sa fiche).
-    // Pièces : "depart" pour passer du niveau 1 au 2, puis × "hausse" à chaque niveau.
+    // Améliorer un emplacement d'un niveau (depuis la fiche de l'objet équipé).
+    // Pièces : depart × niveau ^ exposant (niveau 1 → 2 : depart ; niveau 10 : ~190 ; niveau 30 : ~990 ; niveau 75 : ~3 900).
     // Minerai : selon la tranche de niveaux, "depart" + "parNiveau" × (niveaux déjà faits dans la tranche).
     // Le tout premier niveau est offert pendant le tutoriel.
     ameliorer: {
-      pieces: { depart: 20, hausse: 1.15 },
+      pieces: { depart: 6, exposant: 1.5 },
       minerai: [
         { jusqua: 10, minerai: 'cuivre',      depart: 2, parNiveau: 1 },
         { jusqua: 20, minerai: 'fer',         depart: 4, parNiveau: 1 },
@@ -1116,8 +1135,8 @@ window.CONFIG = {
      Chaque jour, de nouvelles missions. Le joueur touche "Récupérer" sur
      une mission réussie pour gagner ses pièces, ses minerais et son XP.
      Quand toutes les missions du jour sont récupérées, il gagne la
-     récompense du jour (perles, clé ou fée). La frise du haut montre la semaine (lundi → dimanche) :
-     un jour manqué est perdu, la semaine recommence chaque lundi.
+     récompense du jour (perles, clé ou fée). La frise du haut montre les jours 1 à 7 (le jour 1 = le premier
+     jour de jeu) : un jour passé de la semaine reste jouable jusqu'à la fin de la semaine.
      --------------------------------------------------------------- */
   missions: {
     nombre: 4,                   // missions par jour
@@ -1132,8 +1151,9 @@ window.CONFIG = {
 
     // MISSIONS DIFFICILES : une mission tirée avec la plus grande quantité de ses "choix" est difficile.
     // Elle donne en plus un consommable (au hasard parmi ceux déjà débloqués), en cette quantité.
-    // C'est le seul moyen d'obtenir des potions et des bombes (la Boutique n'en vend plus).
-    consommables: { potion: 1, bombe: 2 },
+    // C'est le seul moyen d'obtenir des potions, des bombes et des radars (ni la Boutique ni les événements n'en vendent).
+    // Ils ne s'utilisent que dans la mine principale.
+    consommables: { potion: 1, bombe: 2, radar: 1 },
 
     // Liste des missions possibles (une même mission ne revient pas deux fois le même jour).
     // "texte" : {n} est remplacé par la quantité ; [singulier, pluriel] quand la quantité peut valoir 1.
@@ -1154,6 +1174,16 @@ window.CONFIG = {
       { type: 'magma',      texte: 'Refroidis {n} cases de magma',       choix: [5, 10],          pieces: 40, deblocage: 'magma' },
       { type: 'bombes',     texte: 'Utilise {n} bombes',                 choix: [3, 5],           pieces: 50, deblocage: 'bombes' },
     ],
+
+    // Jauge de la semaine (sous les jours) : toutes les missions récupérées dans la semaine, jours passés compris.
+    // "missions" = nombre à atteindre (4 missions × 7 jours = 28 au plus).
+    semaine: {
+      paliers: [
+        { missions: 10, recompense: { cles: { bois: 1 } } },
+        { missions: 20, recompense: { cles: { argent: 1 } } },
+        { missions: 28, recompense: { cles: { or: 1 }, gemmes: 30 } },
+      ],
+    },
 
     // Récompense du jour, du jour 1 au jour 7, gagnée quand toutes les missions du jour sont récupérées.
     // Le jour 1 est le premier jour où le joueur a les missions ; après le jour 7, un nouveau cycle recommence au jour 1.
@@ -1196,10 +1226,11 @@ window.CONFIG = {
     xpGeode: 0,                       // géodes ouvertes : plus d'XP (la pierre nouvelle qu'elle donne compte comme un nouveau trésor)
 
     // ---- XP à gagner pour passer chaque niveau ----
-    // Niveau 2 : "depart" ; chaque niveau suivant demande "enPlus" de plus (niveau 3 : 120, niveau 10 : 260…).
-    // Repère : fin des premiers pas (niveau 16 de la mine) ≈ niveau 3 (sac 5 cases), niveau 4 avec les premières missions.
+    // Niveau 2 : "depart" ; chaque niveau suivant demande "enPlus" de plus (niveau 3 : 70, niveau 10 : 140…).
+    // Réglé par simulation le 30 octobre 2026 (seuls trésors, collections et checkpoints donnent de l'XP) :
+    // fin des premiers pas ≈ niveau 3-4, fin de la Mine des pionniers (~jour 15) ≈ niveau 13.
     // Une ligne de "niveaux" peut avoir son propre "xp".
-    xp: { depart: 100, enPlus: 20 },
+    xp: { depart: 60, enPlus: 10 },
 
     // ---- Les niveaux, à partir du niveau 2 ----
     // "recompense" : pieces, gemmes (perles), potions, bombes, cle ('bois', 'argent', 'or', 'etoile') avec "cles" = combien,
@@ -1208,7 +1239,7 @@ window.CONFIG = {
     //   sac = nombre de cases du sac, poche = géodes qui ne prennent pas de case,
     //   fee = une fée : 'hasard' (une couleur que le joueur n'a pas encore) ou une couleur de pets > fees (ex. 'bleue').
     // "deblocage" : la fonctionnalité qui s'ouvre à ce niveau (voir "fonctionnalites" ci-dessous).
-    // Repères (à vérifier en test) : niveau 13 vers la fin du biome 1, 19 au biome 2, 35 au biome 5, 53 à la fin de la mine 1.
+    // Repère (simulation du 30 octobre 2026) : niveau 8 à la fin du 1er jour, 12 vers le jour 7, 13 à la fin de la Mine des pionniers.
     // Après le dernier niveau de la liste, l'XP continue de grandir, sans récompense.
     niveaux: [
       { recompense: { pieces: 100 } },                              // 2
@@ -1450,7 +1481,7 @@ window.CONFIG = {
       fin: 16,                 // dernier jour de l'événement. J15 et J16 : la boutique seule reste ouverte
     },
 
-    // TICKETS : 1 Ticket = 1 descente, avec l'énergie pleine
+    // TICKETS : 1 Ticket = 1 descente, avec l'énergie bleue pleine (energieTicket)
     tickets: {
       parJour: 3,              // Tickets gratuits par jour. Pas de cumul : ceux qui restent sont perdus à minuit
       // true = les Tickets gratuits arrivent en deux fois : "aMinuit" à minuit, le reste à "heure" (18 = 18 h)
@@ -1462,6 +1493,12 @@ window.CONFIG = {
       premiereDescenteOfferte: true,   // la toute première descente est guidée et ne coûte pas de Ticket
     },
 
+    // ÉNERGIE BLEUE : chaque Ticket remplit une barre d'énergie bleue, la même pour tous les joueurs (le niveau du mineur
+    // ne compte pas : le classement reste juste). L'énergie de la mine principale n'est pas touchée.
+    // Dans la mine de l'événement : pas de potion, de pub, de perles, de bombe ni de radar. La barre vide termine la descente.
+    // La puissance de l'équipement compte : elle fait baisser les coups par roche.
+    energieTicket: 60,
+
     // NIVEAUX : 30 niveaux, en 3 décors de 10 niveaux
     niveaux: 30,
     // Départs possibles en plus du niveau 1 : atteindre ce niveau une fois permet ensuite d'y descendre directement
@@ -1470,8 +1507,10 @@ window.CONFIG = {
     // Un décor par tranche de 10 niveaux. "depuis" = son premier niveau.
     // "taille" = la grille (5 = 5 × 5 cases, 7 maximum) ; "tresors" = [minimum, maximum] de trésors par niveau ;
     // "partPierre" = part des cases en pierre (0.35 = 35 %) ; "chanceCandy" = chance qu'une pierre soit une Pierre à Candy Corn.
-    // "cout" = énergie pour dégager les trésors d'un niveau, en part de l'énergie max du joueur (0.06 = 6 %) :
-    //   chaque joueur fait à peu près le même nombre de niveaux par Ticket, quelle que soit son énergie
+    // "resistance" = multiplie la résistance de toutes les roches du décor (comme etages > profondeur > resistance) :
+    //   à 3, une pierre demande 9 coups à la puissance 0, 3 coups avec 20 de puissance, 1 avec 80 ;
+    // "cout" = énergie pour dégager les trésors d'un niveau (à la puissance 0), en part de l'énergie bleue (0.06 = 6 %) :
+    //   chaque joueur fait à peu près le même nombre de niveaux par Ticket
     //   (au moins 3 énergie par niveau, soit une pierre). Repère : environ 15 niveaux par Ticket si le joueur ne casse
     //   que ce qui cache les trésors, moins s'il casse aussi les Pierres à Candy Corn et les Pierres aux yeux.
     //   Comme dans la mine principale, un trésor garde une case dans la terre (energie > indiceTresor) :
@@ -1480,17 +1519,17 @@ window.CONFIG = {
     // "fond" = image de fond de l'écran ; "terre" = 1 à 3 images de terre (variantes) ;
     // "pierre" = 1 à 3 images de pierre (intacte, fissurée, très fissurée ; avec une seule image, des fissures sont dessinées dessus).
     biomes: [
-      { nom: 'Potager aux citrouilles', depuis: 1, taille: 5, tresors: [1, 1], partPierre: 0.35, chanceCandy: 0.3, cout: 0.05,
+      { nom: 'Potager aux citrouilles', depuis: 1, resistance: 3, taille: 5, tresors: [1, 1], partPierre: 0.35, chanceCandy: 0.3, cout: 0.05,
         cases: { yeux: [1, 1], toiles: [0, 0], sacs: [0, 0], grosBonbons: [0, 1] },
         fond: '',     // Assets/Event/Halloween/Fond_Potager.png
         terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Potager_1.png, _2, _3
         pierre: ['Assets/Event/Halloween/Tile_Halloween_Stone.png'] }, // une image propre au décor : Assets/Event/Halloween/Pierre_Potager_1.png, _2, _3
-      { nom: 'Forêt des chauves-souris', depuis: 11, taille: 6, tresors: [1, 2], partPierre: 0.4, chanceCandy: 0.3, cout: 0.06,
+      { nom: 'Forêt des chauves-souris', depuis: 11, resistance: 4, taille: 6, tresors: [1, 2], partPierre: 0.4, chanceCandy: 0.3, cout: 0.06,
         cases: { yeux: [1, 2], toiles: [1, 1], sacs: [0, 1], grosBonbons: [0, 1] },
         fond: '',     // Assets/Event/Halloween/Fond_Foret.png
         terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Foret_1.png, _2, _3
         pierre: ['Assets/Event/Halloween/Tile_Halloween_Stone.png'] }, // une image propre au décor : Assets/Event/Halloween/Pierre_Foret_1.png, _2, _3
-      { nom: 'Manoir des fantômes', depuis: 21, taille: 6, tresors: [2, 2], partPierre: 0.45, chanceCandy: 0.3, cout: 0.07,
+      { nom: 'Manoir des fantômes', depuis: 21, resistance: 5, taille: 6, tresors: [2, 2], partPierre: 0.45, chanceCandy: 0.3, cout: 0.07,
         cases: { yeux: [1, 2], toiles: [1, 2], sacs: [1, 1], grosBonbons: [1, 1] },
         fond: '',     // Assets/Event/Halloween/Fond_Manoir.png
         terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Manoir_1.png, _2, _3
@@ -1534,15 +1573,14 @@ window.CONFIG = {
 
     // LA CITROUILLE GÉANTE : le boss du niveau 30, à partir du jour "calendrier > boss".
     // Elle prend 2 × 2 cases. Ses dégâts restent d'une descente à l'autre : on l'use petit à petit.
-    // "vie" = sa vie en coups de pioche de base, en part de l'énergie max du joueur, fixée quand elle apparaît
+    // "vie" = sa vie en coups de pioche à la puissance 0, en part de l'énergie bleue × la résistance du décor, fixée quand elle apparaît
     //   (1.2 : avec 60 d'énergie max, 72 coups ; une meilleure pioche frappe plus fort, donc va plus vite).
     //   Repère : en partant du niveau 21, un joueur arrive au niveau 30 avec environ un tiers de son énergie,
     //   il lui faut donc 3 à 4 descentes jusqu'au fond pour la vaincre.
-    // "bombe" = coups de pioche que vaut une bombe sur elle.
     // Vaincue, elle repousse à la descente suivante avec "vieRetour" et donne alors "recompenseRetour".
     boss: {
       nom: 'Citrouille géante',
-      vie: 1.2, vieRetour: 0.6, bombe: 5,
+      vie: 1.2, vieRetour: 0.6,
       // 1re victoire : comme la récompense d'un gardien (pièces, potion), des Géodes de lune (à l'Atelier),
       // des Candy Corn et l'exclusivité (un modèle de "equipement" plus bas)
       recompense: { pieces: 500, potions: 1, geodesLune: 3, candy: 100, exclusif: 'fauxCitrouille' },
@@ -1647,9 +1685,6 @@ window.CONFIG = {
     // avec les 2 pubs par jour (5 Tickets), vers le J8. Un joueur à 40 d'énergie ne l'a qu'avec les pubs.
     // Les Candy Corn dépendent de l'énergie du joueur : les Pierres à Candy Corn coûtent de l'énergie à casser.
     boutiqueSorciere: {
-      bombe:      { prix: 25 },
-      radar:      { prix: 25 },
-      potion:     { prix: 60, parJour: 1 },
       geodeLune:  { prix: 90 },
       // Coffre Halloween : une pièce d'équipement à thème (voir "equipement" plus bas), avec ces chances de rareté
       coffre:     { prix: 160, chances: { commun: 60, rare: 35, epique: 5 } },

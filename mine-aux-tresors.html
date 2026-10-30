@@ -169,6 +169,7 @@ button.bag-pill:active{transform:translateY(2px); box-shadow:0 1px 0 var(--panel
 .dw-skip input:focus-visible{outline:2px solid #7d3c98; outline-offset:2px}
 /* Out of energy: three ways to refill side by side (potion, ad, pearls), then "Remonter" */
 .en-opts{display:grid; grid-template-columns:repeat(3, 1fr); gap:2.5cqw}
+.en-blue{grid-column:1 / -1; margin:0; padding:2cqw 3cqw; text-align:center; font-size:4cqw; color:var(--ink)}
 .en-opt{position:relative; display:flex; flex-direction:column; align-items:center; gap:1cqw; padding:3cqw 1cqw 2.5cqw; border:.7cqw solid var(--outline); border-radius:4.5cqw; cursor:pointer;
   background:#fbf1dc; background-clip:padding-box; box-shadow:inset 0 -1.4cqw 0 #e2c89a; font-family:var(--font-display); color:var(--ink)}
 .en-opt:active{transform:translateY(2px); box-shadow:inset 0 -.5cqw 0 #e2c89a}
@@ -791,6 +792,8 @@ button.eq-dmg{cursor:pointer}
 /* Only the items scroll; the scene with the miner stays put */
 .eq-inv{flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; padding:calc(var(--u) * 9) var(--side) calc(var(--u) * 6)}
 .eq-inv::-webkit-scrollbar{display:none}
+.eq-invhead{display:flex; justify-content:flex-end; margin:calc(var(--u) * -5) 0 calc(var(--u) * 5)}
+.eq-auto{min-height:0; padding:calc(var(--u) * 1.8) calc(var(--u) * 4.4); font-size:calc(var(--u) * 3.8)}
 #scr-hero .eq-soon{color:var(--ink-soft)}
 #scr-hero .gi-grid{grid-template-columns:repeat(4, 1fr); gap:calc(var(--u) * 3.8) calc(var(--u) * 3.7); margin:0}
 #scr-hero .gi{aspect-ratio:auto; height:calc(var(--u) * 24.2); place-items:start center; padding:calc(var(--u) * 2.6) 0 0; border-radius:calc(var(--u) * 2.6);
@@ -1475,6 +1478,21 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .wk-day.sel .wk-ic{background:#fff6e0; box-shadow:inset 0 0 0 calc(var(--u) * .8) #e0b04a, 0 calc(var(--u) * .8) 0 #c98f22; transform:scale(1.14)}
 .wk-day.done:not(.sel) .wk-ic{background:#e3fbe9; box-shadow:inset 0 0 0 calc(var(--u) * .5) #9bdcb0}
 .wk-day.missed .dr-art,.wk-day.locked .dr-art{filter:grayscale(1); opacity:.45}
+.wk-ic .badge{position:absolute; right:-8%; top:-8%; bottom:auto; left:auto; transform:scale(.85)}   /* same corner as the tick or the lock */
+/* The week's gauge under the days: missions claimed this week, a gift on each step */
+.wk-gauge{grid-column:1 / -1; display:flex; align-items:center; gap:calc(var(--u) * 2.4); margin-top:calc(var(--u) * 2)}
+.wk-glbl{flex:none; display:flex; flex-direction:column; align-items:center; line-height:1.1; font-family:var(--font-display); font-size:calc(var(--u) * 3.2); color:var(--ink-soft)}
+.wk-glbl b{font-weight:400; color:var(--ink)}
+.wk-track{position:relative; flex:1; margin-right:calc(var(--u) * 4)}
+.wk-track .bar.mini{height:calc(var(--u) * 4.6)}
+.wk-gift{position:absolute; top:50%; width:calc(var(--u) * 9); height:calc(var(--u) * 9); margin:calc(var(--u) * -4.5) 0 0 calc(var(--u) * -4.5); padding:0; border:0; border-radius:50%;
+  background:#fbf1dc; box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge); display:grid; place-items:center; cursor:pointer}
+.wk-gift .dr-art{width:72%; height:72%}
+.wk-gift .dr-art b{font-size:calc(var(--u) * 2.4); -webkit-text-stroke:calc(var(--u) * .6) var(--outline)}
+.wk-gift.ready{background:#fff3a8; box-shadow:inset 0 0 0 calc(var(--u) * .6) #e0b04a, 0 0 calc(var(--u) * 3) #ffe36b; animation:dcWobble 1.4s ease-in-out infinite}
+.wk-gift.got .dr-art{filter:grayscale(.6); opacity:.55}
+.wk-gift i{position:absolute; right:-14%; top:-14%; width:46%; height:46%}
+.wk-gift i svg{display:block; width:100%; height:100%}
 /* The chest of the day, opened once every mission is claimed */
 .dc-card{display:flex; align-items:center; gap:calc(var(--u) * 3); padding:calc(var(--u) * 4); border-radius:calc(var(--u) * 4); background:#fff6e0;
   box-shadow:inset 0 0 0 calc(var(--u) * .8) #e0b04a, 0 calc(var(--u) * 1) 0 #c98f22; text-align:left}
@@ -1719,6 +1737,9 @@ body.nav-on #scr-village .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-a
 #scr-mine{padding-bottom:0}
 #scr-mine .hud{align-items:center; gap:12px}
 #scr-mine .chip.depth,#scr-mine .chip.energy{border:0; background:none; box-shadow:none}
+/* Event mines: blue energy (a Ticket's own bar) */
+#scr-mine .chip.energy.blue > img{filter:hue-rotate(185deg) saturate(1.6) drop-shadow(0 2px 0 #1d1a2b)}
+#scr-mine .energy.blue .bar i{background:linear-gradient(#7fd3ff, #2f8be6)}
 #scr-mine .depth{align-items:center; padding:0 4px; min-width:64px}
 #scr-mine .depth span{font-family:var(--font-display); font-size:15px; letter-spacing:0; text-transform:none; color:#fff; -webkit-text-stroke:4px var(--outline); paint-order:stroke fill}
 #scr-mine .depth b{font-size:38px; line-height:.95; color:#fff; -webkit-text-stroke:7px var(--outline); paint-order:stroke fill; text-shadow:0 3px 0 var(--outline)}
@@ -2834,9 +2855,18 @@ const isEquipped = it => G().eq[it.slot] === it.id;
 const gearOpen = () => !!(S.buildings && S.buildings.forge);
 const slotOpen = sk => { const d = EQC.emplacements[sk].deblocage; return !d || has(d); };
 const archOpen = ak => slotOpen(ARCH[ak].slot) && (ARCH[ak].biome || 1) <= biomeOf(Math.max(S.reached || 1, S.level || 1));
-// Main stat of an item: (start + per level × (level − 1)) × rarity multiplier, capped
+// Levels belong to the slots (Habby style): an item works at its slot's level, capped by its rarity (config.js > raretes > niveauMax)
+const slotLv = sk => ((G().slots || {})[sk]) || 1;
+const ilv = it => Math.min(slotLv(it.slot), capOf(it));
+// Power of an item (all equipped items add up; config.js > emplacements > puissance)
+function powerOf(it) {
+  const p = EQC.emplacements[it.slot].puissance; if (!p) return 0;
+  return (p.depart + p.parNiveau * (ilv(it) - 1)) * EQC.raretes[it.rar].multiplicateur;
+}
+// Secondary stat of an item: (start + per level × (level − 1)) × rarity multiplier, capped (the Pickaxe has none)
 function statOf(it) {
-  const st = EQC.emplacements[it.slot].stat, raw = (st.depart + st.parNiveau * (it.lv - 1)) * EQC.raretes[it.rar].multiplicateur;
+  const st = EQC.emplacements[it.slot].stat; if (!st) return 0;
+  const raw = (st.depart + st.parNiveau * (ilv(it) - 1)) * EQC.raretes[it.rar].multiplicateur;
   const v = st.nombre ? Math.round(raw) : raw;   // damage: a whole number
   return st.max != null ? Math.min(st.max, v) : v;
 }
@@ -2844,11 +2874,12 @@ function statOf(it) {
 const passiveOf = it => { const i = PAS_TIERS.indexOf(it.rar), v = ARCH[it.arch].valeurs; return i >= 0 ? v[Math.min(i, v.length - 1)] : 0; };
 // What the equipped items give, all together: { dmg, coin, ore, free, geode, pile, pas: { model: value } }
 function gearTotals() {
-  const t = { dmg: 0, coin: 0, ore: 0, free: 0, geode: 0, pile: 0, pas: {} };
+  const t = { power: 0, coin: 0, ore: 0, free: 0, geode: 0, pile: 0, pas: {} };
   if (!S || !S.gear) return t;
   for (const sk of GSLOTS) {
     const it = equipped(sk); if (!it) continue;
-    t[SLOT_STAT[sk]] = statOf(it);
+    t.power += powerOf(it);
+    if (EQC.emplacements[sk].stat) t[SLOT_STAT[sk]] = statOf(it);
     // (a Halloween model works like the model it copies: "commeModele")
     const p = passiveOf(it), pk = ARCH[it.arch].comme || it.arch; if (p) t.pas[pk] = Math.max(t.pas[pk] || 0, p);
   }
@@ -2874,7 +2905,8 @@ function claimedBest(key) {
   return v;
 }
 // + a little energy for every miner level (config.js > progressionJoueur > energieParNiveau), on top of the level rewards
-const maxE = () => Math.max(MAX_E, claimedBest('energie')) + Math.round((CFG.progressionJoueur.energieParNiveau || 0) * (minerLevel() - 1));
+// (in an event mine: the blue energy of a Ticket, the same for every player: config.js > mineHantee > energieTicket)
+const maxE = () => S && S.haunt && HW && HW.energieTicket ? HW.energieTicket : Math.max(MAX_E, claimedBest('energie')) + Math.round((CFG.progressionJoueur.energieParNiveau || 0) * (minerLevel() - 1));
 // The miner's level from the XP (same rule as the Progression page; written here so it can be used early)
 function minerLevel() {
   const P = CFG.progressionJoueur, X = P.xp || { depart: 40, enPlus: 20 };
@@ -2883,7 +2915,8 @@ function minerLevel() {
   return lv;
 }
 // Pickaxe damage: 1, plus the equipped Pickaxe's bonus (see Equipment)
-const pickPower = () => BASE_DMG + gearTotals().dmg;
+const gearPower = () => Math.round(gearTotals().power);
+const pickPower = () => BASE_DMG + gearPower();
 // Watering can: 5 s and 1 watering without runes (Rune de la Source, Rune du Torrent at the Altar)
 const bucketCd = () => (runeVal('source') || 5) * 1000;
 const maxCharges = () => runeVal('torrent') || 1;
@@ -2942,10 +2975,17 @@ const geodesAt = level => Object.entries(GEODES).filter(([k]) => GEODE_UNLOCK[k]
 // Cover a treasure with the ground its series asks for
 // Toughness on the level being played: in the Pioneers' mine, stone needs more hits deeper down (config.js > etages > profondeur)
 let LV_HP = HP;
+// Every rock gets tougher with depth (config.js > etages > profondeur > resistance; later mines: energie > resistanceParMine)
+const RES_MINE = CFG.energie.resistanceParMine || [1];
+function resistAt(level) {
+  if (S.wide) return 1;
+  if (S.haunt) return (HW && hwBiome(level).resistance) || 1;
+  if (etOn(level)) return etDepth(etLv(level)).resistance || 1;
+  return RES_MINE[Math.min(RES_MINE.length, biomeOf(level)) - 1] || 1;
+}
 function hpAt(level) {
-  if (!etOn(level)) return HP;
-  const k = etDepth(etLv(level)).coupsPierre;
-  return k ? { ...HP, stone: k * BASE_DMG, ore: k * BASE_DMG } : HP;
+  const r = resistAt(level);
+  return r === 1 ? HP : Object.fromEntries(Object.entries(HP).map(([k, v]) => [k, Math.round(v * r)]));
 }
 const tileOf = t => LV_HP[t] ? { t, hp: LV_HP[t], max: LV_HP[t] } : { t };
 function coverSoil(g, cells, soil, level) {
@@ -3016,7 +3056,7 @@ function genLevel(level) {
   if (S.tuto) tutoEnergy(); else if (inGuide() && level < nextReturn() && level >= (S.reached || 1)) guideStone();
 }
 // Energy needed to break every rock of the board with the pickaxe (cooled magma included)
-const hitsOf = c => Math.ceil((c.t === 'magma' ? HP.cool : c.hp || 0) / pickPower());
+const hitsOf = c => Math.ceil((c.t === 'magma' ? LV_HP.cool : c.hp || 0) / pickPower());
 const ROCK = ['stone', 'ore', 'hard', 'ice', 'stump', 'magma', 'cool'];
 // A tutorial level always gives the energy needed to finish it (never stuck on the new tile)
 function tutoEnergy() {
@@ -3264,7 +3304,7 @@ function placeAll(picks, reserved) {
    Above the biome's budget, rock over the treasures turns into dirt, starting with treasures that have no ground rule. */
 // (in hits of the base pickaxe, like the energy budgets: toughness is counted ×10 since the whole-number damages)
 function tileCost(c) {
-  if (c.t === 'magma') return HP.cool / BASE_DMG;
+  if (c.t === 'magma') return LV_HP.cool / BASE_DMG;
   if (c.t === 'ice') return (c.hp || 0) * 2 / BASE_DMG;
   return ['stone', 'ore', 'hard', 'cool', 'root', 'stump'].includes(c.t) ? (c.hp || 0) / BASE_DMG : 0;
 }
@@ -3275,7 +3315,7 @@ function trimCost(g, placed, level, kind) {
   const ef = S.ftype && etOn(level) && ET.types[S.ftype];
   // (the Pioneers' mine: the covers already fit the level's energy cap, see etCover)
   if (ef && ET.recouvrement) return;
-  const budget = ef ? etDepth(etLv(level)).energie * (ef.cout ?? 1) : E.coutNiveau[Math.min(E.coutNiveau.length, biomeOf(level)) - 1] * mult;
+  const budget = ef ? etDepth(etLv(level)).energie * (ef.cout ?? 1) : E.coutNiveau[Math.min(E.coutNiveau.length, biomeOf(level)) - 1] * mult * resistAt(level);
   const shuffle = a => a.sort(() => Math.random() - .5);
   // Every treasure keeps at least one cell in the dirt: digging the free dirt always shows where to break
   // (config.js > energie > indiceTresor; relics inside bonus chests excepted)
@@ -4044,6 +4084,7 @@ function act(p, isTap) {
     save();
     return;
   }
+  if (S.tool === 'bomb' && S.haunt) { disarm(); return deny(i, tr('Les objets ne marchent que dans la mine principale.'), ''); }
   if (S.tool === 'bomb') {
     if (S.bombs <= 0) return deny(i, tr('Plus de bombes ! Gagne-en avec les missions difficiles.'), '');
     if (Math.random() < (gearTotals().pas.gantsDynamiteur || 0) + runeVal('artificier')) floatText(i, tr('Bombe gratuite !'), '#ffd23d'); else S.bombs--;
@@ -4075,7 +4116,7 @@ function coolMagma(i) {
   while (todo.length) {
     const j = todo.shift(), cell = S.grid[j];
     if (chain) for (const k of nb4(j)) if (!seen.has(k) && S.grid[k].t === 'magma') { seen.add(k); todo.push(k); }
-    Object.assign(cell, { t: 'cool', hp: HP.cool, max: HP.cool }); delete cell.chain;
+    Object.assign(cell, { t: 'cool', hp: LV_HP.cool, max: LV_HP.cool }); delete cell.chain;
     const delay = n * 90; n++;
     setTimeout(() => { paintTile(j); const p = center(j); steam(p.x, p.y); tileEls[j].animate([{ filter: 'brightness(2.2)' }, { filter: 'brightness(1)' }], { duration: 500 }); }, delay);
   }
@@ -4383,7 +4424,7 @@ const CONS_LIST = [
   { k: 'potions', name: tr('Potion d\'énergie'), icon: () => POTION, desc: tr('Remplit ton énergie au maximum.'), use: () => { $('bagViewModal').hidden = true; usePotion(); }, open: () => has('potions') || S.potions > 0 },
 ];
 function renderCons() {
-  const list = CONS_LIST.filter(x => x.open());
+  const list = S.haunt ? [] : CONS_LIST.filter(x => x.open());   // (items work in the main mine only)
   $('bagPaneCons').innerHTML = list.length ? list.map(x => `<div class="cons-row"><span class="ci">${x.icon()}<i>${S[x.k]}</i></span>
     <div><b>${x.name}</b><span>${x.desc}</span></div>
     <button class="btn sm" data-use="${x.k}" ${S[x.k] ? '' : 'disabled'}>${tr('Utiliser')}</button></div>`).join('')
@@ -4511,6 +4552,7 @@ function updateEnergy(force) {
     else S.nextRegen = now + REGEN_MS;
   }
   const e = `${S.energy} / ${maxE()}`;
+  $('energyChip').classList.toggle('blue', !!S.haunt);
   if (e !== lastE || force) { lastE = e; $('energyTxt').textContent = e; $('energyFill').style.width = Math.min(100, S.energy / maxE() * 100) + '%'; }
   const r = S.energy >= maxE() ? tr('Énergie pleine') : REGEN_MS > 0 ? tr('+1 dans {s} s', { s: Math.max(1, Math.ceil((S.nextRegen - now) / 1000)) }) : tr('Recharge au village');
   if (r !== lastR) { lastR = r; $('regenTxt').textContent = r; }
@@ -4545,11 +4587,12 @@ function openEnergyModal(stuck) {
   if ([...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
   const price = PANNE.prixRechargePerles, gems = G().gems, ads = energyAdsLeft();
   const opt = (k, icon, title, sub, on, tag) => `<button class="en-opt ${k}" data-en="${k}"${on ? '' : ' disabled'}><span class="en-ic">${icon}${tag ? `<i>${tag}</i>` : ''}</span><b>${title}</b><small>${sub}</small></button>`;
-  $('enOpts').innerHTML = opt('potion', POTION, tr('Potion'), S.potions ? tr('Énergie pleine') : tr('Aucune potion'), S.potions > 0, S.potions ? '×' + S.potions : '')
+  $('enOpts').innerHTML = S.haunt ? `<p class="en-blue">${tr('Plus d\'énergie bleue : la descente est finie. Un nouveau Ticket remplit la barre.')}</p>` : opt('potion', POTION, tr('Potion'), S.potions ? tr('Énergie pleine') : tr('Aucune potion'), S.potions > 0, S.potions ? '×' + S.potions : '')
     + opt('ad', img('Assets/UI/Energy_Yellow.png'), tr('Pub'), ads > 0 ? `+${PANNE.pubEnergie} ${BOLT}` : tr('Plus de pub aujourd\'hui'), ads > 0, ads > 0 ? '▶' : '')
     + opt('gem', GEM_ICON, tr('Recharge'), `${price} ${GEM_ICON}`, gems >= price, '');
-  $('enUpSub').textContent = CFG.energie.rechargeAuVillage ? tr('Recharger l\'énergie') : '';
-  $('enStay').hidden = !!stuck;
+  $('enUpSub').textContent = CFG.energie.rechargeAuVillage && !S.haunt ? tr('Recharger l\'énergie') : '';
+  $('enText').hidden = !!S.haunt;   // (event mines: no refill, the notice in place of the options says why)
+  $('enStay').hidden = !!stuck || !!S.haunt;
   paintEnWallet();
   $('energyModal').hidden = false; sfx('deny');
 }
@@ -4597,8 +4640,8 @@ function refreshBadges() {
   setDot('badgeMuseum', museumWaiting() && !bn.museum);
   setDot('badgeShop', !!S.buildings.shop && chestReady() && !bn.shop);
   hwPaintVillage();
-  if (S.daily && S.daily.goals) {
-    const ready = S.daily.goals.filter(g => !g.claimed && goalDone(g)).length + (dayChestReady() ? 1 : 0);
+  if (S.daily && S.daily.goals && S.week) {
+    const ready = missionsReady();
     setDot('questBadge', ready > 0, ready);
     const q = $('questBtn'); if (q && q.classList.contains('ready') !== !!ready) q.classList.toggle('ready', !!ready);
   }
@@ -4660,7 +4703,8 @@ function paintRadar() {
   });
 }
 function useRadar() {
-  if (!S.radars) return toast(tr('Pas de radar. La Sorcière en vend pendant la Mine Hantée.'), '');
+  if (S.haunt) return toast(tr('Les objets ne marchent que dans la mine principale.'), '');
+  if (!S.radars) return toast(tr('Pas de radar. Gagne-en avec les missions difficiles.'), '');
   const hidden = S.rewards.filter(r => !r.found && !r.radar);
   if (!hidden.length) return toast(tr('Tous les trésors restants sont déjà repérés.'), '');
   const rw = hidden[randInt(0, hidden.length - 1)]; rw.radar = true; S.radars--;
@@ -4669,6 +4713,7 @@ function useRadar() {
   toast(rw.kind === 'art' ? tr('Radar : artefact repéré !') : tr('Radar : géode repérée !'), 'good');
 }
 function usePotion() {
+  if (S.haunt) return toast(tr('Les objets ne marchent que dans la mine principale.'), '');
   if (!S.potions) return toast(tr('Pas de potion. Gagne-en avec les missions difficiles.'), '');
   if (S.energy >= maxE()) return toast(tr('Ton énergie est déjà pleine.'), '');
   S.potions--; S.energy = maxE(); updateEnergy(true); updateQuick(); save();
@@ -4731,34 +4776,36 @@ const GEM_ICON = GIMG.gemmes ? img(GIMG.gemmes, tr('perles')) : svgImg(`<path d=
 const keyName = k => tr(EQC.coffres[k].cle);
 const nfG = v => v.toLocaleString(LANG === 'en' ? 'en-US' : 'fr-FR', { maximumFractionDigits: 2 });
 const pctG = v => { const p = Math.round(v * 1000) / 10; return nfG(p >= 10 ? Math.round(p) : p) + (LANG === 'en' ? '%' : ' %'); };
-const statTxt = (sk, v) => { const st = EQC.emplacements[sk].stat; return tr(st.texte, { v: st.nombre ? nfG(Math.round(v)) : pctG(v) }); };
+const statTxt = (sk, v) => { const st = EQC.emplacements[sk].stat; return st ? tr(st.texte, { v: st.nombre ? nfG(Math.round(v)) : pctG(v) }) : ''; };
+const powerTxt = it => tr('Puissance +{v}', { v: nfG(Math.round(powerOf(it))) });
 const passiveTxt = (ak, v) => tr(ARCH[ak].passif, { v: ARCH[ak].nombre ? nfG(v) : pctG(v) });
 const rarLabel = r => tr(EQC.raretes[r].nom);
 const rarTagG = r => `<span class="rar rar-${RAR_CSS[r]}">${rarLabel(r)}</span>`;
 const sBadge = r => isS(r) ? '<span class="gi-s">S</span>' : '';
 const slotName = sk => tr(EQC.emplacements[sk].nom);
 const itemName = it => tr(ARCH[it.arch].nom);
-const capOf = it => EQC.raretes[it.rar].niveauMax;
-const score = it => rarIdx(it.rar) * 100 + it.lv;
+const capOf = it => EQC.raretes[it.rar].niveauMax ?? Infinity;
+const score = it => rarIdx(it.rar) * 1000 + ilv(it);
 // Better than what the slot holds now (or the slot is empty)
 const better = it => { const cur = equipped(it.slot); return !isEquipped(it) && (!cur || score(it) > score(cur)); };
 
-/* ---------- Equipment: level up (item sheet) ----------
-   Coins (× a rise per level) + the ore of the level band (copper, iron, gold, mithril, raw crystal) */
+/* ---------- Equipment: level up (the equipped item's sheet levels its SLOT) ----------
+   Coins (depart × level ^ exposant) + the ore of the level band (copper, iron, gold, mithril, raw crystal) */
 function levelCost(it) {
-  const A = EQC.ameliorer, L = it.lv;
-  const coin = Math.max(5, Math.round(A.pieces.depart * Math.pow(A.pieces.hausse, L - 1) / 5) * 5);
+  const A = EQC.ameliorer, L = slotLv(it.slot);
+  const coin = Math.max(5, Math.round(A.pieces.depart * Math.pow(L, A.pieces.exposant) / 5) * 5);
   let prev = 0, band = A.minerai[A.minerai.length - 1];
   for (const b of A.minerai) { if (L < b.jusqua) { band = b; break; } prev = b.jusqua; }
   return { coin, [RES_FR[band.minerai]]: band.depart + band.parNiveau * (L - Math.max(1, prev)) };
 }
 const upFree = () => !G().firstUp;   // the very first level-up is offered by the tutorial
-const canLevel = it => !!it && it.lv < capOf(it) && (upFree() || canPay(levelCost(it)));
+const canLevel = it => !!it && isEquipped(it) && slotLv(it.slot) < capOf(it) && (upFree() || canPay(levelCost(it)));
 function levelUp(it) {
   if (!canLevel(it)) return;
-  if (!upFree()) { const cost = levelCost(it); pay(cost); for (const [k, n] of Object.entries(cost)) it.spent[k] = (it.spent[k] || 0) + n; }
-  G().firstUp = true; it.lv++; stat('forge'); gainXP((PJ.xpEquipement || {}).amelioration); unlockAudio(); sfx('reward');
-  toast(tr('{x} : niveau {n} !', { x: itemName(it), n: it.lv }), 'good');
+  if (!upFree()) pay(levelCost(it));
+  const g = G(); g.slots = g.slots || {}; g.slots[it.slot] = slotLv(it.slot) + 1;
+  g.firstUp = true; stat('forge'); gainXP((PJ.xpEquipement || {}).amelioration); unlockAudio(); sfx('reward');
+  toast(tr('{x} : niveau {n} !', { x: slotName(it.slot), n: slotLv(it.slot) }), 'good');
   refreshGear(); save();
 }
 function equip(it) {
@@ -4778,7 +4825,7 @@ const nextRar = r => RAR_KEYS[rarIdx(r) + 1];
 function mergeFodder(it) {
   if (!it || !nextRar(it.rar)) return null;
   const need = EQC.fusion.nombre - 1;
-  const pool = G().items.filter(x => x.id !== it.id && !isEquipped(x) && x.rar === it.rar && x.slot === it.slot).sort((a, b) => a.lv - b.lv);
+  const pool = G().items.filter(x => x.id !== it.id && !isEquipped(x) && x.rar === it.rar && x.slot === it.slot);
   const same = pool.filter(x => x.arch === it.arch);
   const use = bySlot(it.rar) ? pool : same;
   return use.length >= need ? use.slice(0, need) : null;
@@ -4791,7 +4838,6 @@ function mergeHint(it) {
   return tr('Fusion : il faut {n} autres objets {s} {r} (tu en as {h}).', { n: need, s: slotName(it.slot), r: rarLabel(it.rar), h: others.length });
 }
 function mergeCore(it, fod) {
-  for (const f of fod) for (const [k, n] of Object.entries(f.spent || {})) { if (k === 'coin') S.coins += n; else S.bag.ores[k] += n; }
   G().items = G().items.filter(x => !fod.includes(x));
   it.rar = nextRar(it.rar); it.isNew = false; G().merges++; stat('fusions'); gainXP((PJ.xpEquipement || {}).fusion);
 }
@@ -4802,8 +4848,29 @@ function merge(it) {
   save(); refreshGear(); showMergeAnim(cards, it);
 }
 
+// « Fusion auto » (Character screen): every merge up to config.js > equipement > fusionAuto (Epic), the equipped items first
+const AUTO_TOP = rarIdx(EQC.fusionAuto || 'epique');
+const autoBases = () => G().items.filter(it => rarIdx(it.rar) < AUTO_TOP && mergeFodder(it));
+function autoMerge() {
+  const made = new Set();
+  for (let guard = 0; guard < 500; guard++) {
+    const list = autoBases(); if (!list.length) break;
+    const it = list.find(isEquipped) || list[0];
+    mergeCore(it, mergeFodder(it)); made.add(it);
+  }
+  const items = [...made].filter(it => G().items.includes(it)); if (!items.length) return;
+  save(); refreshGear();
+  // The results, shown like a chest of 10
+  const m = $('chestModal'); m.className = 'modal chest-modal'; m.hidden = false;
+  cmItem = items[0]; cmItems = items; cmChest = null;
+  $('chestTitle').textContent = tr('Fusion automatique');
+  $('chestBtn').hidden = true;
+  unlockAudio(); sfx('fuse'); revealMany(items);
+  $('chestBtns').innerHTML = `<button class="btn ghosty" data-cm="close">${tr('Continuer')}</button>`;
+}
+
 /* ---------- Equipment: chests and keys ---------- */
-const newItem = (ak, rar) => ({ id: G().nextId++, slot: ARCH[ak].slot, arch: ak, rar, lv: 1, spent: {}, isNew: true });
+const newItem = (ak, rar) => ({ id: G().nextId++, slot: ARCH[ak].slot, arch: ak, rar, isNew: true });
 // A random item: the chest's rarity odds (with its pity), then a slot and a model already unlocked
 function rollItem(chest) {
   const C = EQC.coffres[chest], g = G();
@@ -4909,8 +4976,8 @@ function revealItem(it) {
   $('chestModal').classList.add('r-' + r);
   $('chestItem').innerHTML = `<div class="cm-rays"></div>${it.rar === 'mythique' ? '<div class="cm-bolts"></div>' : ''}
     <div class="gi big r-${r} cm-card">${gearArt(it.arch)}${sBadge(it.rar)}</div>
-    <b class="cm-name rar rar-${r}">${itemName(it)}</b><span class="cm-sub">${rarTagG(it.rar)} · ${slotName(it.slot)} · ${tr('Niv. {n}', { n: it.lv })}</span>
-    <span class="cm-stat">${statTxt(it.slot, statOf(it))}</span>`;
+    <b class="cm-name rar rar-${r}">${itemName(it)}</b><span class="cm-sub">${rarTagG(it.rar)} · ${slotName(it.slot)} · ${tr('Niv. {n}', { n: ilv(it) })}</span>
+    <span class="cm-stat">${powerTxt(it)}${EQC.emplacements[it.slot].stat ? ' · ' + statTxt(it.slot, statOf(it)) : ''}</span>`;
   $('chestItem').hidden = false;
   const more = cmChest && G().keys[cmChest] > 0;
   $('chestBtns').innerHTML = (better(it) ? `<button class="btn" data-cm="equip" id="cmEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>` : '')
@@ -4978,7 +5045,7 @@ function openSheet(id) {
   if (it && it.isNew) { it.isNew = false; save(); }
   renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick');
 }
-const gcard = (it, cls = '') => `<button class="gi r-${RAR_CSS[it.rar]} ${cls}" data-gi="${it.id}" aria-label="${itemName(it)} ${rarLabel(it.rar)}"><span class="gi-art">${gearArt(it.arch)}</span><span class="gi-lv">${tr('Niv. {n}', { n: it.lv })}</span>${sBadge(it.rar)}${it.isNew ? `<span class="gi-new">${tr('Nouveau')}</span>` : ''}${isEquipped(it) ? '<span class="gi-on">✓</span>' : ''}</button>`;
+const gcard = (it, cls = '') => `<button class="gi r-${RAR_CSS[it.rar]} ${cls}" data-gi="${it.id}" aria-label="${itemName(it)} ${rarLabel(it.rar)}"><span class="gi-art">${gearArt(it.arch)}</span><span class="gi-lv">${tr('Niv. {n}', { n: ilv(it) })}</span>${sBadge(it.rar)}${it.isNew ? `<span class="gi-new">${tr('Nouveau')}</span>` : ''}${isEquipped(it) ? '<span class="gi-on">✓</span>' : ''}</button>`;
 // Icon of each slot's main stat, in the item sheet
 const STAT_ICON = { pioche: () => img('Assets/UI/Icon_Damage.png'), pelle: () => resArt('coin'), gants: () => resArt('copper'), casque: () => BOLT, lanterne: () => geodeArt('gold'), bottes: () => img('Assets/UI/Icon_Gold.png') };
 const LOCK_SVG = '<svg viewBox="0 0 24 28" aria-hidden="true"><path d="M6 12V8a6 6 0 0 1 12 0v4" fill="none" stroke="#1d1a2b" stroke-width="3.2"/><rect x="2" y="11" width="20" height="15" rx="4" fill="#fff" stroke="#1d1a2b" stroke-width="2.6"/><circle cx="12" cy="17.5" r="2.4" fill="#1d1a2b"/><path d="M12 18v4" stroke="#1d1a2b" stroke-width="2.6" stroke-linecap="round"/></svg>';
@@ -4990,8 +5057,9 @@ const sheetCostHTML = cost => Object.entries(cost).map(([k, n]) => {
 function renderSheet() {
   if (sheetId === 'stats') return renderStatsSheet();
   const it = gearItem(sheetId); if (!it) { $('gearModal').hidden = true; return; }
-  const a = ARCH[it.arch], r = RAR_CSS[it.rar], cap = capOf(it), maxed = it.lv >= cap, cost = levelCost(it), free = upFree();
+  const a = ARCH[it.arch], r = RAR_CSS[it.rar], cap = capOf(it), on = isEquipped(it), maxed = slotLv(it.slot) >= cap, cost = levelCost(it), free = upFree();
   const st = EQC.emplacements[it.slot].stat, v = statOf(it);
+  const capTxt = cap === Infinity ? '' : ` / ${cap}`;
   const active = rarIdx(it.rar) >= rarIdx(PAS_TIERS[0]);
   const tier = (rr, i) => `<li class="${rarIdx(it.rar) >= rarIdx(rr) ? 'on' : 'off'}">${rarTagG(rr)}<span>${passiveTxt(it.arch, a.valeurs[Math.min(i, a.valeurs.length - 1)])}</span></li>`;
   // One line: the active passive, or the first one to unlock; every rarity behind a button
@@ -5002,18 +5070,19 @@ function renderSheet() {
   const how = bySlot(it.rar) ? tr('Fusionner {n} objets « {s} »', { n, s: slotName(it.slot) }) : tr('Fusionner {n} identiques', { n });
   const hint = !nr ? '' : `<p class="gs-unlock">${active ? tr('{x} pour l\'améliorer', { x: how }) : tr('{x} pour débloquer', { x: how })}</p>`;
   $('gearCard').innerHTML = `
-    <div class="gi gs-big r-${r}${better(it) ? ' better' : ''}"><span class="gi-art">${gearArt(it.arch)}</span>${sBadge(it.rar)}<span class="gi-lv">${tr('Niveau {n}', { n: it.lv })}</span></div>
+    <div class="gi gs-big r-${r}${better(it) ? ' better' : ''}"><span class="gi-art">${gearArt(it.arch)}</span>${sBadge(it.rar)}<span class="gi-lv">${tr('Niveau {n}', { n: ilv(it) })}${capTxt}</span></div>
     <div class="card gear-card gs-panel">
       ${nr ? `<button class="gs-fusebtn${fod ? ' on' : ''}" data-gmerge aria-label="${tr('Fusionner')}">${img('Assets/UI/Icon_Forge.png')}${fod ? '<span class="badge">!</span>' : ''}</button>` : ''}
       <h2 class="gs-name">${itemName(it)}</h2>
       <p class="gs-h">${tr('Stats')}</p>
-      <div class="gs-box gs-statrow"><span class="gs-sic">${STAT_ICON[it.slot]()}</span><span class="gs-slab">${tr(st.court)}</span><b>${st.nombre ? nfG(v) : pctG(v)}</b></div>
+      <div class="gs-box gs-statrow"><span class="gs-sic">${img('Assets/UI/Icon_Damage.png')}</span><span class="gs-slab">${tr('Puissance')}</span><b>${nfG(Math.round(powerOf(it)))}</b></div>
+      ${st ? `<div class="gs-box gs-statrow"><span class="gs-sic">${STAT_ICON[it.slot]()}</span><span class="gs-slab">${tr(st.court)}</span><b>${st.nombre ? nfG(v) : pctG(v)}</b></div>` : ''}
       <p class="gs-h">${active ? '' : LOCK_SVG}${tr('Passif')}<button class="gs-more" data-gtiers>${sheetAllTiers ? tr('Masquer') : tr('Toutes les raretés')}</button></p>
       <div class="gs-box gs-pasbox">${pas}${hint}</div>
-      <div class="gs-box gs-cost">${maxed ? `<span class="gs-free">${tr('Niveau max')}</span>` : free ? `<span class="gs-free">${tr('Offert')}</span>` : sheetCostHTML(cost)}</div>
+      <div class="gs-box gs-cost">${!on ? `<span class="gs-free">${tr('Équipe-le pour améliorer l\'emplacement')}</span>` : maxed ? `<span class="gs-free">${nr ? tr('Niveau max pour cette rareté : fusionne pour aller plus haut') : tr('Niveau max')}</span>` : free ? `<span class="gs-free">${tr('Offert')}</span>` : sheetCostHTML(cost)}</div>
       <div class="gs-btns">
         ${isEquipped(it) ? `<button class="gs-btn blue" data-gunequip>${tr('Retirer')}</button>` : `<button class="gs-btn blue" data-gequip id="gEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>`}
-        <button class="gs-btn" data-gup id="gUp" ${!maxed && canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button>
+        <button class="gs-btn" data-gup id="gUp" ${canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button>
       </div>
     </div>
     <button class="gs-close" data-gclose aria-label="${tr('Fermer')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#1d1a2b" stroke-width="7" stroke-linecap="round"/><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></button>`;
@@ -5021,11 +5090,11 @@ function renderSheet() {
 // Every bonus of the equipped items, in one list
 function renderStatsSheet() {
   const T = gearTotals();
-  const rows = GSLOTS.filter(sk => slotOpen(sk)).map(sk => { const it = equipped(sk); return `<li><span class="gs-ic">${it ? gearArt(it.arch) : slotArt(sk)}</span><span><b>${slotName(sk)}</b>${it ? statTxt(sk, statOf(it)) : tr('Rien d\'équipé')}</span></li>`; }).join('');
+  const rows = GSLOTS.filter(sk => slotOpen(sk)).map(sk => { const it = equipped(sk); return `<li><span class="gs-ic">${it ? gearArt(it.arch) : slotArt(sk)}</span><span><b>${slotName(sk)} · ${tr('Niv. {n}', { n: it ? ilv(it) : slotLv(sk) })}</b>${it ? powerTxt(it) + (EQC.emplacements[sk].stat ? ' · ' + statTxt(sk, statOf(it)) : '') : tr('Rien d\'équipé')}</span></li>`; }).join('');
   const pas = Object.entries(T.pas).map(([ak, v]) => `<li><span class="gs-ic">${gearArt(ak)}</span><span><b>${tr(ARCH[ak].nom)}</b>${passiveTxt(ak, v)}</span></li>`).join('');
   $('gearCard').innerHTML = `<div class="card gear-card"><button class="x" data-gclose aria-label="${tr('Fermer')}">×</button><h2>${tr('Tes bonus')}</h2>
     <ul class="gs-list">${rows}</ul>${pas ? `<p class="gs-h">${tr('Passifs actifs')}</p><ul class="gs-list">${pas}</ul>` : ''}
-    <p class="gs-hint">${(BAG_FREE ? tr('Énergie max {e} · Dégâts de la pioche {d}', { e: maxE(), d: nfG(Math.round(pickPower())) }) : tr('Énergie max {e} · Sac {b} cases · Dégâts de la pioche {d}', { e: maxE(), b: bagCap(), d: nfG(Math.round(pickPower())) }))}</p></div>`;
+    <p class="gs-hint">${tr('Puissance {p} · Dégâts par coup {d}', { p: nfG(gearPower()), d: nfG(pickPower()) })}<br>${(BAG_FREE ? tr('Énergie max {e}', { e: maxE() }) : tr('Énergie max {e} · Sac {b} cases', { e: maxE(), b: bagCap() }))}</p></div>`;
 }
 document.addEventListener('click', e => {
   const t = e.target;
@@ -5037,6 +5106,7 @@ document.addEventListener('click', e => {
   if (t.closest('[data-gtiers]')) { sheetAllTiers = !sheetAllTiers; sfx('pick'); renderSheet(); return; }
   if (t.closest('[data-gup]')) return levelUp(it);
   if (t.closest('[data-gmerge]')) { if (mergeFodder(it)) return merge(it); unlockAudio(); sfx('deny'); return toast(mergeHint(it), ''); }
+  if (t.closest('[data-gauto]')) return autoMerge();
   if (t.closest('[data-gstats]')) { sheetId = 'stats'; renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick'); return; }
   const sl = t.closest('[data-eqslot]');
   if (sl) {
@@ -5071,19 +5141,18 @@ function renderHero() {
     if (!open || !slotOpen(sk)) return `<button class="eq-slot locked" data-eqslot="${sk}" aria-label="${slotName(sk)}"><span class="eq-ic"><b>?</b></span>${open && d ? `<span class="eq-lv">${tr('Niv. {n}', { n: UNLOCK[d] })}</span>` : ''}</button>`;
     const up = G().items.some(x => x.slot === sk && better(x)) || (it && !!mergeFodder(it));
     if (!it) return `<button class="eq-slot empty" data-eqslot="${sk}" id="eqs-${sk}" aria-label="${slotName(sk)}"><span class="eq-ic">${slotArt(sk)}</span>${up ? '<span class="badge">!</span>' : ''}</button>`;
-    return `<button class="eq-slot r-${RAR_CSS[it.rar]}" data-gi="${it.id}" id="eqs-${sk}" aria-label="${slotName(sk)}"><span class="eq-ic">${gearArt(it.arch)}</span><span class="eq-lv">${tr('Niv. {n}', { n: it.lv })}</span>${sBadge(it.rar)}${up ? '<span class="badge">!</span>' : ''}</button>`;
+    return `<button class="eq-slot r-${RAR_CSS[it.rar]}" data-gi="${it.id}" id="eqs-${sk}" aria-label="${slotName(sk)}"><span class="eq-ic">${gearArt(it.arch)}</span><span class="eq-lv">${tr('Niv. {n}', { n: ilv(it) })}</span>${sBadge(it.rar)}${up ? '<span class="badge">!</span>' : ''}</button>`;
   };
   $('eqLeft').innerHTML = GSLOTS.slice(0, 3).map(slot).join('');
   $('eqRight').innerHTML = GSLOTS.slice(3).map(slot).join('');
-  // One stat under the miner: the pickaxe's damage (a tap shows every bonus)
-  const dmg = nfG(Math.round(pickPower()));
+  // One stat under the miner: the power of all the equipment (a tap shows every bonus)
   $('eqStats').innerHTML = !has('pioche') ? ''
-    : `<${open ? 'button data-gstats' : 'span'} class="eq-dmg" title="${tr('Dégâts')}">${img('Assets/UI/Icon_Damage.png')}<b>${dmg}</b></${open ? 'button' : 'span'}>`;
+    : `<${open ? 'button data-gstats' : 'span'} class="eq-dmg" title="${tr('Puissance')}">${img('Assets/UI/Icon_Damage.png')}<b>${nfG(gearPower())}</b></${open ? 'button' : 'span'}>`;
   // (no Forge button any more: levelling up and merging happen in the item sheet)
   $('eqActions').innerHTML = '';
-  const list = G().items.filter(it => !isEquipped(it)).sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot) || b.lv - a.lv);
+  const list = G().items.filter(it => !isEquipped(it)).sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot));
   $('eqInv').innerHTML = !open ? `<p class="eq-soon">${tr('L\'équipement arrive avec la Forge, au niveau {n}.', { n: UNLOCK.forge })}</p>`
-    : list.length ? `<div class="gi-grid">${list.map(it => gcard(it, better(it) ? 'better' : mergeFodder(it) ? 'can' : '')).join('')}</div>`
+    : list.length ? `${autoBases().length ? `<div class="eq-invhead"><button class="btn sm eq-auto" data-gauto>${tr('Fusion auto')}</button></div>` : ''}<div class="gi-grid">${list.map(it => gcard(it, better(it) ? 'better' : mergeFodder(it) ? 'can' : '')).join('')}</div>`
     : `<p class="eq-soon">${tr('Les objets que tu trouves dans les coffres arrivent ici.')}</p>`;
   $('navHeroBadge').hidden = !open || !heroBadge();
   // First merge possible: the item, then the merge button of its sheet
@@ -5610,7 +5679,7 @@ function hwMineHTML() {
   return `<div class="hw-card">
       <div class="hw-tk">${TICKET_ART()}<b>${tickets}</b><span>${tr(plural(tickets, 'Ticket', 'Tickets'))}${H.paid ? `<small>${tr('dont {n} acheté(s), gardé(s) jusqu\'à la fin', { n: H.paid })}</small>` : ''}</span></div>
       <p class="hw-next">${next ? tr('Prochains Tickets gratuits dans {t}', { t: '<b data-hwt="free"></b>' }) : tr('C\'est le dernier jour de la mine : plus de Tickets gratuits.')}</p>
-      <p class="hw-rule">${tr('{n} Tickets gratuits par jour, perdus à minuit. 1 Ticket = 1 descente avec l\'énergie pleine.', { n: HWT.parJour })}</p>
+      <p class="hw-rule">${tr('{n} Tickets gratuits par jour, perdus à minuit. 1 Ticket = 1 descente avec une barre d\'énergie bleue pleine. Pas d\'objets dans cette mine.', { n: HWT.parJour })}</p>
       ${adMax ? `<button class="btn hw-ad" data-hwad ${H.ads < adMax ? '' : 'disabled'}>▶ ${tr('+1 Ticket')}<small>${tr('pub {a} / {b}', { a: H.ads, b: adMax })}</small></button>` : ''}
     </div>
     <div class="hw-card">
@@ -5819,9 +5888,10 @@ function hwCoach() {
 // Rock tiles and the hits they take (energy), with the base pickaxe
 const HROCK = ['stone', 'hcandy', 'heyes', 'hsweet', 'hbag', 'stump', 'root'];
 const hwHits = c => HROCK.includes(c.t) ? Math.ceil((c.hp || 0) / BASE_DMG) : 0;
-function hwTile(t, coups) { return { t, hp: coups * BASE_DMG, max: coups * BASE_DMG }; }
+function hwTile(t, coups) { const hp = Math.round(coups * BASE_DMG * resistAt(S.level)); return { t, hp, max: hp }; }
 function genHaunt(level) {
   const B = hwBiome(level), kind = hwKind(level), NT = HW.niveauTresor, T = HW.tuiles;
+  LV_HP = hpAt(level);   // (the setting's toughness for plain stone too)
   const n = Math.min(MAX_COLS, B.taille + (kind === 'treasure' ? NT.tailleEnPlus || 0 : 0));
   setDims(n, n); S.cols = S.rows = n; S.tuto = 0; S.floor = kind;
   const g = Array.from({ length: N }, () => ({ t: 'dirt', v: randInt(0, 2) }));
@@ -5883,7 +5953,7 @@ function genHaunt(level) {
    Same rules as the main mine: too much → rock over the treasures turns into dirt; too little → dirt into stone. */
 function hwTrim(g, placed, kind, B) {
   const E = CFG.energie, M = E.multiplicateurCout, mult = kind === 'treasure' ? M.tresor : kind === 'guardian' ? M.gardien : 1;
-  const budget = Math.max(3, Math.round(maxE() * (B.cout || .05) * mult)), cells = placed.flatMap(b => b.cells);
+  const budget = Math.max(3, Math.round(maxE() * (B.cout || .05) * mult)) * (B.resistance || 1), cells = placed.flatMap(b => b.cells);
   if (E.indiceTresor) for (const { cells: cs } of placed) if (!cs.some(i => g[i].t === 'dirt')) g[cs[randInt(0, cs.length - 1)]] = { t: 'dirt', v: randInt(0, 2) };
   let total = cells.reduce((a, i) => a + hwHits(g[i]), 0);
   for (const i of [...cells].sort(() => Math.random() - .5)) {
@@ -6034,7 +6104,7 @@ function hwBossCells() {
 // A new pumpkin when there is none yet, or when the last one was beaten; its life is set by the player's max energy
 function hwBossSpawn() {
   const H = S.hallo; if (H.boss && H.boss.hp > 0) return;
-  const wins = (H.boss && H.boss.wins) || 0, max = Math.max(1, Math.round(maxE() * (wins ? HW.boss.vieRetour : HW.boss.vie))) * BASE_DMG;
+  const wins = (H.boss && H.boss.wins) || 0, max = Math.max(1, Math.round(maxE() * (wins ? HW.boss.vieRetour : HW.boss.vie) * resistAt(HW.niveaux))) * BASE_DMG;
   H.boss = { hp: max, max, wins };
 }
 // Its picture and life bar, over its 4 cells
@@ -6193,8 +6263,11 @@ const museumTotal = () => Object.keys(GEMS).length + Object.values(ARTS).filter(
 const museumOwned = () => Object.values(S.bag.gems).filter(Boolean).length + Object.entries(S.bag.arts).filter(([k, n]) => n && ARTS[k] && !ARTS[k].of).length;
 /* ---------- Daily missions (config.js > missions) ----------
    Each day, a few missions (coins, ore, XP); once they are all claimed, the reward of the day (pearls, a key or a fairy).
-   The week strip goes from Monday to Sunday: a missed day is lost, the week starts again each Monday. */
+   The strip shows days 1 to 7: an earlier day of the week stays playable until the week ends (a missed day gets its
+   missions when the player opens it). The week's gauge counts every mission claimed (config.js > missions > semaine). */
 const OBJ = CFG.missions;
+// What a hard mission's consumable needs to be unlocked (progression > deblocages)
+const CONS_UNLOCK_GOAL = { potion: 'potions', bombe: 'bombes', radar: 'radar' };
 // Haunted Mine: its missions (config.js > mineHantee > missions), one a day while its mine is open
 const HW_GOALS = (HW && HW.missions) || [];
 const goalDef = type => OBJ.liste.find(x => x.type === type) || HW_GOALS.find(x => x.type === type);
@@ -6225,7 +6298,7 @@ function newGoal(exclude, list = OBJ.liste) {
   let n = ch[randInt(0, ch.length - 1)];
   // The biggest of several choices: a hard mission, which also gives a consumable (the only way to get potions and bombs)
   const hard = ch.length > 1 && n === Math.max(...ch);
-  const consOpts = Object.keys(OBJ.consommables || {}).filter(k => has(k === 'potion' ? 'potions' : 'bombes'));
+  const consOpts = Object.keys(OBJ.consommables || {}).filter(k => has(CONS_UNLOCK_GOAL[k] || k));
   const cons = hard && consOpts.length ? consOpts[randInt(0, consOpts.length - 1)] : null;
   if (n >= 5) n = Math.round(n * goalScale(OBJ.quantiteParNiveau) / 5) * 5;
   const reward = Math.round(o.pieces * goalScale(OBJ.bonusParNiveau) / 5) * 5;
@@ -6235,7 +6308,7 @@ function newGoal(exclude, list = OBJ.liste) {
   // (a Halloween mission also gives Candy Corn)
   return { type: o.type, n, start, target: start + n, reward, ore: oreN ? ore : null, oreN, claimed: false, ...(hard ? { hard: true } : {}), ...(cons ? { cons, consN: OBJ.consommables[cons] } : {}), ...(list === HW_GOALS ? { hw: true, candy: o.candy || 0 } : {}) };
 }
-// A day's missions as they ended, to be looked at later in the week (they can no longer be claimed)
+// A day's missions as they ended (saves from before earlier days stayed playable: shown, no longer claimable)
 const freezeDay = d => ({ goals: d.goals.map(g => ({ type: g.type, n: g.n, reward: g.reward, ore: g.ore, oreN: g.oreN, cons: g.cons, consN: g.consN, hard: g.hard, claimed: g.claimed,
   got: Math.max(0, Math.min(g.n, goalValue(g.type) - g.start)) })) });
 // A new day brings new missions (yesterday's are kept, frozen, for the week strip); a new week empties the strip.
@@ -6245,7 +6318,7 @@ function dailyMissions() {
   if (!S.week.past) S.week.past = {};
   if (S.daily && S.daily.day === today() && S.daily.wk !== S.week.start) { S.daily.wk = S.week.start; S.daily.wd = weekDay(); }   // (saves of the Monday-Sunday weeks)
   if (!S.daily || S.daily.day !== today()) {
-    if (S.daily && S.daily.wk === S.week.start) S.week.past[S.daily.wd] = freezeDay(S.daily);
+    if (S.daily && S.daily.wk === S.week.start) S.week.past[S.daily.wd] = { ...S.daily, live: true };
     S.daily = { day: today(), wk: S.week.start, wd: weekDay(), goals: [], rerolls: 0, chest: false };
   }
   while (!S.daily.chest && S.daily.goals.length < OBJ.nombre) {
@@ -6265,9 +6338,25 @@ function hwDailyGoal() {
   }
 }
 const goalDone = g => goalValue(g.type) >= g.target;
-const CONS_ART = k => k === 'potion' ? POTION : TOOLS.bomb;
-const goalsClaimed = () => S.daily.goals.filter(g => g.claimed).length;
-const dayChestReady = () => !S.daily.chest && S.daily.goals.length > 0 && goalsClaimed() === S.daily.goals.length;
+// A day of the week: today, or an earlier day still playable (a day missed gets its missions the first time it is opened)
+function dayAt(d) {
+  if (d === weekDay()) return S.daily;
+  let p = S.week.past[d];
+  if (p && !p.live) { if (S.week.done[d]) return null; p = null; }
+  if (!p) p = S.week.past[d] = { goals: [], rerolls: 0, chest: false, live: true };
+  while (!p.chest && p.goals.length < OBJ.nombre) { const g = newGoal(p.goals.map(x => x.type)); if (!g) break; p.goals.push(g); }
+  return p;
+}
+const liveDays = () => { const out = []; for (let d = 0; d <= weekDay(); d++) { const D = dayAt(d); if (D) out.push([d, D]); } return out; };
+const dayReady = D => D.goals.filter(g => !g.claimed && goalDone(g)).length + (dayChestReady(D) ? 1 : 0);
+// The week's gauge: every mission claimed this week (config.js > missions > semaine)
+const WK = OBJ.semaine || { paliers: [] };
+const weekClaimed = () => [...Array(weekDay() + 1).keys()].reduce((a, d) => { const D = d === weekDay() ? S.daily : S.week.past[d]; return a + (D ? D.goals.filter(g => g.claimed).length : 0); }, 0);
+const weekStepReady = i => !(S.week.wk || [])[i] && weekClaimed() >= WK.paliers[i].missions;
+const missionsReady = () => liveDays().reduce((a, [, D]) => a + dayReady(D), 0) + WK.paliers.filter((_, i) => weekStepReady(i)).length;
+const CONS_ART = k => k === 'potion' ? POTION : k === 'radar' ? RADAR : TOOLS.bomb;
+const goalsClaimed = (D = S.daily) => D.goals.filter(g => g.claimed).length;
+const dayChestReady = (D = S.daily) => !D.chest && D.goals.length > 0 && goalsClaimed(D) === D.goals.length;
 // The reward of a day, drawn by its main gift (a fairy, else its best key, else pearls, else coins) with its amount;
 // the rest of the reward (XP…) goes in small chips next to it
 function dayGift(r) {
@@ -6304,11 +6393,20 @@ const shownDay = () => Math.min(missionDay, weekDay());
 function renderWeek() {
   const t = weekDay(), sel = shownDay();
   return OBJ.recompenses.map(r => fairyReward(r)).map((r, i) => {
-    const st = S.week.done[i] ? 'done' : i === t ? 'today' : i < t ? 'missed' : 'locked';
+    const D = i <= t && !S.week.done[i] ? dayAt(i) : null;
+    const st = S.week.done[i] ? 'done' : i === t ? 'today' : i < t ? (D ? 'open' : 'missed') : 'locked';
     const tag = st === 'done' ? CHECK_ICON : st === 'locked' ? LOCK_ICON : '';
     return `<button class="wk-day ${st}${i === t ? ' now' : ''}${i === sel ? ' sel' : ''}" data-wkday="${i}" aria-pressed="${i === sel}" aria-label="${dayLabel(i)}">
-      <b>${dayLabel(i)}</b><span class="wk-ic">${giftHTML(dayGift(r))}${tag ? `<i>${tag}</i>` : ''}</span></button>`;
-  }).join('');
+      <b>${dayLabel(i)}</b><span class="wk-ic">${giftHTML(dayGift(r))}${tag ? `<i>${tag}</i>` : ''}${D && i !== t && dayReady(D) ? '<span class="badge">!</span>' : ''}</span></button>`;
+  }).join('') + weekGaugeHTML();
+}
+// Under the days: one bar for the whole week, its gifts sitting on it
+function weekGaugeHTML() {
+  if (!WK.paliers.length) return '';
+  const n = weekClaimed(), max = WK.paliers[WK.paliers.length - 1].missions;
+  return `<div class="wk-gauge"><span class="wk-glbl">${tr('Semaine')}<b>${Math.min(n, max)} / ${max}</b></span><div class="wk-track"><div class="bar mini"><i style="width:${Math.min(100, n / max * 100)}%"></i></div>
+    ${WK.paliers.map((p, i) => { const got = (S.week.wk || [])[i], ready = weekStepReady(i);
+      return `<button class="wk-gift${got ? ' got' : ready ? ' ready' : ''}" style="left:${p.missions / max * 100}%" data-wkstep="${i}" aria-label="${tr('{n} missions', { n: p.missions })}">${giftHTML(dayGift(p.recompense))}${got ? `<i>${CHECK_ICON}</i>` : ''}</button>`; }).join('')}</div></div>`;
 }
 // An earlier day: its reward (collected or missed) and its missions as they ended
 function renderPastDay(i) {
@@ -6334,38 +6432,40 @@ function goalRow(g, cls, cur, side, extra) {
     <div class="bar mini"><i style="width:${pct}%"></i><span>${Math.max(0, Math.min(cur, g.n))} / ${g.n}</span></div></div>
     ${side}</div>`;
 }
-function renderDayChest() {
-  const r = fairyReward(OBJ.recompenses[weekDay()]), day = dayName(weekDay()), n = goalsClaimed(), tot = S.daily.goals.length;
-  const ready = dayChestReady(), open = S.daily.chest, gift = dayGift(r);
+function renderDayChest(d = weekDay(), D = S.daily) {
+  const r = fairyReward(OBJ.recompenses[d]), day = dayName(d), n = goalsClaimed(D), tot = D.goals.length;
+  const ready = dayChestReady(D), open = D.chest, gift = dayGift(r);
   const txt = open ? tr('Récompense du {d} récupérée ! Reviens demain.', { d: day }) : ready ? tr('La récompense du {d} est à toi !', { d: day })
     : tr('Récupère toutes les missions pour gagner la récompense du {d}', { d: day });
   return `<div class="dc-card${ready ? ' ready' : ''}${open ? ' open' : ''}">
     <div class="vg-txt"><span>${txt}</span>
       <div class="bar mini"><i style="width:${tot ? n / tot * 100 : 0}%"></i><span>${n} / ${tot}</span></div>
       <div class="chap-rw">${rwChips(gift.rest)}</div></div>
-    <button class="dc-chest" data-dchest ${ready ? '' : 'disabled'} aria-label="${tr('Récupérer la récompense du {d}', { d: day })}">${giftHTML(gift)}${open ? `<i class="dc-got">${CHECK_ICON}</i>` : ''}${ready ? `<span class="btn sm">${tr('Récupérer')}</span>` : ''}</button>
+    <button class="dc-chest" data-dchest="${d}" ${ready ? '' : 'disabled'} aria-label="${tr('Récupérer la récompense du {d}', { d: day })}">${giftHTML(gift)}${open ? `<i class="dc-got">${CHECK_ICON}</i>` : ''}${ready ? `<span class="btn sm">${tr('Récupérer')}</span>` : ''}</button>
   </div>`;
 }
 function renderGoals() {
   dailyMissions();
-  const ready = S.daily.goals.filter(g => !g.claimed && goalDone(g)).length + (dayChestReady() ? 1 : 0);
+  const ready = missionsReady();
   // Badge on the village's Missions button when a reward waits
   $('questBadge').hidden = !ready; $('questBadge').textContent = ready;
   $('questBtn').classList.toggle('ready', !!ready);
   $('weekBox').innerHTML = renderWeek();
-  if (shownDay() < weekDay()) return renderPastDay(shownDay());
-  $('dayChestBox').innerHTML = renderDayChest();
-  const canReroll = S.daily.rerolls < (OBJ.relances || 0);
-  $('vgList').innerHTML = S.daily.goals.map((g, i) => {
+  const d = shownDay(), D = dayAt(d);
+  if (!D) return renderPastDay(d);
+  $('dayChestBox').innerHTML = renderDayChest(d, D);
+  const canReroll = D.rerolls < (OBJ.relances || 0);
+  $('vgList').innerHTML = D.goals.map((g, i) => {
     const cur = goalValue(g.type) - g.start, done = goalDone(g);
     const rw = `+${g.reward}${COIN}${g.ore ? ` +${g.oreN}${resArt(g.ore)}` : ''}${g.cons ? ` +${g.consN}${CONS_ART(g.cons)}` : ''}${g.candy && HW ? ` +${g.candy}${CANDY_ART()}` : ''}`;
     const xp = goalXP(g) ? `<span class="vg-xp">+${goalXP(g)}${XP_ICON}</span>` : '';
     const side = g.claimed ? `<span class="vg-got">${CHECK_ICON}</span>`
-      : `<div class="vg-side">${done ? `<button class="btn sm" data-claim="${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">${rw}</button>` : `<span class="vg-rw">${rw}</span>`}${xp}</div>`;
-    const reroll = canReroll && !done && !g.claimed ? `<button class="vg-reroll" data-reroll="${i}" aria-label="${tr('Changer de mission')}">${REROLL_ICON}</button>` : '';
+      : `<div class="vg-side">${done ? `<button class="btn sm" data-claim="${d}:${i}" aria-label="${tr('Récupérer {n} pièces', { n: g.reward })}">${rw}</button>` : `<span class="vg-rw">${rw}</span>`}${xp}</div>`;
+    const reroll = canReroll && !done && !g.claimed ? `<button class="vg-reroll" data-reroll="${d}:${i}" aria-label="${tr('Changer de mission')}">${REROLL_ICON}</button>` : '';
     return goalRow(g, (g.claimed ? 'claimed' : done ? 'done' : '') + (g.hard ? ' hard' : ''), g.claimed ? g.n : cur, side, reroll);
   }).join('');
-  $('vgNext').textContent = tr('Nouvelles missions dans {t}', { t: untilTomorrow() });
+  if (d < weekDay()) $('vgNext').innerHTML = `<span>${tr('Encore faisable jusqu\'à la fin de la semaine')}</span> <button class="btn sm" data-wkday="${weekDay()}">${tr('Revenir à aujourd\'hui')}</button>`;
+  else $('vgNext').textContent = tr('Nouvelles missions dans {t}', { t: untilTomorrow() });
 }
 // A day of the strip: today and the earlier days of the week can be looked at; the next ones are still locked
 document.addEventListener('click', e => {
@@ -6379,7 +6479,7 @@ document.addEventListener('click', e => {
 const staleDay = () => { if (S.daily && S.daily.day === today()) return false; renderGoals(); save(); return true; };
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-claim]'); if (!b || staleDay()) return;
-  const g = S.daily.goals[+b.dataset.claim]; if (!g || g.claimed || !goalDone(g)) return;
+  const [d, i] = b.dataset.claim.split(':').map(Number), D = dayAt(d), g = D && D.goals[i]; if (!g || g.claimed || !goalDone(g)) return;
   unlockAudio(); sfx('reward');
   g.claimed = true;
   S.coins += g.reward; flyMoney(b.getBoundingClientRect(), g.reward, 0);
@@ -6387,6 +6487,7 @@ document.addEventListener('click', e => {
   if (g.candy && S.hallo) S.hallo.candy += g.candy;
   if (g.cons === 'potion') { S.potions += g.consN; updateQuick(); }
   if (g.cons === 'bombe') { S.bombs += g.consN; updateBombs(); }
+  if (g.cons === 'radar') { S.radars += g.consN; updateQuick(); }
   const xp = goalXP(g);
   gainXP(xp, 'missions');
   toast(tr('Mission réussie !') + ` +${g.reward}${COIN}` + (g.cons ? ` +${g.consN}${CONS_ART(g.cons)}` : '') + (xp ? ` +${xp}${XP_ICON}` : ''), 'good', true);
@@ -6395,24 +6496,25 @@ document.addEventListener('click', e => {
 // ↻ : a mission not done yet is swapped for another kind, a few times a day
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-reroll]'); if (!b || staleDay()) return;
-  const i = +b.dataset.reroll, g = S.daily.goals[i];
-  if (!g || g.claimed || goalDone(g) || S.daily.rerolls >= (OBJ.relances || 0)) return;
+  const [d, i] = b.dataset.reroll.split(':').map(Number), D = dayAt(d), g = D && D.goals[i];
+  if (!g || g.claimed || goalDone(g) || D.rerolls >= (OBJ.relances || 0)) return;
   // (a Halloween mission is swapped for the other Halloween one)
-  const next = newGoal(S.daily.goals.map(x => x.type), g.hw ? HW_GOALS : OBJ.liste);
+  const next = newGoal(D.goals.map(x => x.type), g.hw ? HW_GOALS : OBJ.liste);
   if (!next) return toast(tr('Pas d\'autre mission pour l\'instant'));
   unlockAudio(); sfx('pick');
-  S.daily.goals[i] = next; S.daily.rerolls++;
+  D.goals[i] = next; D.rerolls++;
   renderGoals(); save();
 });
 // All the missions claimed: the reward of the day
 document.addEventListener('click', e => {
-  const cb = e.target.closest('[data-dchest]'); if (!cb || staleDay() || !dayChestReady()) return;
-  const d = weekDay(), r = fairyReward(OBJ.recompenses[d]);
+  const cb = e.target.closest('[data-dchest]'); if (!cb || staleDay()) return;
+  const d = +cb.dataset.dchest, D = dayAt(d); if (!D || !dayChestReady(D)) return;
+  const r = fairyReward(OBJ.recompenses[d]);
   unlockAudio(); sfx('win');
   S.coins += r.pieces || 0; G().gems += r.gemmes || 0;
   flyMoney(cb.getBoundingClientRect(), r.pieces || 0, r.gemmes || 0);
   for (const [k, n] of Object.entries(r.cles || {})) G().keys[k] = (G().keys[k] || 0) + n;
-  S.daily.chest = true; S.week.done[d] = true;
+  D.chest = true; S.week.done[d] = true;
   gainXP(r.xp || 0);
   // A fairy has its own reward page; anything else shows in a small window
   if (r.fee) giveFairy(r.fee);
@@ -6422,6 +6524,22 @@ document.addEventListener('click', e => {
     $('dayDoneRw').innerHTML = rwChips(r);
     $('dayDoneModal').hidden = false;
   }
+  refreshGear(); renderGoals(); save();
+});
+// A gift of the week's gauge: same small window as a day's reward
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-wkstep]'); if (!b || staleDay()) return;
+  const i = +b.dataset.wkstep, p = WK.paliers[i]; unlockAudio();
+  if (!weekStepReady(i)) { sfx('deny'); return toast((S.week.wk || [])[i] ? tr('Déjà récupéré') : tr('Encore {n} missions cette semaine', { n: p.missions - weekClaimed() })); }
+  const r = p.recompense; sfx('win');
+  (S.week.wk = S.week.wk || [])[i] = true;
+  S.coins += r.pieces || 0; G().gems += r.gemmes || 0;
+  flyMoney(b.getBoundingClientRect(), r.pieces || 0, r.gemmes || 0);
+  for (const [k, n] of Object.entries(r.cles || {})) G().keys[k] = (G().keys[k] || 0) + n;
+  $('dayDoneTitle').textContent = tr('Récompense de la semaine !');
+  $('dayDoneArt').innerHTML = giftHTML(dayGift(r));
+  $('dayDoneRw').innerHTML = rwChips(r);
+  $('dayDoneModal').hidden = false;
   refreshGear(); renderGoals(); save();
 });
 $('dayDoneOk').addEventListener('click', () => { $('dayDoneModal').hidden = true; });
@@ -8034,6 +8152,8 @@ function start(data) {
     S = freshState(); genLevel(1);
   }
   S.gear = Object.assign(newGear(), S.gear || {}); S.gear.keys = Object.assign(newGear().keys, S.gear.keys);
+  // (saves from before slot levels: each slot takes the highest level of its items; what was spent stays spent)
+  if (!S.gear.slots) { S.gear.slots = {}; for (const it of S.gear.items) { S.gear.slots[it.slot] = Math.max(S.gear.slots[it.slot] || 1, it.lv || 1); delete it.lv; delete it.spent; } }
   if (!S.tutoSeen) S.tutoSeen = {};
   // Saves from before the first-steps tutorial: players already past it don't see it again
   if (saved && S.reached > 5) for (const k of ['toucher', 'creuser', 'tresor', 'sacPlein', 'surface', 'descendre', 'bld-museum', 'prime', 'museeRetour', 'redescendre-5', 'ascenseur', 'sac', 'suivant', 'retour-5']) S.tutoSeen[k] = true;
