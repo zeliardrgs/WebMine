@@ -68,6 +68,7 @@ window.TEXTES_EN = {
   "Niveau 1 : {e}": "Level 1: {e}",
   "Niveau suivant : {e}": "Next level: {e}",
   "+{v} sur les primes du Musée": "+{v} on Museum bonuses",
+  "Exclusif ! Un casque Épique.": "Exclusive! An Epic helmet.",
   "Puissance": "Power",
   "Puissance +{v}": "Power +{v}",
   "Puissance {p} · Dégâts par coup {d}": "Power {p} · Damage per hit {d}",

@@ -549,7 +549,7 @@ window.CONFIG = {
     // "durete" = multiplie les chances des recouvrements durs (Caché et Scellé) : plus il est grand, plus ils sont fréquents.
     // Refonte du 30 octobre 2026 (puissance de l'équipement) : la difficulté ne monte qu'avec la profondeur, jamais avec l'équipement.
     // Simulation (WebMine/.sim/gearsim.js) : un joueur à 3 × 10 min par jour, qui met ses pièces dans l'équipement,
-    // finit la mine vers le jour 15 en dépensant 5 à 10 énergie par étage.
+    // finit la mine vers le jour 12 en dépensant 4 à 9 énergie par étage (puissance × 1,5 le 30 octobre 2026 : le jeu était trop dur).
     profondeur: [
       { depuis: 1,  resistance: 1,  energie: 3,   durete: 0.6 },
       { depuis: 11, resistance: 2,  energie: 10,   durete: 0.8 },
@@ -980,6 +980,9 @@ window.CONFIG = {
     // Fusion (bouton en haut à droite de la fiche de l'objet) : l'objet + 2 autres de la même rareté donnent
     // 1 objet de la rareté suivante (voir "fusion" dans chaque rareté). Le niveau reste celui de l'emplacement.
     fusion: { nombre: 3 },
+
+    // false = les passifs des modèles (« Passif » dans la fiche) sont retirés pour l'instant : pas affichés, sans effet.
+    passifs: false,
     // Bouton « Fusion auto » (écran Personnage) : fait d'un coup toutes les fusions dont le résultat est au plus de cette rareté
     // (Commun → Rare, Rare → Épique). Au-dessus, les fusions restent à la main.
     fusionAuto: 'epique',
@@ -998,7 +1001,7 @@ window.CONFIG = {
     emplacements: {
       pioche: {
         nom: 'Pioche', deblocage: 'pioche',
-        puissance: { depart: 3, parNiveau: 1 },
+        puissance: { depart: 5, parNiveau: 1.5 },
         stat: null,
         modeles: {
           picLourd:  { nom: 'Pic lourd',  biome: 1, passif: '{v} de chance de frapper deux fois plus fort', valeurs: [0.12, 0.16, 0.2, 0.25, 0.3] },
@@ -1008,7 +1011,7 @@ window.CONFIG = {
       },
       pelle: {
         nom: 'Pelle', deblocage: null,
-        puissance: { depart: 1, parNiveau: 0.4 },
+        puissance: { depart: 2, parNiveau: 0.6 },
         stat: { court: 'Pièces par tas', texte: '+{v} de pièces par tas', depart: 0.1, parNiveau: 0.02 },
         modeles: {
           pelleProspecteur: { nom: 'Pelle de prospecteur', biome: 1, passif: '+{v} tas de pièces sur les niveaux trésor', valeurs: [1, 1.5, 2, 2.5, 3], nombre: true },
@@ -1017,7 +1020,7 @@ window.CONFIG = {
       },
       gants: {
         nom: 'Gants', deblocage: 'cuivre',
-        puissance: { depart: 1, parNiveau: 0.4 },
+        puissance: { depart: 2, parNiveau: 0.6 },
         stat: { court: 'Minerai en plus', texte: '{v} de chance de +1 minerai par bloc', depart: 0.1, parNiveau: 0.03, max: 2 },
         modeles: {
           gantsFer:        { nom: 'Gants de fer', biome: 1, passif: '{v} de chance de trouver aussi le meilleur minerai', valeurs: [0.05, 0.075, 0.1, 0.15, 0.2] },
@@ -1026,7 +1029,7 @@ window.CONFIG = {
       },
       casque: {
         nom: 'Casque', deblocage: 'casque',
-        puissance: { depart: 1, parNiveau: 0.4 },
+        puissance: { depart: 2, parNiveau: 0.6 },
         // Endurance = chance qu'un coup de pioche ne coûte pas d'énergie (un « coup gratuit »). Source principale
         // d'énergie de la mine avec les niveaux de la pioche (réglé par simulation le 16 octobre 2026).
         stat: { court: 'Endurance', texte: 'Endurance : {v} de chance qu\'un coup de pioche ne coûte pas d\'énergie', depart: 0.09, parNiveau: 0.015, max: 0.45 },
@@ -1037,7 +1040,7 @@ window.CONFIG = {
       },
       lanterne: {
         nom: 'Lanterne', deblocage: 'geodes',
-        puissance: { depart: 1, parNiveau: 0.4 },
+        puissance: { depart: 2, parNiveau: 0.6 },
         stat: { court: 'Géodes rares', texte: 'Géodes rares {v} plus fréquentes', depart: 0.1, parNiveau: 0.03 },
         modeles: {
           lanterneProspecteur: { nom: 'Lanterne de prospecteur', biome: 1, passif: '{v} de chance qu\'une géode monte d\'une rareté', valeurs: [0.1, 0.15, 0.2, 0.275, 0.35] },
@@ -1046,7 +1049,7 @@ window.CONFIG = {
       },
       bottes: {
         nom: 'Bottes', deblocage: 'bottes',
-        puissance: { depart: 1, parNiveau: 0.4 },
+        puissance: { depart: 2, parNiveau: 0.6 },
         stat: { court: "Tas d'or caché", texte: '{v} de chance qu\'une case de terre cache un tas d\'or', depart: 0.02, parNiveau: 0.003, max: 0.5 },
         modeles: {
           bottesProspecteur:  { nom: 'Bottes de prospecteur', biome: 1, passif: '+{v} de tas d\'or en plus', valeurs: [0.25, 0.375, 0.5, 0.75, 1] },

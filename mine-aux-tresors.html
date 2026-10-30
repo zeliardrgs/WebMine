@@ -2886,7 +2886,9 @@ function statOf(it) {
   return st.max != null ? Math.min(st.max, v) : v;
 }
 // Passive of the item's model: from Epic on, stronger at Legendary and Mythic
-const passiveOf = it => { const i = PAS_TIERS.indexOf(it.rar), v = ARCH[it.arch].valeurs; return i >= 0 ? v[Math.min(i, v.length - 1)] : 0; };
+// (passives switched off for now: config.js > equipement > passifs)
+const PAS_ON = EQC.passifs !== false;
+const passiveOf = it => { const i = PAS_TIERS.indexOf(it.rar), v = ARCH[it.arch].valeurs; return PAS_ON && i >= 0 ? v[Math.min(i, v.length - 1)] : 0; };
 // What the equipped items give, all together: { dmg, coin, ore, free, geode, pile, pas: { model: value } }
 function gearTotals() {
   const t = { power: 0, coin: 0, ore: 0, free: 0, geode: 0, pile: 0, pas: {} };
@@ -5141,7 +5143,7 @@ function renderSheet() {
     : `<p class="gs-pastxt${active ? '' : ' off'}">${passiveTxt(it.arch, a.valeurs[Math.min(pi, a.valeurs.length - 1)])}</p>`;
   const nr = nextRar(it.rar), fod = mergeFodder(it), n = EQC.fusion.nombre;
   const how = bySlot(it.rar) ? tr('Fusionner {n} objets « {s} »', { n, s: slotName(it.slot) }) : tr('Fusionner {n} identiques', { n });
-  const hint = !nr ? '' : `<p class="gs-unlock">${active ? tr('{x} pour l\'améliorer', { x: how }) : tr('{x} pour débloquer', { x: how })}</p>`;
+  const hint = !nr ? '' : `<p class="gs-unlock">${active || !PAS_ON ? tr('{x} pour l\'améliorer', { x: how }) : tr('{x} pour débloquer', { x: how })}</p>`;
   $('gearCard').innerHTML = `
     <div class="gi gs-big r-${r}${better(it) ? ' better' : ''}"><span class="gi-art">${gearArt(it.arch)}</span>${sBadge(it.rar)}<span class="gi-lv">${tr('Niveau {n}', { n: ilv(it) })}${capTxt}</span></div>
     <div class="card gear-card gs-panel">
@@ -5150,8 +5152,8 @@ function renderSheet() {
       <p class="gs-h">${tr('Stats')}</p>
       <div class="gs-box gs-statrow"><span class="gs-sic">${img('Assets/UI/Icon_Damage.png')}</span><span class="gs-slab">${tr('Puissance')}</span><b>${nfG(Math.round(powerOf(it)))}</b></div>
       ${st ? `<div class="gs-box gs-statrow"><span class="gs-sic">${STAT_ICON[it.slot]()}</span><span class="gs-slab">${tr(st.court)}</span><b>${st.nombre ? nfG(v) : pctG(v)}</b></div>` : ''}
-      <p class="gs-h">${active ? '' : LOCK_SVG}${tr('Passif')}<button class="gs-more" data-gtiers>${sheetAllTiers ? tr('Masquer') : tr('Toutes les raretés')}</button></p>
-      <div class="gs-box gs-pasbox">${pas}${hint}</div>
+      ${PAS_ON ? `<p class="gs-h">${active ? '' : LOCK_SVG}${tr('Passif')}<button class="gs-more" data-gtiers>${sheetAllTiers ? tr('Masquer') : tr('Toutes les raretés')}</button></p>
+      <div class="gs-box gs-pasbox">${pas}${hint}</div>` : hint ? `<div class="gs-box gs-pasbox">${hint}</div>` : ''}
       <div class="gs-box gs-cost">${!on ? `<span class="gs-free">${tr('Équipe-le pour améliorer l\'emplacement')}</span>` : maxed ? `<span class="gs-free">${nr ? tr('Niveau max pour cette rareté : fusionne pour aller plus haut') : tr('Niveau max')}</span>` : free ? `<span class="gs-free">${tr('Offert')}</span>` : sheetCostHTML(cost)}</div>
       <div class="gs-btns">
         ${isEquipped(it) ? `<button class="gs-btn blue" data-gunequip>${tr('Retirer')}</button>` : `<button class="gs-btn blue" data-gequip id="gEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>`}
@@ -5804,7 +5806,7 @@ const WITCH = {
   geodeLune: { art: () => geodeArt('lune'), name: () => GEODES.lune.name, desc: () => tr('À ouvrir à l\'Atelier : une pierre de lune pour ta collection.'), give: () => { S.bag.geodes.push('lune'); toast(tr('+1 {x} (à l\'Atelier)', { x: GEODES.lune.name }), 'good'); } },
   coffre:    { art: () => chestArt('halloween'), name: () => chestName('halloween'), desc: () => tr('Une pièce d\'équipement à thème : Pioche-citrouille, Pelle-balai, Gants squelette ou Lanterne-citrouille.'), give: () => hwChest() },
   chapeau:   { art: () => GIMG.chapeauSorciere ? gearArt('chapeauSorciere') : svgImg(HAT), name: () => tr(HW.equipement.chapeauSorciere.nom), excl: true, owned: () => !!S.hallo.hat,
-               desc: () => tr('Exclusif ! Un casque Épique : {x}', { x: passiveTxt('chapeauSorciere', passiveOf({ arch: 'chapeauSorciere', rar: HW.equipement.chapeauSorciere.rarete || 'epique' })) }), give: () => hwGiveGear('chapeauSorciere') },
+               desc: () => PAS_ON ? tr('Exclusif ! Un casque Épique : {x}', { x: passiveTxt('chapeauSorciere', passiveOf({ arch: 'chapeauSorciere', rar: HW.equipement.chapeauSorciere.rarete || 'epique' })) }) : tr('Exclusif ! Un casque Épique.'), give: () => hwGiveGear('chapeauSorciere') },
   feeCitrouille: { art: () => img(PETS.fees.citrouille.visuel), name: () => tr(PETS.fees.citrouille.nom), excl: true, owned: () => ownsFairy('citrouille'),
                desc: () => tr('Exclusif ! {x}', { x: tr(PETS.fees.citrouille.bonus) }), give: () => giveFairy('citrouille') },
 };
