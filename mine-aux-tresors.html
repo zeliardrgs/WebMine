@@ -5122,7 +5122,7 @@ function openSheet(id) {
   if (it && it.isNew) { it.isNew = false; save(); }
   renderSheet(); $('gearModal').hidden = false; unlockAudio(); sfx('pick');
 }
-const gcard = (it, cls = '') => `<button class="gi r-${RAR_CSS[it.rar]} ${cls}" data-gi="${it.id}" aria-label="${itemName(it)} ${rarLabel(it.rar)}"><span class="gi-art">${gearArt(it.arch)}</span><span class="gi-lv">${tr('Niv. {n}', { n: ilv(it) })}</span>${sBadge(it.rar)}${it.isNew ? `<span class="gi-new">${tr('Nouveau')}</span>` : ''}${isEquipped(it) ? '<span class="gi-on">✓</span>' : ''}</button>`;
+const gcard = (it, cls = '') => `<button class="gi r-${RAR_CSS[it.rar]} ${cls}" data-gi="${it.id}" aria-label="${itemName(it)} ${rarLabel(it.rar)}"><span class="gi-art">${gearArt(it.arch)}</span>${isEquipped(it) ? `<span class="gi-lv">${tr('Niv. {n}', { n: ilv(it) })}</span>` : ''}${sBadge(it.rar)}${it.isNew ? `<span class="gi-new">${tr('Nouveau')}</span>` : ''}${isEquipped(it) ? '<span class="gi-on">✓</span>' : ''}</button>`;
 // Icon of each slot's main stat, in the item sheet
 const STAT_ICON = { pioche: () => img('Assets/UI/Icon_Damage.png'), pelle: () => resArt('coin'), gants: () => resArt('copper'), casque: () => BOLT, lanterne: () => geodeArt('gold'), bottes: () => img('Assets/UI/Icon_Gold.png') };
 const LOCK_SVG = '<svg viewBox="0 0 24 28" aria-hidden="true"><path d="M6 12V8a6 6 0 0 1 12 0v4" fill="none" stroke="#1d1a2b" stroke-width="3.2"/><rect x="2" y="11" width="20" height="15" rx="4" fill="#fff" stroke="#1d1a2b" stroke-width="2.6"/><circle cx="12" cy="17.5" r="2.4" fill="#1d1a2b"/><path d="M12 18v4" stroke="#1d1a2b" stroke-width="2.6" stroke-linecap="round"/></svg>';
@@ -5147,7 +5147,7 @@ function renderSheet() {
   const how = bySlot(it.rar) ? tr('Fusionner {n} objets « {s} »', { n, s: slotName(it.slot) }) : tr('Fusionner {n} identiques', { n });
   const hint = !nr ? '' : `<p class="gs-unlock">${active || !PAS_ON ? tr('{x} pour le faire évoluer', { x: how }) : tr('{x} pour débloquer', { x: how })}</p>`;
   $('gearCard').innerHTML = `
-    <div class="gi gs-big r-${r}${better(it) ? ' better' : ''}"><span class="gi-art">${gearArt(it.arch)}</span>${sBadge(it.rar)}<span class="gi-lv">${tr('Niveau {n}', { n: ilv(it) })}${capTxt}</span></div>
+    <div class="gi gs-big r-${r}${better(it) ? ' better' : ''}"><span class="gi-art">${gearArt(it.arch)}</span>${sBadge(it.rar)}${on ? `<span class="gi-lv">${tr('Niveau {n}', { n: ilv(it) })}${capTxt}</span>` : ''}</div>
     <div class="card gear-card gs-panel">
       ${nr ? `<button class="gs-fusebtn${fod ? ' on' : ''}" data-gmerge aria-label="${tr('Fusionner')}">${img('Assets/UI/Icon_Forge.png')}${fod ? '<span class="badge">!</span>' : ''}</button>` : ''}
       <h2 class="gs-name">${itemName(it)}</h2>
