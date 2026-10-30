@@ -253,7 +253,7 @@
       for (const k of Object.keys(M.ARTS)) if (M.ARTS[k].set === set && !M.ARTS[k].of) b[k] = 2;
       hwDone('Collection Halloween à 2 étoiles (la 3e donne la Cape)');
     },
-    hwStarts() { S().hallo.best = M.CFG.mineHantee.niveaux; hwDone('Tous les départs débloqués (niveaux 11 et 21)'); },
+    hwStarts() { const h = S().hallo; h.bosses = h.bosses || {}; for (const l of [10, 20]) h.bosses[l] = { won: true }; h.best = Math.max(h.best || 1, 21); hwDone('Citrouilles 10 et 20 battues : départs 11 et 21 ouverts'); },
     // Step 3: the candy hour now (same day), straight down to the boss, the boss almost beaten / back to full life
     hwHour() {
       const d = Math.max(1, M.hw.day()), h = M.CFG.mineHantee.heureDesBonbons.de;
@@ -262,13 +262,13 @@
     },
     hwDeep() {
       if (S().haunt) return msg('Remonte d\'abord de la Mine Hantée');
-      close(); M.hw.start(M.CFG.mineHantee.niveaux);
+      const h = S().hallo, l = Math.ceil(Math.max(h.best || 1, 10) / 10) * 10; h.best = Math.max(h.best || 1, l); close(); M.hw.start(l);
     },
     hwBossLow() {
-      const b = S().hallo.boss; if (!b || b.hp <= 0) return msg('Pas de Citrouille géante pour l\'instant (descends au niveau 30 à partir du jour 8)');
+      const b = S().haunt && (S().hallo.bosses || {})[S().level]; if (!b || b.hp <= 0) return msg('Pas de Citrouille géante sur ce niveau (descends à un checkpoint : 10, 20, 30…)');
       b.hp = M.CFG.mine.degatsPioche || 10; M.hw.bossPaint(); M.save(); msg('Citrouille géante : plus qu\'un coup !');
     },
-    hwBossReset() { delete S().hallo.boss; M.save(); msg('Citrouille géante remise à zéro (jamais vaincue, vie pleine à la prochaine descente)'); },
+    hwBossReset() { S().hallo.bosses = {}; M.save(); msg('Toutes les Citrouilles remises à zéro (jamais vaincues)'); },
     hwReset() {
       if (!confirm('Remettre la Mine Hantée à zéro (Tickets, Candy Corn, départs) ?')) return;
       const s = S(); s.hallo = { candy: 0, free: 0, freeDay: 0, evening: false, ads: 0, adsDay: 0, paid: 0, first: false, best: 1, seen: false };
@@ -349,12 +349,12 @@
       <button data-c="hwPaid">+3 Tickets achetés</button>
       <button data-c="hwCandy">+100 Candy Corn</button>
       <button data-c="hwCol2">Collection Halloween à 2 étoiles</button>
-      <button data-c="hwStarts">Débloquer les départs 11 et 21</button>
+      <button data-c="hwStarts">Battre les Citrouilles 10 et 20</button>
       <button data-c="hwFirst">Rejouer la 1re descente</button>
       <button data-c="hwHour">Heure des bonbons maintenant</button>
-      <button data-c="hwDeep">Descendre au niveau 30 (boss)</button>
+      <button data-c="hwDeep">Descendre à la prochaine Citrouille</button>
       <button data-c="hwBossLow">Boss : plus qu'un coup</button>
-      <button data-c="hwBossReset">Boss remis à zéro</button>
+      <button data-c="hwBossReset">Citrouilles remises à zéro</button>
       <button data-c="hwReset" class="warn">Remettre l'event à zéro</button>
     </div>
     </div>` : ''}

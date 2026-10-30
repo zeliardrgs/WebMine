@@ -1547,6 +1547,21 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .dd-art .dr-art b{font-size:28px; -webkit-text-stroke:6px var(--outline)}
 .chap-done .chap-rw{justify-content:center; margin:12px 0 16px}
 .chap-done .prog-chip img{width:24px; height:24px}
+/* Haunted Mine leaderboard */
+.hw-board{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:4px}
+.hw-rank{display:flex; align-items:center; gap:10px; padding:6px 10px; border-radius:10px; background:#fff6e0}
+.hw-rank b{width:26px; font-family:var(--font-display); font-weight:400; text-align:center}
+.hw-rank span{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.hw-rank em{font-style:normal; font-size:13px; color:var(--ink-soft)}
+.hw-rank:nth-child(-n+3) b{color:#e08a00}
+.hw-rank.me{background:#ffe36b; box-shadow:inset 0 0 0 2px #e0b04a}
+.hw-gap{text-align:center; color:var(--ink-soft)}
+.hw-sim{margin:8px 0 0; font-size:12px; color:var(--ink-soft); text-align:center}
+.hw-rrow{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 0; border-top:1px solid rgba(0,0,0,.08)}
+.hw-rrow > span{flex:none; font-size:13px}
+.hw-rrow.on{background:#fff3a8; border-radius:8px; padding:6px 8px}
+.hw-rrow .chap-rw{justify-content:flex-end}
+.pl-title{font-size:12px; color:#7d3c98}
 .vg-hard{display:inline-block; margin-bottom:2px; padding:1px 7px; border-radius:7px; background:#e0553a; color:#fff; font-style:normal; font-size:10px; letter-spacing:.02em; text-transform:uppercase}
 .vg-row.hard{box-shadow:0 0 0 2px #e0553a inset}
 .vg-xp{flex:none; margin-left:4px; padding:2px 6px; border-radius:8px; background:#3d8ff0; color:#fff; font-family:var(--font-display); font-size:11px; white-space:nowrap}
@@ -1984,7 +1999,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .hw-link b{font-family:var(--font-display); font-weight:900; font-size:12px; line-height:1.15; text-align:center}
 .hw-sc{background:#ffe0b8}
 .seg.hw-tabs{background:rgba(255,255,255,.14)}
-.seg.hw-tabs button{flex:1; color:#fff3d6}
+.seg.hw-tabs button{flex:1; min-width:0; padding-inline:4px; color:#fff3d6; font-size:min(15px, 3.6vw); white-space:nowrap}   /* 4 tabs fit on a phone */
 .seg.hw-tabs button[aria-pressed="true"]{color:var(--ink)}
 .hw-col{flex-direction:row; align-items:center; text-align:left; border:0; font:inherit; cursor:pointer}
 .hw-col > span:last-child{display:flex; flex-direction:column; gap:2px}
@@ -2979,7 +2994,7 @@ let LV_HP = HP;
 const RES_MINE = CFG.energie.resistanceParMine || [1];
 function resistAt(level) {
   if (S.wide) return 1;
-  if (S.haunt) return (HW && hwBiome(level).resistance) || 1;
+  if (S.haunt) return HW ? hwResist(level) : 1;
   if (etOn(level)) return etDepth(etLv(level)).resistance || 1;
   return RES_MINE[Math.min(RES_MINE.length, biomeOf(level)) - 1] || 1;
 }
@@ -5563,11 +5578,20 @@ const hwMineDays = () => HWCal.mineOuverte || [1, HWCal.fin];
 const hwMineOpen = () => { const d = hwDay(); return !!HW && d >= hwMineDays()[0] && d <= hwMineDays()[1]; };
 // The event shows with the Events (player level), once the first steps are over
 const hwShown = () => hwLive() && eventsOpen() && !inGuide();
-function hwBottom() { return !!S.haunt && S.level >= HW.niveaux; }
+// The mine has no bottom (config.js > mineHantee > profondeur): the 3 settings take turns every 10 levels, the rocks get
+// tougher every 10 levels and the grid bigger every few tens. A pumpkin standing on a checkpoint blocks the way down.
+const HWD = (HW && HW.profondeur) || { resistanceDepart: 3, resistanceParDizaine: 1, tailleEnPlusTous: 30 };
+const hwTen = level => Math.ceil(level / 10);
+const hwResist = level => HWD.resistanceDepart + HWD.resistanceParDizaine * (hwTen(level) - 1);
+const hwSize = (level, B) => Math.min(MAX_COLS, B.taille + Math.floor((level - 1) / (HWD.tailleEnPlusTous || 1e9)));
+const hwBossLv = level => level > 0 && level % (HW.niveauGardien.tousLes || 10) === 0;
+const hwBossOf = level => (S.hallo.bosses || {})[level];
+const hwBossWon = level => !!(hwBossOf(level) || {}).won;
+function hwBottom() { return !!S.haunt && Array.isArray(S.grid) && S.grid.some(c => c.t === 'hboss'); }
 // The setting of a level (Potager 1-10, Forêt 11-20, Manoir 21-30) and the kind of level
-function hwBiomeIdx(level) { let k = 0; HW.biomes.forEach((b, i) => { if (level >= b.depuis) k = i; }); return k; }
+function hwBiomeIdx(level) { return (hwTen(level) - 1) % HW.biomes.length; }
 function hwBiome(level) { return HW.biomes[hwBiomeIdx(level)]; }
-const hwKind = level => (HW.niveauTresor.niveaux || []).includes(level) ? 'treasure' : level === HW.niveauGardien.niveau ? 'guardian' : 'easy';
+const hwKind = level => level % (HW.niveauTresor.tousLes || 10) === (HW.niveauTresor.decalage ?? 5) ? 'treasure' : hwBossLv(level) ? 'guardian' : 'easy';
 // "3 j 4 h", "4 h 12 min", "2 min 30 s"
 function hwDur(ms) {
   const s = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
@@ -5638,7 +5662,7 @@ function hwAd() {
 
 /* ---------- Event page (hub) ---------- */
 // Starting points: level 1, and each "départ" once reached (config.js > mineHantee > departs)
-const hwStarts = () => [1, ...(HW.departs || []).filter(l => (S.hallo.best || 1) >= l)];
+const hwStarts = () => [1, ...Object.keys(S.hallo.bosses || {}).map(Number).filter(hwBossWon).sort((a, b) => a - b).map(l => l + 1).slice(-2)];
 let hwFrom = 0;   // chosen start (0 = the deepest one)
 // The event page has three tabs: the mine (tickets, going down), the Witch's shop (Candy Corn) and the event's premium shop
 let hwView = 'mine';
@@ -5660,14 +5684,14 @@ function renderHaunt() {
   document.querySelector('#scr-haunt .hwh-down').classList.toggle('off', !hwMineOpen() || (!first && !tickets));
   $('hwShopBtn').innerHTML = CANDY_ART();
   $('hwChips').innerHTML = (hwCandyHour() ? `<span class="hwh-chip">${CANDY_ART()}${tr('Heure des bonbons !')}</span>` : '')
-    + (HW.boss && hwBossDay() && !(S.hallo.boss && S.hallo.boss.wins) ? `<span class="hwh-chip">${BOSS_ART()}${tr('La Citrouille géante t\'attend !')}</span>` : '');
+    + (HW.boss && (S.hallo.best || 1) >= hwNextBoss() ? `<span class="hwh-chip">${BOSS_ART()}${tr('La Citrouille géante t\'attend !')}</span>` : '');
   const open = hwMineOpen();
   const tab = (k, label) => `<button data-hwview="${k}" aria-pressed="${hwView === k}">${label}</button>`;
   // (the sheet: Tickets and departures, the Witch, Premium)
   $('hwBody').innerHTML = `
     <p class="hwh-days">${tr('Jour {d} / {n}', { d: hwDay(), n: HWCal.fin })} · ${tr('Fin dans {t}', { t: '<span data-hwt="end"></span>' })}</p>
-    <div class="seg hw-tabs">${tab('mine', tr('Tickets'))}${tab('witch', tr('Sorcière'))}${tab('premium', tr('Premium'))}</div>
-    ${hwView === 'witch' ? hwWitchHTML() : hwView === 'premium' ? hwPremiumHTML() : hwMineHTML()}`;
+    <div class="seg hw-tabs">${tab('mine', tr('Tickets'))}${HW.classement ? tab('board', tr('Classement')) : ''}${tab('witch', tr('Sorcière'))}${tab('premium', tr('Premium'))}</div>
+    ${hwView === 'witch' ? hwWitchHTML() : hwView === 'premium' ? hwPremiumHTML() : hwView === 'board' ? hwBoardHTML() : hwMineHTML()}`;
   hwTimers();
 }
 function hwMineHTML() {
@@ -5687,6 +5711,45 @@ function hwMineHTML() {
       <button class="btn big hw-down" data-hwgo ${first || tickets ? '' : 'disabled'}>${first ? tr('Première descente offerte !') : tr('Descendre · 1 Ticket')}</button>
       ${!first && !tickets ? `<p class="hw-none">${tr('Plus de Tickets pour l\'instant. Regarde une pub ou reviens plus tard !')}</p>` : ''}
     </div>${hwHourHTML()}${hwBossHTML()}${collection}`;
+}
+
+/* ---------- Leaderboard (config.js > mineHantee > classement) ----------
+   The deepest level reached during the event. No server yet: the other players are simulated (seeded, the same on every
+   device), each going a bit deeper every day the mine is open. Cosmetic rewards by rank, given when the event ends. */
+const HW_NAMES = ['Lou', 'Maëlys', 'Noah', 'Inès', 'Hugo', 'Jade', 'Léo', 'Zoé', 'Gabin', 'Lina', 'Sacha', 'Romy', 'Nolan', 'Alma', 'Timéo',
+  'Capucine', 'Eliott', 'Mila', 'Paul', 'Anaïs', 'Rayan', 'Clémence', 'Malo', 'Louise', 'Yanis'];
+function hwBoard() {
+  const C = HW.classement, open = hwMineDays(), d = Math.max(0, Math.min(hwDay(), open[1]) - open[0] + 1);
+  const rows = Array.from({ length: C.joueursSimules || 0 }, (_, i) => {
+    const r = seeded(i * 7919 + 13), skill = .4 + 2.2 * Math.pow(r(), 2);
+    return { name: HW_NAMES[i % HW_NAMES.length] + (i >= HW_NAMES.length ? String(i) : ''), depth: Math.max(1, Math.round(skill * 2.4 * Math.pow(d, .85) + r() * 4)) };
+  });
+  rows.push({ name: tr(EQC.nomPersonnage || ''), depth: S.hallo.best || 1, me: true });
+  rows.sort((a, b) => b.depth - a.depth || (b.me ? 1 : 0) - (a.me ? 1 : 0));
+  rows.forEach((x, i) => { x.rank = i + 1; });
+  return rows;
+}
+const hwRankRw = rank => (HW.classement.recompenses || []).find(x => rank <= x.rang);
+const hwRwChips = x => [x.titre && `<span class="prog-chip">${tr('Titre')} « ${tr(x.titre)} »</span>`, x.banniere && `<span class="prog-chip">${tr(x.banniere)}</span>`, x.avatar && `<span class="prog-chip">${tr(x.avatar)}</span>`].filter(Boolean).join('');
+function hwBoardHTML() {
+  const rows = hwBoard(), me = rows.find(x => x.me), top = rows.slice(0, 10), mine = hwRankRw(me.rank);
+  const row = x => `<li class="hw-rank${x.me ? ' me' : ''}"><b>${x.rank}</b><span>${x.name}</span><em>${tr('Niveau {n}', { n: x.depth })}</em></li>`;
+  return `<div class="hw-card"><p class="hw-rule">${tr('Le niveau le plus profond atteint pendant l\'événement. Récompenses à la fin de l\'événement.')}</p>
+      <ol class="hw-board">${top.map(row).join('')}${me.rank > 10 ? `<li class="hw-gap">…</li>${row(me)}` : ''}</ol>
+      <p class="hw-sim">${tr('Joueurs simulés : le vrai classement arrivera avec le serveur.')}</p></div>
+    <div class="hw-card"><b>${tr('Récompenses')}</b>${(HW.classement.recompenses || []).map((x, i, a) => `<div class="hw-rrow${x === mine ? ' on' : ''}"><span>${i && a[i - 1].rang + 1 < x.rang ? tr('Rangs {a} à {b}', { a: a[i - 1].rang + 1, b: x.rang }) : i ? tr('Rang {n}', { n: x.rang }) : tr('1er')}</span><div class="chap-rw">${hwRwChips(x)}</div></div>`).join('')}</div>`;
+}
+// When the event is over: the final rank's cosmetics, once (the title shows under the miner's name in Progression)
+function hwGiveRank() {
+  if (!HW || !HW.classement || !S.hallo || S.hallo.rankGiven || hwDay() <= HWCal.fin || !S.hallo.first) return;
+  const me = hwBoard().find(x => x.me), x = hwRankRw(me.rank); S.hallo.rankGiven = me.rank;
+  if (x) {
+    const C = S.cosmetics = S.cosmetics || { titres: [], bannieres: [], avatars: [] };
+    if (x.titre) { C.titres.push(x.titre); C.titre = C.titre || x.titre; }
+    if (x.banniere) C.bannieres.push(x.banniere); if (x.avatar) C.avatars.push(x.avatar);
+    toast(tr('Classement final de la Mine Hantée : {n}e ! Titre « {t} » gagné.', { n: me.rank, t: tr(x.titre) }), 'good', true); sfx('win');
+  }
+  save();
 }
 
 /* ---------- The Witch's shop: paid in Candy Corn (config.js > mineHantee > boutiqueSorciere) ---------- */
@@ -5771,6 +5834,7 @@ document.addEventListener('click', e => {
 });
 // End of the event: the Candy Corn left becomes coins (config.js > mineHantee > conversion), once, back at the village or on the event's page
 function hwConvert() {
+  hwGiveRank();
   if (!HW || !S.hallo || S.haunt || hwDay() <= HWCal.fin || !(S.hallo.candy > 0)) return;
   const n = S.hallo.candy, c = Math.round(n * (HW.conversion.piecesParCandy || 0));
   S.hallo.candy = 0; S.coins += c; save();
@@ -5868,7 +5932,7 @@ function hwArrive() {
   if (S.level > (H.best || 1)) {
     H.best = S.level;
     // A new starting point: the first level of the next setting
-    if ((HW.departs || []).includes(S.level)) {
+    if (S.level > 1 && S.level % 10 === 1 && hwBossWon(S.level - 1)) {
       S.trip.newCp = S.level; sfx('win');
       toast(tr(HW.textes.nouveauDepart, { x: tr(hwBiome(S.level).nom), n: S.level }), 'good');
     }
@@ -5892,7 +5956,7 @@ function hwTile(t, coups) { const hp = Math.round(coups * BASE_DMG * resistAt(S.
 function genHaunt(level) {
   const B = hwBiome(level), kind = hwKind(level), NT = HW.niveauTresor, T = HW.tuiles;
   LV_HP = hpAt(level);   // (the setting's toughness for plain stone too)
-  const n = Math.min(MAX_COLS, B.taille + (kind === 'treasure' ? NT.tailleEnPlus || 0 : 0));
+  const n = Math.min(MAX_COLS, hwSize(level, B) + (kind === 'treasure' ? NT.tailleEnPlus || 0 : 0));
   setDims(n, n); S.cols = S.rows = n; S.tuto = 0; S.floor = kind;
   const g = Array.from({ length: N }, () => ({ t: 'dirt', v: randInt(0, 2) }));
   const take = list => list.splice(randInt(0, list.length - 1), 1)[0];
@@ -5905,8 +5969,8 @@ function genHaunt(level) {
     for (let i = 0; i < N && have < want; i++) if (g[i].t === 'dirt' && Math.hypot(i % COLS - cx, (i / COLS | 0) - cy) < rad) { g[i] = tileOf('stone'); have++; }
   }
   // Guardian level, from the boss's day: the Citrouille géante in the middle (2 × 2 cells, no treasure under it)
-  const boss = kind === 'guardian' && hwBossDay() ? hwBossCells() : [];
-  if (boss.length) { hwBossSpawn(); boss.forEach((i, q) => { g[i] = { t: 'hboss', q }; }); }
+  const boss = kind === 'guardian' && !hwBossWon(level) ? hwBossCells() : [];
+  if (boss.length) { hwBossSpawn(level); boss.forEach((i, q) => { g[i] = { t: 'hboss', q }; }); }
   // Candy Corn stones (many more on the treasure levels)
   const chance = kind === 'treasure' ? NT.chanceCandy : B.chanceCandy;
   cellsOf(c => c.t === 'stone').forEach(i => { if (Math.random() < chance) g[i] = hwTile('hcandy', T.pierreCandy.coups); });
@@ -5953,7 +6017,7 @@ function genHaunt(level) {
    Same rules as the main mine: too much → rock over the treasures turns into dirt; too little → dirt into stone. */
 function hwTrim(g, placed, kind, B) {
   const E = CFG.energie, M = E.multiplicateurCout, mult = kind === 'treasure' ? M.tresor : kind === 'guardian' ? M.gardien : 1;
-  const budget = Math.max(3, Math.round(maxE() * (B.cout || .05) * mult)) * (B.resistance || 1), cells = placed.flatMap(b => b.cells);
+  const budget = Math.max(3, Math.round(maxE() * (B.cout || .05) * mult)) * hwResist(S.level), cells = placed.flatMap(b => b.cells);
   if (E.indiceTresor) for (const { cells: cs } of placed) if (!cs.some(i => g[i].t === 'dirt')) g[cs[randInt(0, cs.length - 1)]] = { t: 'dirt', v: randInt(0, 2) };
   let total = cells.reduce((a, i) => a + hwHits(g[i]), 0);
   for (const i of [...cells].sort(() => Math.random() - .5)) {
@@ -6092,26 +6156,26 @@ function hwHourHTML() {
 }
 
 /* ---------- The Citrouille géante (config.js > mineHantee > boss) ----------
-   The boss of level 30, from the day calendrier > boss: 2 × 2 cells. Its life (S.hallo.boss: hp and max, in pickaxe
-   damage like the tiles) is kept from one descent to the next. Beaten, it grows back with less life and a smaller reward. */
-const hwBossDay = () => !!(HW && HW.boss) && hwDay() >= (HWCal.boss || 1);
+   One pumpkin on each checkpoint (10, 20, 30…): 2 × 2 cells. Its life (S.hallo.bosses[level]: hp and max, in pickaxe
+   damage like the tiles) is kept from one descent to the next; it blocks the way down until beaten, then never comes back. */
+const hwBossDay = () => !!(HW && HW.boss);
 const BOSS_ART = () => HW.boss.image ? img(HW.boss.image, tr(HW.boss.nom)) : svgImg(PUMPKIN, tr(HW.boss.nom));
 // Its 4 cells, in the middle of the grid (the top-left one first)
 function hwBossCells() {
   const r = Math.max(0, (ROWS >> 1) - 1), c = Math.max(0, (COLS >> 1) - 1);
   return [r * COLS + c, r * COLS + c + 1, (r + 1) * COLS + c, (r + 1) * COLS + c + 1];
 }
-// A new pumpkin when there is none yet, or when the last one was beaten; its life is set by the player's max energy
-function hwBossSpawn() {
-  const H = S.hallo; if (H.boss && H.boss.hp > 0) return;
-  const wins = (H.boss && H.boss.wins) || 0, max = Math.max(1, Math.round(maxE() * (wins ? HW.boss.vieRetour : HW.boss.vie) * resistAt(HW.niveaux))) * BASE_DMG;
-  H.boss = { hp: max, max, wins };
+// The pumpkin of a checkpoint: its life is set once (blue energy × toughness of its level, a bit more for each deeper one)
+function hwBossSpawn(level) {
+  const H = S.hallo, bs = H.bosses = H.bosses || {}; if (bs[level]) return;
+  const k = hwTen(level), max = Math.max(1, Math.round(maxE() * HW.boss.vie * hwResist(level) * (1 + (HW.boss.vieEnPlus || 0) * (k - 1)))) * BASE_DMG;
+  bs[level] = { hp: max, max };
 }
 // Its picture and life bar, over its 4 cells
 function hwBossPaint(hit) {
   const at = S.grid.findIndex(c => c.t === 'hboss');
   let el = overEl.querySelector('.hw-boss');
-  if (at >= 0 && !(S.hallo.boss && S.hallo.boss.hp > 0)) hwBossSpawn();   // (a pumpkin on the board but none in the save: a new one)
+  if (at >= 0 && !hwBossOf(S.level)) hwBossSpawn(S.level);   // (a pumpkin on the board but none in the save: a new one)
   if (at < 0) { if (el) el.remove(); return; }
   if (!el) {
     el = document.createElement('div'); el.className = 'hw-boss';
@@ -6119,23 +6183,24 @@ function hwBossPaint(hit) {
     el.innerHTML = `<div class="hw-boss-art">${BOSS_ART()}</div><div class="bar mini hw-boss-bar"><i></i><span></span></div>`;
     overEl.append(el);
   }
-  const B = S.hallo.boss;
+  const B = hwBossOf(S.level);
   el.querySelector('.hw-boss-bar i').style.width = (B.hp / B.max * 100) + '%';
   el.querySelector('.hw-boss-bar span').textContent = `${Math.ceil(B.hp / BASE_DMG)} / ${Math.round(B.max / BASE_DMG)}`;
   if (hit && !reduced) el.querySelector('.hw-boss-art').animate([{ transform: 'none' }, { transform: 'rotate(-4deg) scale(.96)' }, { transform: 'rotate(3deg)' }, { transform: 'none' }], { duration: 300 });
 }
 function hwBossHit(i, dmg) {
-  const B = S.hallo.boss; if (!B || B.hp <= 0) return;
+  const B = hwBossOf(S.level); if (!B || B.hp <= 0) return;
   B.hp = Math.max(0, B.hp - dmg);
   const { x, y } = center(i);
   burst(x, y, ['#ff8a1e', '#ffd23d', '#b8441b'], 8, { spread: 26, size: [3, 8] });
   if (B.hp > 0) { sfx('hit'); return hwBossPaint(true); }
   hwBossDown();
 }
-// Beaten: the reward (config.js > mineHantee > boss > recompense the first time, recompenseRetour after) and its popup
+// Beaten: the way down is open for good, its reward (bigger for each deeper pumpkin) and its popup
 function hwBossDown() {
-  const H = S.hallo, B = H.boss, first = !B.wins, R = (first ? HW.boss.recompense : HW.boss.recompenseRetour) || {};
-  B.wins = (B.wins || 0) + 1;
+  const H = S.hallo, B = hwBossOf(S.level), lv = S.level, up = 1 + (HW.boss.recompenseEnPlus || 0) * (hwTen(lv) - 1), R0 = HW.boss.recompense || {};
+  const R = { ...R0, pieces: Math.round((R0.pieces || 0) * up / 10) * 10, candy: Math.round((R0.candy || 0) * up / 5) * 5 };
+  B.won = true;
   const cells = S.grid.map((c, i) => c.t === 'hboss' ? i : -1).filter(i => i >= 0), a = center(cells[0]), s = ts();
   sfx('boom'); setTimeout(() => sfx('win'), 300);
   burst(a.x + s / 2, a.y + s / 2, ['#ff8a1e', '#ffd23d', '#ff5bb0', '#9be37a', '#fff'], 60, { spread: s * 2.4, up: 22, size: [5, 12], dur: 1200 });
@@ -6145,14 +6210,14 @@ function hwBossDown() {
   if (R.potions && has('potions')) { S.potions += R.potions; updateQuick(); chips.push(chip(POTION, R.potions)); }
   if (R.geodesLune) { for (let k = 0; k < R.geodesLune; k++) S.bag.geodes.push('lune'); chips.push(chip(geodeArt('lune'), R.geodesLune)); }
   if (R.candy) { H.candy += R.candy; S.trip.candy = (S.trip.candy || 0) + R.candy; stat('candy', R.candy); chips.push(chip(CANDY_ART(), R.candy)); }
-  const excl = first && R.exclusif && HW.equipement[R.exclusif] ? R.exclusif : null;
+  const excl = lv === HW.boss.exclusifAu && HW.boss.exclusif && HW.equipement[HW.boss.exclusif] ? HW.boss.exclusif : null;
   if (excl) chips.push(`<span class="prog-chip hw-excl-chip">${tr(HW.equipement[excl].nom)}</span>`);
   cells.forEach(clearCell);
-  updateBadge(); save();
+  updateBadge(); updateNextPill(); save();
   setTimeout(() => {
     $('bossArt').innerHTML = BOSS_ART(); $('bossTitle').textContent = tr(HW.boss.titreVaincu);
     $('bossRw').innerHTML = chips.join('');
-    $('bossText').textContent = tr(HW.boss.texteRetour) + (R.geodesLune ? ' ' + tr('Les Géodes de lune t\'attendent à l\'Atelier.') : '');
+    $('bossText').textContent = tr(HW.boss.texteVaincu, { n: lv + 1 }) + (R.geodesLune ? ' ' + tr('Les Géodes de lune t\'attendent à l\'Atelier.') : '');
     $('bossModal').dataset.excl = excl || ''; $('bossModal').hidden = false;
   }, reduced ? 0 : 900);
 }
@@ -6161,16 +6226,16 @@ $('bossOk').addEventListener('click', () => {
   if (excl) { m.dataset.excl = ''; hwGiveGear(excl); }
 });
 // The event page: the boss's life, or when it arrives
+// The next pumpkin still standing
+const hwNextBoss = () => { let l = 10; while (hwBossWon(l)) l += 10; return l; };
 function hwBossHTML() {
   if (!HW.boss) return '';
-  const B = S.hallo.boss, ex = HW.boss.recompense && HW.equipement[HW.boss.recompense.exclusif];
-  const line = !hwBossDay() ? tr(HW.boss.texteAvant, { t: '<b data-hwt="boss"></b>' })
-    : B && B.hp > 0 ? tr('Elle t\'attend au niveau 30. Tes coups restent d\'une descente à l\'autre !')
-    : B && B.wins ? tr(plural(B.wins, 'Vaincue une fois ! Elle repousse au niveau 30.', 'Vaincue {n} fois ! Elle repousse au niveau 30.'), { n: B.wins })
-    : tr('Elle t\'attend au niveau 30 !');
-  const bar = B && B.hp > 0 && hwBossDay() ? `<div class="bar mini hw-boss-bar"><i style="width:${B.hp / B.max * 100}%"></i><span>${Math.ceil(B.hp / BASE_DMG)} / ${Math.round(B.max / BASE_DMG)}</span></div>` : '';
+  const L = hwNextBoss(), B = hwBossOf(L), ex = L <= HW.boss.exclusifAu && HW.equipement[HW.boss.exclusif];
+  const line = B && B.hp < B.max ? tr('Elle t\'attend au niveau {n}. Tes coups restent d\'une descente à l\'autre !', { n: L })
+    : tr('La prochaine t\'attend au niveau {n}. Bats-la pour descendre plus bas !', { n: L });
+  const bar = B && B.hp > 0 ? `<div class="bar mini hw-boss-bar"><i style="width:${B.hp / B.max * 100}%"></i><span>${Math.ceil(B.hp / BASE_DMG)} / ${Math.round(B.max / BASE_DMG)}</span></div>` : '';
   return `<div class="hw-card hw-col hw-boss-card"><span class="hw-link-ic">${BOSS_ART()}</span>
-    <span><b>${tr(HW.boss.nom)}</b><small>${line}</small>${bar}${ex && !(B && B.wins) ? `<small class="hw-boss-ex">${tr('À gagner : {x}, exclusif !', { x: tr(ex.nom) })}</small>` : ''}</span></div>`;
+    <span><b>${tr(HW.boss.nom)}</b><small>${line}</small>${bar}${ex ? `<small class="hw-boss-ex">${tr('Au niveau {n}, à gagner : {x}, exclusif !', { n: HW.boss.exclusifAu, x: tr(ex.nom) })}</small>` : ''}</span></div>`;
 }
 /* Backpack: treasures and geodes found during an expedition take one slot each (ores don't) */
 /* The bag grows with the player's level (config.js > progressionJoueur > niveaux): "sac" = slots,
@@ -6799,7 +6864,7 @@ function paintPlCard(p) {
 function renderProg() {
   const p = plInfo(), last = Math.max(PJ.niveaux.length + 1, p.lv + 1);
   $('progHead').innerHTML = `<span class="pl-face big"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b class="pl-hex">${hexBadge(p.lv, 'mini')}</b></span>
-    <div class="prog-who"><b>${tr(EQC.nomPersonnage || '')}</b><span>${tr('Niveau {n}', { n: p.lv })}</span>
+    <div class="prog-who"><b>${tr(EQC.nomPersonnage || '')}</b>${S.cosmetics && S.cosmetics.titre ? `<span class="pl-title">${tr(S.cosmetics.titre)}</span>` : ''}<span>${tr('Niveau {n}', { n: p.lv })}</span>
     <span class="pl-gauge"><img class="pl-xpic" src="Assets/UI/Icon_XP.png" alt="XP" draggable="false"><span class="pl-bar"><i style="width:${Math.min(100, p.xp / p.need * 100)}%"></i><span>${p.xp} / ${p.need}</span></span></span></div>`;
   // Horizontal track from level 1 to the right: each level's badge sits on a gauge that fills up to the player's XP
   // (--f = how full the stretch to the next level is), with the level's reward card beside it
@@ -7976,7 +8041,7 @@ function tryDescend() {
   $('descendStats').className = 'dw-stats' + (full && low ? ' two' : '');
   $('descendStats').innerHTML = (full ? stat('Assets/UI/Bag.png', `${bagUsed()} / ${bagCap()}`) : '') + (low ? stat('Assets/UI/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
   // How far the next checkpoint is: worth going on when it is close
-  const cp = S.haunt ? (HW.departs || []).find(l => l > S.level) : CHECKPOINTS.find(l => l > S.level);
+  const cp = S.haunt ? hwTen(S.level) * 10 + 1 : CHECKPOINTS.find(l => l > S.level);
   $('descendCp').textContent = cp ? tr(plural(cp - S.level, 'Prochain checkpoint : niveau {n} (dans {k} niveau)', 'Prochain checkpoint : niveau {n} (dans {k} niveaux)'), { n: cp, k: cp - S.level }) : '';
   $('descendCp').hidden = !cp;
   // First steps, before a planned return: no "Remonter" here, the player is shown how to keep going
@@ -8228,6 +8293,12 @@ function start(data) {
   if (!(S.bucketCharges >= 0)) S.bucketCharges = maxCharges();
   // Haunted Mine: saves from before the event get its fields; a descent saved after the event was removed from config.js ends
   S.hallo = Object.assign(newHallo(), S.hallo || {});
+  if (!S.hallo.bosses) {
+    const H = S.hallo, bs = H.bosses = {};
+    for (let l = 10; l < (H.best || 1); l += 10) bs[l] = { won: true };
+    if (H.boss && H.boss.wins) bs[30] = { won: true }; else if (H.boss && H.boss.hp > 0) bs[30] = { hp: H.boss.hp, max: H.boss.max };
+    delete H.boss;
+  }
   if (S.haunt && !HW) { const b = S.hauntBack || {}; delete S.haunt; delete S.hauntBack; for (const k of WIDE_KEEP) if (k in b) S[k] = b[k]; if (Array.isArray(S.grid)) setDims(S.cols, S.rows); else genLevel(S.level || 1); }
   buildBoard(true); setTool(S.tool || 'shovel'); updateBombs(); updateQuick(); paintSound(); updateBadge(); updateEnergy(true);
   loop();

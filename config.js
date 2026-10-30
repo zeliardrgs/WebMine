@@ -1476,7 +1476,6 @@ window.CONFIG = {
     // Calendrier, en jours de l'événement (J1 = le jour "debut", J14 = le soir d'Halloween)
     calendrier: {
       mineOuverte: [1, 14],    // la mine est ouverte du J1 au J14 (Tickets gratuits ces jours-là seulement)
-      boss: 8,                 // la Citrouille géante arrive au niveau 30 à partir de ce jour
       promo: [13, 16],         // packs de Tickets en promo
       fin: 16,                 // dernier jour de l'événement. J15 et J16 : la boutique seule reste ouverte
     },
@@ -1499,16 +1498,18 @@ window.CONFIG = {
     // La puissance de l'équipement compte : elle fait baisser les coups par roche.
     energieTicket: 60,
 
-    // NIVEAUX : 30 niveaux, en 3 décors de 10 niveaux
-    niveaux: 30,
-    // Départs possibles en plus du niveau 1 : atteindre ce niveau une fois permet ensuite d'y descendre directement
-    // (11 = début de la Forêt des chauves-souris, 21 = début du Manoir des fantômes)
-    departs: [11, 21],
-    // Un décor par tranche de 10 niveaux. "depuis" = son premier niveau.
+    // NIVEAUX : la mine n'a pas de fond. Les 3 décors se suivent par tranches de 10 niveaux, puis recommencent
+    // (31 = Potager, 41 = Forêt…). Une Citrouille géante garde chaque checkpoint (10, 20, 30…, voir "boss").
+    // Battre la Citrouille d'un checkpoint ouvre le départ juste après (11, 21, 31…).
+    // Ce qui monte avec la profondeur :
+    //   "resistanceDepart" + "resistanceParDizaine" × (dizaine − 1) = résistance de toutes les roches
+    //     (3 aux niveaux 1-10, 4 aux niveaux 11-20, 5 aux niveaux 21-30, 6 aux niveaux 31-40…) ;
+    //   la grille grandit d'une case tous les "tailleEnPlusTous" niveaux, jusqu'à 7 × 7.
+    profondeur: { resistanceDepart: 3, resistanceParDizaine: 1, tailleEnPlusTous: 30 },
+    // Un décor par tranche de 10 niveaux. "depuis" = son premier niveau (le premier tour : 1, 11, 21).
     // "taille" = la grille (5 = 5 × 5 cases, 7 maximum) ; "tresors" = [minimum, maximum] de trésors par niveau ;
     // "partPierre" = part des cases en pierre (0.35 = 35 %) ; "chanceCandy" = chance qu'une pierre soit une Pierre à Candy Corn.
-    // "resistance" = multiplie la résistance de toutes les roches du décor (comme etages > profondeur > resistance) :
-    //   à 3, une pierre demande 9 coups à la puissance 0, 3 coups avec 20 de puissance, 1 avec 80 ;
+    //   Résistance 3 : une pierre demande 9 coups à la puissance 0, 3 coups avec 20 de puissance, 1 avec 80.
     // "cout" = énergie pour dégager les trésors d'un niveau (à la puissance 0), en part de l'énergie bleue (0.06 = 6 %) :
     //   chaque joueur fait à peu près le même nombre de niveaux par Ticket
     //   (au moins 3 énergie par niveau, soit une pierre). Repère : environ 15 niveaux par Ticket si le joueur ne casse
@@ -1519,36 +1520,36 @@ window.CONFIG = {
     // "fond" = image de fond de l'écran ; "terre" = 1 à 3 images de terre (variantes) ;
     // "pierre" = 1 à 3 images de pierre (intacte, fissurée, très fissurée ; avec une seule image, des fissures sont dessinées dessus).
     biomes: [
-      { nom: 'Potager aux citrouilles', depuis: 1, resistance: 3, taille: 5, tresors: [1, 1], partPierre: 0.35, chanceCandy: 0.3, cout: 0.05,
+      { nom: 'Potager aux citrouilles', depuis: 1, taille: 5, tresors: [1, 1], partPierre: 0.35, chanceCandy: 0.3, cout: 0.05,
         cases: { yeux: [1, 1], toiles: [0, 0], sacs: [0, 0], grosBonbons: [0, 1] },
         fond: '',     // Assets/Event/Halloween/Fond_Potager.png
         terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Potager_1.png, _2, _3
         pierre: ['Assets/Event/Halloween/Tile_Halloween_Stone.png'] }, // une image propre au décor : Assets/Event/Halloween/Pierre_Potager_1.png, _2, _3
-      { nom: 'Forêt des chauves-souris', depuis: 11, resistance: 4, taille: 6, tresors: [1, 2], partPierre: 0.4, chanceCandy: 0.3, cout: 0.06,
+      { nom: 'Forêt des chauves-souris', depuis: 11, taille: 6, tresors: [1, 2], partPierre: 0.4, chanceCandy: 0.3, cout: 0.06,
         cases: { yeux: [1, 2], toiles: [1, 1], sacs: [0, 1], grosBonbons: [0, 1] },
         fond: '',     // Assets/Event/Halloween/Fond_Foret.png
         terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Foret_1.png, _2, _3
         pierre: ['Assets/Event/Halloween/Tile_Halloween_Stone.png'] }, // une image propre au décor : Assets/Event/Halloween/Pierre_Foret_1.png, _2, _3
-      { nom: 'Manoir des fantômes', depuis: 21, resistance: 5, taille: 6, tresors: [2, 2], partPierre: 0.45, chanceCandy: 0.3, cout: 0.07,
+      { nom: 'Manoir des fantômes', depuis: 21, taille: 6, tresors: [2, 2], partPierre: 0.45, chanceCandy: 0.3, cout: 0.07,
         cases: { yeux: [1, 2], toiles: [1, 2], sacs: [1, 1], grosBonbons: [1, 1] },
         fond: '',     // Assets/Event/Halloween/Fond_Manoir.png
         terre: ['Assets/Event/Halloween/Tile_Halloween_Dirt.png'],     // une image propre au décor : Assets/Event/Halloween/Terre_Manoir_1.png, _2, _3
         pierre: ['Assets/Event/Halloween/Tile_Halloween_Stone.png'] }, // une image propre au décor : Assets/Event/Halloween/Pierre_Manoir_1.png, _2, _3
     ],
-    // Niveaux trésor : remplis de Candy Corn, à chaque descente
+    // Niveaux trésor : remplis de Candy Corn, à chaque descente. Au milieu de chaque tranche de 10 : 5, 15, 25…
     niveauTresor: {
-      niveaux: [10, 20],
+      tousLes: 10, decalage: 5,
       tailleEnPlus: 1,          // la grille est plus grande d'un cran (7 × 7 maximum)
       chanceCandy: 0.75,        // chance qu'une pierre soit une Pierre à Candy Corn (au lieu de "chanceCandy" du décor)
       tasDeBonbons: [3, 5],     // tas de Candy Corn, ramassés gratuitement d'un coup de pelle
       bonbonsParTas: [2, 4],
       texte: "Niveau trésor ! Des Candy Corn partout.",
     },
-    // Niveau gardien : le dernier niveau. La Citrouille géante y arrive à partir du jour "calendrier > boss".
+    // Niveaux gardiens : chaque checkpoint (10, 20, 30…), avec sa Citrouille géante (voir "boss")
     niveauGardien: {
-      niveau: 30,
+      tousLes: 10,
       pierreEnPlus: 1.4,        // quantité de pierre (1 = normal)
-      texte: "Niveau gardien ! Le fond de la Mine Hantée.",
+      texte: "Niveau gardien ! Bats la Citrouille géante pour descendre plus bas.",
     },
 
     /* ----- LES TWISTS ----- */
@@ -1571,25 +1572,37 @@ window.CONFIG = {
       texteBientot: "Heure des bonbons à {h} h : Candy Corn ×{x} !",
     },
 
-    // LA CITROUILLE GÉANTE : le boss du niveau 30, à partir du jour "calendrier > boss".
-    // Elle prend 2 × 2 cases. Ses dégâts restent d'une descente à l'autre : on l'use petit à petit.
-    // "vie" = sa vie en coups de pioche à la puissance 0, en part de l'énergie bleue × la résistance du décor, fixée quand elle apparaît
-    //   (1.2 : avec 60 d'énergie max, 72 coups ; une meilleure pioche frappe plus fort, donc va plus vite).
-    //   Repère : en partant du niveau 21, un joueur arrive au niveau 30 avec environ un tiers de son énergie,
-    //   il lui faut donc 3 à 4 descentes jusqu'au fond pour la vaincre.
-    // Vaincue, elle repousse à la descente suivante avec "vieRetour" et donne alors "recompenseRetour".
+    // LA CITROUILLE GÉANTE : elle garde chaque checkpoint (niveauGardien > tousLes). Tant qu'elle n'est pas battue,
+    // on ne peut pas descendre plus bas. Elle prend 2 × 2 cases. Ses dégâts restent d'une descente à l'autre.
+    // Une fois battue, elle ne revient plus : son départ (le niveau juste après) est ouvert.
+    // "vie" = sa vie en coups de pioche à la puissance 0, en part de l'énergie bleue × la résistance du niveau
+    //   (1.2 : 72 coups × la résistance) ; chaque Citrouille suivante a "vieEnPlus" de vie en plus (0.15 = +15 %).
+    // "recompense" = la récompense de la 1re Citrouille (niveau 10) ; chaque suivante donne "recompenseEnPlus" de plus
+    //   (pièces et Candy Corn), la potion va dans le sac de la mine principale. "exclusif" : seulement au niveau "exclusifAu".
     boss: {
       nom: 'Citrouille géante',
-      vie: 1.2, vieRetour: 0.6,
-      // 1re victoire : comme la récompense d'un gardien (pièces, potion), des Géodes de lune (à l'Atelier),
-      // des Candy Corn et l'exclusivité (un modèle de "equipement" plus bas)
-      recompense: { pieces: 500, potions: 1, geodesLune: 3, candy: 100, exclusif: 'fauxCitrouille' },
-      recompenseRetour: { candy: 60, geodesLune: 1 },
+      vie: 1.2, vieEnPlus: 0.15,
+      recompense: { pieces: 300, potions: 1, geodesLune: 1, candy: 60 },
+      recompenseEnPlus: 0.5,
+      exclusif: 'fauxCitrouille', exclusifAu: 30,
       image: 'Assets/Event/Halloween/Boss_Citrouille.png',   // couvre 2 × 2 cases
       texte: "La Citrouille géante ! Tes coups restent d'une descente à l'autre.",
-      texteAvant: "La Citrouille géante arrive au niveau 30 dans {t}.",
       titreVaincu: "Citrouille géante vaincue !",
-      texteRetour: "Elle repoussera à ta prochaine descente au niveau 30…",
+      texteVaincu: "La voie est libre : tu peux maintenant partir du niveau {n}.",
+    },
+
+    // CLASSEMENT : le niveau le plus profond atteint pendant l'événement. Pas encore de serveur : les autres joueurs
+    // sont simulés (l'onglet le dit), ils descendent un peu chaque jour.
+    // "recompenses" : à la fin de l'événement, selon le rang ("rang" = jusqu'à ce rang). Des cosmétiques :
+    // un titre (affiché sous le nom du joueur), une bannière et un avatar (images à venir : nom seulement pour l'instant).
+    classement: {
+      joueursSimules: 49,
+      recompenses: [
+        { rang: 1,  titre: 'Roi de la Citrouille', banniere: 'Bannière de la Citrouille d\'or', avatar: 'Avatar Citrouille couronnée' },
+        { rang: 3,  titre: 'Seigneur des ténèbres', banniere: 'Bannière de la nuit hantée' },
+        { rang: 10, titre: 'Chasseur de citrouilles' },
+        { rang: 50, titre: 'Explorateur hanté' },
+      ],
     },
 
     // MISSION D'HALLOWEEN : tant que la mine est ouverte, une des missions du jour est une mission d'Halloween.
@@ -1761,7 +1774,7 @@ window.CONFIG = {
       fermee: "La mine est fermée. La boutique reste ouverte jusqu'à la fin de l'événement.",
       // Nouveau départ débloqué ({x} = le décor, {n} = le niveau)
       nouveauDepart: "Nouveau départ : {x} (niveau {n}) !",
-      fondDeLaMine: "Tu es au fond de la Mine Hantée ! Remonte avec ton butin.",
+      fondDeLaMine: "La Citrouille géante bloque le passage : bats-la pour descendre plus bas !",
     },
   },
 };
