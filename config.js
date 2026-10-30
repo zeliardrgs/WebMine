@@ -1345,13 +1345,13 @@ window.CONFIG = {
 
     // Titres (affichés sous le nom)
     titres: {
-      apprenti:            { nom: 'Apprenti mineur', defaut: true },
-      confirme:            { nom: 'Mineur confirmé', niveauMineur: 10 },
-      maitre:              { nom: 'Maître mineur', niveauMineur: 25 },
-      roiCitrouille:       { nom: 'Roi de la Citrouille', source: 'Mine Hantée : 1er du classement' },
-      seigneurTenebres:    { nom: 'Seigneur des ténèbres', source: 'Mine Hantée : top 3 du classement' },
-      chasseurCitrouilles: { nom: 'Chasseur de citrouilles', source: 'Mine Hantée : top 10 du classement' },
-      explorateurHante:    { nom: 'Explorateur hanté', source: 'Mine Hantée : top 50 du classement' },
+      apprenti:            { nom: 'Petite pioche', defaut: true },
+      confirme:            { nom: 'Pioche aguerrie', niveauMineur: 10 },
+      maitre:              { nom: 'Pioche d\'or', niveauMineur: 25 },
+      roiCitrouille:       { nom: 'Majesté Citrouille', source: 'Mine Hantée : 1er du classement' },
+      seigneurTenebres:    { nom: 'Terreur des ténèbres', source: 'Mine Hantée : top 3 du classement' },
+      chasseurCitrouilles: { nom: 'Fléau des citrouilles', source: 'Mine Hantée : top 10 du classement' },
+      explorateurHante:    { nom: 'Âme hantée', source: 'Mine Hantée : top 50 du classement' },
     },
   },
 
