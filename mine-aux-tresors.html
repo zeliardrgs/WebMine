@@ -1547,6 +1547,41 @@ body.nav-on .menu .scr-head .back{bottom:calc(var(--nav-h) + env(safe-area-inset
 .dd-art .dr-art b{font-size:28px; -webkit-text-stroke:6px var(--outline)}
 .chap-done .chap-rw{justify-content:center; margin:12px 0 16px}
 .chap-done .prog-chip img{width:24px; height:24px}
+/* Player profile */
+.pl-face.framed{border:3px solid; box-sizing:border-box}
+.pr-card{display:flex; flex-direction:column; gap:10px; background:var(--card-bg); box-shadow:inset 0 0 0 calc(var(--u) * .5) var(--card-edge), 0 calc(var(--u) * .8) 0 var(--card-edge)}
+.pr-card .prog-who > b{color:var(--ink)}
+.pr-card .pl-title{font-size:14px; color:#7d3c98}
+.pr-card .prog-who > span:last-child{color:var(--ink-soft)}
+.pr-card .prog-head{margin:0}
+.pf-face{width:76px; height:76px}
+.pf-nameline{display:flex; align-items:center; gap:8px; min-width:0}
+.pf-nameline b{font-weight:400; font-size:20px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pf-pen{flex:none; width:32px; height:32px; padding:4px; border:3px solid var(--outline); border-radius:10px; background:#fff6e0; cursor:pointer}
+.pf-pen svg{display:block; width:100%; height:100%}
+#nameOk{display:flex; flex-direction:column; align-items:center; line-height:1.1}
+#nameOk small{display:inline-flex; align-items:center; gap:3px; font-size:12px; opacity:.85}
+#nameOk small img{width:15px; height:15px}
+.pf-name input{margin:10px 0 14px}
+.pf-grid{display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px}
+.pf-grid.titres{grid-template-columns:repeat(2, minmax(0, 1fr))}
+.pf-grid.titres .pf-item{justify-content:center; min-height:44px; padding:8px 26px}
+.pf-item{position:relative; display:flex; flex-direction:column; align-items:center; gap:5px; padding:10px 6px; border:0; border-radius:14px; cursor:pointer;
+  background:var(--card-bg); box-shadow:inset 0 0 0 3px var(--card-edge), 0 3px 0 var(--card-edge); color:var(--ink); font:inherit; text-align:center}
+.pf-item b{font-family:var(--font-display); font-weight:400; font-size:13px; line-height:1.15}
+.pf-item small{display:flex; align-items:center; justify-content:center; gap:3px; font-size:10.5px; line-height:1.2; color:var(--ink-soft)}
+.pf-item small svg{flex:none; width:12px; height:13px}
+.pf-item.on{box-shadow:inset 0 0 0 3px #e0b04a, 0 3px 0 #c98f22; background:#fff6e0}
+.pf-item.locked .pf-ico{filter:grayscale(1); opacity:.5}
+.pf-item.locked b{opacity:.6}
+.pf-ico{width:56px; height:56px}
+.pf-lock{position:absolute; top:6px; right:6px; width:18px; height:20px}
+.pf-lock svg{display:block; width:100%; height:100%}
+.pf-check{position:absolute; top:-6px; right:-6px; width:24px; height:24px}
+.pf-check svg{display:block; width:100%; height:100%}
+.pf-name input{width:100%; box-sizing:border-box; margin:6px 0; padding:10px 12px; border:3px solid var(--outline); border-radius:12px; font:inherit; font-size:18px; text-align:center; color:var(--ink); background:#fff}
+.pf-cost{margin:4px 0 10px; font-size:13px; color:var(--ink-soft)}
+.pf-btns{display:flex; gap:10px; justify-content:center}
 /* Haunted Mine leaderboard */
 .hw-board{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:4px}
 .hw-rank{display:flex; align-items:center; gap:10px; padding:6px 10px; border-radius:10px; background:#fff6e0}
@@ -2150,6 +2185,14 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <header class="scr-head"><h1>Boutique premium</h1><div class="wallet-bar" data-money></div></header>
 </div>
 
+<!-- Player profile (the miner's head on the home): name, avatar, frame, title -->
+<div class="screen menu" id="scr-profile" hidden>
+  <header class="scr-head"><button class="back back-red" data-go="village" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button><h1>Profil</h1><div class="wallet-bar" data-money></div></header>
+  <div class="prog-card pr-card" id="pfHead"></div>
+  <div class="seg pf-tabs" id="pfTabs"></div>
+  <div class="pf-grid" id="pfGrid"></div>
+</div>
+
 <div class="screen menu" id="scr-progress" hidden>
   <header class="scr-head"><h1>Progression</h1><div class="wallet-bar" data-money></div></header>
   <div class="prog-card">
@@ -2475,6 +2518,13 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <p class="lvup-hint" id="lvupHint">Touche la pierre pour la casser !</p>
     <div class="lvup-rw" id="lvupRw" hidden></div>
     <button class="btn big lvup-ok" id="lvupOk" hidden>Récupérer</button>
+  </div>
+</div>
+<div class="modal" id="nameModal" hidden>
+  <div class="card chap-done pf-name" role="dialog" aria-labelledby="nameTitle" style="text-align:center">
+    <h2 id="nameTitle">Ton nom</h2>
+    <input id="nameInput" type="text" autocomplete="off" spellcheck="false" aria-label="Nom">
+    <div class="pf-btns"><button class="btn ghosty" id="nameNo">Annuler</button><button class="btn" id="nameOk">Valider</button></div>
   </div>
 </div>
 <div class="modal" id="dayDoneModal" hidden>
@@ -5210,7 +5260,7 @@ function refreshGear() {
 
 /* ---------- Character screen: the miner with her 6 pieces of equipment, her stats and her items ---------- */
 function renderHero() {
-  $('heroName').textContent = tr(EQC.nomPersonnage || '');
+  $('heroName').textContent = playerName();
   const open = gearOpen();
   // Slots: the item's picture with its level written over it; the slot's name stays in the label for screen readers
   const slot = sk => {
@@ -5396,7 +5446,7 @@ function gearCoach() {
 }
 
 /* ---------- Screens ---------- */
-const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets', 'missions', 'haunt'];
+const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets', 'missions', 'haunt', 'profile'];
 function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
@@ -5409,7 +5459,7 @@ function go(name) {
   if (name !== 'atelier') stopMini();
   if (name !== 'pets') stopPets();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: () => { muView = 0; renderMuseum(); }, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals, haunt: renderHaunt })[name]();
+  ({ village: renderVillage, museum: () => { muView = 0; renderMuseum(); }, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals, haunt: renderHaunt, profile: renderProfile })[name]();
   updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -5769,13 +5819,13 @@ function hwBoard() {
     const r = seeded(i * 7919 + 13), skill = .4 + 2.2 * Math.pow(r(), 2);
     return { name: HW_NAMES[i % HW_NAMES.length] + (i >= HW_NAMES.length ? String(i) : ''), depth: Math.max(1, Math.round(skill * 2.4 * Math.pow(d, .85) + r() * 4)) };
   });
-  rows.push({ name: tr(EQC.nomPersonnage || ''), depth: S.hallo.best || 1, me: true });
+  rows.push({ name: playerName(), depth: S.hallo.best || 1, me: true });
   rows.sort((a, b) => b.depth - a.depth || (b.me ? 1 : 0) - (a.me ? 1 : 0));
   rows.forEach((x, i) => { x.rank = i + 1; });
   return rows;
 }
 const hwRankRw = rank => (HW.classement.recompenses || []).find(x => rank <= x.rang);
-const hwRwChips = x => [x.titre && `<span class="prog-chip">${tr('Titre')} « ${tr(x.titre)} »</span>`, x.banniere && `<span class="prog-chip">${tr(x.banniere)}</span>`, x.avatar && `<span class="prog-chip">${tr(x.avatar)}</span>`].filter(Boolean).join('');
+const hwRwChips = x => [x.titre && `<span class="prog-chip">${tr('Titre')} « ${cosName('titres', x.titre)} »</span>`, x.cadre && `<span class="prog-chip">${tr('Cadre')} « ${cosName('cadres', x.cadre)} »</span>`, x.avatar && `<span class="prog-chip">${tr('Avatar')} « ${cosName('avatars', x.avatar)} »</span>`].filter(Boolean).join('');
 function hwBoardHTML() {
   const rows = hwBoard(), me = rows.find(x => x.me), top = rows.slice(0, 10), mine = hwRankRw(me.rank);
   const row = x => `<li class="hw-rank${x.me ? ' me' : ''}"><b>${x.rank}</b><span>${x.name}</span><em>${tr('Niveau {n}', { n: x.depth })}</em></li>`;
@@ -5789,13 +5839,96 @@ function hwGiveRank() {
   if (!HW || !HW.classement || !S.hallo || S.hallo.rankGiven || hwDay() <= HWCal.fin || !S.hallo.first) return;
   const me = hwBoard().find(x => x.me), x = hwRankRw(me.rank); S.hallo.rankGiven = me.rank;
   if (x) {
-    const C = S.cosmetics = S.cosmetics || { titres: [], bannieres: [], avatars: [] };
-    if (x.titre) { C.titres.push(x.titre); C.titre = C.titre || x.titre; }
-    if (x.banniere) C.bannieres.push(x.banniere); if (x.avatar) C.avatars.push(x.avatar);
-    toast(tr('Classement final de la Mine Hantée : {n}e ! Titre « {t} » gagné.', { n: me.rank, t: tr(x.titre) }), 'good', true); sfx('win');
+    for (const [k, kind] of [['titre', 'titres'], ['cadre', 'cadres'], ['avatar', 'avatars']]) if (x[k]) giveCosmetic(kind, x[k]);
+    toast(tr('Classement final de la Mine Hantée : {n}e ! Titre « {t} » gagné, à choisir dans ton Profil.', { n: me.rank, t: cosName('titres', x.titre) }), 'good', true); sfx('win');
   }
   save();
 }
+
+/* ---------- Player profile (config.js > profil): name, avatar, frame, title ----------
+   Cosmetics have a code name; a reward gives it by that name (giveCosmetic). Owned: "defaut", a miner level reached, a
+   fairy the player has (fairies are avatars too), or won (S.cosmetics). The chosen ones are in S.profile. */
+const PF = CFG.profil;
+const PF_DEF = { nom: '', renames: 0, avatar: 'mineur', cadre: 'bois', titre: 'apprenti' };
+function profileOf() { const P = S.profile = S.profile || {}; for (const k in PF_DEF) if (!(k in P)) P[k] = PF_DEF[k]; return P; }
+const playerName = () => profileOf().nom || tr(EQC.nomPersonnage || '');
+const fairyAvatars = () => Object.keys(PETS.fees || {}).filter(k => PETS.fees[k].visuel);
+const cosDef = (kind, id) => kind === 'avatars' && PETS.fees[id] && !PF.avatars[id] ? { nom: PETS.fees[id].nom, image: PETS.fees[id].visuel, fee: true } : (PF[kind] || {})[id];
+const cosName = (kind, id) => { const d = cosDef(kind, id); return d ? tr(d.nom) : ''; };
+const cosList = kind => [...Object.keys(PF[kind]), ...(kind === 'avatars' ? fairyAvatars() : [])];
+function ownsCos(kind, id) {
+  const d = cosDef(kind, id); if (!d) return false;
+  if (d.defaut) return true;
+  if (d.fee) return ownsFairy(id);
+  if (d.niveauMineur) return plLevel() >= d.niveauMineur;
+  return ((S.cosmetics || {})[kind] || []).includes(id);
+}
+function giveCosmetic(kind, id) {
+  const C = S.cosmetics = S.cosmetics || {}; C[kind] = C[kind] || [];
+  if (!C[kind].includes(id)) C[kind].push(id);
+}
+const cosHow = d => d.niveauMineur ? tr('Au niveau {n} du mineur', { n: d.niveauMineur }) : d.fee ? tr('Obtiens cette fée') : d.source ? tr(d.source) : '';
+const avatarImg = id => { const d = cosDef('avatars', id); return d && d.image ? d.image : 'Assets/UI/Icon_Character.png'; };
+const faceStyle = (cadre = profileOf().cadre) => { const c = (cosDef('cadres', cadre) || PF.cadres.bois).couleurs; return `border-color:${c[0]}; background:${c[1]}`; };
+// The home card's head: the chosen avatar in its frame
+function paintFace(el) {
+  if (!el) return;
+  const im = el.querySelector('img'), src = avatarImg(profileOf().avatar);
+  if (im && im.getAttribute('src') !== src) im.src = src;
+  el.setAttribute('style', faceStyle()); el.classList.add('framed');
+}
+const PEN_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20 L5 15 L15.5 4.5 L19.5 8.5 L9 19 Z" fill="#ffd23d" stroke="#1d1a2b" stroke-width="2.2" stroke-linejoin="round"/><path d="M13.5 6.5 L17.5 10.5" stroke="#1d1a2b" stroke-width="2.2"/></svg>';
+let pfTab = 'avatars';
+function renderProfile() {
+  const P = profileOf();
+  $('pfHead').innerHTML = `<div class="prog-head">
+      <span class="pl-face big pf-face framed" style="${faceStyle()}"><img src="${avatarImg(P.avatar)}" alt="" draggable="false"></span>
+      <div class="prog-who"><span class="pf-nameline"><b>${playerName()}</b><button class="pf-pen" id="pfRename" aria-label="${tr('Changer de nom')}">${PEN_ICON}</button></span><span class="pl-title">${cosName('titres', P.titre)}</span></div>
+    </div>`;
+  const tab = (k, label) => `<button data-pftab="${k}" aria-pressed="${pfTab === k}">${label}</button>`;
+  $('pfTabs').innerHTML = tab('avatars', tr('Avatars')) + tab('cadres', tr('Cadres')) + tab('titres', tr('Titres'));
+  const on = { avatars: P.avatar, cadres: P.cadre, titres: P.titre }[pfTab];
+  $('pfGrid').className = 'pf-grid ' + pfTab;
+  $('pfGrid').innerHTML = cosList(pfTab).map(id => {
+    const d = cosDef(pfTab, id), own = ownsCos(pfTab, id), sel = id === on;
+    const art = pfTab === 'titres' ? '' : pfTab === 'avatars'
+      ? `<span class="pl-face pf-ico framed" style="${faceStyle()}"><img src="${avatarImg(id)}" alt="" draggable="false"></span>`
+      : `<span class="pl-face pf-ico framed" style="${faceStyle(id)}"><img src="${avatarImg(P.avatar)}" alt="" draggable="false"></span>`;
+    return `<button class="pf-item${own ? '' : ' locked'}${sel ? ' on' : ''}" data-pfpick="${id}" aria-pressed="${sel}">
+      ${art}<b>${tr(d.nom)}</b>${own ? '' : `<i class="pf-lock">${LOCK_SVG}</i>`}${sel ? `<i class="pf-check">${CHECK_ICON}</i>` : ''}</button>`;
+  }).join('');
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-pftab]');
+  if (t) { unlockAudio(); sfx('pick'); pfTab = t.dataset.pftab; return renderProfile(); }
+  const b = e.target.closest('[data-pfpick]'); if (!b) return;
+  const id = b.dataset.pfpick, d = cosDef(pfTab, id); unlockAudio();
+  if (!ownsCos(pfTab, id)) { sfx('deny'); return toast(`${tr(d.nom)} · ${cosHow(d)}`, ''); }
+  sfx('pick'); profileOf()[{ avatars: 'avatar', cadres: 'cadre', titres: 'titre' }[pfTab]] = id;
+  save(); renderProfile(); renderPlCard();
+});
+// Renaming: free the first times (config.js > profil > renommagesGratuits), then a price in pearls
+const nameCostHTML = () => profileOf().renames < PF.renommagesGratuits ? tr('Gratuit') : `${PF.prixRenommage} ${GEM_ICON}`;
+document.addEventListener('click', e => {
+  if (!e.target.closest('#pfRename')) return;
+  unlockAudio(); sfx('pick');
+  const [lo, hi] = PF.longueurNom; $('nameInput').value = playerName(); $('nameInput').maxLength = hi;
+  $('nameOk').innerHTML = `${tr('Valider')}<small>${nameCostHTML()}</small>`; $('nameModal').hidden = false; setTimeout(() => $('nameInput').select(), 50);
+});
+$('nameNo').addEventListener('click', () => { $('nameModal').hidden = true; });
+$('nameOk').addEventListener('click', () => {
+  const P = profileOf(), [lo, hi] = PF.longueurNom, v = $('nameInput').value.replace(/\s+/g, ' ').trim();
+  if (v.length < lo || v.length > hi) { sfx('deny'); return toast(tr('Le nom doit faire de {a} à {b} caractères.', { a: lo, b: hi }), ''); }
+  if (!/^[\p{L}\p{N} '_.-]+$/u.test(v)) { sfx('deny'); return toast(tr('Lettres, chiffres, espaces, - et _ seulement.'), ''); }
+  if (v === playerName()) { $('nameModal').hidden = true; return; }
+  const paid = P.renames >= PF.renommagesGratuits;
+  if (paid && G().gems < PF.prixRenommage) { sfx('deny'); return toast(tr('Pas assez de perles.'), ''); }
+  if (paid) G().gems -= PF.prixRenommage;
+  P.nom = v; P.renames++; $('nameModal').hidden = true;
+  sfx('reward'); toast(tr('Tu t\'appelles maintenant {x} !', { x: v }), 'good');
+  paintMoney(); save(); renderProfile(); renderPlCard();
+});
+$('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('nameOk').click(); });
 
 /* ---------- The Witch's shop: paid in Candy Corn (config.js > mineHantee > boutiqueSorciere) ---------- */
 const HAT = '<path d="M50 6 L70 66 H30Z" fill="#6b3fa0" stroke="#3b2245" stroke-width="5" stroke-linejoin="round"/><ellipse cx="50" cy="70" rx="44" ry="12" fill="#6b3fa0" stroke="#3b2245" stroke-width="5"/><path d="M33 58 H67" stroke="#ff8a1e" stroke-width="8"/>';
@@ -6897,7 +7030,7 @@ $('fairyBtns').addEventListener('click', e => {
 // The card on the village: face with the level, name, XP gauge (hidden during the first steps, like the missions)
 function renderPlCard() {
   $('plCard').hidden = inGuide();
-  $('plName').textContent = tr(EQC.nomPersonnage || '');
+  $('plName').textContent = playerName(); paintFace($('plCard').querySelector('.pl-face'));
   paintPlCard(plInfoOf(plAnim ? plAnim.v : S.xpSeen ?? S.pxp));
   $('plBadge').hidden = !plWaiting();
 }
@@ -6908,8 +7041,8 @@ function paintPlCard(p) {
 }
 function renderProg() {
   const p = plInfo(), last = Math.max(PJ.niveaux.length + 1, p.lv + 1);
-  $('progHead').innerHTML = `<span class="pl-face big"><img src="Assets/UI/Icon_Character.png" alt="" draggable="false"><b class="pl-hex">${hexBadge(p.lv, 'mini')}</b></span>
-    <div class="prog-who"><b>${tr(EQC.nomPersonnage || '')}</b>${S.cosmetics && S.cosmetics.titre ? `<span class="pl-title">${tr(S.cosmetics.titre)}</span>` : ''}<span>${tr('Niveau {n}', { n: p.lv })}</span>
+  $('progHead').innerHTML = `<span class="pl-face big" style="${faceStyle()}"><img src="${avatarImg(profileOf().avatar)}" alt="" draggable="false"><b class="pl-hex">${hexBadge(p.lv, 'mini')}</b></span>
+    <div class="prog-who"><b>${playerName()}</b><span class="pl-title">${cosName('titres', profileOf().titre)}</span><span>${tr('Niveau {n}', { n: p.lv })}</span>
     <span class="pl-gauge"><img class="pl-xpic" src="Assets/UI/Icon_XP.png" alt="XP" draggable="false"><span class="pl-bar"><i style="width:${Math.min(100, p.xp / p.need * 100)}%"></i><span>${p.xp} / ${p.need}</span></span></span></div>`;
   // Horizontal track from level 1 to the right: each level's badge sits on a gauge that fills up to the player's XP
   // (--f = how full the stretch to the next level is), with the level's reward card beside it
@@ -6935,7 +7068,7 @@ function openProg() {
   const row = $('progList').querySelector('.prog-row.ready, .prog-row.next');
   if (row) row.scrollIntoView({ block: 'nearest', inline: 'center' });
 }
-$('plCard').addEventListener('click', openProg);
+$('plCard').addEventListener('click', e => { if (e.target.closest('.pl-face')) { unlockAudio(); sfx('pick'); return go('profile'); } openProg(); });
 // Camera slides to a building (keeps the map inside the screen)
 function panTo(el, done) {
   const w = world.getBoundingClientRect(), r = el.getBoundingClientRect();

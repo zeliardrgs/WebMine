@@ -1315,6 +1315,47 @@ window.CONFIG = {
   },
 
   /* ---------------------------------------------------------------
+     PROFIL DU JOUEUR (toucher la tête du mineur, en haut à gauche de l'accueil)
+     Le nom, l'avatar, le cadre de l'avatar et le titre. Ce sont des récompenses cosmétiques
+     (classements des événements, liveops…). Chaque cosmétique a un nom de code (à gauche) :
+     les récompenses le donnent par ce nom (ex. mineHantee > classement > recompenses).
+     Pour l'obtenir : "defaut: true" = dès le début ; "niveauMineur" = à ce niveau du mineur ;
+     sinon il faut le gagner, et "source" dit comment (affiché sur la case verrouillée).
+     --------------------------------------------------------------- */
+  profil: {
+    // Changer de nom : gratuit les premières fois, puis ce prix en perles. Longueur du nom : [minimum, maximum].
+    renommagesGratuits: 2,
+    prixRenommage: 50,
+    longueurNom: [3, 14],
+
+    // Avatars (image carrée). Les fées que le joueur possède sont aussi des avatars (leur image), en plus de cette liste.
+    avatars: {
+      mineur:              { nom: 'Mineur', image: 'Assets/UI/Icon_Character.png', defaut: true },
+      citrouilleCouronnee: { nom: 'Citrouille couronnée', image: 'Assets/Event/Halloween/Boss_Citrouille.png', source: 'Mine Hantée : 1er du classement' },
+    },
+
+    // Cadres de l'avatar : "couleurs" = [bord, intérieur] (dessin provisoire, une image peut venir plus tard)
+    cadres: {
+      bois:         { nom: 'Cadre en bois',        couleurs: ['#8a5a32', '#ffe2a8'], defaut: true },
+      argent:       { nom: 'Cadre d\'argent',       couleurs: ['#9aa6b8', '#eef3fb'], niveauMineur: 10 },
+      or:           { nom: 'Cadre d\'or',           couleurs: ['#e0a21c', '#fff3c4'], niveauMineur: 20 },
+      citrouilleOr: { nom: 'Citrouille d\'or',      couleurs: ['#ff8a1e', '#ffd23d'], source: 'Mine Hantée : 1er du classement' },
+      nuitHantee:   { nom: 'Nuit hantée',          couleurs: ['#6b3fa0', '#d9c6ff'], source: 'Mine Hantée : top 3 du classement' },
+    },
+
+    // Titres (affichés sous le nom)
+    titres: {
+      apprenti:            { nom: 'Apprenti mineur', defaut: true },
+      confirme:            { nom: 'Mineur confirmé', niveauMineur: 10 },
+      maitre:              { nom: 'Maître mineur', niveauMineur: 25 },
+      roiCitrouille:       { nom: 'Roi de la Citrouille', source: 'Mine Hantée : 1er du classement' },
+      seigneurTenebres:    { nom: 'Seigneur des ténèbres', source: 'Mine Hantée : top 3 du classement' },
+      chasseurCitrouilles: { nom: 'Chasseur de citrouilles', source: 'Mine Hantée : top 10 du classement' },
+      explorateurHante:    { nom: 'Explorateur hanté', source: 'Mine Hantée : top 50 du classement' },
+    },
+  },
+
+  /* ---------------------------------------------------------------
      AUTEL DE LA MONTAGNE : LES RUNES (comme les talents d'Archero 2)
      L'Autel apparaît au village au retour qui suit le niveau progression > deblocages > autel.
      Toutes les runes sont là dès le début, au niveau 0. Chaque prière coûte des pièces (de plus en plus cher) :
@@ -1593,15 +1634,15 @@ window.CONFIG = {
 
     // CLASSEMENT : le niveau le plus profond atteint pendant l'événement. Pas encore de serveur : les autres joueurs
     // sont simulés (l'onglet le dit), ils descendent un peu chaque jour.
-    // "recompenses" : à la fin de l'événement, selon le rang ("rang" = jusqu'à ce rang). Des cosmétiques :
-    // un titre (affiché sous le nom du joueur), une bannière et un avatar (images à venir : nom seulement pour l'instant).
+    // "recompenses" : à la fin de l'événement, selon le rang ("rang" = jusqu'à ce rang). Des cosmétiques du Profil
+    // (voir "profil" : titres, cadres, avatars), donnés par leur nom de code.
     classement: {
       joueursSimules: 49,
       recompenses: [
-        { rang: 1,  titre: 'Roi de la Citrouille', banniere: 'Bannière de la Citrouille d\'or', avatar: 'Avatar Citrouille couronnée' },
-        { rang: 3,  titre: 'Seigneur des ténèbres', banniere: 'Bannière de la nuit hantée' },
-        { rang: 10, titre: 'Chasseur de citrouilles' },
-        { rang: 50, titre: 'Explorateur hanté' },
+        { rang: 1,  titre: 'roiCitrouille', cadre: 'citrouilleOr', avatar: 'citrouilleCouronnee' },
+        { rang: 3,  titre: 'seigneurTenebres', cadre: 'nuitHantee' },
+        { rang: 10, titre: 'chasseurCitrouilles' },
+        { rang: 50, titre: 'explorateurHante' },
       ],
     },
 
