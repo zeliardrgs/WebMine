@@ -2848,7 +2848,7 @@ const mineOf = level => Math.ceil(level / MINE_LEN);
 const inMine = level => (level - 1) % MINE_LEN + 1;
 const keyEvery = (level, n) => { const F = EQC.cles.facteurParMine || [1]; return n > 0 && level > 0 && inMine(level) % (n * F[Math.min(mineOf(level), F.length) - 1]) === 0; };
 const GSLOTS = ['pioche', 'pelle', 'gants', 'casque', 'lanterne', 'bottes'];   // left column, then right column
-const SLOT_STAT = { pioche: 'dmg', pelle: 'coin', gants: 'ore', casque: 'free', lanterne: 'geode', bottes: 'pile' };
+const SLOT_STAT = { pioche: 'crit', pelle: 'coin', gants: 'ore', casque: 'free', lanterne: 'geode', bottes: 'pile' };
 const CHESTS = Object.keys(EQC.coffres);                         // bois, argent, or, etoile
 // Haunted Mine: themed models (config.js > mineHantee > equipement). Each one goes in a slot of the miner and has the passive
 // of another model of that slot ("commeModele"); they only come from the Coffre Halloween and the event's exclusives.
@@ -2891,7 +2891,7 @@ const PAS_ON = EQC.passifs !== false;
 const passiveOf = it => { const i = PAS_TIERS.indexOf(it.rar), v = ARCH[it.arch].valeurs; return PAS_ON && i >= 0 ? v[Math.min(i, v.length - 1)] : 0; };
 // What the equipped items give, all together: { dmg, coin, ore, free, geode, pile, pas: { model: value } }
 function gearTotals() {
-  const t = { power: 0, coin: 0, ore: 0, free: 0, geode: 0, pile: 0, pas: {} };
+  const t = { power: 0, crit: 0, coin: 0, ore: 0, free: 0, geode: 0, pile: 0, pas: {} };
   if (!S || !S.gear) return t;
   for (const sk of GSLOTS) {
     const it = equipped(sk); if (!it) continue;
@@ -4094,6 +4094,8 @@ function act(p, isTap) {
     // The pickaxe does half damage on ice (full damage, or more, with the Pic de givre)
     let dmg = pickPower() * (c.t === 'ice' ? T.pas.picGivre || .5 : 1);
     if (Math.random() < (T.pas.picLourd || 0)) { dmg *= 2; floatText(i, tr('Coup puissant !'), '#ffd23d'); }
+    // The Pickaxe's secondary stat: a critical hit does double damage
+    else if (Math.random() < T.crit) { dmg *= 2; floatText(i, tr('Coup critique !'), '#ff8a3d'); }
     // Haunted Mine: the Citrouille géante keeps its damage from one descent to the next
     if (c.t === 'hboss') { hwBossHit(i, dmg); save(); return; }
     if (free &&Math.random() < (T.pas.casqueChantier || 0)) dmg = c.hp;
@@ -5143,7 +5145,7 @@ function renderSheet() {
     : `<p class="gs-pastxt${active ? '' : ' off'}">${passiveTxt(it.arch, a.valeurs[Math.min(pi, a.valeurs.length - 1)])}</p>`;
   const nr = nextRar(it.rar), fod = mergeFodder(it), n = EQC.fusion.nombre;
   const how = bySlot(it.rar) ? tr('Fusionner {n} objets « {s} »', { n, s: slotName(it.slot) }) : tr('Fusionner {n} identiques', { n });
-  const hint = !nr ? '' : `<p class="gs-unlock">${active || !PAS_ON ? tr('{x} pour l\'améliorer', { x: how }) : tr('{x} pour débloquer', { x: how })}</p>`;
+  const hint = !nr ? '' : `<p class="gs-unlock">${active || !PAS_ON ? tr('{x} pour le faire évoluer', { x: how }) : tr('{x} pour débloquer', { x: how })}</p>`;
   $('gearCard').innerHTML = `
     <div class="gi gs-big r-${r}${better(it) ? ' better' : ''}"><span class="gi-art">${gearArt(it.arch)}</span>${sBadge(it.rar)}<span class="gi-lv">${tr('Niveau {n}', { n: ilv(it) })}${capTxt}</span></div>
     <div class="card gear-card gs-panel">

@@ -992,8 +992,8 @@ window.CONFIG = {
     // PUISSANCE : chaque objet équipé donne de la puissance ; les dégâts d'un coup de pioche = mine > degatsPioche + la puissance
     // de tout l'équipement. Puissance d'un objet = (depart + parNiveau × (niveau de l'emplacement − 1)) × multiplicateur de la rareté.
     // "stat" = la STAT SECONDAIRE de l'emplacement (l'ancienne stat principale), calculée de la même façon, sans dépasser "max".
-    // "court" = nom court de la stat, affiché avec sa valeur dans la fiche de l'objet. La Pioche n'a pas de stat secondaire :
-    // elle donne plus de puissance que les autres.
+    // "court" = nom court de la stat, affiché avec sa valeur dans la fiche de l'objet. La Pioche donne plus de puissance
+    // que les autres ; sa stat secondaire est le coup critique (dégâts × 2).
     // Les pourcentages sont écrits en décimal : 0.1 = 10 % ("nombre: true" = un nombre, pas un pourcentage).
     // "modeles" = les archétypes de l'emplacement. "biome" = biome à partir duquel il sort des coffres.
     // Chaque modèle a un passif qui s'active à Épique et grandit à chaque rareté au-dessus :
@@ -1002,7 +1002,7 @@ window.CONFIG = {
       pioche: {
         nom: 'Pioche', deblocage: 'pioche',
         puissance: { depart: 5, parNiveau: 1.5 },
-        stat: null,
+        stat: { court: 'Coup critique', texte: '{v} de chance de coup critique (dégâts × 2)', depart: 0.05, parNiveau: 0.005, max: 0.5 },
         modeles: {
           picLourd:  { nom: 'Pic lourd',  biome: 1, passif: '{v} de chance de frapper deux fois plus fort', valeurs: [0.12, 0.16, 0.2, 0.25, 0.3] },
           picEclats: { nom: 'Pic à éclats', biome: 2, passif: '{v} de chance de casser aussi une roche voisine', valeurs: [0.12, 0.17, 0.22, 0.275, 0.33] },
