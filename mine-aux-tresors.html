@@ -5053,7 +5053,7 @@ function revealItem(it) {
   $('chestModal').classList.add('r-' + r);
   $('chestItem').innerHTML = `<div class="cm-rays"></div>${it.rar === 'mythique' ? '<div class="cm-bolts"></div>' : ''}
     <div class="gi big r-${r} cm-card">${gearArt(it.arch)}${sBadge(it.rar)}</div>
-    <b class="cm-name rar rar-${r}">${itemName(it)}</b><span class="cm-sub">${rarTagG(it.rar)} · ${slotName(it.slot)} · ${tr('Niv. {n}', { n: ilv(it) })}</span>
+    <b class="cm-name rar rar-${r}">${itemName(it)}</b><span class="cm-sub">${rarTagG(it.rar)} · ${slotName(it.slot)}</span>
     <span class="cm-stat">${powerTxt(it)}${EQC.emplacements[it.slot].stat ? ' · ' + statTxt(it.slot, statOf(it)) : ''}</span>`;
   $('chestItem').hidden = false;
   const more = cmChest && G().keys[cmChest] > 0;
