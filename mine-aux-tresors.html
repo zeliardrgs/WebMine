@@ -4806,13 +4806,13 @@ const walletHTML = keys => keys.filter(k => k === 'coin' || has(ORE_UNLOCK[k]) |
 // Each shop article appears at its own level (config.js > progression > deblocages)
 const CONS_UNLOCK = { bomb: 'bombes', potion: 'potions', radar: 'radar' };
 const SHOP_ITEMS = ['bombes', 'potions', 'radar'];
-let shopTab = 'coffres';
+let shopTab = 'premium';
 function renderShopScreen() {
-  // Sub-tabs like Dicero: equipment chests (once the Forge is open) and premium packs.
+  // Sub-tabs: premium packs first, then equipment chests (once the Forge is open).
   // No « Articles » any more: potions and bombs come only from the hard missions.
   if (shopTab !== 'premium' && !gearOpen()) shopTab = 'premium';
   const stab = (k, label, dot) => `<button data-stab="${k}" id="stab-${k}" aria-pressed="${shopTab === k}">${label}${dot ? '<span class="badge">!</span>' : ''}</button>`;
-  $('shopTabs').innerHTML = (gearOpen() ? stab('coffres', tr('Coffres'), chestReady()) : '') + stab('premium', tr('Premium'));
+  $('shopTabs').innerHTML = stab('premium', tr('Premium')) + (gearOpen() ? stab('coffres', tr('Coffres'), chestReady()) : '');
   $('chestList').hidden = shopTab !== 'coffres'; $('premiumBody').hidden = shopTab !== 'premium';
   if (shopTab === 'premium') renderPremium();
   $('shopWallet').innerHTML = moneyHTML() + keysWallet();
@@ -5450,8 +5450,8 @@ const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premiu
 function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
-  if (name === 'premium') { shopTab = gearOpen() ? 'coffres' : 'premium'; name = 'shop'; }
-  else if (name === 'shop' && $('scr-shop').hidden) shopTab = gearOpen() ? 'coffres' : 'premium';
+  if (name === 'premium') { shopTab = 'premium'; name = 'shop'; }
+  else if (name === 'shop' && $('scr-shop').hidden) shopTab = 'premium';
   SCREENS.forEach(n => $('scr-' + n).hidden = n !== name);
   document.body.classList.toggle('in-mine', name === 'mine');
   if (name !== 'mine') dropBoardCoaches();
@@ -5527,7 +5527,7 @@ function paintFairyOffer() {
 $('fairyOffers').addEventListener('click', e => {
   const b = e.target.closest('[data-fairyoffer]'); if (!b) return;
   const k = b.dataset.fairyoffer; unlockAudio(); sfx('pick');
-  go('shop'); shopTab = 'premium'; renderShopScreen();   // go() picks the shop's default tab: the Premium one instead
+  go('shop'); shopTab = 'premium'; renderShopScreen();
   setTimeout(() => { const c = $('offer-' + k); if (!c) return; c.scrollIntoView({ behavior: 'smooth', block: 'center' }); c.classList.add('flash'); }, 80);
 });
 function renderPremium() {
@@ -5859,9 +5859,9 @@ const cosList = kind => [...Object.keys(PF[kind]), ...(kind === 'avatars' ? fair
 function ownsCos(kind, id) {
   const d = cosDef(kind, id); if (!d) return false;
   if (d.defaut) return true;
+  if (((S.cosmetics || {})[kind] || []).includes(id)) return true;
   if (d.fee) return ownsFairy(id);
-  if (d.niveauMineur) return plLevel() >= d.niveauMineur;
-  return ((S.cosmetics || {})[kind] || []).includes(id);
+  return !!d.niveauMineur && plLevel() >= d.niveauMineur;
 }
 function giveCosmetic(kind, id) {
   const C = S.cosmetics = S.cosmetics || {}; C[kind] = C[kind] || [];

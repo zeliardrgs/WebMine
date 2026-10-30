@@ -166,6 +166,20 @@
       s.altar.n = Math.max(s.altar.n, 60); refresh(); msg('Toutes les runes au niveau max');
     },
     altarReset() { const s = S(); s.altar = { n: 0, runes: {} }; delete s.tutoSeen.priere; refresh(); msg('Autel remis à zéro'); },
+    // Player profile (config.js > profil): every avatar, frame and title, the free renames, the profile screen
+    cosAll() {
+      const s = S(), C = s.cosmetics = s.cosmetics || {}, PF = M.CFG.profil;
+      for (const kind of ['avatars', 'cadres', 'titres']) C[kind] = Object.keys(PF[kind]).filter(k => !PF[kind][k].defaut);
+      refresh(); msg('Tous les avatars, cadres et titres débloqués');
+    },
+    cosReset() {
+      const s = S(); s.cosmetics = {};
+      Object.assign(s.profile = s.profile || {}, { avatar: 'mineur', cadre: 'bois', titre: 'apprenti' });
+      refresh(); msg('Cosmétiques retirés, profil remis par défaut');
+    },
+    renamesFree() { (S().profile = S().profile || {}).renames = 0; refresh(); msg('Les 2 changements de nom gratuits sont revenus'); },
+    renamesUsed() { (S().profile = S().profile || {}).renames = M.CFG.profil.renommagesGratuits; refresh(); msg('Changements gratuits épuisés : le prochain coûte ' + M.CFG.profil.prixRenommage + ' perles'); },
+    profileOpen() { panel.hidden = true; M.go('profile'); },
     // Equipment (the gear opens with the Forge: "Débloquer jusqu'au niveau 11" then go back to the village)
     gems() { const g = S().gear; g.gems += 500; M.refreshGear(); refresh(); msg('+500 perles'); },
     keys() { const k = S().gear.keys; for (const c in k) k[c] += 5; M.refreshGear(); refresh(); msg('+5 clés de chaque coffre'); },
@@ -295,7 +309,7 @@
   // Categories: the home page shows one tile per category, a tile opens its sub-menu (« ‹ » goes back)
   const CATS = [
     ['niveaux', '⛏️', 'Niveaux et mine'], ['pionniers', '🍀', 'Mine des pionniers'], ['ressources', '💰', 'Ressources'],
-    ['mineur', '⭐', 'Mineur et Autel'], ['equipement', '🛡️', 'Équipement'], ['fees', '🧚', 'Fées'], ['geodes', '💎', 'Géodes'],
+    ['mineur', '⭐', 'Mineur et Autel'], ['profil', '🪪', 'Profil'], ['equipement', '🛡️', 'Équipement'], ['fees', '🧚', 'Fées'], ['geodes', '💎', 'Géodes'],
     ['sac', '🎒', 'Sac et Musée'], ['marees', '🌊', 'Grotte des Marées'], ...(M.hw ? [['hantee', '🎃', 'Mine Hantée']] : []), ['partie', '💾', 'Partie'],
   ];
   panel.innerHTML = `<div class="cp" role="dialog" aria-label="Menu cheat">
@@ -378,6 +392,17 @@
       <button data-c="altarRunes">Toutes les runes au max</button>
       <button data-c="altarReset" class="warn">Remettre l'Autel à zéro</button>
     </div>
+    </div>
+
+    <div class="cat" data-cat="profil" hidden>
+    <div class="row">
+      <button data-c="profileOpen">Ouvrir le profil</button>
+      <button data-c="cosAll">Débloquer tous les cosmétiques</button>
+      <button data-c="renamesFree">Rendre les noms gratuits</button>
+      <button data-c="renamesUsed">Épuiser les noms gratuits</button>
+      <button data-c="cosReset" class="warn">Retirer les cosmétiques</button>
+    </div>
+    <p class="note">Les fées comptent aussi comme avatars : « Toutes les fées » dans Fées.</p>
     </div>
 
     <div class="cat" data-cat="equipement" hidden>
