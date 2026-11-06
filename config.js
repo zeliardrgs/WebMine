@@ -321,16 +321,23 @@ window.CONFIG = {
        9. Redescente : cuivre au niveau 21
        10. Forge : elle apparaît au retour de la 1re expédition qui ramène du cuivre ; améliorer la pioche
        Les niveaux 1 à 5 sont écrits à la main (les mêmes pour tous les joueurs), seulement la 1re fois.
-       Grille : une ligne par rangée. "." = terre, "#" = pierre, une lettre = une case d'un trésor (en terre ;
+       Grille : une ligne par rangée. "." = terre, "#" = pierre, "$" = un tas de pièces, une lettre = une case d'un trésor (en terre ;
        en majuscule = sous la pierre). "tresors" : la lettre → l'artefact. Le coût en énergie de la pierre
        (3 coups par pierre avant le premier équipement) fait exactement 30 sur les niveaux 3 à 5. */
     ftue: {
+      // Des motifs faciles à retenir, dessinés avec des tas de pièces ("$", ramassés à la pelle, sans énergie) :
       niveaux: {
-        1: { grille: ['...', '.a.', '...'], tresors: { a: 'coquillage' } },
-        2: { grille: ['...', '...', 'b..'], tresors: { b: 'feuille' } },
-        3: { grille: ['...', '.C.', '...'], tresors: { c: 'ammonite' } },
-        4: { grille: ['....', '..D.', '....', '....'], tresors: { d: 'dent' } },
-        5: { grille: ['....', 'EEFF', 'EEFF', '....'], tresors: { e: 'lion', f: 'taureau' } },
+        // 1 « Le dé » : un 5 de dé, le coquillage au milieu
+        1: { grille: ['$.$', '.a.', '$.$'], tresors: { a: 'coquillage' } },
+        // 2 « Le sourire » : deux yeux, la feuille en guise de nez, une bouche de pièces
+        2: { grille: ['$.$', '.b.', '$$$'], tresors: { b: 'feuille' } },
+        // 3 « La fleur » : la pierre au cœur (1re pioche), quatre pétales de pièces
+        3: { grille: ['.$.', '$C$', '.$.'], tresors: { c: 'ammonite' } },
+        // 4 « La flèche » : une flèche de pièces qui pointe vers la dent, sous la pierre
+        4: { grille: ['$.$', '.$.', '.D.'], tresors: { d: 'dent' } },
+        // 5 « Le coffre plein » : toute la grille en pierre sauf un coin, trois trésors emboîtés (24 énergie : l'énergie
+        //   tombe pile à 0 en dégageant le dernier)
+        5: { grille: ['EEF', 'EEF', 'GG.'], tresors: { e: 'lion', f: 'lampe', g: 'pierreDeLave' } },
       },
       // Quand les bâtiments apparaissent (au retour au village) :
       //   'premierRetour' = au 1er retour ; 'checkpoint10' = quand le checkpoint 10 est débloqué ;
@@ -533,48 +540,29 @@ window.CONFIG = {
     // "depuis" = premier niveau de la tranche. defi: null = pas d'étage Défi dans la tranche (remplacé par Standard).
     // Un type peut aussi changer sa composition dans une tranche (ex. un mini-boss plus doux : pierre, magma).
     tranches: [
+      // Niveaux 1 à 50 : toutes les grilles en 3 × 3 (demande du 6 novembre 2026) ; à partir de 51 : 4 × 4.
+      // Les étages à part (demi-gardien 49, gardien 99 : etages > speciaux) gardent leur grande grille.
       { depuis: 1,
-        respiration: { grille: [2, 2], tresors: [1, 1] },
+        respiration: { grille: [3, 3], tresors: [1, 1] },
         standard:    { grille: [3, 3], tresors: [1, 1] },
-        fouille:     { grille: [4, 4], tresors: [2, 2] },
+        fouille:     { grille: [3, 3], tresors: [2, 2] },
         defi:        null,
-        miniboss:    { grille: [4, 4], tresors: [2, 2], pierre: 0.25, magma: 0 },   // doux
-        tresor:      { grille: [4, 4], tresors: [1, 1] } },
+        miniboss:    { grille: [3, 3], tresors: [2, 2], pierre: 0.35, magma: 0 },   // doux
+        tresor:      { grille: [3, 3], tresors: [1, 1] } },
       { depuis: 11,
         respiration: { grille: [3, 3], tresors: [1, 1] },
-        standard:    { grille: [4, 4], tresors: [2, 2] },
-        fouille:     { grille: [5, 5], tresors: [3, 3] },
-        defi:        { grille: [4, 4], tresors: [2, 2] },
-        miniboss:    { grille: [6, 5], tresors: [3, 3] },
-        tresor:      { grille: [5, 5], tresors: [1, 1] } },
-      { depuis: 21,
-        respiration: { grille: [3, 3], tresors: [1, 1] },
-        standard:    { grille: [4, 4], tresors: [2, 2] },
-        fouille:     { grille: [6, 5], tresors: [3, 3] },
-        defi:        { grille: [5, 5], tresors: [2, 3] },
-        miniboss:    { grille: [7, 6], tresors: [3, 3] },
-        tresor:      { grille: [5, 5], tresors: [2, 2] } },
-      { depuis: 31,
-        respiration: { grille: [4, 4], tresors: [1, 1] },
-        standard:    { grille: [5, 5], tresors: [2, 2] },
-        fouille:     { grille: [6, 6], tresors: [4, 4] },
-        defi:        { grille: [5, 5], tresors: [3, 3] },
-        miniboss:    { grille: [8, 6], tresors: [3, 3] },
-        tresor:      { grille: [6, 6], tresors: [2, 2] } },
+        standard:    { grille: [3, 3], tresors: [1, 1] },
+        fouille:     { grille: [3, 3], tresors: [2, 2] },
+        defi:        { grille: [3, 3], tresors: [1, 1] },
+        miniboss:    { grille: [3, 3], tresors: [2, 2] },
+        tresor:      { grille: [3, 3], tresors: [1, 1] } },
       { depuis: 51,
-        respiration: { grille: [4, 4], tresors: [1, 2] },
-        standard:    { grille: [5, 5], tresors: [2, 3] },
-        fouille:     { grille: [7, 6], tresors: [4, 4] },
-        defi:        { grille: [6, 6], tresors: [3, 3] },
-        miniboss:    { grille: [8, 7], tresors: [3, 4] },
-        tresor:      { grille: [6, 6], tresors: [2, 2] } },
-      { depuis: 71,
-        respiration: { grille: [4, 4], tresors: [2, 2] },
-        standard:    { grille: [6, 5], tresors: [3, 3] },
-        fouille:     { grille: [7, 7], tresors: [5, 5] },
-        defi:        { grille: [6, 6], tresors: [4, 4] },
-        miniboss:    { grille: [9, 7], tresors: [4, 4] },
-        tresor:      { grille: [7, 7], tresors: [2, 2] } },
+        respiration: { grille: [4, 4], tresors: [1, 1] },
+        standard:    { grille: [4, 4], tresors: [1, 2] },
+        fouille:     { grille: [4, 4], tresors: [2, 3] },
+        defi:        { grille: [4, 4], tresors: [2, 2] },
+        miniboss:    { grille: [4, 4], tresors: [2, 3] },
+        tresor:      { grille: [4, 4], tresors: [1, 1] } },
     ],
 
     // Étages à part, qui remplacent l'étage prévu par le cycle (juste avant les checkpoints 50 et 100)
@@ -596,8 +584,10 @@ window.CONFIG = {
     // finit la mine vers le jour 12 en dépensant 4 à 9 énergie par étage (puissance × 1,5 le 30 octobre 2026 : le jeu était trop dur).
     profondeur: [
       { depuis: 1,  resistance: 1,  energie: 3,   durete: 0.6 },
-      { depuis: 11, resistance: 2,  energie: 10,   durete: 0.8 },
-      { depuis: 21, resistance: 3,  energie: 21,  durete: 0.8 },
+      // FTUE : pierre normale jusqu'au niveau 20 (3 coups à la pioche de base, 2 avec la 1re pioche du coffre),
+      // puis plus dure à partir du 21 (plus on descend, plus c'est dur)
+      { depuis: 11, resistance: 1,  energie: 10,   durete: 0.8 },
+      { depuis: 21, resistance: 2,  energie: 21,  durete: 0.8 },
       { depuis: 31, resistance: 5,  energie: 35,  durete: 1 },
       { depuis: 51, resistance: 8,  energie: 94,  durete: 1.4 },
       { depuis: 61, resistance: 11, energie: 119,  durete: 1.6 },
@@ -688,11 +678,11 @@ window.CONFIG = {
     enPlus: [],           // checkpoints en plus (plus de checkpoint au niveau 5 : les premiers pas sont en refonte)
     dernier: 990,         // dernier niveau qui a un checkpoint
     // La clé cachée sous le niveau du checkpoint : "defaut" partout, sauf les paliers (niveau dans la mine, 1 à 100 :
-    // 50 = 50, 150, 250… ; 100 = 100, 200…). Clés : bois, argent, or, etoile. "taille" = [colonnes, lignes] de la clé.
+    // 50 = 50, 150, 250… ; 100 = 100, 200…). Clés : bois, argent, or, etoile.
     cle: {
       defaut: 'bois',
       paliers: { 50: 'argent', 100: 'or' },
-      taille: [2, 2],
+      // (la clé prend toute la grille du niveau)
     },
   },
 

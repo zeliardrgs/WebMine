@@ -3196,8 +3196,8 @@ function genFtue(level, F) {
   const g = [], spots = {};
   F.grille.forEach((line, r) => [...line].forEach((ch, c) => {
     const i = r * cols + c;
-    g[i] = ch === '#' || (ch !== '.' && ch === ch.toUpperCase()) ? stone() : { t: 'dirt', v: randInt(0, 2) };
-    if (ch !== '.' && ch !== '#') { const k = ch.toLowerCase(), b = spots[k] = spots[k] || { r, c, r2: r, c2: c }; b.r = Math.min(b.r, r); b.c = Math.min(b.c, c); b.r2 = Math.max(b.r2, r); b.c2 = Math.max(b.c2, c); }
+    g[i] = ch === '$' ? { t: 'coins', sz: 'moyen' } : ch === '#' || (ch !== '.' && ch === ch.toUpperCase()) ? stone() : { t: 'dirt', v: randInt(0, 2) };
+    if (ch !== '.' && ch !== '#' && ch !== '$') { const k = ch.toLowerCase(), b = spots[k] = spots[k] || { r, c, r2: r, c2: c }; b.r = Math.min(b.r, r); b.c = Math.min(b.c, c); b.r2 = Math.max(b.r2, r); b.c2 = Math.max(b.c2, c); }
   }));
   S.grid = g;
   S.rewards = Object.entries(spots).filter(([k]) => ARTS[F.tresors[k]]).map(([k, b]) => ({ kind: 'art', key: F.tresors[k], r: b.r, c: b.c, w: b.c2 - b.c + 1, h: b.r2 - b.r + 1, found: false }));
@@ -3324,7 +3324,7 @@ function genCheckpointLevel(level) {
   S.ftype = ef ? ef.type : null; LV_HP = hpAt(level);
   const g = Array.from({ length: N }, () => ({ t: 'dirt', v: randInt(0, 2) }));
   let p = null;
-  if (!cpOpen(level)) { const [w, h] = (CP.cle && CP.cle.taille) || [2, 2]; p = { kind: 'key', key: cpKey(level), w: Math.min(w, COLS), h: Math.min(h, ROWS), bonus: true }; }
+  if (!cpOpen(level)) p = { kind: 'key', key: cpKey(level), w: COLS, h: ROWS, bonus: true };   // the key fills the whole grid
   else {
     // An artefact already found (one of this mine if possible), small enough for the grid
     const fits = k => ARTS[k] && ARTS[k].w <= COLS && ARTS[k].h <= ROWS;
@@ -3856,7 +3856,8 @@ function levelCoach() {
   // Level 1 (a single tile): tap to dig; level 2 (2×2): swipe to dig
   if (lv === 1 && !S.tutoSeen.toucher) {
     const dirt = () => S.grid.filter(c => c.t === 'dirt').length, n0 = dirt();
-    startCoach('toucher', [toolStep('shovel'), { text: TX.toucher, target: () => tileEls[0], done: () => dirt() < n0 }], true);
+    const first = Math.max(0, S.grid.findIndex(c => c.t === 'dirt'));
+    startCoach('toucher', [toolStep('shovel'), { text: TX.toucher, target: () => tileEls[first], done: () => dirt() < n0 }], true);
   }
   if (lv === 2 && !S.tutoSeen.creuser) {
     // Along the treasure's row, so the swipe finds it; done once a whole row is dug or the treasure shows
