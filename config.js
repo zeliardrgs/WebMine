@@ -321,22 +321,24 @@ window.CONFIG = {
        9. Redescente : cuivre au niveau 21
        10. Forge : elle apparaît au retour de la 1re expédition qui ramène du cuivre ; améliorer la pioche
        Les niveaux 1 à 5 sont écrits à la main (les mêmes pour tous les joueurs), seulement la 1re fois.
-       Grille : une ligne par rangée. "." = terre, "#" = pierre, "$" = un tas de pièces, une lettre = une case d'un trésor (en terre ;
+       Grille : une ligne par rangée. "." = terre, "#" = pierre, une lettre = une case d'un trésor (en terre ;
        en majuscule = sous la pierre). "tresors" : la lettre → l'artefact. Le coût en énergie de la pierre
        (3 coups par pierre avant le premier équipement) fait exactement 30 sur les niveaux 3 à 5. */
     ftue: {
-      // Des motifs faciles à retenir, dessinés avec des tas de pièces ("$", ramassés à la pelle, sans énergie) :
+      // Des motifs faciles à retenir, dessinés avec de la pierre ("#"). Avant la pioche (niveaux 1 et 2), ces pierres
+      // ne se cassent pas : on creuse autour. Aux niveaux 3 et 4, casser les pierres du motif coûte de l'énergie pour rien :
+      // même en les cassant toutes (21 énergie), le joueur arrive au niveau 5 avec un peu d'énergie et tombe à 0 au niveau 5.
       niveaux: {
         // 1 « Le dé » : un 5 de dé, le coquillage au milieu
-        1: { grille: ['$.$', '.a.', '$.$'], tresors: { a: 'coquillage' } },
-        // 2 « Le sourire » : deux yeux, la feuille en guise de nez, une bouche de pièces
-        2: { grille: ['$.$', '.b.', '$$$'], tresors: { b: 'feuille' } },
-        // 3 « La fleur » : la pierre au cœur (1re pioche), quatre pétales de pièces
-        3: { grille: ['.$.', '$C$', '.$.'], tresors: { c: 'ammonite' } },
-        // 4 « La flèche » : une flèche de pièces qui pointe vers la dent, sous la pierre
-        4: { grille: ['$.$', '.$.', '.D.'], tresors: { d: 'dent' } },
+        1: { grille: ['#.#', '.a.', '#.#'], tresors: { a: 'coquillage' } },
+        // 2 « Le sourire » : deux yeux, la feuille en guise de nez, une bouche de pierre
+        2: { grille: ['#.#', '.b.', '###'], tresors: { b: 'feuille' } },
+        // 3 « La fleur » : l'ammonite au cœur, sous la pierre (1re pioche), quatre pétales de pierre
+        3: { grille: ['.#.', '#C#', '.#.'], tresors: { c: 'ammonite' } },
+        // 4 « La flèche » : une flèche de pierre qui pointe vers la dent, sous la pierre
+        4: { grille: ['#.#', '.#.', '.D.'], tresors: { d: 'dent' } },
         // 5 « Le coffre plein » : toute la grille en pierre sauf un coin, trois trésors emboîtés (24 énergie : l'énergie
-        //   tombe pile à 0 en dégageant le dernier)
+        //   tombe pile à 0 en dégageant le dernier, ou avant s'il a cassé des pierres pour rien)
         5: { grille: ['EEF', 'EEF', 'GG.'], tresors: { e: 'lion', f: 'lampe', g: 'pierreDeLave' } },
       },
       // Quand les bâtiments apparaissent (au retour au village) :
