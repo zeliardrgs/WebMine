@@ -1172,10 +1172,11 @@ window.CONFIG = {
       picLourd: 'Assets/Equipements/Pickaxe_03.png', picEclats: 'Assets/Equipements/Pickaxe_13.png',
       picGivre: 'Assets/Equipements/Pickaxe_12.png',
       pelleProspecteur: 'Assets/Equipements/Shovel_09.png', pelleLarge: 'Assets/Equipements/Shovel_02.png',
-      gantsFer: '', gantsDynamiteur: '',
-      casqueChantier: '', casqueVeine: '',
-      lanterneProspecteur: '', lanterneAncienne: '',
-      bottesProspecteur: '', bottesPorteBonheur: '',
+      // (16 icônes par emplacement dans Assets/Equipements : Gloves_01…16, Helmet_01…16, Lantern_01…16, Boots_01…16)
+      gantsFer: 'Assets/Equipements/Gloves_02.png', gantsDynamiteur: 'Assets/Equipements/Gloves_13.png',
+      casqueChantier: 'Assets/Equipements/Helmet_04.png', casqueVeine: 'Assets/Equipements/Helmet_15.png',
+      lanterneProspecteur: 'Assets/Equipements/Lantern_07.png', lanterneAncienne: 'Assets/Equipements/Lantern_14.png',
+      bottesProspecteur: 'Assets/Equipements/Boots_01.png', bottesPorteBonheur: 'Assets/Equipements/Boots_05.png',
       // Coffres (fermés) et clés
       coffreBois: 'Assets/UI/Chest_Wood.png', coffreArgent: 'Assets/UI/Chest_Silver.png',
       coffreOr: 'Assets/UI/Chest_Gold.png', coffreEtoile: 'Assets/UI/Chest_Star.png',

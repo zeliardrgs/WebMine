@@ -746,7 +746,7 @@ body.nav-on .v-bottom{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   background:linear-gradient(var(--g1, #eee), var(--g2, #ccc)); box-shadow:inset 0 0 0 3px rgba(255,255,255,.55), 0 3px 0 rgba(0,0,0,.25)}
 .gi:active{transform:translateY(2px)}
 .gi img,.gi-art img{width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
-.gi-art{width:78%; height:78%; display:grid; place-items:center}
+.gi-art{width:78%; height:78%; display:grid; grid-template:100% / 100%; place-items:center}   /* fixed track: a tall picture (Lantern) stays inside the box */
 .gi-lv{position:absolute; left:50%; bottom:-6px; transform:translateX(-50%); padding:0 6px; border-radius:8px; background:var(--ink); color:#fff; font-family:var(--font-display); font-size:10.5px; line-height:16px; white-space:nowrap}
 .gi-s{position:absolute; top:3px; left:4px; min-width:16px; height:16px; padding:0 3px; box-sizing:border-box; border-radius:5px; background:#fff; color:var(--g2, var(--ink)); font-family:var(--font-display); font-size:11px; line-height:16px; text-align:center; box-shadow:0 1px 0 rgba(0,0,0,.25); z-index:1}
 .gi-new{position:absolute; top:-6px; left:-4px; padding:0 5px; border-radius:7px; background:var(--lava); color:#fff; font-family:var(--font-display); font-size:9.5px; line-height:15px; transform:rotate(-8deg)}
