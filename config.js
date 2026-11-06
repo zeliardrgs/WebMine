@@ -327,7 +327,7 @@ window.CONFIG = {
     ftue: {
       // Des motifs faciles à retenir, dessinés avec de la pierre ("#"). Avant la pioche (niveaux 1 et 2), ces pierres
       // ne se cassent pas : on creuse autour. Aux niveaux 3 et 4, casser les pierres du motif coûte de l'énergie pour rien :
-      // même en les cassant toutes (21 énergie), le joueur arrive au niveau 5 avec un peu d'énergie et tombe à 0 au niveau 5.
+      // même en les cassant toutes (24 énergie), le joueur ne tombe jamais à 0 avant la fin du niveau 4.
       niveaux: {
         // 1 « Le dé » : un 5 de dé, le coquillage au milieu
         1: { grille: ['#.#', '.a.', '#.#'], tresors: { a: 'coquillage' } },
@@ -335,8 +335,8 @@ window.CONFIG = {
         2: { grille: ['#.#', '.b.', '###'], tresors: { b: 'feuille' } },
         // 3 « La fleur » : l'ammonite au cœur, sous la pierre (1re pioche), quatre pétales de pierre
         3: { grille: ['.#.', '#C#', '.#.'], tresors: { c: 'ammonite' } },
-        // 4 « La flèche » : une flèche de pierre qui pointe vers la dent, sous la pierre
-        4: { grille: ['#.#', '.#.', '.D.'], tresors: { d: 'dent' } },
+        // 4 « Le cœur » : un cœur de pierre, la dent en son centre (sous la pierre)
+        4: { grille: ['#.#', '#D#', '.#.'], tresors: { d: 'dent' } },
         // 5 « Le coffre plein » : toute la grille en pierre sauf un coin, trois trésors emboîtés (24 énergie : l'énergie
         //   tombe pile à 0 en dégageant le dernier, ou avant s'il a cassé des pierres pour rien)
         5: { grille: ['EEF', 'EEF', 'GG.'], tresors: { e: 'lion', f: 'lampe', g: 'pierreDeLave' } },
