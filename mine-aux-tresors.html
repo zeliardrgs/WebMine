@@ -2611,7 +2611,7 @@ const costFromFr = c => Object.fromEntries(Object.entries(c).map(([k, n]) => [RE
 // A level of an upgrade in config.js: { biome, (energie), price… }
 const stepOf = o => { const { biome = 1, energie, cases, ...price } = o; return { biome, energie, cost: costFromFr(price) }; };
 let COLS = 7, ROWS = 10, N = COLS * ROWS;
-const KEY = 'mine-tresors-v3';   // v3: equipment prototype (older saves start over)
+const KEY = 'mine-tresors-v4';   // v4: FTUE rework of 6 November 2026 (older saves start over)
 /* Language (Paramètres > Langue). Texts are written in French in the code and in config.js;
    tr('texte français') gives the English version from textes-en.js when the game is in English.
    {n}, {a}… in a text are replaced by the values given: tr('Niveau {n}', { n: 5 }). */
@@ -2689,8 +2689,6 @@ function etType(level) {
   if (sp) return sp.type;
   let t = etCycle(Math.floor((m - 1) / 10))[(m - 1) % 10];
   if (t === 'defi' && !etTranche(m).defi) t = 'standard';
-  // A treasure level is only one the first time (replayed from its checkpoint, it is a Standard level)
-  if (t === 'tresor' && (S.treasureDone || {})[level]) t = 'standard';
   return t;
 }
 // Everything about a level's type: composition and cost (etages > types), grid and treasures (tranche or special level)
@@ -2717,9 +2715,9 @@ function luckyRoll(level) {
 }
 const KIND_OF_TYPE = { tresor: 'treasure', miniboss: 'hard', gardien: 'guardian', demiGardien: 'guardian' };
 const baseKind = level => etOn(level) ? KIND_OF_TYPE[etType(level)] || 'easy'
-  : level >= 1000 ? 'king' : level % 100 === 0 || GUARD_EXTRA.includes(level) ? 'guardian' : level % 10 === 0 ? 'treasure' : level % 10 === 9 ? 'hard' : 'easy';
-// A treasure level is only a treasure level the first time: replayed later (from its checkpoint), it is a normal level
-const floorKind = level => { const k = baseKind(level); return k === 'treasure' && (S.treasureDone || {})[level] ? 'easy' : k; };
+  : level >= 1000 ? 'king' : level % 100 === 99 || GUARD_EXTRA.includes(level) ? 'guardian' : level % 10 === 0 ? 'treasure' : level % 10 === 9 ? 'hard' : 'easy';
+// The treasure level is the checkpoint: always all dirt, with a key the first time and an artefact afterwards (genCheckpointLevel)
+const floorKind = level => baseKind(level);
 // A tutorial level is a tutorial only until the player has gone past it: replayed later (starting again from the top
 // of the mine or from a checkpoint), it is a normal level
 const isTuto = level => !S.wide && !S.haunt && !S.maze && !!TUTO[level] && level >= (S.reached || 1);
@@ -2790,7 +2788,7 @@ const LOOK = {
   citrine: { file: 'Citrine', art: 'une' }, ambre: { file: 'Amber', art: 'un' }, topazeImperiale: { file: 'Gem_Yellow_1', art: 'une' }, heliodore: { ph: 'gem', art: 'un' },
   rubis: { file: 'Rubis', art: 'un' }, emeraude: { file: 'Emerald', art: 'une' }, saphirEtoile: { file: 'StarSaphire', art: 'un' }, diamantPur: { ph: 'gem', art: 'un' },
   // Artefacts
-  coquillage: { file: 'Shell', w: 1, h: 1 }, feuille: { file: 'LeafFossil', w: 1, h: 1 }, ammonite: { file: 'Amonite', w: 1, h: 1 },
+  coquillage: { file: 'Shell', w: 1, h: 1 }, feuille: { file: 'LeafFossil', w: 1, h: 1 }, ammonite: { file: 'Amonite', w: 1, h: 1 }, dent: { ph: 'spiral', w: 1, h: 1 },
   lion: { file: 'Artefact_Astro_01', w: 2, h: 2 }, taureau: { file: 'Artefact_Astro_02', w: 2, h: 2 }, scorpion: { file: 'Artefact_Astro_03', w: 2, h: 2 }, dragon: { file: 'Artefact_Astro_04', w: 2, h: 2 },
   lampe: { file: 'Lantern', w: 1, h: 2 }, gourde: { file: 'Minepurse', w: 2, h: 2 }, casque: { file: 'Helmet', w: 2, h: 2 }, pioche: { file: 'pickaxe', w: 2, h: 2 },
   fragmentGauche: { file: 'Artefact_Tablet_01', w: 2, h: 3 }, fragmentCentral: { file: 'Artefact_Tablet_02', w: 3, h: 3 }, fragmentDroit: { file: 'Artefact_Tablet_03', w: 2, h: 3 },
@@ -2910,9 +2908,9 @@ const TOOLS = {
 
 const oreArt = k => resArt(k);
 
-function rwSVG(rw) { return rw.kind === 'gem' ? gemArt(rw.key) : rw.kind === 'geode' ? geodeArt(rw.key) : artArt(rw.key); }
-function rwName(rw) { return rw.kind === 'gem' ? GEMS[rw.key].name : rw.kind === 'geode' ? GEODES[rw.key].name : ARTS[rw.key].name; }
-function rwLabel(rw) { return rw.kind === 'gem' ? tr('Pierre précieuse') : rw.kind === 'geode' ? tr('Géode') : tr('Artefact'); }
+function rwSVG(rw) { return rw.kind === 'key' ? keyArt(rw.key) : rw.kind === 'gem' ? gemArt(rw.key) : rw.kind === 'geode' ? geodeArt(rw.key) : artArt(rw.key); }
+function rwName(rw) { return rw.kind === 'key' ? keyName(rw.key) : rw.kind === 'gem' ? GEMS[rw.key].name : rw.kind === 'geode' ? GEODES[rw.key].name : ARTS[rw.key].name; }
+function rwLabel(rw) { return rw.kind === 'key' ? tr('Clé') : rw.kind === 'gem' ? tr('Pierre précieuse') : rw.kind === 'geode' ? tr('Géode') : tr('Artefact'); }
 
 /* ---------- Equipment: data (config.js > equipement) ----------
    6 slots, each with a few models ("archétypes"). An item = { id, slot, arch, rar, lv, spent }.
@@ -2948,7 +2946,9 @@ const gearItem = id => G().items.find(it => it.id === id);
 const equipped = sk => gearItem(G().eq[sk]);
 const isEquipped = it => G().eq[it.slot] === it.id;
 // Equipment opens with the Forge (level 11, on the next return to the village)
-const gearOpen = () => !!(S.buildings && S.buildings.forge);
+const gearOpen = () => !!(S.buildings && (S.buildings.shop || S.buildings.forge));
+// The Forge (level-ups and merges) opens after the first expedition that brings back copper
+const forgeOpen = () => !!(S.buildings && S.buildings.forge);
 const slotOpen = sk => { const d = EQC.emplacements[sk].deblocage; return !d || has(d); };
 const archOpen = ak => slotOpen(ARCH[ak].slot) && (ARCH[ak].biome || 1) <= biomeOf(Math.max(S.reached || 1, S.level || 1));
 // Levels belong to the slots (Habby style): an item works at its slot's level, capped by its rarity (config.js > raretes > niveauMax)
@@ -3034,7 +3034,7 @@ function freshState() {
       opened: Object.fromEntries(Object.keys(OPEN).map(k => [k, 0])),
       arts: Object.fromEntries(Object.keys(ARTS).map(k => [k, 0])),
     },
-    coins: CFG.depart.pieces, reached: 1, pxp: 0, pclaim: {}, altar: { n: 0, runes: {} }, trip: newTrip(), screen: 'village', roll: null,
+    coins: CFG.depart.pieces, reached: 1, cpBest: 0, pxp: 0, xpCapLv: 2, xpBank: 0, pclaim: {}, altar: { n: 0, runes: {} }, trip: newTrip(), screen: 'mine', roll: null,   // (a new game starts right in the mine, level 1)
     grid: null, rewards: null, gear: newGear(), pets: newPets(), hpX10: true, xpSeen: 0, hallo: newHallo(),
   };
 }
@@ -3145,7 +3145,9 @@ let petNight = false;
 function genLevel(level) {
   const prev = S.lastSig, kind = floorKind(level);
   petNight = !isTuto(level) && petRoll('inconnu');
-  for (let k = 0; k < 12; k++) { genLevelOnce(level, kind); if (levelSig() !== prev) break; }
+  const F = ftueLevel(level);
+  for (let k = 0; k < 12; k++) { genLevelOnce(level, kind); if (F || levelSig() !== prev) break; }
+  if (F) (S.ftueDone = S.ftueDone || {})[level] = true;   // a written level is played once
   petNight = false;
   S.lastSig = levelSig(); S.oilTaps = 0;
   // The kind of this visit (shown in the HUD and the bubble); a treasure level is used up once generated
@@ -3153,14 +3155,14 @@ function genLevel(level) {
   if (S.tuto) S.ftype = 'respiration';
   wideView.x = wideView.y = null;   // a big board starts centred
   if (kind === 'treasure') (S.treasureDone = S.treasureDone || {})[level] = true;
-  if (S.tuto) tutoEnergy(); else if (inGuide() && level < nextReturn() && level >= (S.reached || 1)) guideStone();
+  if (S.tuto) tutoEnergy(); else if (inGuide() && level < nextReturn() && level >= (S.reached || 1) && !F) guideStone();
 }
 // Energy needed to break every rock of the board with the pickaxe (cooled magma included)
 const hitsOf = c => Math.ceil((c.t === 'magma' ? LV_HP.cool : c.hp || 0) / pickPower());
 const ROCK = ['stone', 'ore', 'hard', 'ice', 'stump', 'magma', 'cool'];
 // A tutorial level always gives the energy needed to finish it (never stuck on the new tile)
 function tutoEnergy() {
-  if (!has('pioche') || TUTO[S.tuto].outil === 'bomb') return;
+  if (!has('pioche') || TUTO[S.tuto].outil === 'bomb' || FTUE_LV[S.tuto]) return;
   const need = Math.min(maxE(), S.grid.reduce((a, c) => a + (ROCK.includes(c.t) ? hitsOf(c) : 0), 0));
   if (S.energy >= need) return;
   S.energy = need;
@@ -3182,12 +3184,32 @@ function guideStone() {
     else S.grid[i] = { t: 'dirt', v: randInt(0, 2) };
   }
 }
+/* FTUE (config.js > progression > ftue > niveaux): levels 1 to 5 are written by hand, the same for every player,
+   the first time only (during the first steps). "." dirt, "#" stone, a letter = a cell of a treasure (capital = under stone). */
+const FTUE = PROG.ftue || {}, FTUE_LV = FTUE.niveaux || {};
+const ftueLevel = level => !S.wide && !S.haunt && inGuide() && !(S.ftueDone || {})[level] && FTUE_LV[level] || null;
+function genFtue(level, F) {
+  const rows = F.grille.length, cols = F.grille[0].length;
+  setDims(cols, rows); S.cols = cols; S.rows = rows;
+  S.tuto = isTuto(level) ? level : 0; S.ftype = 'respiration'; LV_HP = hpAt(level);
+  const stone = () => ({ t: 'stone', hp: LV_HP.stone, max: LV_HP.stone });
+  const g = [], spots = {};
+  F.grille.forEach((line, r) => [...line].forEach((ch, c) => {
+    const i = r * cols + c;
+    g[i] = ch === '#' || (ch !== '.' && ch === ch.toUpperCase()) ? stone() : { t: 'dirt', v: randInt(0, 2) };
+    if (ch !== '.' && ch !== '#') { const k = ch.toLowerCase(), b = spots[k] = spots[k] || { r, c, r2: r, c2: c }; b.r = Math.min(b.r, r); b.c = Math.min(b.c, c); b.r2 = Math.max(b.r2, r); b.c2 = Math.max(b.c2, c); }
+  }));
+  S.grid = g;
+  S.rewards = Object.entries(spots).filter(([k]) => ARTS[F.tresors[k]]).map(([k, b]) => ({ kind: 'art', key: F.tresors[k], r: b.r, c: b.c, w: b.c2 - b.c + 1, h: b.r2 - b.r + 1, found: false }));
+}
 function genLevelOnce(level, kindArg) {
+  const F = ftueLevel(level); if (F) return genFtue(level, F);
   const [cols, rows] = levelDims(level, kindArg || floorKind(level));
   setDims(cols, rows); S.cols = cols; S.rows = rows;
   S.tuto = isTuto(level) ? level : 0;
   if (S.tuto) return genTutorial(level, TUTO[level]);
   const kind = kindArg || floorKind(level);
+  if (kind === 'treasure' && !S.wide && CHECKPOINTS.includes(level)) return genCheckpointLevel(level);
   // Pioneers' mine: the level's type (config.js > etages) decides the ground and the treasures
   const ef = etOn(level) ? etInfo(level) : null;
   S.ftype = ef ? ef.type : null; LV_HP = hpAt(level);
@@ -3278,13 +3300,12 @@ function genLevelOnce(level, kindArg) {
   // Pioneers' mine: a share of the treasures lies under stone or magma, the others in the dirt (config.js > etages > profondeur)
   if (ef) etCover(g, best, level, ef);
   trimCost(g, best, level, kind);
-  // A chest key: on a treasure level every X levels (the first time), sometimes on a normal level (once the equipment is open)
-  // (multiples of 100 are guardian levels: the key goes on the first treasure level after the interval, e.g. 410, 810)
-  const KC = EQC.cles, keyHere = kind === 'treasure' ? KC.niveauTresor && keyEvery(level - 10, KC.niveauTresorTousLes || 10) : Math.random() < (KC.chanceEtage || 0);
+  // A chest key, sometimes, on a normal level (once the equipment is open); the checkpoint's key: see genCheckpointLevel
+  const KC = EQC.cles, keyHere = Math.random() < (KC.chanceEtage || 0);
   if (gearOpen() && keyHere) {
     const taken = new Set([...reserved, ...best.flatMap(b => b.cells)]);
     const list = free().filter(i => !taken.has(i));
-    if (list.length) g[list[randInt(0, list.length - 1)]] = { t: 'gkey', k: kind === 'treasure' ? KC.niveauTresor : 'bois' };
+    if (list.length) g[list[randInt(0, list.length - 1)]] = { t: 'gkey', k: 'bois' };
   }
   // Rune Arc-en-ciel: a very rare rainbow tile, worth a lot of coin piles at once
   if (!isTuto(level) && Math.random() < runeVal('arcEnCiel')) {
@@ -3293,6 +3314,39 @@ function genLevelOnce(level, kindArg) {
     if (list.length) g[list[randInt(0, list.length - 1)]] = { t: 'rainbow' };
   }
   S.grid = g; S.rewards = best.map(({ p, r, c }) => ({ ...p, r, c, found: false }));
+}
+/* The checkpoint level (10, 20, 30…; config.js > checkpoints > cle): the whole grid is dirt. The first time a chest key
+   lies under it (seen in pieces while digging, like an artefact); picking it up opens the checkpoint. Replayed later from
+   the lift: still all dirt, with an artefact the player has already found instead of the key. */
+const cpKey = level => { const C = CP.cle || {}, m = mineLv(level); return (C.paliers || {})[m] || C.defaut || 'bois'; };
+function genCheckpointLevel(level) {
+  const ef = etOn(level) ? etInfo(level) : null;
+  S.ftype = ef ? ef.type : null; LV_HP = hpAt(level);
+  const g = Array.from({ length: N }, () => ({ t: 'dirt', v: randInt(0, 2) }));
+  let p = null;
+  if (!cpOpen(level)) { const [w, h] = (CP.cle && CP.cle.taille) || [2, 2]; p = { kind: 'key', key: cpKey(level), w: Math.min(w, COLS), h: Math.min(h, ROWS), bonus: true }; }
+  else {
+    // An artefact already found (one of this mine if possible), small enough for the grid
+    const fits = k => ARTS[k] && ARTS[k].w <= COLS && ARTS[k].h <= ROWS;
+    const owned = Object.keys(S.bag.arts).filter(k => S.bag.arts[k] && fits(k)), here = Object.keys(artsAt(level)).filter(k => owned.includes(k));
+    const list = here.length ? here : owned;
+    if (list.length) { const k = list[randInt(0, list.length - 1)]; p = { kind: 'art', key: k, w: ARTS[k].w, h: ARTS[k].h }; }
+  }
+  const best = p ? placeAll([p], []) : [];
+  S.grid = g; S.rewards = best.map(({ p, r, c }) => ({ ...p, r, c, found: false }));
+}
+// Picking up the checkpoint's key: the key, then the checkpoint opens (lift, XP, end-of-expedition screen)
+function takeCpKey(rw, ri) {
+  const cell = rw.r * COLS + rw.c;
+  sfx('reward'); giveKey(rw.key, 1, cell, '');
+  const el = rwEls[ri]; el.classList.add('done');
+  burst((rw.c + rw.w / 2) * ts(), (rw.r + rw.h / 2) * ts(), ['#fff6a8', '#ffc23d', '#ffffff'], 16, { spread: 46, up: 10, size: [3, 7], dur: 800 });
+  setTimeout(() => { if (slotEls[ri]) fly(el, slotEls[ri], () => { if (slotEls[ri]) slotEls[ri].classList.add('found'); }); else el.style.opacity = 0; }, 300);
+  if (!S.haunt && !S.wide && CHECKPOINTS.includes(S.level) && !cpOpen(S.level)) {
+    S.cpBest = S.level; S.trip.newCp = S.level; gainXP(PJ.xpCheckpoint || 0, 'checkpoints'); sfx('win');
+    setTimeout(() => toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: mineLv(S.level) }) : tr('Checkpoint niveau {n} débloqué !', { n: mineLv(S.level) }), 'good'), 900);
+  }
+  updateGoals(); save();
 }
 /* Pioneers' mine: the ground of a level = its type's share of stone and magma (the rest is dirt), in small patches.
    No stone before the pickaxe; before the magma level, magma becomes stone. */
@@ -3512,6 +3566,8 @@ function genTutorial(level, tuto) {
       const free = [...Array(9).keys()].filter(i => !cells.includes(i));
       const j = free.includes(4) ? 4 : free[randInt(0, free.length - 1)];
       g[j] = { t: 'ore', ore: tuto.nouveaute === 'cuivre' ? 'copper' : 'iron', hp: HP.ore, max: HP.ore };
+      // (copper: enough blocks to pay the first level-up at the Forge, config.js > progression > ftue > blocsCuivreTuto)
+      if (tuto.nouveaute === 'cuivre') free.filter(i => i !== j).slice(0, Math.max(0, (FTUE.blocsCuivreTuto || 1) - 1)).forEach(i => g[i] = { t: 'ore', ore: 'copper', hp: HP.ore, max: HP.ore });
       break;
     }
   }
@@ -3647,8 +3703,8 @@ function applyUnlocks() {
   $('energyChip').hidden = !has('pioche');
   $('bagPill').hidden = !S.bagSeen;
   $('upBtn').hidden = !upAllowed();
-  // First steps: the goals wait until the end
-  $('questBtn').hidden = inGuide();
+  // The missions open with the miner level (config.js > progressionJoueur > niveaux > deblocage 'missions')
+  $('questBtn').hidden = !missionsOpen();
   updateBadge();
   for (const k of ['museum', 'forge', 'atelier', 'shop', 'altar']) { const b = document.querySelector(`.bld[data-go="${k === 'forge' ? 'hero' : k}"]`); if (b) b.hidden = !S.buildings[k]; }
   document.querySelectorAll('.home-sc:not(.hw-sc)').forEach(b => { const k = b.dataset.go; b.hidden = !S.buildings[k] || (k === 'shop' && !!S.tutoSeen.guideFin); b.classList.toggle('new', !!(S.bldNew || {})[k]); });
@@ -3669,7 +3725,7 @@ function bubbleInfo() {
   // Pioneers' mine: the text of the level's type first (config.js > etages > types > texte)
   const ft = S.ftype && ET && ET.types[S.ftype];
   if (ft && ft.texte) return { key: 'f' + S.level, text: tr(ft.texte) };
-  const text = k === 'treasure' ? RY.niveauTresor.texte : k === 'guardian' ? RY.niveauGardien.texte : k === 'king' ? RY.niveau1000.texte : null;
+  const text = k === 'treasure' ? (S.rewards || []).some(r => r.kind === 'art') ? RY.niveauTresor.texteRejoue || RY.niveauTresor.texte : RY.niveauTresor.texte : k === 'guardian' ? RY.niveauGardien.texte : k === 'king' ? RY.niveau1000.texte : null;
   return text ? { key: 'f' + S.level, text: tr(text) } : null;
 }
 function showTuto() {
@@ -4518,6 +4574,7 @@ function takeReward(ri) {
   const rw = S.rewards[ri]; if (!rw || rw.taken === true || bagQueue.length) return;
   rw.taken = true; rwEls[ri].classList.remove('ready', 'left');
   setTimeout(checkAutoNext);
+  if (rw.kind === 'key') return takeCpKey(rw, ri);
   // A guaranteed treasure is only guaranteed until it has been picked up once
   if (rw.guaranteed) (S.guarDone = S.guarDone || {})[S.level] = true;
   collect(rw, ri);
@@ -4764,6 +4821,8 @@ function openEnergyModal(stuck) {
   $('enUpSub').textContent = CFG.energie.rechargeAuVillage && !S.haunt && !S.maze ? tr('Recharger l\'énergie') : '';
   $('enText').hidden = !!(S.haunt || S.maze);   // (event mines: no refill, the notice in place of the options says why)
   $('enStay').hidden = !!stuck || !!S.haunt || !!S.maze;
+  // First steps (level 5 of the FTUE): no refill yet, just the way home
+  if (inGuide() && !S.haunt && !S.maze) { $('enOpts').innerHTML = `<p class="en-blue">${tr(TX.plusEnergie || 'Remonte à la surface pour recharger ton énergie.')}</p>`; $('enText').hidden = true; $('enStay').hidden = true; }
   paintEnWallet();
   $('energyModal').hidden = false; sfx('deny');
 }
@@ -4969,8 +5028,8 @@ function levelCost(it) {
   for (const b of A.minerai) { if (L < b.jusqua) { band = b; break; } prev = b.jusqua; }
   return { coin, [RES_FR[band.minerai]]: band.depart + band.parNiveau * (L - Math.max(1, prev)) };
 }
-const upFree = () => !G().firstUp;   // the very first level-up is offered by the tutorial
-const canLevel = it => !!it && isEquipped(it) && slotLv(it.slot) < capOf(it) && (upFree() || canPay(levelCost(it)));
+const upFree = () => false;   // (FTUE: the first level-up is paid with the copper of the first copper expedition)
+const canLevel = it => !!it && forgeOpen() && isEquipped(it) && slotLv(it.slot) < capOf(it) && (upFree() || canPay(levelCost(it)));
 function levelUp(it) {
   if (!canLevel(it)) return;
   if (!upFree()) pay(levelCost(it));
@@ -5061,7 +5120,8 @@ function dailyReset() { const g = G(); if (g.day !== today()) { g.day = today();
 // Ads left today on a chest (config.js > coffres > pub)
 const adsLeft = k => { dailyReset(); return Math.max(0, (EQC.coffres[k].pub || 0) - ((G().ads || {})[k] || 0)); };
 // The very first wooden chest is offered (tutorial)
-const firstGift = k => !G().firstFree && k === 'bois';
+// (FTUE: the level 10 key opens the first chest; it is a gift only when the player has no key for it)
+const firstGift = k => !G().firstFree && k === 'bois' && !(G().keys[k] > 0);
 const chestReady = () => gearOpen() && (!G().firstFree || CHESTS.some(k => G().keys[k] > 0 || adsLeft(k) > 0));
 const untilTomorrow = () => { const d = new Date(), m = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1) - d, h = Math.floor(m / 36e5); return h ? tr('{h} h', { h }) : tr('{m} min', { m: Math.ceil(m / 6e4) }); };
 function giveKey(k, n = 1, cell = null, why = '') {
@@ -5085,7 +5145,9 @@ function openChests(chest, n, how) {
   const items = [];
   for (let i = 0; i < n; i++) {
     // The very first chest always holds a Common Pickaxe (tutorial)
-    items.push(g.firstFree ? rollItem(chest) : newItem(Object.keys(EQC.emplacements.pioche.modeles)[0], RAR_KEYS[0]));
+    const second = g.firstFree && !g.secondDone && FTUE.deuxiemeCoffre && ARCH[FTUE.deuxiemeCoffre];
+    items.push(!g.firstFree ? newItem(Object.keys(EQC.emplacements.pioche.modeles)[0], RAR_KEYS[0]) : second ? newItem(FTUE.deuxiemeCoffre, RAR_KEYS[0]) : rollItem(chest));
+    if (g.firstFree) g.secondDone = true;
     g.firstFree = true;
   }
   g.items.push(...items); stat('coffres', n); gainXP((PJ.xpEquipement || {}).nouveau * n);
@@ -5243,7 +5305,7 @@ function renderSheet() {
   $('gearCard').innerHTML = `
     <div class="gi gs-big r-${r}${better(it) ? ' better' : ''}"><span class="gi-art">${gearArt(it.arch)}</span>${sBadge(it.rar)}${on ? `<span class="gi-lv">${tr('Niveau {n}', { n: ilv(it) })}${capTxt}</span>` : ''}</div>
     <div class="card gear-card gs-panel">
-      ${nr ? `<button class="gs-fusebtn${fod ? ' on' : ''}" data-gmerge aria-label="${tr('Fusionner')}">${img('Assets/UI/Icon_Forge.png')}${fod ? '<span class="badge">!</span>' : ''}</button>` : ''}
+      ${nr && forgeOpen() ? `<button class="gs-fusebtn${fod ? ' on' : ''}" data-gmerge aria-label="${tr('Fusionner')}">${img('Assets/UI/Icon_Forge.png')}${fod ? '<span class="badge">!</span>' : ''}</button>` : ''}
       <h2 class="gs-name">${itemName(it)}</h2>
       <p class="gs-h">${tr('Stats')}</p>
       <div class="gs-box gs-statrow"><span class="gs-sic">${img('Assets/UI/Icon_Damage.png')}</span><span class="gs-slab">${tr('Puissance')}</span><b>${nfG(Math.round(powerOf(it)))}</b></div>
@@ -5253,7 +5315,7 @@ function renderSheet() {
       <div class="gs-box gs-cost">${!on ? `<span class="gs-free">${tr('Équipe-le pour améliorer l\'emplacement')}</span>` : maxed ? `<span class="gs-free">${nr ? tr('Niveau max pour cette rareté : fusionne pour aller plus haut') : tr('Niveau max')}</span>` : free ? `<span class="gs-free">${tr('Offert')}</span>` : sheetCostHTML(cost)}</div>
       <div class="gs-btns">
         ${isEquipped(it) ? `<button class="gs-btn blue" data-gunequip>${tr('Retirer')}</button>` : `<button class="gs-btn blue" data-gequip id="gEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>`}
-        <button class="gs-btn" data-gup id="gUp" ${canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button>
+        ${forgeOpen() ? `<button class="gs-btn" data-gup id="gUp" ${canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button>` : ''}
       </div>
     </div>
     <button class="gs-close" data-gclose aria-label="${tr('Fermer')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#1d1a2b" stroke-width="7" stroke-linecap="round"/><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></button>`;
@@ -5283,7 +5345,7 @@ document.addEventListener('click', e => {
   if (sl) {
     unlockAudio(); sfx('deny');
     const sk = sl.dataset.eqslot, d = EQC.emplacements[sk].deblocage;
-    if (!gearOpen()) return toast(tr('L\'équipement arrive avec la Forge (niveau {n}).', { n: UNLOCK.forge }), '');
+    if (!gearOpen()) return toast(tr('L\'équipement arrive avec la Boutique (niveau {n}).', { n: UNLOCK.boutique }), '');
     if (!slotOpen(sk)) return toast(tr('Se débloque au niveau {n}.', { n: UNLOCK[d] }), '');
     return toast(tr('Trouve un objet {s} dans les coffres de la Boutique.', { s: slotName(sk) }), '');
   }
@@ -5322,7 +5384,7 @@ function renderHero() {
   // (no Forge button any more: levelling up and merging happen in the item sheet)
   $('eqActions').innerHTML = '';
   const list = G().items.filter(it => !isEquipped(it)).sort((a, b) => rarIdx(b.rar) - rarIdx(a.rar) || GSLOTS.indexOf(a.slot) - GSLOTS.indexOf(b.slot));
-  $('eqInv').innerHTML = !open ? `<p class="eq-soon">${tr('L\'équipement arrive avec la Forge, au niveau {n}.', { n: UNLOCK.forge })}</p>`
+  $('eqInv').innerHTML = !open ? `<p class="eq-soon">${tr('L\'équipement arrive avec la Boutique, au niveau {n}.', { n: UNLOCK.boutique })}</p>`
     : list.length ? `${autoBases().length ? `<div class="eq-invhead"><button class="btn sm eq-auto" data-gauto>${tr('Fusion auto')}</button></div>` : ''}<div class="gi-grid">${list.map(it => gcard(it, better(it) ? 'better' : mergeFodder(it) ? 'can' : '')).join('')}</div>`
     : `<p class="eq-soon">${tr('Les objets que tu trouves dans les coffres arrivent ici.')}</p>`;
   $('navHeroBadge').hidden = !open || !heroBadge();
@@ -5475,7 +5537,7 @@ function paintMoney() {
 }
 // Tutorial of the first chest: open it, equip the pickaxe, look at it on the miner, level it up
 function gearCoach() {
-  if (!gearOpen() || G().firstUp || S.tutoSeen['eq-premier']) return;
+  if (!gearOpen() || S.tutoSeen['eq-premier']) return;
   startCoach('eq-premier', [
     { text: TXE.ouvrirCoffre, target: () => $('stab-coffres'), done: () => shopTab === 'coffres' || G().firstFree },
     { text: TXE.ouvrirCoffre, target: () => $('chestOpen1'), done: () => G().firstFree },
@@ -5483,7 +5545,6 @@ function gearCoach() {
     { text: TXE.equiper, target: () => $('cmEquip'), done: () => !!G().eq.pioche },
     { text: TXE.personnage, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden || !$('gearModal').hidden },
     { text: TXE.toucherObjet, target: () => $('eqs-pioche'), done: () => !$('gearModal').hidden },
-    { text: TXE.ameliorer, target: () => $('gUp'), done: () => G().firstUp },
     // (shown once the item sheet is closed)
     { text: TX.retourVillage, target: () => document.querySelector('.nav-tab[data-nav="village"]'), done: () => !$('scr-village').hidden },
   ]);
@@ -6970,19 +7031,35 @@ const plLevel = () => plInfo().lv;
 // Level that opens a feature (1 = open from the start)
 const plUnlockAt = k => { const i = PJ.niveaux.findIndex(r => r.deblocage === k); return i < 0 ? 1 : i + 2; };
 const eventsOpen = () => plLevel() >= plUnlockAt('evenements');
+const missionsOpen = () => plLevel() >= plUnlockAt('missions');
 const plReady = l => l <= plLevel() && !!plRow(l) && !!plRow(l).recompense && !(S.pclaim || {})[l];
 const plWaiting = () => { let n = 0; for (let l = 2; l <= plLevel(); l++) if (plReady(l)) n++; return n; };
 // XP is never silent: each gain says why. During a descent (levels, records) it is written in the trip, shown at the
 // end of the expedition; xpSink collects the gains of one action (the recap, a geode opened) to list them there.
 let xpSink = null;
 const TRIP_XP = ['niveaux', 'records', 'checkpoints'];
+// Total XP needed to reach a level
+const plTotalAt = lv => { let t = 0; for (let l = 1; l < lv; l++) t += plStep(l); return t; };
+// One level at most per return to the village (config.js > progressionJoueur > unNiveauParRetour):
+// the XP beyond the next level waits in S.xpBank and comes in on the next return
+const xpCapLv = () => S.xpCapLv || plLevel() + 1;
+function capXP() {
+  if (!PJ.unNiveauParRetour) return;
+  const max = plTotalAt(xpCapLv() + 1) - 1;
+  if (S.pxp > max) { S.xpBank = (S.xpBank || 0) + S.pxp - max; S.pxp = max; }
+}
+function xpNewVisit() {
+  if (!PJ.unNiveauParRetour) return;
+  S.xpCapLv = plLevel() + 1;
+  if (S.xpBank) { S.pxp = (S.pxp || 0) + S.xpBank; S.xpBank = 0; capXP(); }
+}
 function gainXP(n, why, count = 1) {
   n = Math.round((n || 0) * (1 + runeVal('savoir')));
   if (!n) return;
   const sink = xpSink || (TRIP_XP.includes(why) && S.trip ? (S.trip.xp = S.trip.xp || {}) : null);
   if (sink && why) { const e = sink[why] = sink[why] || { xp: 0, n: 0 }; e.xp += n; e.n += count; }
   const before = plLevel();
-  S.pxp = (S.pxp || 0) + n;
+  S.pxp = (S.pxp || 0) + n; capXP();
   const lv = plLevel();
   if (lv > before && !inGuide() && $('scr-village').hidden) setTimeout(() => { sfx('win'); toast(tr('Niveau {n} atteint ! Ton badge t\'attend à l\'accueil.', { n: lv }), 'good'); }, 900);
   if (!$('scr-village').hidden) { renderPlCard(); setTimeout(animatePlXp, 350); }
@@ -7009,7 +7086,7 @@ let plAnim = null;
 function animatePlXp() {
   if (plAnim || $('scr-village').hidden) return;
   const from = S.xpSeen ?? S.pxp, to = S.pxp || 0;
-  if (to <= from || inGuide() || $('plCard').hidden) { S.xpSeen = to; setTimeout(levelUpFlow, 300); return; }
+  if (to <= from || $('plCard').hidden) { S.xpSeen = to; setTimeout(levelUpFlow, 300); return; }
   if (coach || revealing || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) { setTimeout(animatePlXp, 700); return; }
   plAnim = { v: from };
   const card = $('plCard'), r = card.querySelector('.pl-gauge').getBoundingClientRect(), tx = r.left + 14, ty = r.top + r.height / 2;
@@ -7043,7 +7120,7 @@ const lvupNext = () => { for (let l = 2; l <= plLevel(); l++) if (plReady(l)) re
 let lvupL = 0, lvupHits = 0;
 // On the home screen, once the XP gauge has filled up: one stone per new level
 function levelUpFlow() {
-  if (lvupL || plAnim || $('scr-village').hidden || inGuide() || coach || revealing) return;
+  if (lvupL || plAnim || $('scr-village').hidden || coach || revealing) return;
   const l = lvupNext(); if (!l) return;
   if ([...document.querySelectorAll('.modal')].some(m => !m.hidden)) { setTimeout(levelUpFlow, 700); return; }
   lvupL = l; lvupHits = 0;
@@ -7187,7 +7264,7 @@ $('fairyBtns').addEventListener('click', e => {
 });
 // The card on the village: face with the level, name, XP gauge (hidden during the first steps, like the missions)
 function renderPlCard() {
-  $('plCard').hidden = inGuide();
+  $('plCard').hidden = !S.buildings.museum;   // (FTUE: the XP card shows from the first return on)
   $('plName').textContent = playerName(); paintFace($('plCard').querySelector('.pl-face'));
   paintPlCard(plInfoOf(plAnim ? plAnim.v : S.xpSeen ?? S.pxp));
   $('plBadge').hidden = !plWaiting();
@@ -7269,7 +7346,7 @@ function renderVillage() {
   $('badgeAltar').hidden = !canPray() || !!(S.bldNew || {}).altar;
   $('badgeMuseum').hidden = !museumWaiting() || !!(S.bldNew || {}).museum;
   $('badgeShop').hidden = !S.buildings.shop || !chestReady() || !!(S.bldNew || {}).shop;
-  const cps = CHECKPOINTS.filter(l => l <= S.reached).length;
+  const cps = CHECKPOINTS.filter(cpOpen).length;
   // Each mine has its own levels 1 to 100: the record shows the deepest mine and its level
   $('mineDepth').textContent = tr('Record : {x}, niveau {n}', { x: biomeName(biomeOf(S.reached || 1)), n: mineLv(S.reached || 1) }) + (cps ? ' · ' + tr(plural(cps, '{n} checkpoint', '{n} checkpoints'), { n: cps }) : '');
   applyCam();
@@ -7338,8 +7415,10 @@ const mineLv = level => (level - 1) % BIOME_LEN + 1;
 const isCamp = level => level % BIOME_LEN === 0;
 const biomeName = b => BIOME_NAMES[b - 1] ? tr(BIOME_NAMES[b - 1]) : tr('Biome {n}', { n: b });
 const galleryInProgress = () => S.rewards && S.rewards.length && !S.rewards.every(r => r.found);
-// Starting points the player can use: level 1 and every checkpoint reached
-const liftStops = () => [1, ...CHECKPOINTS.filter(l => l <= S.reached)];
+// A checkpoint opens once its key is picked up on its level (genCheckpointLevel), not just by reaching it
+const cpOpen = l => l <= (S.cpBest || 0);
+// Starting points the player can use: level 1 and every checkpoint finished
+const liftStops = () => [1, ...CHECKPOINTS.filter(cpOpen)];
 /* Choosing the mine (config.js > biomes > cartes): one card per biome reached (plus the next one, locked), with its
    ores, its picture and the deepest level reached in it; under the cards, the starting level (level 1 of the biome and
    its checkpoints reached), then "Descendre". */
@@ -7384,7 +7463,7 @@ function renderLift() {
   const last = Math.min(total, lastOpen + 1);
   $('lfCards').innerHTML = Array.from({ length: last }, (_, i) => i + 1).map(b => {
     const from = (b - 1) * BIOME_LEN + 1, to = b * BIOME_LEN, c = liftCard(b);
-    if (!mineOpen(b)) return `<div class="lf-card locked" data-biome="${b}"><p class="lf-lock">${MINE_UNLOCK % 100 === 0
+    if (!mineOpen(b)) return `<div class="lf-card locked" data-biome="${b}"><p class="lf-lock">${MINE_UNLOCK % 100 === 99
       ? tr('{x} : bats le gardien du niveau {n} pour débloquer cette mine.', { n: MINE_UNLOCK, x: biomeName(b - 1) })
       : tr('{x} : termine le niveau {n} pour débloquer cette mine.', { n: MINE_UNLOCK, x: biomeName(b - 1) })}</p></div>`;
     const reach = S.reached >= from ? mineLv(Math.min(S.reached, to)) : 0;
@@ -7557,14 +7636,27 @@ const BUILDINGS = {
   altar:   { name: 'l\'Autel',     key: 'autel',    text: 'Prie pour graver des runes.' },
 };
 const OW_IMG = { museum: 'Museum', forge: 'Forge', atelier: 'Workshop', shop: 'Shop' };
+// When a building appears, on a return to the village (config.js > progression > ftue > batiments); T = the trip just ended
+const BLD_WHEN = (FTUE.batiments || {});
+function bldReady(k, T) {
+  const w = BLD_WHEN[k], b = BUILDINGS[k];
+  if (!w) return !b.key || has(b.key);
+  if (w === 'premierRetour') return true;
+  if (w === 'checkpoint10') return cpOpen(CHECKPOINTS[0]);
+  if (w === 'geode') return !!T && (T.finds || []).some(f => f.kind === 'geode');
+  if (w === 'cuivre') return !!T && (T.ores || {}).copper > 0;
+  if (w === 'niveauJoueur') return plLevel() >= plUnlockAt(k === 'altar' ? 'autel' : k);
+  return false;
+}
 function openRecap() {
   // First steps: the planned returns reached so far. Back home before the planned return (0 energy, stuck),
   // that stretch of the tutorial is over too: it never comes back when the player goes down again.
   if (inGuide()) S.guideBack = Math.max(S.guideBack || 0, nextReturn(), ...GUIDE.retours.filter(r => r <= S.level));
   if (!S.tutoSeen.surface) startCoach('surface', [{ text: TX.surface, target: () => $('recapVillage'), done: () => $('recapModal').hidden }]);
   const T = S.trip; let coins = 0;
+  xpNewVisit();
   // New buildings appear in the village itself (not on this screen)
-  const opened = Object.entries(BUILDINGS).filter(([k, b]) => !S.buildings[k] && (!b.key || has(b.key))).map(([k]) => k);
+  const opened = Object.keys(BUILDINGS).filter(k => !S.buildings[k] && bldReady(k, T));
   opened.forEach(k => { S.buildings[k] = true; (S.bldNew = S.bldNew || {})[k] = true; });
   S.newBuildings = [...(S.newBuildings || []), ...opened];
   xpSink = T.xp = T.xp || {};   // new treasures and collection stars brought back count with the levels of the descent
@@ -7657,12 +7749,17 @@ function villageCoach() {
   // Very first visit: go down into the mine
   if (S.reached <= 1 && !S.tutoSeen.descendre)
     return startCoach('descendre', [{ text: TX.descendre, target: () => $('descendBtn'), done: () => $('scr-village').hidden || !$('liftModal').hidden }]);
+  // A miner level waiting: its rock comes first (FTUE: level 2 right after the first Museum visit)
+  if (lvupL || plAnim) return;
+  if (lvupNext() && !(S.newBuildings || []).length && !['museum', 'shop', 'forge', 'atelier', 'altar'].some(k => S.buildings[k] && (S.bldNew || {})[k] && !S.tutoSeen['bld-' + k])) return levelUpFlow();
   // A building that just appeared: the camera goes to it, then the player enters it
   const k = ['museum', 'shop', 'forge', 'atelier', 'altar'].find(k => S.buildings[k] && (S.bldNew || {})[k] && !S.tutoSeen['bld-' + k]);
   if (k) {
     // The equipment is in the Character screen: the hand shows that tab
     if (k === 'forge') return startCoach('bld-forge', [
-      { text: TX.batiments.forge, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden },
+      { text: TX.batiments.forge, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden || !$('gearModal').hidden },
+      { text: TXE.toucherObjet, target: () => $('eqs-pioche'), done: () => !$('gearModal').hidden },
+      { text: TXE.ameliorer, target: () => $('gUp'), done: () => G().firstUp },
     ]);
     if (k === 'atelier') return startCoach('bld-atelier', [
       { text: TX.batiments.atelier, target: () => document.querySelector('.nav-tab[data-nav="museum"]'), done: () => !$('scr-museum').hidden || !$('scr-atelier').hidden },
@@ -7680,9 +7777,10 @@ function villageCoach() {
       { text: TX.sacAcheter, scroll: true, target: () => document.querySelector(`[data-plclaim="${bagLv}"]`), done: () => !plReady(bagLv) || $('scr-progress').hidden },
     ]);
   }
-  // End of the first steps: the goals appear, then a short "well done"
+  // The missions open with the miner level: shown once
+  if (missionsOpen() && !S.tutoSeen.objectifs && !lvupL) { applyUnlocks(); return startCoach('objectifs', [{ text: TX.objectifs, target: () => $('questBtn'), done: () => !$('scr-missions').hidden }]); }
+  // End of the first steps: a short "well done"
   if (!inGuide() && !S.tutoSeen.guideFin) {
-    if (!S.tutoSeen.objectifs) { applyUnlocks(); return startCoach('objectifs', [{ text: TX.objectifs, target: () => $('questBtn'), done: () => !$('scr-missions').hidden }]); }
     S.tutoSeen.guideFin = true; save(); applyUnlocks(); updateNav('village');
     return toast(tr(TX.fin), 'good');
   }
@@ -7695,6 +7793,8 @@ function villageCoach() {
 function mineCoach() {
   if (S.wide || S.haunt) return;
   if (coach || $('scr-mine').hidden || descending || bagQueue.length || !settled() || [...document.querySelectorAll('.modal')].some(m => !m.hidden)) return;
+  // First steps: out of energy (level 5) → the energy window, then back up
+  if (inGuide() && has('pioche') && S.energy <= 0 && S.level >= (S.reached || 1)) return openEnergyModal(true);
   if (inGuide() && S.level >= nextReturn())
     return startCoach('retour-' + nextReturn(), [{ text: TX.remonter, target: () => $('upBtn'), done: () => $('scr-mine').hidden }], true);
   const lv = S.level;
@@ -8293,7 +8393,7 @@ const renderHelp = () => $('help').innerHTML = [
   ['bombes', TOOLS.bomb, tr('<b>Bombe</b> : dans ton sac, onglet Consommables. Elle fait sauter les 9 cases autour de la cible, sauf le magma chaud.')],
   ['radar', RADAR, tr('<b>Radar</b> : dans ton sac, onglet Consommables. Il entoure l\'emplacement d\'un trésor caché.')],
   [() => S.bagSeen, img('Assets/UI/Bag.png'), tr('<b>Sac</b> : chaque trésor et chaque géode prend une case (les minerais ne comptent pas). Agrandis-le à la boutique.')],
-  [() => S.reached >= CHECKPOINTS[0], UP_ICON, tr('<b>Ascenseur</b> : à l\'accueil, « Descendre » te propose les checkpoints débloqués (niveau 10, 20, 30…), rangés par biome. C\'est gratuit.')],
+  [() => cpOpen(CHECKPOINTS[0]), UP_ICON, tr('<b>Ascenseur</b> : à l\'accueil, « Descendre » te propose les checkpoints débloqués (niveau 10, 20, 30…), rangés par biome. C\'est gratuit.')],
   [null, UP_ICON, tr('<b>Remonter</b> : quitte la mine quand tu veux. Ton sac se vide : les nouveaux trésors vont au musée, les doublons sont vendus.')],
   [() => S.buildings.museum, artArt('lion'), tr('<b>Musée</b> : chaque nouveau trésor rapporte une prime. Complète une collection pour gagner une étoile (jusqu\'à {n}) : ses doublons se vendent plus cher, et la prime se récupère au Musée.', { n: MAX_STARS })],
   [() => S.buildings.shop, img('Assets/UI/Bag.png'), tr('<b>Boutique</b> : agrandis ton sac. D\'autres articles arrivent plus profond.')],
@@ -8306,7 +8406,7 @@ const renderHelp = () => $('help').innerHTML = [
   ['glace', TOOLS.pickaxe, tr('<b>Glace</b> : la pioche y fait moitié moins de dégâts. Collée au magma, elle fond d\'un coup de pelle. Une bombe la fait fondre aussi.')],
   ['gaz', TOOLS.bomb, tr('<b>Gaz</b> : une bombe qui le touche fait une explosion 5×5.')],
   ['coffre', TOOLS.shovel, tr('<b>Coffre bonus</b> : touche-le pour l\'ouvrir. Toujours des pièces, parfois plus.')],
-  [() => S.reached >= 10, COIN, tr('<b>Rythme</b> : tous les 10 niveaux, un niveau trésor rempli de minerai et de tas de pièces. Tous les 100 niveaux, un niveau gardien avec une grosse récompense.')],
+  [() => S.reached >= 10, COIN, tr('<b>Rythme</b> : le 9e niveau de chaque dizaine est dur ; le 10e, le checkpoint, est tout en terre avec une clé de coffre dessous. Ramasse-la pour débloquer le checkpoint. Juste avant chaque fin de mine, un niveau gardien avec une grosse récompense.')],
   ['geodes', geodeArt('crystal'), tr('<b>Géodes</b> : verte (Commune), bleue (Rare), violette (Épique), dorée (Légendaire). Ouvre-les à l\'atelier : chacune donne une pierre précieuse de sa rareté. Les pierres précieuses ne se trouvent que dans les géodes.')],
 ].filter(([k]) => !k || (typeof k === 'function' ? k() : has(k))).map(([, s, t]) => `<div>${s}<span>${t}</span></div>`).join('');
 $('helpClose').addEventListener('click', () => { $('helpModal').hidden = true; });
@@ -8323,7 +8423,7 @@ $('resetBtn').addEventListener('click', () => {
   if (!$('resetBtn').dataset.armed) return resetArm(true);
   const { sound, music, lang } = S; S = freshState(); Object.assign(S, { sound, music, lang });
   genLevel(1); buildBoard(true); setTool('shovel'); updateBombs(); updateQuick(); updateBadge(); paintSound(); updateEnergy(true);
-  closeSettings(); go('village'); save(); toast(tr('Nouvelle partie !'), 'good');
+  closeSettings(); go('mine'); save(); toast(tr('Nouvelle partie !'), 'good');
 });
 
 /* ---------- Level complete: no popup, a "next level" button appears ---------- */
@@ -8342,7 +8442,7 @@ function levelDone() {
       const best = geodesAt(S.level).map(([k]) => k).sort((a, b) => RARITIES.indexOf(GEODES[b].rarity) - RARITIES.indexOf(GEODES[a].rarity))[0];
       if (best) { S.bag.geodes.push(best); parts.push(rarName(GEODES[best].name, GEODES[best].rarity) + ' ' + tr('(à l\'Atelier)')); }
     }
-    if (gearOpen() && EQC.cles.gardien && keyEvery(S.level, EQC.cles.gardienTousLes || 100)) { const k = EQC.cles.gardien; G().keys[k]++; parts.push(tr('+1 {x}', { x: keyName(k) })); }
+    if (gearOpen() && EQC.cles.gardien && keyEvery(S.level + 1, EQC.cles.gardienTousLes || 100)) { const k = EQC.cles.gardien; G().keys[k]++; parts.push(tr('+1 {x}', { x: keyName(k) })); }
     // Beating this guardian may open the next mine (config.js > biomes > niveauDeblocage)
     const nextMine = biomeOf(S.level) + 1, opens = nextMine <= BIOME_NAMES.length && !mineOpen(nextMine);
     S.guardDone[S.level] = true;
@@ -8442,8 +8542,6 @@ function arriveNext() {
   gainXP(inGuide() ? 0 : PJ.xpNiveau || 0, 'niveaux');
   if (newRecord) gainXP(recordXP(S.level), 'records');
   if (newRecord && gearOpen()) for (const r of EQC.cles.records) if (keyEvery(S.level, r.tousLes)) setTimeout(() => giveKey(r.cle, 1, null, tr('Record niveau {n} !', { n: mineLv(S.level) })), 900);
-  if (newRecord && CHECKPOINTS.includes(S.level)) gainXP(PJ.xpCheckpoint || 0, 'checkpoints');
-  if (newRecord && CHECKPOINTS.includes(S.level)) { S.trip.newCp = S.level; sfx('win'); toast(isCamp(S.level) ? tr('⛺ Camp de biome débloqué (niveau {n}) !', { n: mineLv(S.level) }) : tr('Checkpoint niveau {n} débloqué !', { n: mineLv(S.level) }), 'good'); }
   save();
 }
 // Étage Lucky: a rainbow banner, a little sound and sparkles; counted for the end-of-expedition screen
@@ -8616,9 +8714,11 @@ function start(data) {
   if (!saved || !saved.buildings) {
     S.buildings = {};
     const visited = S.reached > 1 || museumOwned() > 0;
-    for (const [k, b] of Object.entries(BUILDINGS)) if (visited && (!b.key || has(b.key))) S.buildings[k] = true;
+    for (const k of Object.keys(BUILDINGS)) if (visited && bldReady(k, null)) S.buildings[k] = true;
   }
   if (!(S.reached >= S.level)) S.reached = S.level;
+  // Saves from before "finish the level to open its checkpoint": every checkpoint reached stays open
+  if (saved && saved.cpBest === undefined) S.cpBest = CHECKPOINTS.filter(l => l <= S.reached).pop() || 0;
   S.bag.geodes = S.bag.geodes.map(g => GEODES[g] ? g : OLD_GEODE[g] || 'white');
   S.trip.finds = S.trip.finds.filter(f => f.kind !== 'geode' || GEODES[f.key] || OLD_GEODE[f.key]).map(f => f.kind === 'geode' && !GEODES[f.key] ? { kind: 'geode', key: OLD_GEODE[f.key] } : f);
   S.roll = null;   // older saves: deepest gallery reached = current one
@@ -8641,7 +8741,8 @@ function start(data) {
     if (!(S.coins >= 0)) S.coins = CFG.depart.pieces;
     for (const [kind, book] of [['gem', S.bag.gems], ['crystal', S.bag.opened], ['art', S.bag.arts]])
       for (const k of Object.keys(book)) if (book[k] > 1) { S.coins += (book[k] - 1) * findValue(kind, k); book[k] = 1; }
-    S.v3 = true; S.screen = 'village';
+    if (saved) S.screen = 'village';
+    S.v3 = true;
   }
   if (!(S.bucketCharges >= 0)) S.bucketCharges = maxCharges();
   // Haunted Mine: saves from before the event get its fields; a descent saved after the event was removed from config.js ends
