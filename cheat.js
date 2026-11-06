@@ -5,7 +5,8 @@
 (() => {
   const M = window.__mine;
   if (!M) return;
-  const KEY = 'mine-tresors-v3', BACKUP = 'mine-tresors-backup', INF = 'mine-cheat-energie';
+  const KEY = 'mine-tresors-v4',   // (same key as the game: mine-aux-tresors.html > KEY)
+    BACKUP = 'mine-tresors-backup', INF = 'mine-cheat-energie';
   const PF = M.CFG.pets.fees, PC = M.CFG.pets.categories;
 
   /* ---------- Style ---------- */

@@ -875,7 +875,6 @@ button.eq-dmg{cursor:pointer}
 .gs-sic{width:calc(var(--u) * 8.4); height:calc(var(--u) * 8.4); margin:calc(var(--u) * -1) 0; flex:none; display:grid; place-items:center}
 .gs-sic img,.gs-sic svg{width:100%; height:100%; object-fit:contain}
 .gs-slab{flex:1; min-width:0; font-family:var(--font-display); font-size:calc(var(--u) * 4.68); color:var(--ink)}
-.gs-sub{display:block; margin-top:calc(var(--u) * .4); font-family:var(--font-body, inherit); font-weight:700; font-size:calc(var(--u) * 2.9); line-height:1.2; color:var(--ink-soft, #6b5a4a)}
 .gs-statrow b{font-family:var(--font-display); font-weight:400; font-size:calc(var(--u) * 6.6); color:var(--ink); white-space:nowrap}
 .card.gs-panel > .gs-pasbox{flex:0 1 auto; min-height:0; margin-bottom:calc(var(--u) * 3); overflow-y:auto; display:flex; flex-direction:column; align-items:flex-start; gap:calc(var(--u) * 1.4); padding:calc(var(--u) * 4.6) calc(var(--u) * 4.6) calc(var(--u) * 3.6)}
 .gs-pastxt{margin:0!important; font-family:var(--font-display); font-size:calc(var(--u) * 3.6)!important; line-height:1.3!important; color:var(--ink)!important}
@@ -3750,7 +3749,7 @@ function applyUnlocks() {
   $('questBtn').hidden = !missionsOpen();
   updateBadge();
   for (const k of ['museum', 'forge', 'atelier', 'shop', 'altar']) { const b = document.querySelector(`.bld[data-go="${k === 'forge' ? 'hero' : k}"]`); if (b) b.hidden = !S.buildings[k]; }
-  document.querySelectorAll('.home-sc:not(.hw-sc)').forEach(b => { const k = b.dataset.go; b.hidden = !S.buildings[k] || (k === 'shop' && !!S.tutoSeen.guideFin); b.classList.toggle('new', !!(S.bldNew || {})[k]); });
+  document.querySelectorAll('.home-sc:not(.hw-sc)').forEach(b => { const k = b.dataset.go; b.hidden = !S.buildings[k] || (k === 'shop' && ftueOver()); b.classList.toggle('new', !!(S.bldNew || {})[k]); });
 }
 // Info bubble: announces treasure, guardian and King's levels, and the guardian's reward (once each).
 // No button: it closes by itself after a few seconds, or with a tap.
@@ -3759,6 +3758,8 @@ function bubbleInfo() {
   if (S.tuto) return null;
   if (S.maze) return { key: 'lab-intro', text: tr(LAB.texte) };
   if (S.qrush) return S.qrEnd ? null : { key: 'qr-intro', text: tr(QR.texte) };
+  // FTUE: no level bubbles (mini-boss, treasure level…), the player learns by playing
+  if (!S.haunt && !S.wide && !ftueOver()) return null;
   const k = S.floor || floorKind(S.level);
   // Haunted Mine: its own treasure and guardian texts (each shown once)
   // (the Citrouille géante has its own text, shown once)
@@ -3836,7 +3837,7 @@ function renderCoach(st) {
   coachArea = { l: Math.min(r.left, q.left) - 4, t: Math.min(r.top, q.top) - 4, r: Math.max(r.right, q.right) + 4, b: Math.max(r.bottom, q.bottom) + 4 };
   // Measured again only when the target moves (camera, board animation, screen size)
   const sig = [r.left, r.top, r.width, r.height, q.left, q.top, innerWidth, innerHeight, st.text].map(v => typeof v === 'number' ? Math.round(v) : v).join();
-  if (st._sig === sig) { dim.hidden = txt.hidden = false; hand.hidden = !!st.info; return; }
+  if (st._sig === sig) { dim.hidden = false; txt.hidden = !st.text; hand.hidden = !!st.info; return; }
   st._sig = sig;
   const cx = r.left + r.width / 2, cy = r.top + Math.min(r.height, r.width) / 2;
   let x2 = cx, y2 = cy;
@@ -3855,7 +3856,9 @@ function renderCoach(st) {
   const inModal = !!el.closest('.modal'), high = !st.above && (my < innerHeight * .55 || inModal);
   txt.style.top = high ? Math.min(innerHeight - 90, inModal ? r.bottom + 14 : Math.max(r.bottom + 16, cy + 64)) + 'px' : '';
   txt.style.bottom = high ? '' : innerHeight - (st.above || inModal ? r.top - 12 : Math.min(r.top - 12, my - rad - 10)) + 'px';
-  dim.hidden = txt.hidden = false; hand.hidden = !!st.info;
+  // A step can place its sentence at a height of the screen (txtY = share of the height), away from what matters
+  if (st.txtY != null) { txt.style.top = Math.round(innerHeight * st.txtY) + 'px'; txt.style.bottom = ''; }
+  dim.hidden = false; txt.hidden = !st.text; hand.hidden = !!st.info;
 }
 // Touches outside the tutorial's target are ignored (the cheat menu stays usable for testing)
 // An info step goes on as soon as the finger or mouse is lifted, anywhere on the screen. Not on "click": on a phone,
@@ -4595,9 +4598,11 @@ function clearCell(i) {
   if (pile) { goldPile(i); petProc(); }
   checkRewards(); save(); checkAutoNext();
 }
-// Every cell cleared and every treasure picked up: go to the next level on its own
-// (a treasure left in the mine, or the bottom of the mine, keeps the "next level" button instead)
+// Every cell cleared and every treasure picked up: going to the next level on its own is OFF (6 November 2026:
+// levels skipped by themselves felt like a bug). The player always goes down with the "next level" button.
+const AUTO_NEXT = false;
 function checkAutoNext() {
+  if (!AUTO_NEXT) return;
   if (!S.rewards || !S.rewards.length || S.level >= 1000 || hwBottom()) return;
   if (!S.rewards.every(r => r.taken === true) || !S.grid.every(c => c.t === 'empty' || c.deco)) return;
   // The first full bag is handled by pickUp (tutorial: down one level, then the "Sac plein" popup)
@@ -5365,13 +5370,13 @@ function renderSheet() {
       ${nr && forgeOpen() ? `<button class="gs-fusebtn${fod ? ' on' : ''}" data-gmerge aria-label="${tr('Fusionner')}">${img('Assets/UI/Icon_Forge.png')}${fod ? '<span class="badge">!</span>' : ''}</button>` : ''}
       <h2 class="gs-name">${itemName(it)}</h2>
       <p class="gs-h">${tr('Stats')}</p>
-      <div class="gs-box gs-statrow" id="gsPower"><span class="gs-sic">${img('Assets/UI/Icon_Damage.png')}</span><span class="gs-slab">${tr('Puissance')}<small class="gs-sub">${tr('+{p} dégâts à chaque coup de pioche', { p: nfG(Math.round(powerOf(it))) })}</small></span><b>${nfG(Math.round(powerOf(it)))}</b></div>
-      ${st ? `<div class="gs-box gs-statrow" id="gsStat"><span class="gs-sic">${STAT_ICON[it.slot]()}</span><span class="gs-slab">${tr(st.court)}<small class="gs-sub">${statTxt(it.slot, v)}</small></span><b>${st.nombre ? nfG(v) : pctG(v)}</b></div>` : ''}
+      <div class="gs-box gs-statrow"><span class="gs-sic">${img('Assets/UI/Icon_Damage.png')}</span><span class="gs-slab">${tr('Puissance')}</span><b>${nfG(Math.round(powerOf(it)))}</b></div>
+      ${st ? `<div class="gs-box gs-statrow"><span class="gs-sic">${STAT_ICON[it.slot]()}</span><span class="gs-slab">${tr(st.court)}</span><b>${st.nombre ? nfG(v) : pctG(v)}</b></div>` : ''}
       ${PAS_ON ? `<p class="gs-h">${active ? '' : LOCK_SVG}${tr('Passif')}<button class="gs-more" data-gtiers>${sheetAllTiers ? tr('Masquer') : tr('Toutes les raretés')}</button></p>
-      <div class="gs-box gs-pasbox">${pas}${forgeOpen() ? hint : ''}</div>` : hint && forgeOpen() ? `<div class="gs-box gs-pasbox">${hint}</div>` : ''}
-      ${!forgeOpen() ? '' : `<div class="gs-box gs-cost">${!on ? `<span class="gs-free">${tr('Équipe-le pour améliorer l\'emplacement')}</span>` : maxed ? `<span class="gs-free">${nr ? tr('Niveau max pour cette rareté : fusionne pour aller plus haut') : tr('Niveau max')}</span>` : free ? `<span class="gs-free">${tr('Offert')}</span>` : sheetCostHTML(cost)}</div>`}
+      <div class="gs-box gs-pasbox">${pas}${hint}</div>` : hint ? `<div class="gs-box gs-pasbox">${hint}</div>` : ''}
+      <div class="gs-box gs-cost">${!on ? `<span class="gs-free">${tr('Équipe-le pour améliorer l\'emplacement')}</span>` : maxed ? `<span class="gs-free">${nr ? tr('Niveau max pour cette rareté : fusionne pour aller plus haut') : tr('Niveau max')}</span>` : free ? `<span class="gs-free">${tr('Offert')}</span>` : sheetCostHTML(cost)}</div>
       <div class="gs-btns">
-        ${isEquipped(it) ? (G().items.some(x => x.slot === it.slot && x.id !== it.id) ? `<button class="gs-btn blue" data-gunequip>${tr('Retirer')}</button>` : '') : `<button class="gs-btn blue" data-gequip id="gEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>`}
+        ${isEquipped(it) ? `<button class="gs-btn blue" data-gunequip>${tr('Retirer')}</button>` : `<button class="gs-btn blue" data-gequip id="gEquip">${equipped(it.slot) ? tr('Remplacer') : tr('Équiper')}</button>`}
         ${forgeOpen() ? `<button class="gs-btn" data-gup id="gUp" ${canLevel(it) ? '' : 'disabled'}>${tr('Améliorer')}</button>` : ''}
       </div>
     </div>
@@ -5602,9 +5607,6 @@ function gearCoach() {
     { text: TXE.equiper, target: () => $('cmEquip'), done: () => !!G().eq.pioche },
     { text: TXE.personnage, target: () => document.querySelector('.nav-tab[data-nav="hero"]'), done: () => !$('scr-hero').hidden || !$('gearModal').hidden },
     { text: TXE.toucherObjet, target: () => $('eqs-pioche'), done: () => !$('gearModal').hidden },
-    { text: TXE.puissance, info: true, above: true, target: () => $('gsPower'), done() { return this.tapped || $('gearModal').hidden; } },
-    { text: TXE.critique, info: true, target: () => $('gsStat'), done() { return this.tapped || $('gearModal').hidden; } },
-    { text: TXE.fermer, target: () => document.querySelector('#gearModal [data-gclose]'), done: () => $('gearModal').hidden },
     // (shown once the item sheet is closed)
     { text: TX.retourVillage, target: () => document.querySelector('.nav-tab[data-nav="village"]'), done: () => !$('scr-village').hidden },
   ]);
@@ -5641,7 +5643,7 @@ function updateNav(name) {
   document.querySelector('.nav-tab[data-nav="museum"]').classList.toggle('locked', !museumOpen);
   document.querySelector('.nav-tab[data-nav="events"]').classList.toggle('locked', !eventsOpen());
   // First steps: only what is open shows (Museum after the first return, Character with the equipment, Premium and Events at the end)
-  const off = { museum: !museumOpen, hero: !gearOpen(), premium: !S.tutoSeen.guideFin, events: !S.tutoSeen.guideFin };
+  const off = { museum: !museumOpen, hero: !gearOpen(), premium: !ftueOver(), events: !S.tutoSeen.guideFin };
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('nav-off', !!off[b.dataset.nav]));
   $('navMuseumBadge').hidden = !museumOpen || !museumWaiting();
   $('navHeroBadge').hidden = !gearOpen() || !heroBadge();
@@ -7209,6 +7211,8 @@ const plLevel = () => plInfo().lv;
 const plUnlockAt = k => { const i = PJ.niveaux.findIndex(r => r.deblocage === k); return i < 0 ? 1 : i + 2; };
 const eventsOpen = () => plLevel() >= plUnlockAt('evenements');
 const missionsOpen = () => plLevel() >= plUnlockAt('missions');
+// The whole FTUE is over once the Forge has been shown (after the first copper expedition)
+const ftueOver = () => !!(S.tutoSeen || {})['bld-forge'];
 const plReady = l => l <= plLevel() && !!plRow(l) && !!plRow(l).recompense && !(S.pclaim || {})[l];
 const plWaiting = () => { let n = 0; for (let l = 2; l <= plLevel(); l++) if (plReady(l)) n++; return n; };
 // XP is never silent: each gain says why. During a descent (levels, records) it is written in the trip, shown at the
@@ -8432,8 +8436,10 @@ function startMini(g) {
   cancelAnimationFrame(mgRaf); mgRaf = requestAnimationFrame(mgTick);
   save();
   if (!S.tutoSeen.atelier) startCoach('atelier', [
-    { text: TX.atelier, target: () => $('mgHit'), done: () => !$('mgResult').hidden || !MG && $('scr-atelier').hidden },
-    { text: TX.retourVillage, target: () => document.querySelector('#mgResult [data-go="village"]'), done: () => $('scr-atelier').hidden },
+    // (the sentence sits high on the screen, away from the cursor bar and the button)
+    { text: TX.atelier, txtY: .3, target: () => $('mgHit'), done: () => !$('mgResult').hidden || !MG && $('scr-atelier').hidden },
+    // (no sentence: the button already says it, and the card shows what the geode gave)
+    { text: '', target: () => document.querySelector('#mgResult [data-go="village"]'), done: () => $('scr-atelier').hidden },
   ]);
 }
 function placeZone() {
@@ -8840,7 +8846,8 @@ function start(data) {
     const sizeOf = r => r.kind === 'gem' ? GEMS[r.key]?.sz : r.kind === 'geode' ? GEODES[r.key]?.sz : ARTS[r.key] && [ARTS[r.key].w, ARTS[r.key].h];
     if (S.rewards.some(r => { const z = sizeOf(r); return !z || z[0] !== r.w || z[1] !== r.h; })) genLevel(S.level);
   } else {
-    S = freshState(); genLevel(1);
+    // No save (or one that can't be read): a new game, right in the mine
+    saved = null; S = freshState(); genLevel(1);
   }
   S.gear = Object.assign(newGear(), S.gear || {}); S.gear.keys = Object.assign(newGear().keys, S.gear.keys);
   // (saves from before slot levels: each slot takes the highest level of its items; what was spent stays spent)

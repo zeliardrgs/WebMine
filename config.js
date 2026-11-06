@@ -287,7 +287,7 @@ window.CONFIG = {
       { niveau: 1,  tresor: 'feuille' },
       { niveau: 2,  tresor: 'coquillage' },
       { niveau: 3,  tresor: 'ammonite' },
-      { niveau: 16, geode: 'blanche' },
+      { niveau: 11, geode: 'blanche' },   // la 1re géode (sans tutoriel : il faut la trouver pour passer au niveau suivant)
       { mine: 2, niveau: 15, tresor: 'longueVue1' },   // le premier morceau du premier trésor en fragments
     ],
 
@@ -358,7 +358,6 @@ window.CONFIG = {
 
     tutoriels: [
       { niveau: 3,   nouveaute: 'pierre',      outil: 'pickaxe', texte: "Touche la pierre pour la casser" },
-      { niveau: 11,  nouveaute: 'geode',       outil: 'shovel',  texte: "Glisse pour dégager la géode" },
       { niveau: 21,  nouveaute: 'cuivre',      outil: 'pickaxe', texte: "Casse le minerai de cuivre" },
       { niveau: 26,  nouveaute: 'magma',       outil: 'bucket',  texte: "Arrose le magma" },
       { niveau: 36,  nouveaute: 'fer',         outil: 'pickaxe', texte: "Casse le minerai de fer" },
@@ -405,9 +404,6 @@ window.CONFIG = {
         equiper: "Équipe ta nouvelle pioche",          // bouton Équiper
         personnage: "Va voir ton équipement",          // onglet Personnage
         toucherObjet: "Touche ta pioche",              // la pioche sur le mineur
-        puissance: "Puissance : la pierre casse en 2 coups au lieu de 3 !",  // fiche de la pioche (touche pour continuer)
-        critique: "Coup critique : parfois un coup 2 fois plus fort !",      // fiche de la pioche (touche pour continuer)
-        fermer: "Ferme la fiche",                                            // fiche de la pioche
         ameliorer: "Améliore-la avec ton cuivre !",    // Forge (après la 1re expédition avec du cuivre) : bouton Améliorer
         fusionner: "Fusionne 3 objets identiques",     // 1re fusion possible (écran Personnage, puis la fiche de l'objet)
       },
