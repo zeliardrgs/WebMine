@@ -89,6 +89,8 @@ window.CONFIG = {
     bombes: 0,      // bombes au départ
     radars: 0,      // radars au départ
     potions: 0,     // potions d'énergie au départ
+    langue: 'en',   // langue d'une nouvelle partie : 'en' = anglais, 'fr' = français (changeable dans les Paramètres)
+    musique: false, // musique d'une nouvelle partie : false = coupée, true = allumée (changeable dans les Paramètres)
   },
 
   /* ---------------------------------------------------------------

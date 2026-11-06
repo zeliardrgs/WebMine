@@ -2546,7 +2546,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       <div class="set-row"><span>Musique</span><button class="switch" id="optMusic" role="switch" aria-checked="true" aria-label="Musique"><i></i></button></div>
       <div class="set-row" id="cheatRow" hidden><span>Cheats</span><button class="switch" id="optCheats" role="switch" aria-checked="false" aria-label="Cheats"><i></i></button></div>
       <div class="set-row"><span>Langue</span><div class="seg" role="group" aria-label="Langue">
-        <button data-lang="fr" aria-pressed="true">Français</button><button data-lang="en" aria-pressed="false">English</button>
+        <button data-lang="fr" aria-pressed="false">Français</button><button data-lang="en" aria-pressed="true">English</button>
       </div></div>
     </div>
     <button class="btn big" id="howBtn">Comment jouer</button>
@@ -2707,7 +2707,9 @@ const KEY = 'mine-tresors-v4';   // v4: FTUE rework of 6 November 2026 (older sa
 /* Language (Paramètres > Langue). Texts are written in French in the code and in config.js;
    tr('texte français') gives the English version from textes-en.js when the game is in English.
    {n}, {a}… in a text are replaced by the values given: tr('Niveau {n}', { n: 5 }). */
-const LANG = (() => { try { return (JSON.parse(localStorage.getItem(KEY)) || {}).lang === 'en' ? 'en' : 'fr'; } catch (e) { return 'fr'; } })();
+// A new game starts in config.js > depart > langue (English by default); a save keeps the player's choice
+const LANG_DEF = (CFG.depart && CFG.depart.langue) === 'fr' ? 'fr' : 'en';
+const LANG = (() => { try { const l = (JSON.parse(localStorage.getItem(KEY)) || {}).lang; return l === 'en' || l === 'fr' ? l : LANG_DEF; } catch (e) { return LANG_DEF; } })();
 const EN = window.TEXTES_EN || {};
 const MISSING_EN = new Set();
 function tr(fr, vars) {
@@ -3118,7 +3120,7 @@ const newTrip = () => ({ finds: [], dupes: [], bonus: [], coins: 0, ores: zeroOr
 
 function freshState() {
   return {
-    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, sound: true, music: true, lang: 'fr', newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, geoSolo: {}, geoOpened: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goalsClosed: false, guideBack: 0,
+    level: 1, energy: MAX_E, nextRegen: Date.now() + REGEN_MS, bucketReady: 0, tool: 'shovel', bombs: CFG.depart.bombes, radars: CFG.depart.radars, potions: CFG.depart.potions, bucketCharges: 1, sound: true, music: CFG.depart.musique !== false, lang: LANG_DEF, newCount: 0, introDone: false, buildings: {}, tuto: 0, tutoSeen: {}, guardDone: {}, guarDone: {}, geoSolo: {}, geoOpened: {}, treasureDone: {}, bagSeen: false, bagTuto: false, shopSeen: {}, kingOpened: false, mine2: false, stats: {}, goalsClosed: false, guideBack: 0,
     bag: {
       ores: zeroOres(),
       gems: Object.fromEntries(Object.keys(GEMS).map(k => [k, 0])),
@@ -9105,8 +9107,11 @@ function start(data) {
     S.v3 = true;
   }
   if (!(S.bucketCharges >= 0)) S.bucketCharges = maxCharges();
+  // Music off by default (config.js > depart > musique): saves from before are switched off once;
+  // after that only the Settings switch turns it back on
+  if (!S.musicOffV1) { S.musicOffV1 = true; if (CFG.depart.musique === false) S.music = false; }
   // Haunted Mine: saves from before the event get its fields; a descent saved after the event was removed from config.js ends
-  S.hallo = Object.assign(newHallo(), S.hallo || {});
+  S.hallo =Object.assign(newHallo(), S.hallo || {});
   if (!S.hallo.bosses) {
     const H = S.hallo, bs = H.bosses = {};
     for (let l = 10; l < (H.best || 1); l += 10) bs[l] = { won: true };
