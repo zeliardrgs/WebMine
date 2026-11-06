@@ -1207,4 +1207,18 @@ window.TEXTES_EN = {
   "Trouve {n} Candy Corn": "Find {n} Candy Corn",
   "Casse une Pierre aux yeux": "Break an Eye Stone",
   "Casse {n} Pierres aux yeux": "Break {n} Eye Stones",
+  // Labyrinthe (événement permanent)
+  "Labyrinthe": "Maze",
+  "Trouve la sortie, tout en haut du labyrinthe !": "Find the exit, at the very top of the maze!",
+  "Tous les jours": "Every day",
+  "Un labyrinthe dans le noir : casse les tuiles pour trouver ton chemin jusqu'à la sortie, et ramasse les minerais en route.": "A maze in the dark: break the tiles to find your way to the exit, and grab the ores on the way.",
+  "Reviens demain": "Come back tomorrow",
+  "Plus de Tickets pour aujourd'hui. Reviens demain !": "No more Tickets today. Come back tomorrow!",
+  "Ce mur est trop solide. Trouve un autre chemin !": "This wall is too strong. Find another way!",
+  "Sortie atteinte !": "Exit reached!",
+  "Creuse un chemin jusqu'à la sortie.": "Dig a path to the exit.",
+  "Trop loin : creuse à partir de ton chemin.": "Too far: dig from your path.",
+  "Sortie !": "Exit!",
+  "Sortie": "Exit",
+  "Plus d'énergie : la partie est finie. Un nouveau Ticket remplit la barre.": "Out of energy: the run is over. A new Ticket fills the bar.",
 };

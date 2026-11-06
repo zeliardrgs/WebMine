@@ -1489,6 +1489,28 @@ window.CONFIG = {
       tresors: [8, 12],        // nombre de trésors cachés (au hasard entre les deux)
       largeurCase: 65,         // largeur d'une case en pixels, sur un écran de téléphone de 430 de large (s'adapte aux autres écrans)
     },
+
+    // « Labyrinthe » : événement permanent. Un labyrinthe dans le noir : on part d'en bas, la sortie est en haut.
+    // Les murs ne se cassent pas ; les couloirs sont faits de terre et de pierre (avec des minerais).
+    // On ne creuse qu'à côté d'une case déjà creusée, et on ne voit que les cases autour du chemin creusé.
+    // Atteindre la sortie fait apparaître le bouton « Niveau suivant » (comme dans la mine).
+    // 1 Ticket = 1 partie avec une barre d'énergie pleine ; la partie s'arrête quand l'énergie est vide ou en remontant.
+    // L'énergie de la mine principale n'est pas touchée. Pas de bombe, de radar ni de potion dans le labyrinthe.
+    labyrinthe: {
+      nom: "Labyrinthe",
+      ticketsParJour: 3,       // Tickets gratuits par jour (pas de cumul : remis à ce nombre à minuit)
+      energieTicket: 60,       // énergie d'une partie
+      taille: [9, 11],         // colonnes × rangées de la 1re grille (nombres impairs)
+      rangeesEnPlusTous: 3,    // la grille gagne 2 rangées toutes les N grilles…
+      rangeesMax: 15,          // …jusqu'à ce nombre de rangées
+      boucles: 0.08,           // part des murs intérieurs retirés pour ouvrir d'autres chemins (0 = un seul chemin)
+      partPierre: 0.45,        // part des cases de couloir en pierre (le reste en terre)
+      chanceMinerai: 0.35,     // chance qu'une pierre contienne un minerai
+      resistanceDepart: 1,     // coups de pioche × ce nombre sur la 1re grille
+      resistanceParPalier: 0.5,// + ce nombre…
+      palier: 5,               // …toutes les N grilles
+      texte: "Trouve la sortie, tout en haut du labyrinthe !",
+    },
   },
 
   /* ---------------------------------------------------------------

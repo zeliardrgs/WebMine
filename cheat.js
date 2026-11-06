@@ -257,6 +257,8 @@
       hwDone(`Jour ${d}, ${h} h`);
     },
     hwRealClock() { localStorage.removeItem(M.hw.CLOCK_KEY); hwDone('Vraie date et vraie heure'); },
+    labTickets() { M.lab.refresh(); M.lab.state().free += 3; M.save(); msg('+3 Tickets Labyrinthe'); },
+    labExit() { if (!M.lab.exit()) return msg('Pas dans le Labyrinthe (ou sortie sans couloir à côté)'); close(); },
     hwFree() { M.hw.refresh(); S().hallo.free += 3; hwDone('+3 Tickets gratuits (perdus à minuit)'); },
     hwPaid() { S().hallo.paid += 3; hwDone('+3 Tickets achetés (gardés jusqu\'à la fin)'); },
     hwCandy() { S().hallo.candy += 100; hwDone('+100 Candy Corn'); },
@@ -310,7 +312,7 @@
   const CATS = [
     ['niveaux', '⛏️', 'Niveaux et mine'], ['pionniers', '🍀', 'Mine des pionniers'], ['ressources', '💰', 'Ressources'],
     ['mineur', '⭐', 'Mineur et Autel'], ['profil', '🪪', 'Profil'], ['equipement', '🛡️', 'Équipement'], ['fees', '🧚', 'Fées'], ['geodes', '💎', 'Géodes'],
-    ['sac', '🎒', 'Sac et Musée'], ['marees', '🌊', 'Grotte des Marées'], ...(M.hw ? [['hantee', '🎃', 'Mine Hantée']] : []), ['partie', '💾', 'Partie'],
+    ['sac', '🎒', 'Sac et Musée'], ['marees', '🌊', 'Grotte des Marées'], ...(M.hw ? [['hantee', '🎃', 'Mine Hantée']] : []), ...(M.lab ? [['labyrinthe', '🌀', 'Labyrinthe']] : []), ['partie', '💾', 'Partie'],
   ];
   panel.innerHTML = `<div class="cp" role="dialog" aria-label="Menu cheat">
     <h2><button class="x" data-c="home" id="cheatBack" aria-label="Retour" hidden>‹</button><span id="cheatTitle">Menu cheat</span>
@@ -348,6 +350,13 @@
     </div>
     <p class="note">Niveaux de la mine 2 dans « Aller à ce niveau » : ajoute 100 (niveau 15 de la mine 2 = 115).</p>
     </div>
+
+    ${M.lab ? `<div class="cat" data-cat="labyrinthe" hidden>
+    <div class="row">
+      <button data-c="labTickets">+3 Tickets Labyrinthe</button>
+      <button data-c="labExit">Atteindre la sortie</button>
+    </div>
+    </div>` : ''}
 
     ${M.hw ? `<div class="cat" data-cat="hantee" hidden>
     <p class="note">Tests, à retirer avant la mise en ligne.</p>
