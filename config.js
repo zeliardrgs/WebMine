@@ -287,7 +287,7 @@ window.CONFIG = {
       { niveau: 1,  tresor: 'feuille' },
       { niveau: 2,  tresor: 'coquillage' },
       { niveau: 3,  tresor: 'ammonite' },
-      { niveau: 16, geode: 'blanche' },
+      { niveau: 11, geode: 'blanche' },   // la 1re géode (sans tutoriel : il faut la trouver pour passer au niveau suivant)
       { mine: 2, niveau: 15, tresor: 'longueVue1' },   // le premier morceau du premier trésor en fragments
     ],
 
@@ -321,13 +321,13 @@ window.CONFIG = {
        9. Redescente : cuivre au niveau 21
        10. Forge : elle apparaît au retour de la 1re expédition qui ramène du cuivre ; améliorer la pioche
        Les niveaux 1 à 5 sont écrits à la main (les mêmes pour tous les joueurs), seulement la 1re fois.
-       Grille : une ligne par rangée. "." = terre, "#" = pierre, une lettre = une case d'un trésor (en terre ;
+       Grille : une ligne par rangée. "." = terre, "#" = pierre de décor (incassable), "%" = pierre cassable, une lettre = une case d'un trésor (en terre ;
        en majuscule = sous la pierre). "tresors" : la lettre → l'artefact. Le coût en énergie de la pierre
        (3 coups par pierre avant le premier équipement) fait exactement 30 sur les niveaux 3 à 5. */
     ftue: {
-      // Des motifs faciles à retenir, dessinés avec de la pierre ("#"). Avant la pioche (niveaux 1 et 2), ces pierres
-      // ne se cassent pas : on creuse autour. Aux niveaux 3 et 4, casser les pierres du motif coûte de l'énergie pour rien :
-      // même en les cassant toutes (21 énergie), le joueur arrive au niveau 5 avec un peu d'énergie et tombe à 0 au niveau 5.
+      // Des motifs faciles à retenir, dessinés avec des pierres de décor ("#") : elles ne se cassent pas et ne coûtent
+      // pas d'énergie (« Cette pierre ne cache rien »). Seules les pierres sur les trésors (lettres en majuscule) se cassent :
+      // l'énergie des niveaux 3 à 5 fait toujours exactement 30.
       niveaux: {
         // 1 « Le dé » : un 5 de dé, le coquillage au milieu
         1: { grille: ['#.#', '.a.', '#.#'], tresors: { a: 'coquillage' } },
@@ -335,12 +335,16 @@ window.CONFIG = {
         2: { grille: ['#.#', '.b.', '###'], tresors: { b: 'feuille' } },
         // 3 « La fleur » : l'ammonite au cœur, sous la pierre (1re pioche), quatre pétales de pierre
         3: { grille: ['.#.', '#C#', '.#.'], tresors: { c: 'ammonite' } },
-        // 4 « La flèche » : une flèche de pierre qui pointe vers la dent, sous la pierre
-        4: { grille: ['#.#', '.#.', '.D.'], tresors: { d: 'dent' } },
-        // 5 « Le coffre plein » : toute la grille en pierre sauf un coin, trois trésors emboîtés (24 énergie : l'énergie
-        //   tombe pile à 0 en dégageant le dernier, ou avant s'il a cassé des pierres pour rien)
-        5: { grille: ['EEF', 'EEF', 'GG.'], tresors: { e: 'lion', f: 'lampe', g: 'pierreDeLave' } },
+        // 4 « Le cœur » : un cœur de pierre, la corne fossile en son centre (sous la pierre)
+        4: { grille: ['#.#', '#D#', '.#.'], tresors: { d: 'dent' } },
+        // 5 « Le coffre plein » : toute la grille en pierre sauf un coin. Trois fossiles déjà trouvés (des doublons : pas de
+        //   nouvelle collection pendant la FTUE) sous la pierre, et 5 pierres cassables ("%"). 8 pierres = 24 énergie : quel que
+        //   soit l'ordre, l'énergie tombe pile à 0 quand tout est cassé.
+        5: { grille: ['E%F', '%%%', '%G.'], tresors: { e: 'coquillage', f: 'feuille', g: 'ammonite' } },
       },
+      // Pendant les premiers pas (jusqu'au retour du niveau 10), tous les artefacts viennent de cette collection
+      // (les niveaux aléatoires de la redescente 1 → 10 aussi) : une seule collection découverte pendant la FTUE
+      collection: 'fossiles',
       // Quand les bâtiments apparaissent (au retour au village) :
       //   'premierRetour' = au 1er retour ; 'checkpoint10' = quand le checkpoint 10 est débloqué ;
       //   'geode' = au retour d'une expédition qui ramène une géode ; 'cuivre' = … qui ramène du cuivre ;
@@ -354,7 +358,6 @@ window.CONFIG = {
 
     tutoriels: [
       { niveau: 3,   nouveaute: 'pierre',      outil: 'pickaxe', texte: "Touche la pierre pour la casser" },
-      { niveau: 11,  nouveaute: 'geode',       outil: 'shovel',  texte: "Glisse pour dégager la géode" },
       { niveau: 21,  nouveaute: 'cuivre',      outil: 'pickaxe', texte: "Casse le minerai de cuivre" },
       { niveau: 26,  nouveaute: 'magma',       outil: 'bucket',  texte: "Arrose le magma" },
       { niveau: 36,  nouveaute: 'fer',         outil: 'pickaxe', texte: "Casse le minerai de fer" },
@@ -875,7 +878,7 @@ window.CONFIG = {
         coquillage: { nom: 'Coquillage fossile', rarete: 'common', taille: [1, 1] },
         feuille:    { nom: 'Feuille fossile',    rarete: 'common', taille: [1, 1] },
         ammonite:   { nom: 'Petite ammonite',    rarete: 'common', taille: [1, 1] },
-        dent:       { nom: 'Dent fossile',       rarete: 'common', taille: [1, 1] },   // dessin temporaire (pas d'image)
+        dent:       { nom: 'Corne fossile',      rarete: 'common', taille: [1, 1] },   // image Artefact_Sea-03
       } },
       // Une pièce par mine : le Sou de cuivre dans la Mine des pionniers, les autres dans les mines suivantes
       monnaies: { nom: 'Monnaies du royaume perdu', prime: 200, sol: 'tout', objets: {
@@ -1633,12 +1636,13 @@ window.CONFIG = {
     iconeTicket: 'Assets/Event/Halloween/Icon_Ticket.png',
 
     // Jour 1 de l'événement (année-mois-jour). Les jours changent à minuit, à l'heure du téléphone du joueur.
-    debut: '2026-10-18',
-    // Calendrier, en jours de l'événement (J1 = le jour "debut", J14 = le soir d'Halloween)
+    debut: '2026-11-06',
+    // Calendrier, en jours de l'événement (J1 = le jour "debut")
     calendrier: {
-      mineOuverte: [1, 14],    // la mine est ouverte du J1 au J14 (Tickets gratuits ces jours-là seulement)
+      mineOuverte: [1, 15],    // la mine est ouverte du J1 au J15 (Tickets gratuits ces jours-là seulement)
+      boss: 1,                 // jour d'arrivée de la Citrouille géante (compte à rebours) ; elle garde chaque checkpoint dès le J1
       promo: [13, 16],         // packs de Tickets en promo
-      fin: 16,                 // dernier jour de l'événement. J15 et J16 : la boutique seule reste ouverte
+      fin: 16,                 // dernier jour de l'événement. J16 : la boutique seule reste ouverte
     },
 
     // TICKETS : 1 Ticket = 1 descente, avec l'énergie bleue pleine (energieTicket)

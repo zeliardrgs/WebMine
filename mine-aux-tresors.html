@@ -2880,7 +2880,7 @@ const LOOK = {
   citrine: { file: 'Citrine', art: 'une' }, ambre: { file: 'Amber', art: 'un' }, topazeImperiale: { file: 'Gem_Yellow_1', art: 'une' }, heliodore: { ph: 'gem', art: 'un' },
   rubis: { file: 'Rubis', art: 'un' }, emeraude: { file: 'Emerald', art: 'une' }, saphirEtoile: { file: 'StarSaphire', art: 'un' }, diamantPur: { ph: 'gem', art: 'un' },
   // Artefacts
-  coquillage: { file: 'Shell', w: 1, h: 1 }, feuille: { file: 'LeafFossil', w: 1, h: 1 }, ammonite: { file: 'Amonite', w: 1, h: 1 }, dent: { ph: 'spiral', w: 1, h: 1 },
+  coquillage: { file: 'Shell', w: 1, h: 1 }, feuille: { file: 'LeafFossil', w: 1, h: 1 }, ammonite: { file: 'Amonite', w: 1, h: 1 }, dent: { file: 'Artefact_Sea-03', w: 1, h: 1 },
   lion: { file: 'Artefact_Astro_01', w: 2, h: 2 }, taureau: { file: 'Artefact_Astro_02', w: 2, h: 2 }, scorpion: { file: 'Artefact_Astro_03', w: 2, h: 2 }, dragon: { file: 'Artefact_Astro_04', w: 2, h: 2 },
   lampe: { file: 'Lantern', w: 1, h: 2 }, gourde: { file: 'Minepurse', w: 2, h: 2 }, casque: { file: 'Helmet', w: 2, h: 2 }, pioche: { file: 'pickaxe', w: 2, h: 2 },
   fragmentGauche: { file: 'Artefact_Tablet_01', w: 2, h: 3 }, fragmentCentral: { file: 'Artefact_Tablet_02', w: 3, h: 3 }, fragmentDroit: { file: 'Artefact_Tablet_03', w: 2, h: 3 },
@@ -3286,11 +3286,14 @@ function genFtue(level, F) {
   setDims(cols, rows); S.cols = cols; S.rows = rows;
   S.tuto = isTuto(level) ? level : 0; S.ftype = 'respiration'; LV_HP = hpAt(level);
   const stone = () => ({ t: 'stone', hp: LV_HP.stone, max: LV_HP.stone });
+  // "#" = a decorative rock: part of the pattern, it can't be broken and costs no energy (so the energy of the first
+  // steps is always spent on the treasures: exactly 30 over levels 3 to 5)
+  const deco = () => ({ ...stone(), deco: true });
   const g = [], spots = {};
   F.grille.forEach((line, r) => [...line].forEach((ch, c) => {
     const i = r * cols + c;
-    g[i] = ch === '#' || (ch !== '.' && ch === ch.toUpperCase()) ? stone() : { t: 'dirt', v: randInt(0, 2) };
-    if (ch !== '.' && ch !== '#') { const k = ch.toLowerCase(), b = spots[k] = spots[k] || { r, c, r2: r, c2: c }; b.r = Math.min(b.r, r); b.c = Math.min(b.c, c); b.r2 = Math.max(b.r2, r); b.c2 = Math.max(b.c2, c); }
+    g[i] = ch === '#' ? deco() : ch === '%' || (ch !== '.' && ch === ch.toUpperCase()) ? stone() : { t: 'dirt', v: randInt(0, 2) };
+    if (ch !== '.' && ch !== '#' && ch !== '%') { const k = ch.toLowerCase(), b = spots[k] = spots[k] || { r, c, r2: r, c2: c }; b.r = Math.min(b.r, r); b.c = Math.min(b.c, c); b.r2 = Math.max(b.r2, r); b.c2 = Math.max(b.c2, c); }
   }));
   S.grid = g;
   S.rewards = Object.entries(spots).filter(([k]) => ARTS[F.tresors[k]]).map(([k, b]) => ({ kind: 'art', key: F.tresors[k], r: b.r, c: b.c, w: b.c2 - b.c + 1, h: b.r2 - b.r + 1, found: false }));
@@ -3351,7 +3354,9 @@ function genLevelOnce(level, kindArg) {
   if (kind === 'king' && !S.kingOpened) { const mid = (ROWS >> 1) * COLS + (COLS >> 1); g[mid] = tileOf('king'); reserved.push(mid); }
   // Treasures: count from config.js > progression > grilles; artefacts of this level's series, geodes once unlocked
   const [tmin, tmax] = S.wide ? WIDE.tresors : ef ? ef.tresors : gridRow(level).tresors, count = randInt(tmin, tmax);
-  const geodes = geodesAt(level), arts = artsAt(level);
+  // FTUE (first steps, up to the level 10 return): only the tutorial collection (config.js > progression > ftue > collection)
+  const ftueArts = inGuide() && FTUE.collection ? artsAt(level).filter(([, o]) => o.set === FTUE.collection) : null;
+  const geodes = geodesAt(level), arts = ftueArts && ftueArts.length ? ftueArts : artsAt(level);
   const kinds = [];
   // One treasure: sometimes a geode; several: every other one is a geode
   if (count === 1) kinds.push(geodes.length && Math.random() < (CFG.geodes.chanceEtageUnTresor ?? 0) ? 'geode' : 'art');
@@ -3802,7 +3807,7 @@ function applyUnlocks() {
   $('questBtn').hidden = !missionsOpen();
   updateBadge();
   for (const k of ['museum', 'forge', 'atelier', 'shop', 'altar']) { const b = document.querySelector(`.bld[data-go="${k === 'forge' ? 'hero' : k}"]`); if (b) b.hidden = !S.buildings[k]; }
-  document.querySelectorAll('.home-sc:not(.hw-sc)').forEach(b => { const k = b.dataset.go; b.hidden = !S.buildings[k] || (k === 'shop' && !!S.tutoSeen.guideFin); b.classList.toggle('new', !!(S.bldNew || {})[k]); });
+  document.querySelectorAll('.home-sc:not(.hw-sc)').forEach(b => { const k = b.dataset.go; b.hidden = !S.buildings[k] || (k === 'shop' && ftueOver()); b.classList.toggle('new', !!(S.bldNew || {})[k]); });
 }
 // Info bubble: announces treasure, guardian and King's levels, and the guardian's reward (once each).
 // No button: it closes by itself after a few seconds, or with a tap.
@@ -3811,6 +3816,8 @@ function bubbleInfo() {
   if (S.tuto) return null;
   if (S.maze) return { key: 'lab-intro', text: tr(LAB.texte) };
   if (S.qrush) return S.qrEnd ? null : { key: 'qr-intro', text: tr(QR.texte) };
+  // FTUE: no level bubbles (mini-boss, treasure level…), the player learns by playing
+  if (!S.haunt && !S.wide && !ftueOver()) return null;
   const k = S.floor || floorKind(S.level);
   // Haunted Mine: its own treasure and guardian texts (each shown once)
   // (the Citrouille géante has its own text, shown once)
@@ -3888,7 +3895,7 @@ function renderCoach(st) {
   coachArea = { l: Math.min(r.left, q.left) - 4, t: Math.min(r.top, q.top) - 4, r: Math.max(r.right, q.right) + 4, b: Math.max(r.bottom, q.bottom) + 4 };
   // Measured again only when the target moves (camera, board animation, screen size)
   const sig = [r.left, r.top, r.width, r.height, q.left, q.top, innerWidth, innerHeight, st.text].map(v => typeof v === 'number' ? Math.round(v) : v).join();
-  if (st._sig === sig) { dim.hidden = txt.hidden = false; hand.hidden = !!st.info; return; }
+  if (st._sig === sig) { dim.hidden = false; txt.hidden = !st.text; hand.hidden = !!st.info; return; }
   st._sig = sig;
   const cx = r.left + r.width / 2, cy = r.top + Math.min(r.height, r.width) / 2;
   let x2 = cx, y2 = cy;
@@ -3907,16 +3914,22 @@ function renderCoach(st) {
   const inModal = !!el.closest('.modal'), high = !st.above && (my < innerHeight * .55 || inModal);
   txt.style.top = high ? Math.min(innerHeight - 90, inModal ? r.bottom + 14 : Math.max(r.bottom + 16, cy + 64)) + 'px' : '';
   txt.style.bottom = high ? '' : innerHeight - (st.above || inModal ? r.top - 12 : Math.min(r.top - 12, my - rad - 10)) + 'px';
-  dim.hidden = txt.hidden = false; hand.hidden = !!st.info;
+  // A step can place its sentence at a height of the screen (txtY = share of the height), away from what matters
+  if (st.txtY != null) { txt.style.top = Math.round(innerHeight * st.txtY) + 'px'; txt.style.bottom = ''; }
+  dim.hidden = false; txt.hidden = !st.text; hand.hidden = !!st.info;
 }
 // Touches outside the tutorial's target are ignored (the cheat menu stays usable for testing)
 // An info step goes on as soon as the finger or mouse is lifted, anywhere on the screen. Not on "click": on a phone,
 // blocking the touch also cancels the click, so the step never ended. The click that may follow is swallowed,
 // so the same tap doesn't also press what was under it.
 let coachSwallowClick = 0;
-for (const type of ['pointerdown', 'mousedown', 'touchstart', 'pointerup', 'touchend', 'click']) addEventListener(type, e => {
+// Scrolling (mouse wheel, trackpad), drags and the keyboard are locked too, so nothing outside the target moves
+// (e.g. the lift's mine cards scrolled to a locked mine during the lift tutorial)
+for (const type of ['pointerdown', 'mousedown', 'touchstart', 'pointerup', 'touchend', 'click', 'wheel', 'pointermove', 'touchmove', 'keydown']) addEventListener(type, e => {
   if (type === 'click' && Date.now() < coachSwallowClick) { e.preventDefault(); e.stopImmediatePropagation(); return; }
   if (!coachArea || (e.target.closest && e.target.closest('#cheatBtn, #cheatPanel'))) return;
+  if (type === 'keydown') { const el = coachStep() && !coachStep().info && coachStep().target(); if (el && el.contains(e.target)) return; e.preventDefault(); e.stopImmediatePropagation(); return; }
+  if (type === 'wheel') { e.preventDefault(); e.stopImmediatePropagation(); return; }
   // Info step: any tap goes on to the next step, and does nothing else
   const st = coachStep();
   if (st && st.info) {
@@ -3925,6 +3938,8 @@ for (const type of ['pointerdown', 'mousedown', 'touchstart', 'pointerup', 'touc
     return;
   }
   if (type === 'pointerup' || type === 'touchend') return;
+  // (a mouse moving without a button pressed is harmless)
+  if (type === 'pointermove' && !e.buttons) return;
   const p = e.touches ? e.touches[0] : e;
   if (p && p.clientX >= coachArea.l && p.clientX <= coachArea.r && p.clientY >= coachArea.t && p.clientY <= coachArea.b) return;
   e.preventDefault(); e.stopImmediatePropagation();
@@ -4325,6 +4340,7 @@ function act(p, isTap) {
   if (S.tool === 'pickaxe') {
     swing();
     if (c.t === 'dirt') return deny(i, tr('La terre part à la pelle, et c\'est gratuit !'), '');
+    if (c.deco) return deny(i, tr('Cette pierre ne cache rien : garde ton énergie !'), '');
     if (freeTap(i)) { breakCell(i); return oilTick(); }
     if (c.t === 'magma') {
       burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, tr('Trop chaud ! Arrose le magma pour le refroidir d\'abord.'));
@@ -4333,7 +4349,7 @@ function act(p, isTap) {
     // Equipment: the Helmet gives free hits, the Pickaxe its damage and its model's passive
     const T = gearTotals(), free = !S.qrush && Math.random() < T.free + (c.t === 'ore' ? T.pas.casqueVeine || 0 : 0);
     if (free) floatText(i, tr('Coup gratuit !'), '#8ff5e8');
-    else if (!S.qrush) { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); if (S.energy <= 0) setTimeout(openEnergyModal, 650); }
+    else if (!S.qrush) { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); if (S.energy <= 0 && !inGuide()) setTimeout(openEnergyModal, 650); /* (first steps: the window waits until the treasures are picked up) */ }
     // Fée verte: sometimes gives a little energy back
     const fv = petFx('energie');
     if (fv && !S.qrush && S.energy < maxE() && Math.random() < (fv.chance || 0)) {
@@ -4496,7 +4512,7 @@ function oilPuddle(i) {
 function oilHit(i) {
   if (S.energy <= 0) { openEnergyModal(); return; }
   if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS;
-  S.energy--; updateEnergy(true); if (S.energy <= 0) setTimeout(openEnergyModal, 650);
+  S.energy--; updateEnergy(true); if (S.energy <= 0 && !inGuide()) setTimeout(openEnergyModal, 650); /* (first steps: the window waits until the treasures are picked up) */
   const c = S.grid[i], { x, y } = center(i); c.oilHit = (c.oilHit || 0) + 1;
   const p = oilPuddle(i), left = p.length - p.reduce((a, j) => a + (S.grid[j].oilHit || 0), 0);
   if (left <= 0) {
@@ -4640,11 +4656,13 @@ function clearCell(i) {
   if (pile) { goldPile(i); petProc(); }
   checkRewards(); save(); checkAutoNext();
 }
-// Every cell cleared and every treasure picked up: go to the next level on its own
-// (a treasure left in the mine, or the bottom of the mine, keeps the "next level" button instead)
+// Every cell cleared and every treasure picked up: going to the next level on its own is OFF (6 November 2026:
+// levels skipped by themselves felt like a bug). The player always goes down with the "next level" button.
+const AUTO_NEXT = false;
 function checkAutoNext() {
+  if (!AUTO_NEXT) return;
   if (!S.rewards || !S.rewards.length || S.level >= 1000 || hwBottom()) return;
-  if (!S.rewards.every(r => r.taken === true) || !S.grid.every(c => c.t === 'empty')) return;
+  if (!S.rewards.every(r => r.taken === true) || !S.grid.every(c => c.t === 'empty' || c.deco)) return;
   // The first full bag is handled by pickUp (tutorial: down one level, then the "Sac plein" popup)
   if (bagFull() && !S.tutoSeen.sacPlein) return;
   const gen = boardGen;
@@ -5683,7 +5701,7 @@ function updateNav(name) {
   document.querySelector('.nav-tab[data-nav="museum"]').classList.toggle('locked', !museumOpen);
   document.querySelector('.nav-tab[data-nav="events"]').classList.toggle('locked', !eventsOpen());
   // First steps: only what is open shows (Museum after the first return, Character with the equipment, Premium and Events at the end)
-  const off = { museum: !museumOpen, hero: !gearOpen(), premium: !S.tutoSeen.guideFin, events: !S.tutoSeen.guideFin };
+  const off = { museum: !museumOpen, hero: !gearOpen(), premium: !ftueOver(), events: !S.tutoSeen.guideFin };
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('nav-off', !!off[b.dataset.nav]));
   $('navMuseumBadge').hidden = !museumOpen || !museumWaiting();
   $('navHeroBadge').hidden = !gearOpen() || !heroBadge();
@@ -7369,6 +7387,8 @@ const plLevel = () => plInfo().lv;
 const plUnlockAt = k => { const i = PJ.niveaux.findIndex(r => r.deblocage === k); return i < 0 ? 1 : i + 2; };
 const eventsOpen = () => plLevel() >= plUnlockAt('evenements');
 const missionsOpen = () => plLevel() >= plUnlockAt('missions');
+// The whole FTUE is over once the Forge has been shown (after the first copper expedition)
+const ftueOver = () => !!(S.tutoSeen || {})['bld-forge'];
 const plReady = l => l <= plLevel() && !!plRow(l) && !!plRow(l).recompense && !(S.pclaim || {})[l];
 const plWaiting = () => { let n = 0; for (let l = 2; l <= plLevel(); l++) if (plReady(l)) n++; return n; };
 // XP is never silent: each gain says why. During a descent (levels, records) it is written in the trip, shown at the
@@ -8592,8 +8612,10 @@ function startMini(g) {
   cancelAnimationFrame(mgRaf); mgRaf = requestAnimationFrame(mgTick);
   save();
   if (!S.tutoSeen.atelier) startCoach('atelier', [
-    { text: TX.atelier, target: () => $('mgHit'), done: () => !$('mgResult').hidden || !MG && $('scr-atelier').hidden },
-    { text: TX.retourVillage, target: () => document.querySelector('#mgResult [data-go="village"]'), done: () => $('scr-atelier').hidden },
+    // (the sentence sits high on the screen, away from the cursor bar and the button)
+    { text: TX.atelier, txtY: .3, target: () => $('mgHit'), done: () => !$('mgResult').hidden || !MG && $('scr-atelier').hidden },
+    // (no sentence: the button already says it, and the card shows what the geode gave)
+    { text: '', target: () => document.querySelector('#mgResult [data-go="village"]'), done: () => $('scr-atelier').hidden },
   ]);
 }
 function placeZone() {
@@ -9000,7 +9022,8 @@ function start(data) {
     const sizeOf = r => r.kind === 'gem' ? GEMS[r.key]?.sz : r.kind === 'geode' ? GEODES[r.key]?.sz : ARTS[r.key] && [ARTS[r.key].w, ARTS[r.key].h];
     if (S.rewards.some(r => { const z = sizeOf(r); return !z || z[0] !== r.w || z[1] !== r.h; })) genLevel(S.level);
   } else {
-    S = freshState(); genLevel(1);
+    // No save (or one that can't be read): a new game, right in the mine
+    saved = null; S = freshState(); genLevel(1);
   }
   S.gear = Object.assign(newGear(), S.gear || {}); S.gear.keys = Object.assign(newGear().keys, S.gear.keys);
   // (saves from before slot levels: each slot takes the highest level of its items; what was spent stays spent)
