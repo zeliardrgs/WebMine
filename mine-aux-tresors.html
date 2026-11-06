@@ -4275,7 +4275,7 @@ function act(p, isTap) {
     // Equipment: the Helmet gives free hits, the Pickaxe its damage and its model's passive
     const T = gearTotals(), free = !S.qrush && Math.random() < T.free + (c.t === 'ore' ? T.pas.casqueVeine || 0 : 0);
     if (free) floatText(i, tr('Coup gratuit !'), '#8ff5e8');
-    else if (!S.qrush) { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); if (S.energy <= 0) setTimeout(openEnergyModal, 650); }
+    else if (!S.qrush) { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); if (S.energy <= 0 && !inGuide()) setTimeout(openEnergyModal, 650); /* (first steps: the window waits until the treasures are picked up) */ }
     // Fée verte: sometimes gives a little energy back
     const fv = petFx('energie');
     if (fv && !S.qrush && S.energy < maxE() && Math.random() < (fv.chance || 0)) {
@@ -4438,7 +4438,7 @@ function oilPuddle(i) {
 function oilHit(i) {
   if (S.energy <= 0) { openEnergyModal(); return; }
   if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS;
-  S.energy--; updateEnergy(true); if (S.energy <= 0) setTimeout(openEnergyModal, 650);
+  S.energy--; updateEnergy(true); if (S.energy <= 0 && !inGuide()) setTimeout(openEnergyModal, 650); /* (first steps: the window waits until the treasures are picked up) */
   const c = S.grid[i], { x, y } = center(i); c.oilHit = (c.oilHit || 0) + 1;
   const p = oilPuddle(i), left = p.length - p.reduce((a, j) => a + (S.grid[j].oilHit || 0), 0);
   if (left <= 0) {
