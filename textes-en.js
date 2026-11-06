@@ -623,7 +623,7 @@ window.TEXTES_EN = {
   "Niveau trésor ! Dégage la terre pour trouver la clé.": "Treasure floor! Clear the dirt to find the key.",
   "Niveau trésor ! Un artefact est caché sous la terre.": "Treasure floor! An artefact is hidden under the dirt.",
   "Fées": "Fairies",
-  "Dent fossile": "Fossil tooth",
+  "Corne fossile": "Fossil horn",
   "Améliore-la avec ton cuivre !": "Upgrade it with your copper!",
   "La Forge est ouverte : va voir ta pioche": "The Forge is open: check your pickaxe",
   "Remonte à la surface pour recharger ton énergie.": "Go back up to the surface to refill your energy.",

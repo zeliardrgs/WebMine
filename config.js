@@ -335,7 +335,7 @@ window.CONFIG = {
         2: { grille: ['#.#', '.b.', '###'], tresors: { b: 'feuille' } },
         // 3 « La fleur » : l'ammonite au cœur, sous la pierre (1re pioche), quatre pétales de pierre
         3: { grille: ['.#.', '#C#', '.#.'], tresors: { c: 'ammonite' } },
-        // 4 « Le cœur » : un cœur de pierre, la dent en son centre (sous la pierre)
+        // 4 « Le cœur » : un cœur de pierre, la corne fossile en son centre (sous la pierre)
         4: { grille: ['#.#', '#D#', '.#.'], tresors: { d: 'dent' } },
         // 5 « Le coffre plein » : toute la grille en pierre sauf un coin. Trois fossiles déjà trouvés (des doublons : pas de
         //   nouvelle collection pendant la FTUE) sous la pierre, et 5 pierres cassables ("%"). 8 pierres = 24 énergie : quel que
@@ -878,7 +878,7 @@ window.CONFIG = {
         coquillage: { nom: 'Coquillage fossile', rarete: 'common', taille: [1, 1] },
         feuille:    { nom: 'Feuille fossile',    rarete: 'common', taille: [1, 1] },
         ammonite:   { nom: 'Petite ammonite',    rarete: 'common', taille: [1, 1] },
-        dent:       { nom: 'Dent fossile',       rarete: 'common', taille: [1, 1] },   // dessin temporaire (pas d'image)
+        dent:       { nom: 'Corne fossile',      rarete: 'common', taille: [1, 1] },   // image Artefact_Sea-03
       } },
       // Une pièce par mine : le Sou de cuivre dans la Mine des pionniers, les autres dans les mines suivantes
       monnaies: { nom: 'Monnaies du royaume perdu', prime: 200, sol: 'tout', objets: {
@@ -1617,12 +1617,13 @@ window.CONFIG = {
     iconeTicket: 'Assets/Event/Halloween/Icon_Ticket.png',
 
     // Jour 1 de l'événement (année-mois-jour). Les jours changent à minuit, à l'heure du téléphone du joueur.
-    debut: '2026-10-18',
-    // Calendrier, en jours de l'événement (J1 = le jour "debut", J14 = le soir d'Halloween)
+    debut: '2026-11-06',
+    // Calendrier, en jours de l'événement (J1 = le jour "debut")
     calendrier: {
-      mineOuverte: [1, 14],    // la mine est ouverte du J1 au J14 (Tickets gratuits ces jours-là seulement)
+      mineOuverte: [1, 15],    // la mine est ouverte du J1 au J15 (Tickets gratuits ces jours-là seulement)
+      boss: 1,                 // jour d'arrivée de la Citrouille géante (compte à rebours) ; elle garde chaque checkpoint dès le J1
       promo: [13, 16],         // packs de Tickets en promo
-      fin: 16,                 // dernier jour de l'événement. J15 et J16 : la boutique seule reste ouverte
+      fin: 16,                 // dernier jour de l'événement. J16 : la boutique seule reste ouverte
     },
 
     // TICKETS : 1 Ticket = 1 descente, avec l'énergie bleue pleine (energieTicket)
