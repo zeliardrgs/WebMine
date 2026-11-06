@@ -497,7 +497,7 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 /* Width of the layout: the mockup's proportions (923×2000) are kept, so on a shorter screen everything shrinks instead of filling the height */
 .xp{--xpw:min(480px, 100vw, 43dvh); container-type:inline-size; display:flex; flex-direction:column; justify-content:center; width:var(--xpw); height:100%; margin:0 auto; box-sizing:border-box;
   padding:calc(env(safe-area-inset-top, 0px) + var(--xpw) * .09) 0 calc(env(safe-area-inset-bottom, 0px) + var(--xpw) * .04); color:#fff; text-align:center}
-.xp-paper{position:relative; flex:0 1 auto; min-height:0; display:flex; flex-direction:column; margin:0 6cqw; padding:10cqw 3cqw 5cqw; border:3px solid #6e5546; border-radius:2.6cqw;
+.xp-paper{position:relative; flex:0 1 auto; min-height:0; max-height:min(150cqw, 68dvh); display:flex; flex-direction:column; margin:0 6cqw; padding:10cqw 3cqw 5cqw; border:3px solid #6e5546; border-radius:2.6cqw;
   background:#ecc59f; box-shadow:0 1cqw 0 rgba(0,0,0,.25); animation:popin .35s cubic-bezier(.3,1.5,.5,1)}
 .xp-out{font-family:var(--font-display); font-weight:400; color:var(--ink)}   /* same type style as the rest of the game */
 .xp-ribbon{position:absolute; left:50%; top:-6.5cqw; transform:translateX(-50%); width:64cqw; box-sizing:border-box; margin:0; padding:3px; background:#2b1a12;
@@ -507,7 +507,15 @@ body.nav-on .screen:has(.scr-head .back){padding-bottom:calc(var(--nav-h) + env(
 .xp-level{display:flex; flex-direction:column; justify-content:center; align-items:center; gap:.8cqw; min-height:15cqw; box-sizing:border-box; padding:2cqw; border-radius:1.8cqw; background:#e3a979; margin:0 1cqw}
 .xp-level b{font-size:5.3cqw; line-height:1}
 .xp-level span{font-size:4.4cqw; line-height:1; color:#7d3c98}
-.xp-body{flex:0 1 auto; min-height:0; overflow-y:auto; margin:0 -2cqw; padding:0 2cqw 1cqw}
+.xp-body{flex:0 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; margin:0 -2cqw; padding:0 2cqw 1cqw}
+/* Scroll bar drawn by the game (phones ignore styled scrollbars): a rounded brown thumb on a light groove, in the paper's colours */
+.xp-body{scrollbar-width:none}
+.xp-body::-webkit-scrollbar{display:none}
+.xp-sb{position:absolute; right:1.2cqw; width:2cqw; border-radius:1cqw; background:#dcae84; box-shadow:inset 0 .3cqw 0 rgba(0,0,0,.14); pointer-events:none; transition:opacity .2s}
+.xp-sb[hidden]{display:block; opacity:0}
+.xp-sb i{position:absolute; left:0; right:0; border-radius:1cqw; background:#a8704a; box-shadow:inset 0 -.4cqw 0 #84532f}
+/* Lots of loot: the popup keeps its height (max-height above), the list scrolls, a soft fade shows there is more below */
+.xp-body.more{-webkit-mask:linear-gradient(#000 calc(100% - 7cqw), transparent); mask:linear-gradient(#000 calc(100% - 7cqw), transparent)}
 .xp-sec{display:flex; align-items:center; gap:2.6cqw; margin:4cqw 0 2.6cqw; font-size:4.1cqw; line-height:1.2}
 .xp-sec::before,.xp-sec::after{content:""; flex:1; height:.5cqw; border-radius:.25cqw; background:#dfa77c}
 .xp-tiles{display:flex; flex-wrap:wrap; justify-content:center; gap:2cqw}
@@ -2389,6 +2397,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       <h2 class="xp-ribbon" id="recapTitle"><span class="xp-out">Fin de l'expédition</span></h2>
       <div class="xp-level"><b class="xp-out" id="recapLevel"></b><span class="xp-out" id="recapCp" hidden>Nouveau checkpoint !</span><span class="xp-out recap-lucky" id="recapLucky" hidden></span></div>
       <div class="xp-body" id="recapBody"></div>
+      <div class="xp-sb" id="recapSb" hidden><i></i></div>
     </div>
     <div class="xp-actions">
       <button class="xp-btn blue" id="recapVillage">Retour à la surface</button>
@@ -7467,9 +7476,21 @@ function openRecap() {
   endWide(); endHaunt(); paintWide();
   $('descendModal').hidden = true;
   $('recapModal').hidden = false;
+  recapFade();
   if (body) sfx('reward');
   save();
 }
+// The fade at the bottom of the loot list, while it can still scroll down
+const recapFade = () => {
+  const b = $('recapBody'), sb = $('recapSb'), over = b.scrollHeight - b.clientHeight;
+  b.classList.toggle('more', over - b.scrollTop > 4);
+  // the game's scroll bar: beside the list, its thumb sized and moved like the scrolled part
+  sb.hidden = over <= 4; if (sb.hidden) return;
+  Object.assign(sb.style, { top: b.offsetTop + 'px', height: b.clientHeight + 'px' });
+  const h = Math.max(24, b.clientHeight * b.clientHeight / b.scrollHeight), t = (b.clientHeight - h) * b.scrollTop / over;
+  Object.assign(sb.firstElementChild.style, { height: h + 'px', top: t + 'px' });
+};
+$('recapBody').addEventListener('scroll', recapFade, { passive: true });
 $('recapAtelier').addEventListener('click', () => { $('recapModal').hidden = true; go('atelier'); });
 let recapToHaunt = false;
 $('recapVillage').addEventListener('click', () => { $('recapModal').hidden = true; go(recapToHaunt && hwShown() ? 'haunt' : 'village'); recapToHaunt = false; });
