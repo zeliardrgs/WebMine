@@ -1221,4 +1221,12 @@ window.TEXTES_EN = {
   "Sortie !": "Exit!",
   "Sortie": "Exit",
   "Plus d'énergie : la partie est finie. Un nouveau Ticket remplit la barre.": "Out of energy: the run is over. A new Ticket fills the bar.",
+  // Quartz Rush (événement permanent)
+  "Quartz Rush": "Quartz Rush",
+  "quartz": "quartz",
+  "Temps": "Time",
+  "Temps écoulé !": "Time's up!",
+  "Récompenses gagnées": "Rewards earned",
+  "Casse un maximum de quartz en une minute ! Le chrono part au premier coup.": "Break as much quartz as you can in one minute! The clock starts with your first hit.",
+  "Une minute pour casser un maximum de quartz ! Le quartz remplit une jauge pleine de récompenses.": "One minute to break as much quartz as you can! Your quartz fills a gauge full of rewards.",
 };

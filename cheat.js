@@ -257,6 +257,9 @@
       hwDone(`Jour ${d}, ${h} h`);
     },
     hwRealClock() { localStorage.removeItem(M.hw.CLOCK_KEY); hwDone('Vraie date et vraie heure'); },
+    qrTickets() { M.qr.refresh(); M.qr.state().free += 3; M.save(); msg('+3 Tickets Quartz Rush'); },
+    qrEnd() { close(); if (!M.qr.finish()) msg('Pas dans un Quartz Rush'); },
+    qrAdd() { M.qr.state().total = (M.qr.state().total || 0) + 100; M.save(); msg('+100 quartz dans la jauge (sans les récompenses)'); },
     labTickets() { M.lab.refresh(); M.lab.state().free += 3; M.save(); msg('+3 Tickets Labyrinthe'); },
     labExit() { if (!M.lab.exit()) return msg('Pas dans le Labyrinthe (ou sortie sans couloir à côté)'); close(); },
     hwFree() { M.hw.refresh(); S().hallo.free += 3; hwDone('+3 Tickets gratuits (perdus à minuit)'); },
@@ -312,7 +315,7 @@
   const CATS = [
     ['niveaux', '⛏️', 'Niveaux et mine'], ['pionniers', '🍀', 'Mine des pionniers'], ['ressources', '💰', 'Ressources'],
     ['mineur', '⭐', 'Mineur et Autel'], ['profil', '🪪', 'Profil'], ['equipement', '🛡️', 'Équipement'], ['fees', '🧚', 'Fées'], ['geodes', '💎', 'Géodes'],
-    ['sac', '🎒', 'Sac et Musée'], ['marees', '🌊', 'Grotte des Marées'], ...(M.hw ? [['hantee', '🎃', 'Mine Hantée']] : []), ...(M.lab ? [['labyrinthe', '🌀', 'Labyrinthe']] : []), ['partie', '💾', 'Partie'],
+    ['sac', '🎒', 'Sac et Musée'], ['marees', '🌊', 'Grotte des Marées'], ...(M.hw ? [['hantee', '🎃', 'Mine Hantée']] : []), ...(M.lab ? [['labyrinthe', '🌀', 'Labyrinthe']] : []), ...(M.qr ? [['quartz', '💜', 'Quartz Rush']] : []), ['partie', '💾', 'Partie'],
   ];
   panel.innerHTML = `<div class="cp" role="dialog" aria-label="Menu cheat">
     <h2><button class="x" data-c="home" id="cheatBack" aria-label="Retour" hidden>‹</button><span id="cheatTitle">Menu cheat</span>
@@ -350,6 +353,14 @@
     </div>
     <p class="note">Niveaux de la mine 2 dans « Aller à ce niveau » : ajoute 100 (niveau 15 de la mine 2 = 115).</p>
     </div>
+
+    ${M.qr ? `<div class="cat" data-cat="quartz" hidden>
+    <div class="row">
+      <button data-c="qrTickets">+3 Tickets Quartz Rush</button>
+      <button data-c="qrEnd">Finir la partie maintenant</button>
+      <button data-c="qrAdd">+100 quartz dans la jauge</button>
+    </div>
+    </div>` : ''}
 
     ${M.lab ? `<div class="cat" data-cat="labyrinthe" hidden>
     <div class="row">

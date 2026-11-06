@@ -1511,6 +1511,33 @@ window.CONFIG = {
       palier: 5,               // …toutes les N grilles
       texte: "Trouve la sortie, tout en haut du labyrinthe !",
     },
+
+    // « Quartz Rush » : événement permanent. Une minute pour casser un maximum de pierres de quartz.
+    // Pelle et pioche ne coûtent pas d'énergie pendant la partie. Le chrono part au premier coup.
+    // Dès que tout le quartz d'une grille est cassé, une nouvelle grille arrive aussitôt.
+    // À la fin, le quartz récolté remplit une jauge : une récompense tous les "palier" quartz.
+    // Après la dernière récompense de la liste, la jauge repart à zéro et la liste recommence.
+    quartzRush: {
+      nom: "Quartz Rush",
+      ticketsParJour: 3,       // Tickets gratuits par jour (pas de cumul : remis à ce nombre à minuit)
+      duree: 60,               // durée d'une partie, en secondes
+      taille: [6, 6],          // colonnes × rangées d'une grille
+      partPierre: 0.3,         // part des cases en pierre simple (ne donne rien)
+      partQuartz: 0.25,        // part des cases en pierre de quartz
+      resistanceQuartz: 1,     // coups pour casser un quartz = ceux d'une pierre × ce nombre
+      quartzParPierre: [1, 3], // quartz donnés par une pierre de quartz (au hasard entre les deux)
+      palier: 40,              // quartz pour passer un palier de la jauge
+      // Récompenses des paliers, dans l'ordre. pieces, gemmes (perles), cles: { bois / argent / or / etoile: nombre }
+      recompenses: [
+        { pieces: 300 },
+        { gemmes: 5 },
+        { pieces: 600 },
+        { cles: { bois: 1 } },
+        { gemmes: 10 },
+        { cles: { argent: 1 } },
+      ],
+      texte: "Casse un maximum de quartz en une minute ! Le chrono part au premier coup.",
+    },
   },
 
   /* ---------------------------------------------------------------

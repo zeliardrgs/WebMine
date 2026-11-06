@@ -2090,6 +2090,30 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .slot.lab-slot{position:relative}
 .slot.lab-slot .lab-door{height:100%; animation:none}
 .slot.lab-slot:not(.found) .lab-door{filter:grayscale(.6) brightness(.8)}
+.t-quartz{background-image:var(--stone0, url(Assets/Ground/Ground_Stone_01.png))}
+.tile.t-quartz::before{background-image:url(Assets/Treasures/Quartz.png); background-size:78% 78%; filter:drop-shadow(0 0 5px rgba(231,194,255,.8))}
+#depthChip.qr #depth{font-variant-numeric:tabular-nums}
+#depthChip.qr-hurry #depth{color:#ff6b6b; animation:qrPulse .5s ease-in-out infinite alternate}
+@keyframes qrPulse{to{transform:scale(1.12)}}
+.slot.qr-slot img{width:80%; height:80%; object-fit:contain}
+.pm-hero.qr-ev{background:linear-gradient(135deg, #e48cff, #8a3fc4 55%, #3a1660); box-shadow:0 5px 0 #24103e, 0 10px 22px rgba(0,0,0,.35)}
+.qr-gauge{position:relative; margin:10px 6px 30px}
+.qr-bar{height:16px; border-radius:10px; background:rgba(0,0,0,.28); box-shadow:inset 0 2px 0 rgba(0,0,0,.25); overflow:hidden}
+.qr-bar i{display:block; height:100%; width:0; border-radius:10px; background:linear-gradient(#f3c6ff, #b56cf0); transition:width 1.2s cubic-bezier(.3,.8,.3,1)}
+.qr-steps{position:absolute; left:0; right:0; top:0; height:16px}
+.qr-step{position:absolute; top:-4px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center}
+.qr-step:last-child{transform:translateX(-100%); align-items:flex-end}
+.qr-step::before{content:""; width:4px; height:24px; border-radius:2px; background:rgba(255,255,255,.55)}
+.qr-step .prog-chip{font-size:10px; padding:1px 4px; margin-top:2px; white-space:nowrap; transform:scale(.8); transform-origin:top center; filter:grayscale(.6) brightness(.85)}
+.qr-step:last-child .prog-chip{transform-origin:top right}
+.qr-step.on .prog-chip{filter:none}
+.qr-num{position:absolute; right:0; top:-20px; font-family:var(--font-display); font-size:12px; color:#fff; -webkit-text-stroke:3px var(--outline); paint-order:stroke fill}
+.qr-gauge.mini{margin:6px 0 34px}
+.qr-card .qr-gauge{margin:28px 10px 44px}
+.qr-card .qr-num{color:#fff}
+.qr-got{display:flex; align-items:center; justify-content:center; gap:6px; font-family:var(--font-display); font-size:40px; color:#fff; -webkit-text-stroke:7px var(--outline); paint-order:stroke fill}
+.qr-got img{width:52px; height:52px; object-fit:contain}
+.qr-wonh{margin:0 0 4px; font-weight:800}
 .pm-hero.lab-ev{background:linear-gradient(135deg, #7a6ad8, #3d3478 55%, #1a1630); box-shadow:0 5px 0 #120f24, 0 10px 22px rgba(0,0,0,.35)}
 .pm-hero.lab-ev .pm-art svg{width:100%; height:100%}
 .pm-hero .btn[disabled]{filter:grayscale(1); opacity:.7}
@@ -2558,6 +2582,16 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <div class="pf-btns"><button class="btn ghosty" id="nameNo">Annuler</button><button class="btn" id="nameOk">Valider</button></div>
   </div>
 </div>
+<div class="modal" id="qrModal" hidden>
+  <div class="card chap-done qr-card" role="dialog" aria-labelledby="qrTitle" style="text-align:center">
+    <h2 id="qrTitle">Temps écoulé !</h2>
+    <div class="qr-got" id="qrGot"></div>
+    <div class="qr-gauge" id="qrGauge"></div>
+    <p class="qr-wonh" id="qrWonH">Récompenses gagnées</p>
+    <div class="chap-rw" id="qrWon"></div>
+    <button class="btn" id="qrOk">Continuer</button>
+  </div>
+</div>
 <div class="modal" id="dayDoneModal" hidden>
   <div class="card chap-done" role="dialog" aria-labelledby="dayDoneTitle" style="text-align:center">
     <h2 id="dayDoneTitle"></h2>
@@ -2643,7 +2677,7 @@ const GUARD_EXTRA = RY.niveauGardien.niveauxEnPlus || [];
    Each level of the mine has a type (Respiration, Standard, Fouille, Défi, Mini-boss, Étage trésor, and the
    guardians of levels 50 and 100), from a cycle of 10 levels. The type sets the grid, the treasures and the ground. */
 const ET = CFG.etages || null;
-const etOn = level => !!(ET && ET.actif) && !S.wide && !S.haunt && !S.maze && Math.ceil(level / CFG.biomes.niveauxParBiome) === (ET.mine || 1);
+const etOn = level => !!(ET && ET.actif) && !S.wide && !S.haunt && !S.maze && !S.qrush && Math.ceil(level / CFG.biomes.niveauxParBiome) === (ET.mine || 1);
 // A small seeded random: a player always gets the same mix of a given cycle
 function seeded(seed) {
   let a = seed >>> 0;
@@ -2722,7 +2756,7 @@ const baseKind = level => etOn(level) ? KIND_OF_TYPE[etType(level)] || 'easy'
 const floorKind = level => { const k = baseKind(level); return k === 'treasure' && (S.treasureDone || {})[level] ? 'easy' : k; };
 // A tutorial level is a tutorial only until the player has gone past it: replayed later (starting again from the top
 // of the mine or from a checkpoint), it is a normal level
-const isTuto = level => !S.wide && !S.haunt && !S.maze && !!TUTO[level] && level >= (S.reached || 1);
+const isTuto = level => !S.wide && !S.haunt && !S.maze && !S.qrush && !!TUTO[level] && level >= (S.reached || 1);
 /* First steps (config.js > progression > guide): until the player is back from the last planned return,
    every expedition ends at a planned return (5: Museum, 11: Shop and Forge, 16: Atelier) */
 const GUIDE = PROG.guide || { fin: 0, retours: [] };
@@ -3079,6 +3113,7 @@ function resistAt(level) {
   if (S.wide) return 1;
   if (S.haunt) return HW ? hwResist(level) : 1;
   if (S.maze) return labResist(level);
+  if (S.qrush) return 1;
   if (etOn(level)) return etDepth(etLv(level)).resistance || 1;
   return RES_MINE[Math.min(RES_MINE.length, biomeOf(level)) - 1] || 1;
 }
@@ -3557,7 +3592,7 @@ const $ = id => document.getElementById(id);
 const board = $('board'), tilesEl = $('tiles'), underEl = $('under'), overEl = $('overRw'), fx = $('fx'), slotsEl = $('slots');
 let tileEls = [], rwEls = [], slotEls = [];
 
-const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'coins', 'king', 'gkey', 'rainbow', 'hcandy', 'heyes', 'hsweet', 'hbag', 'hpile'];
+const OVERLAY = ['spring', 'mystery', 'gas', 'chest', 'stump', 'root', 'ice', 'coins', 'king', 'gkey', 'rainbow', 'hcandy', 'heyes', 'hsweet', 'hbag', 'hpile', 'quartz'];
 function tileClass(c, i) {
   let cls = 'tile t-' + c.t;
   if (c.t === 'dirt') { const v = c.v ?? i % 3; if (v) cls += ' v' + v; }
@@ -3613,11 +3648,12 @@ function buildBoard(animate) {
     d.title = rw.found ? rwName(rw) : tr('{x} cachée', { x: rwLabel(rw) });
     d.innerHTML = rwSVG(rw); slotsEl.append(d); return d;
   });
-  $('depth').textContent = S.wide ? tr(WIDE.nom) : S.maze ? S.level : mineLv(S.level);
-  $('goalLbl').textContent = S.maze ? tr('Sortie') : tr('Trésors');
+  $('depth').textContent = S.wide ? tr(WIDE.nom) : S.qrush ? qrClock(qrLeft()) : S.maze ? S.level : mineLv(S.level); qrShown = '';
+  $('goalLbl').textContent = S.qrush ? tr('Quartz') : S.maze ? tr('Sortie') : tr('Trésors');
   paintMineBg();
   const fk = S.tuto ? 'easy' : S.floor || floorKind(S.level);
-  $('depthLbl').textContent = S.wide ? tr('Événement') : tr('Niveau');
+  $('depthLbl').textContent = S.wide ? tr('Événement') : S.qrush ? tr('Temps') : tr('Niveau');
+  $('depthChip').classList.toggle('qr', !!S.qrush); if (!S.qrush) $('depthChip').classList.remove('qr-hurry');
   $('depthChip').classList.toggle('wide', !!S.wide);
   const special = !S.wide && ['treasure', 'guardian', 'king'].includes(fk);
   // A mini-boss gets its band too
@@ -3632,6 +3668,7 @@ function buildBoard(animate) {
 }
 function updateGoals() {
   const f = S.rewards.filter(r => r.found).length;
+  if (S.qrush) { $('goalCount').textContent = S.qrGot || 0; slotsEl.innerHTML = `<div class="slot found qr-slot">${qrIcon()}</div>`; return; }
   $('goalCount').textContent = S.maze ? `${S.mazeOut ? 1 : 0} / 1` : `${f} / ${S.rewards.length}`;
   if (S.maze) slotsEl.innerHTML = `<div class="slot lab-slot${S.mazeOut ? ' found' : ''}" title="${tr('Sortie')}"><i class="lab-door"></i></div>`;
   updateNextPill();
@@ -3644,9 +3681,9 @@ function applyUnlocks() {
   document.querySelectorAll('.tool').forEach(b => { const k = TOOL_UNLOCK[b.dataset.tool], on = !k || has(k); b.hidden = !on; if (on) n++; });
   $('scr-mine').style.setProperty('--ntools', n);
   if ((TOOL_UNLOCK[S.tool] && !has(TOOL_UNLOCK[S.tool])) || (S.tool === 'bomb' && $('armBar').hidden)) setTool('shovel');
-  $('energyChip').hidden = !has('pioche');
+  $('energyChip').hidden = !has('pioche') || !!S.qrush;
   $('bagPill').hidden = !S.bagSeen;
-  $('upBtn').hidden = !upAllowed();
+  $('upBtn').hidden = !upAllowed() || !!S.qrush;
   // First steps: the goals wait until the end
   $('questBtn').hidden = inGuide();
   updateBadge();
@@ -3659,6 +3696,7 @@ function bubbleInfo() {
   if (S.rewardMsg && S.rewardMsg.level === S.level) return { key: 'r' + S.level, html: S.rewardMsg.html, reward: true };
   if (S.tuto) return null;
   if (S.maze) return { key: 'lab-intro', text: tr(LAB.texte) };
+  if (S.qrush) return S.qrEnd ? null : { key: 'qr-intro', text: tr(QR.texte) };
   const k = S.floor || floorKind(S.level);
   // Haunted Mine: its own treasure and guardian texts (each shown once)
   // (the Citrouille géante has its own text, shown once)
@@ -3794,7 +3832,7 @@ function dropBoardCoaches() {
 }
 function levelCoach() {
   if (S.haunt) return hwCoach();
-  if (S.wide || S.maze) return;
+  if (S.wide || S.maze || S.qrush) return;
   if ($('scr-mine').hidden) return;
   const lv = S.level, t = TUTO[lv];
   // Level 1 (a single tile): tap to dig; level 2 (2×2): swipe to dig
@@ -4126,12 +4164,14 @@ const freeTap = i => SOFT.includes(S.grid[i].t) || isMelting(i);
 const CHIPS = {
   cool: ['#7a2a32', '#3a1a20', '#ff9a3d'], hard: ['#5a6aa8', '#3b4577', '#9fb0ff'], ice: ['#dff6ff', '#a6e6ff', '#ffffff'],
   root: ['#8a5a2b', '#5a3518', '#c08a50'], stump: ['#8a5a2b', '#5a3518', '#e0b074'], stone: ['#8e9ac0', '#6b7699', '#4d5577'],
-  hcandy: ['#8e9ac0', '#ff9a2a', '#ffe14d'], heyes: ['#8e9ac0', '#6b7699', '#fff7c8'], hsweet: ['#ff5bb0', '#ffd0ec', '#fff'], hbag: ['#c97a3a', '#ff9a2a', '#ffe14d'],
+  quartz: ['#8e9ac0', '#e7c2ff', '#ffffff'], hcandy: ['#8e9ac0', '#ff9a2a', '#ffe14d'], heyes: ['#8e9ac0', '#6b7699', '#fff7c8'], hsweet: ['#ff5bb0', '#ffd0ec', '#fff'], hbag: ['#c97a3a', '#ff9a2a', '#ffe14d'],
 };
 const chipsOf = c => c.t === 'ore' ? ['#8e9ac0', ORES[c.ore].o1, '#5a6488'] : CHIPS[c.t] || CHIPS.stone;
 function act(p, isTap) {
   if (digLock) return;
   const i = cellAt(p); if (i < 0) return;
+  // Quartz Rush: the clock starts with the first hit; nothing more once the time is up
+  if (S.qrush) { if (S.qrEnd && qrLeft() <= 0) return; if (!S.qrEnd) { S.qrEnd = Date.now() + QR.duree * 1000; closeTuto(); } }
   // Oil on the cell: only the pickaxe (or a bomb) gets through
   if (S.grid[i].oil && S.tool !== 'bomb') {
     if (!isTap) return;
@@ -4173,14 +4213,14 @@ function act(p, isTap) {
     if (c.t === 'magma') {
       burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, tr('Trop chaud ! Arrose le magma pour le refroidir d\'abord.'));
     }
-    if (S.energy <= 0) { openEnergyModal(); return; }
+    if (S.energy <= 0 && !S.qrush) { openEnergyModal(); return; }
     // Equipment: the Helmet gives free hits, the Pickaxe its damage and its model's passive
-    const T = gearTotals(), free = Math.random() < T.free + (c.t === 'ore' ? T.pas.casqueVeine || 0 : 0);
+    const T = gearTotals(), free = !S.qrush && Math.random() < T.free + (c.t === 'ore' ? T.pas.casqueVeine || 0 : 0);
     if (free) floatText(i, tr('Coup gratuit !'), '#8ff5e8');
-    else { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); if (S.energy <= 0) setTimeout(openEnergyModal, 650); }
+    else if (!S.qrush) { if (S.energy >= maxE()) S.nextRegen = Date.now() + REGEN_MS; S.energy--; updateEnergy(true); if (S.energy <= 0) setTimeout(openEnergyModal, 650); }
     // Fée verte: sometimes gives a little energy back
     const fv = petFx('energie');
-    if (fv && S.energy < maxE() && Math.random() < (fv.chance || 0)) {
+    if (fv && !S.qrush && S.energy < maxE() && Math.random() < (fv.chance || 0)) {
       const n = Math.min(fv.valeur || 1, maxE() - S.energy);
       S.energy += n; updateEnergy(true); petProc(); setTimeout(() => floatText(i, tr('+{n} énergie', { n }), '#8ff5e8'), 250);
     }
@@ -4213,7 +4253,7 @@ function act(p, isTap) {
     oilTick(); save();
     return;
   }
-  if (S.tool === 'bomb' && (S.haunt || S.maze)) { disarm(); return deny(i, tr('Les objets ne marchent que dans la mine principale.'), ''); }
+  if (S.tool === 'bomb' && (S.haunt || S.maze || S.qrush)) { disarm(); return deny(i, tr('Les objets ne marchent que dans la mine principale.'), ''); }
   if (S.tool === 'bomb') {
     if (S.bombs <= 0) return deny(i, tr('Plus de bombes ! Gagne-en avec les missions difficiles.'), '');
     if (Math.random() < (gearTotals().pas.gantsDynamiteur || 0) + runeVal('artificier')) floatText(i, tr('Bombe gratuite !'), '#ffd23d'); else S.bombs--;
@@ -4260,6 +4300,7 @@ function breakCell(i) {
   if (t === 'stone' || t === 'hard' || t === 'ore' || t === 'hcandy' || t === 'heyes') stat('pierres');
   clearCell(i);
   if (S.haunt) hwBreak(i, c, t);
+  if (t === 'quartz') qrGain(i);
   if (t === 'spring') {
     sfx('steam'); burst(x, y, ['#3db5ff', '#a6e6ff', '#ffffff'], 14, { spread: 36, size: [3, 8] });
     for (const j of nb4(i)) if (S.grid[j].t === 'magma') coolMagma(j);
@@ -4479,6 +4520,7 @@ function clearCell(i) {
   S.grid[i] = { t: 'empty' }; paintTile(i);
   if (S.haunt) hwLight(i);
   if (S.maze) { hwAround(i, j => { paintTile(j); }); labCheckExit(); }
+  if (S.qrush) qrCheckGrid();
   if (pile) { goldPile(i); petProc(); }
   checkRewards(); save(); checkAutoNext();
 }
@@ -4595,7 +4637,7 @@ const CONS_LIST = [
   { k: 'potions', name: tr('Potion d\'énergie'), icon: () => POTION, desc: tr('Remplit ton énergie au maximum.'), use: () => { $('bagViewModal').hidden = true; usePotion(); }, open: () => has('potions') || S.potions > 0 },
 ];
 function renderCons() {
-  const list = S.haunt || S.maze ? [] : CONS_LIST.filter(x => x.open());   // (items work in the main mine only)
+  const list = S.haunt || S.maze || S.qrush ? [] : CONS_LIST.filter(x => x.open());   // (items work in the main mine only)
   $('bagPaneCons').innerHTML = list.length ? list.map(x => `<div class="cons-row"><span class="ci">${x.icon()}<i>${S[x.k]}</i></span>
     <div><b>${x.name}</b><span>${x.desc}</span></div>
     <button class="btn sm" data-use="${x.k}" ${S[x.k] ? '' : 'disabled'}>${tr('Utiliser')}</button></div>`).join('')
@@ -4818,9 +4860,9 @@ function refreshBadges() {
   }
 }
 function loop() {
-  paintMoney(); updateEnergy(); updateBucket(); checkStuck(); hwTick();
+  paintMoney(); updateEnergy(); updateBucket(); checkStuck(); hwTick(); qrTick();
   const now = performance.now(); if (now - badgeT > 250) { badgeT = now; try { refreshBadges(); } catch (e) {} }
-  const up = !upAllowed(); if ($('upBtn').hidden !== up) $('upBtn').hidden = up;
+  const up = !upAllowed() || !!S.qrush; if ($('upBtn').hidden !== up) $('upBtn').hidden = up;
   requestAnimationFrame(loop);
 }
 
@@ -4874,7 +4916,7 @@ function paintRadar() {
   });
 }
 function useRadar() {
-  if (S.haunt || S.maze) return toast(tr('Les objets ne marchent que dans la mine principale.'), '');
+  if (S.haunt || S.maze || S.qrush) return toast(tr('Les objets ne marchent que dans la mine principale.'), '');
   if (!S.radars) return toast(tr('Pas de radar. Gagne-en avec les missions difficiles.'), '');
   const hidden = S.rewards.filter(r => !r.found && !r.radar);
   if (!hidden.length) return toast(tr('Tous les trésors restants sont déjà repérés.'), '');
@@ -4884,7 +4926,7 @@ function useRadar() {
   toast(rw.kind === 'art' ? tr('Radar : artefact repéré !') : tr('Radar : géode repérée !'), 'good');
 }
 function usePotion() {
-  if (S.haunt || S.maze) return toast(tr('Les objets ne marchent que dans la mine principale.'), '');
+  if (S.haunt || S.maze || S.qrush) return toast(tr('Les objets ne marchent que dans la mine principale.'), '');
   if (!S.potions) return toast(tr('Pas de potion. Gagne-en avec les missions difficiles.'), '');
   if (S.energy >= maxE()) return toast(tr('Ton énergie est déjà pleine.'), '');
   S.potions--; S.energy = maxE(); updateEnergy(true); updateQuick(); save();
@@ -5595,6 +5637,11 @@ function renderEvents() {
       <span class="pm-tag">${tr('Halloween')} · ${tr('Fin dans {t}', { t: hwDur(hwEnd() - hwNow()) })}</span>
       <div class="pm-txt"><b>${tr(HW.nom)}</b><p>${tr(HW.textes.intro)}</p></div>
       <button class="btn big" data-go="haunt">${tr('Entrer')}</button></div>` : ''}
+    ${QR ? `<div class="pm-hero ev qr-ev"><span class="pm-art">${img(QR_IMG)}</span>
+      <span class="pm-tag">${tr('Tous les jours')} · ${tr(plural(qrRefresh().free, '{n} Ticket', '{n} Tickets'), { n: qrRefresh().free })}</span>
+      <div class="pm-txt"><b>${tr(QR.nom)}</b><p>${tr('Une minute pour casser un maximum de quartz ! Le quartz remplit une jauge pleine de récompenses.')}</p></div>
+      <div class="qr-gauge mini" id="qrEvGauge"></div>
+      <button class="btn big" data-qrush${qrRefresh().free > 0 ? '' : ' disabled'}>${qrRefresh().free > 0 ? tr('Jouer') : tr('Reviens demain')}</button></div>` : ''}
     ${LAB ? `<div class="pm-hero ev lab-ev"><span class="pm-art">${LAB_ICON}</span>
       <span class="pm-tag">${tr('Tous les jours')} · ${tr(plural(labRefresh().free, '{n} Ticket', '{n} Tickets'), { n: labRefresh().free })}</span>
       <div class="pm-txt"><b>${tr(LAB.nom)}</b><p>${tr('Un labyrinthe dans le noir : casse les tuiles pour trouver ton chemin jusqu\'à la sortie, et ramasse les minerais en route.')}</p></div>
@@ -5610,6 +5657,7 @@ function renderEvents() {
     <h2 class="pm-h">${tr('À venir')}</h2>
     ${ev(artArt('coquillage'), tr('Chasse aux fossiles'), tr('Trouve un maximum de fossiles pour gagner des récompenses.'))}
     ${ev(geodeArt('crystal'), tr('Festival des géodes'), tr('Des géodes plus rares, à ouvrir à l\'Atelier.'))}`;
+  if (QR) { const t = qrState().total || 0; qrGauge($('qrEvGauge'), t, t); }
 }
 /* ---------- Event "Wide Mine" (config.js > evenements > mineLarge) ----------
    One very wide mine at the depth of the player's record. The normal mine (level, board, treasures) is put aside
@@ -5620,7 +5668,7 @@ const WIDE_KEEP = ['level', 'grid', 'rewards', 'cols', 'rows', 'floor', 'tuto', 
 const wideView = { x: 0, y: 0, moving: false };
 // Pioneers' mine: a mini-boss or guardian grid too big for the screen is shown like the Wide Mine (config.js > etages > grandeGrille)
 let panBig = false;
-const bigFloor = () => !S.wide && !S.haunt && !S.maze && !S.tuto && ['miniboss', 'demiGardien', 'gardien'].includes(S.ftype) && !$('scr-mine').hidden;
+const bigFloor = () => !S.wide && !S.haunt && !S.maze && !S.qrush && !S.tuto && ['miniboss', 'demiGardien', 'gardien'].includes(S.ftype) && !$('scr-mine').hidden;
 const panView = () => !!S.wide || panBig;
 function startWide() {
   if (S.wide) return go('mine');
@@ -5809,6 +5857,116 @@ if (LAB) {
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-maze]')) return;
   unlockAudio(); sfx('pick'); startMaze(); if (!$('scr-events').hidden) renderEvents();
+});
+
+/* ---------- Event « Quartz Rush » (config.js > evenements > quartzRush), permanent ----------
+   One minute to break as much quartz as possible; digging costs no energy. The clock starts with the first hit.
+   A grid without quartz left is replaced at once. At the end, the quartz fills a gauge: a reward every "palier"
+   quartz, in the order of the list, which starts again after its last reward. Like the other event mines, the main
+   mine is put aside during a run (S.qrBack) and comes back at the end. */
+const QR = (CFG.evenements || {}).quartzRush || null;
+const QR_IMG = 'Assets/Treasures/Quartz.png';
+const qrIcon = () => img(QR_IMG, tr('quartz'));
+const qrState = () => S.qr || (S.qr = { free: 0, day: '', total: 0, best: 0 });
+function qrRefresh() {
+  const Q = qrState();
+  if (Q.day !== today()) { Q.day = today(); Q.free = QR.ticketsParJour; }
+  return Q;
+}
+const qrCycle = () => QR.palier * QR.recompenses.length;
+const qrLeft = () => S.qrEnd ? Math.max(0, S.qrEnd - Date.now()) : QR.duree * 1000;
+const qrClock = ms => { const t = Math.ceil(ms / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+function startRush() {
+  if (!QR) return;
+  if (S.qrush) return go('mine');
+  const Q = qrRefresh();
+  if (Q.free <= 0) { sfx('deny'); return toast(tr('Plus de Tickets pour aujourd\'hui. Reviens demain !'), ''); }
+  Q.free--;
+  S.qrBack = Object.fromEntries(LAB_KEEP.map(k => [k, S[k]]));
+  delete S.tutoSeen['qr-intro'];   // the rules are shown at the start of every run
+  S.qrush = true; S.level = 1; S.qrGot = 0; S.qrEnd = 0; S.rewardMsg = null; bagQueue.length = 0;
+  if (S.tool === 'bomb' || S.tool === 'bucket') setTool('pickaxe');
+  sfx('descend');
+  genRush(); buildBoard(true);
+  go('mine'); save();
+}
+// Back to the main mine (the run's quartz is already counted)
+function endRush() {
+  if (!S.qrush) return;
+  const b = S.qrBack || {};
+  delete S.qrush; delete S.qrBack; delete S.qrGot; delete S.qrEnd;
+  for (const k of LAB_KEEP) if (k in b) S[k] = b[k];
+  if (!Array.isArray(S.grid) || !S.grid.length) genLevel(S.level || 1);
+  else setDims(S.cols, S.rows);
+  buildBoard(false); fitBoard(); updateEnergy(true); save();
+}
+function genRush() {
+  const [cols, rows] = QR.taille;
+  setDims(cols, rows); S.cols = cols; S.rows = rows; S.tuto = 0; S.floor = 'easy'; S.ftype = null;
+  LV_HP = hpAt(1);
+  const g = Array.from({ length: N }, () => ({ t: 'dirt', v: randInt(0, 2) }));
+  const cells = [...g.keys()].sort(() => Math.random() - .5), hp = Math.max(1, Math.round(LV_HP.stone * (QR.resistanceQuartz || 1)));
+  const nq = Math.max(1, Math.round(N * QR.partQuartz)), ns = Math.round(N * QR.partPierre);
+  cells.slice(0, nq).forEach(i => { g[i] = { t: 'quartz', hp, max: hp }; });
+  cells.slice(nq, nq + ns).forEach(i => { g[i] = tileOf('stone'); });
+  S.grid = g; S.rewards = [];
+}
+function qrGain(i) {
+  const n = randInt(...QR.quartzParPierre);
+  S.qrGot = (S.qrGot || 0) + n; sfx('ore');
+  const { x, y } = center(i); burst(x, y, ['#f7d6ff', '#c58cff', '#fff'], 12, { spread: 32, up: 18, size: [3, 7] });
+  floatText(i, amountHTML(n, qrIcon()), '#f3c6ff', true);
+  updateGoals();
+}
+// No quartz left on the grid: a new one comes at once
+function qrCheckGrid() {
+  if (!S.qrush || S.grid.some(c => c.t === 'quartz')) return;
+  const gen = boardGen;
+  setTimeout(() => {
+    if (!S.qrush || gen !== boardGen || (S.qrEnd && qrLeft() <= 0)) return;
+    S.level++; genRush(); buildBoard(true); save();
+  }, 300);
+}
+// The clock (called by the main loop)
+let qrShown = '';
+function qrTick() {
+  if (!S || !S.qrush) return;
+  const left = qrLeft(), t = qrClock(left);
+  if (t !== qrShown && !$('scr-mine').hidden) { qrShown = t; $('depth').textContent = t; $('depthChip').classList.toggle('qr-hurry', !!S.qrEnd && left <= 10000); }
+  if (S.qrEnd && left <= 0) qrFinish();
+}
+function qrFinish() {
+  if (!S.qrush) return;
+  digLock = true; sfx('win');
+  const Q = qrState(), got = S.qrGot || 0, before = Q.total || 0, L = QR.recompenses.length;
+  Q.total = before + got; Q.best = Math.max(Q.best || 0, got);
+  // Every step passed gives its reward
+  const won = [];
+  for (let k = Math.floor(before / QR.palier) + 1; k <= Math.floor(Q.total / QR.palier); k++) {
+    const r = QR.recompenses[(k - 1) % L]; won.push(r);
+    S.coins += r.pieces || 0; G().gems += r.gemmes || 0;
+    for (const [c, n] of Object.entries(r.cles || {})) G().keys[c] = (G().keys[c] || 0) + n;
+  }
+  endRush(); refreshGear();
+  $('qrGot').innerHTML = `+${got}${qrIcon()}`;
+  $('qrWon').innerHTML = won.length ? won.map(rwChips).join('') : '';
+  $('qrWonH').hidden = !won.length;
+  qrGauge($('qrGauge'), before, Q.total);
+  $('qrModal').hidden = false;
+  save();
+}
+// The gauge of the current round of rewards: one notch per step, its reward under it
+function qrGauge(el, from, to) {
+  const C = qrCycle(), wrapped = Math.floor(to / C) > Math.floor(from / C), a = wrapped ? 0 : from % C, b = to % C;
+  el.innerHTML = `<div class="qr-bar"><i style="width:${a / C * 100}%"></i></div>
+    <div class="qr-steps">${QR.recompenses.map((r, k) => `<span class="qr-step${b >= (k + 1) * QR.palier ? ' on' : ''}" style="left:${(k + 1) / QR.recompenses.length * 100}%">${rwChips(r)}</span>`).join('')}</div>
+    <div class="qr-num">${b} / ${C}</div>`;
+  const bar = el.querySelector('.qr-bar i');
+  requestAnimationFrame(() => setTimeout(() => { bar.style.width = b / C * 100 + '%'; }, 200));
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-qrush]')) return;
+  unlockAudio(); sfx('pick'); startRush();
 });
 
 /* ---------- Event « La Mine Hantée » (config.js > mineHantee) ----------
@@ -6944,6 +7102,7 @@ document.addEventListener('click', e => {
   refreshGear(); renderGoals(); save();
 });
 $('dayDoneOk').addEventListener('click', () => { $('dayDoneModal').hidden = true; });
+$('qrOk').addEventListener('click', () => { unlockAudio(); sfx('pick'); $('qrModal').hidden = true; go('events'); });
 $('questBtn').addEventListener('click', () => { unlockAudio(); sfx('pick'); missionDay = 7; go('missions'); });
 /* ---------- Player progression = the miner level (config.js > progressionJoueur) ----------
    Missions, depth records, the Museum, the equipment and the Altar give XP; the player's level comes from the total XP.
@@ -7357,9 +7516,9 @@ function paintMineBg() {
   // Haunted Mine: each of its 3 settings has its own background, dirt and stone (config.js > mineHantee > biomes);
   // no picture yet: a night sky and the usual dirt and stone, tinted (CSS #scr-mine.haunt)
   const card = S.haunt ? hwBiome(S.level) : liftCard(biomeOf(S.level || 1));
-  const src = S.haunt ? card.fond : !S.wide && !S.maze && card.fondMine;
-  document.body.style.setProperty('--mine-bg', S.maze ? 'radial-gradient(ellipse at 50% 35%, #2b2540, #0c0a12 75%)' : src ? `url("${src}")` : S.haunt ? HW_NIGHT[hwBiomeIdx(S.level)] : 'none');
-  document.body.classList.toggle('mine-bg', !!src || !!S.haunt || !!S.maze);
+  const src = S.haunt ? card.fond : !S.wide && !S.maze && !S.qrush && card.fondMine;
+  document.body.style.setProperty('--mine-bg', S.qrush ? 'radial-gradient(ellipse at 50% 30%, #6b3f8f, #24123a 75%)' : S.maze ? 'radial-gradient(ellipse at 50% 35%, #2b2540, #0c0a12 75%)' : src ? `url("${src}")` : S.haunt ? HW_NIGHT[hwBiomeIdx(S.level)] : 'none');
+  document.body.classList.toggle('mine-bg', !!src || !!S.haunt || !!S.maze || !!S.qrush);
   $('scr-mine').classList.toggle('maze', !!S.maze);
   // Its dirt: up to 3 pictures (the 3 looks of a dirt tile); none = the brown dirt
   const dirt = card.terre || [], el = $('scr-mine');
@@ -8358,7 +8517,7 @@ function updateNextPill() {
   // "Next level" only once the uncovered treasures are picked up, so none is left behind by mistake
   // (first steps: at a planned return, the only way is back up)
   // (Haunted Mine: no "next level" at its bottom)
-  const done = S.maze ? !!S.mazeOut : !S.wide && (settled() || S.ftype === 'lucky') && !(inGuide() && S.level >= nextReturn()) && !hwBottom();
+  const done = S.qrush ? false : S.maze ? !!S.mazeOut : !S.wide && (settled() || S.ftype === 'lucky') && !(inGuide() && S.level >= nextReturn()) && !hwBottom();
   $('nextPill').hidden = !done;
   $('nextPill').textContent = S.maze ? tr('Niveau {n} ↓', { n: S.level + 1 }) : S.level >= 1000 ? tr('Mine suivante ↓') : tr('Niveau {n} ↓', { n: mineLv(S.level + 1) });
 }
@@ -8652,6 +8811,7 @@ function start(data) {
     if (H.boss && H.boss.wins) bs[30] = { won: true }; else if (H.boss && H.boss.hp > 0) bs[30] = { hp: H.boss.hp, max: H.boss.max };
     delete H.boss;
   }
+  if (S.qrush && !QR) { const b = S.qrBack || {}; delete S.qrush; delete S.qrBack; delete S.qrGot; delete S.qrEnd; for (const k of LAB_KEEP) if (k in b) S[k] = b[k]; if (Array.isArray(S.grid)) setDims(S.cols, S.rows); else genLevel(S.level || 1); }
   if (S.maze && !LAB) { const b = S.mazeBack || {}; delete S.maze; delete S.mazeBack; delete S.mazeOut; for (const k of LAB_KEEP) if (k in b) S[k] = b[k]; if (Array.isArray(S.grid)) setDims(S.cols, S.rows); else genLevel(S.level || 1); }
   if (S.haunt && !HW) { const b = S.hauntBack || {}; delete S.haunt; delete S.hauntBack; for (const k of WIDE_KEEP) if (k in b) S[k] = b[k]; if (Array.isArray(S.grid)) setDims(S.cols, S.rows); else genLevel(S.level || 1); }
   buildBoard(true); setTool(S.tool || 'shovel'); updateBombs(); updateQuick(); paintSound(); updateBadge(); updateEnergy(true);
@@ -8686,6 +8846,8 @@ function loadCheats() {
     etType: level => ET && etType(level), etInfo: level => ET && etInfo(level), etOn: level => ET && etOn(level),
     // Étage Lucky (cheat « Étage Lucky maintenant »): turns the current level into one
     makeLucky() { if (!ET || !etOn(S.level)) return false; S.luckyAt = S.level; S.lastLucky = S.level; genLevel(S.level); buildBoard(true); go('mine'); luckyArrive(); save(); return true; },
+    // Quartz Rush (cheat menu): tickets, end the run now, quartz in the gauge
+    qr: QR && { refresh: qrRefresh, state: qrState, start: startRush, finish() { if (!S.qrush) return false; S.qrEnd = Date.now(); qrFinish(); return true; } },
     // Labyrinth (cheat menu): tickets, and the exit reached at once
     lab: LAB && { refresh: labRefresh, state: labState, start: startMaze, exit() { if (!S.maze) return false; const i = S.grid.findIndex(c => c.t === 'lexit'); for (const j of nb4(i)) if (S.grid[j].t !== 'lwall') { S.grid[j] = { t: 'empty' }; paintTile(j); } labCheckExit(); S.grid.forEach((_, j) => paintTile(j)); return S.mazeOut; } },
     // Haunted Mine: the event's clock (test clock key), tickets and page
