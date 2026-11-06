@@ -2258,7 +2258,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 </div>
 
 <div class="screen menu" id="scr-altar" hidden>
-  <header class="scr-head"><button class="back" data-go="village">‹ Village</button><h1>Autel</h1><div class="wallet-bar" data-money></div></header>
+  <header class="scr-head"><button class="back" data-go="village">‹ Accueil</button><h1>Autel</h1><div class="wallet-bar" data-money></div></header>
   <div class="card flat al-top" id="altarTop"></div>
   <div class="al-runes" id="altarRunes"></div>
 </div>
@@ -2302,7 +2302,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       </div>
     </div>
     <button class="iconbtn" id="settingsBtnMine" aria-label="Paramètres"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M26.0 12.9 L30.3 13.5 L30.3 18.5 L26.0 19.1 L25.3 20.9 L27.9 24.3 L24.3 27.9 L20.9 25.3 L19.1 26.0 L18.5 30.3 L13.5 30.3 L12.9 26.0 L11.1 25.3 L7.7 27.9 L4.1 24.3 L6.7 20.9 L6.0 19.1 L1.7 18.5 L1.7 13.5 L6.0 12.9 L6.7 11.1 L4.1 7.7 L7.7 4.1 L11.1 6.7 L12.9 6.0 L13.5 1.7 L18.5 1.7 L19.1 6.0 L20.9 6.7 L24.3 4.1 L27.9 7.7 L25.3 11.1Z" fill="#7d3c98" stroke="#3b2245" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="4.6" fill="#fff4dc" stroke="#3b2245" stroke-width="2"/></svg></button>
-    <button class="iconbtn" id="upBtn" aria-label="Remonter au village" title="Remonter au village">
+    <button class="iconbtn" id="upBtn" aria-label="Remonter à la surface" title="Remonter à la surface">
       <span id="upIcon"></span>
     </button>
   </header>
@@ -2411,7 +2411,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
     <div class="stars">⛏️</div>
     <h2 id="mine2Title">Mine 2 : bientôt disponible</h2>
     <p>Bravo, tu as atteint le fond de la mine ! Une nouvelle mine t'attend… elle arrive bientôt.</p>
-    <button class="btn big" id="mine2Up">Remonter au village</button>
+    <button class="btn big" id="mine2Up">Remonter à la surface</button>
   </div>
 </div>
 
@@ -2561,7 +2561,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       <h2 class="dw-title" id="enTitle">Plus d'énergie !</h2>
       <p id="enText">Recharge ton énergie pour continuer à creuser.</p>
       <div class="en-opts" id="enOpts"></div>
-      <button class="btn big dw-up" id="enUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false"><span class="dw-lbl"><b>Remonter au village</b><small id="enUpSub"></small></span></button>
+      <button class="btn big dw-up" id="enUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false"><span class="dw-lbl"><b>Remonter à la surface</b><small id="enUpSub"></small></span></button>
       <button class="dw-stay" id="enStay">Rester ici</button>
     </div>
   </div>
@@ -2574,7 +2574,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
       <p id="descendText"></p>
       <p class="dw-cp" id="descendCp" hidden></p>
       <div class="dw-stats" id="descendStats"></div>
-      <button class="btn big dw-up" id="descendUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false"><span class="dw-lbl"><b id="descendUpTxt">Remonter au village</b><small id="descendUpSub"></small></span></button>
+      <button class="btn big dw-up" id="descendUp"><img src="Assets/UI/Arrow_Up.png" alt="" draggable="false"><span class="dw-lbl"><b id="descendUpTxt">Remonter à la surface</b><small id="descendUpSub"></small></span></button>
       <button class="btn ghosty dw-down" id="descendYes"><span class="dw-lbl"><b id="descendYesTxt">Descendre quand même</b><small id="descendYesSub"></small></span><span class="dw-arrow" aria-hidden="true">↓</span></button>
       <label class="dw-skip" id="descendSkipRow"><input type="checkbox" id="descendSkip"><span id="descendSkipTxt">Ne plus demander pendant cette session</span></label>
       <button class="dw-stay" id="descendNo">Rester ici</button>
@@ -4697,7 +4697,7 @@ function updateEnergy(force) {
   const e = `${S.energy} / ${maxE()}`;
   $('energyChip').classList.toggle('blue', !!S.haunt);
   if (e !== lastE || force) { lastE = e; $('energyTxt').textContent = e; $('energyFill').style.width = Math.min(100, S.energy / maxE() * 100) + '%'; }
-  const r = S.energy >= maxE() ? tr('Énergie pleine') : REGEN_MS > 0 ? tr('+1 dans {s} s', { s: Math.max(1, Math.ceil((S.nextRegen - now) / 1000)) }) : tr('Recharge au village');
+  const r = S.energy >= maxE() ? tr('Énergie pleine') : REGEN_MS > 0 ? tr('+1 dans {s} s', { s: Math.max(1, Math.ceil((S.nextRegen - now) / 1000)) }) : tr('Recharge à la surface');
   if (r !== lastR) { lastR = r; $('regenTxt').textContent = r; }
   if (!$('scr-village').hidden && (e !== lastVE || force)) { lastVE = e; $('vEnergyTxt').textContent = e; $('vEnergyFill').style.width = Math.min(100, S.energy / maxE() * 100) + '%'; }
 }
@@ -8121,7 +8121,7 @@ function finishMini(win) {
       <p>${text}</p>
       ${list}
       ${xpLinesHTML(xpGot)}
-      ${next ? `<button class="btn big" data-geo="${next}">${nextN > 1 ? tr('Géodes suivantes (×{k})', { k: nextN }) : tr('Géode suivante')}</button>` : `<button class="btn big" data-go="village">${tr('Retour au village')}</button>`}`;
+      ${next ? `<button class="btn big" data-geo="${next}">${nextN > 1 ? tr('Géodes suivantes (×{k})', { k: nextN }) : tr('Géode suivante')}</button>` : `<button class="btn big" data-go="village">${tr('Retour à l\'accueil')}</button>`}`;
     $('mgResult').hidden = false;
     renderGeoStock(); save();
   }, 420);
@@ -8151,7 +8151,7 @@ const renderHelp = () => $('help').innerHTML = [
   ['bombes', TOOLS.bomb, tr('<b>Bombe</b> : dans ton sac, onglet Consommables. Elle fait sauter les 9 cases autour de la cible, sauf le magma chaud.')],
   ['radar', RADAR, tr('<b>Radar</b> : dans ton sac, onglet Consommables. Il entoure l\'emplacement d\'un trésor caché.')],
   [() => S.bagSeen, img('Assets/UI/Bag.png'), tr('<b>Sac</b> : chaque trésor et chaque géode prend une case (les minerais ne comptent pas). Agrandis-le à la boutique.')],
-  [() => S.reached >= CHECKPOINTS[0], UP_ICON, tr('<b>Ascenseur</b> : au village, « Descendre » te propose les checkpoints débloqués (niveau 10, 20, 30…), rangés par biome. C\'est gratuit.')],
+  [() => S.reached >= CHECKPOINTS[0], UP_ICON, tr('<b>Ascenseur</b> : à l\'accueil, « Descendre » te propose les checkpoints débloqués (niveau 10, 20, 30…), rangés par biome. C\'est gratuit.')],
   [null, UP_ICON, tr('<b>Remonter</b> : quitte la mine quand tu veux. Ton sac se vide : les nouveaux trésors vont au musée, les doublons sont vendus.')],
   [() => S.buildings.museum, artArt('lion'), tr('<b>Musée</b> : chaque nouveau trésor rapporte une prime. Complète une collection pour gagner une étoile (jusqu\'à {n}) : ses doublons se vendent plus cher, et la prime se récupère au Musée.', { n: MAX_STARS })],
   [() => S.buildings.shop, img('Assets/UI/Bag.png'), tr('<b>Boutique</b> : agrandis ton sac. D\'autres articles arrivent plus profond.')],
@@ -8243,7 +8243,7 @@ function tryDescend() {
   $('descendText').textContent = full && low ? tr('Attention, ton sac est plein et il te reste peu d\'énergie.')
     : full && guide ? tr('Ton sac est plein, mais tu peux continuer : les pièces et les minerais ne prennent pas de place.')
     : full ? tr('Attention, ton sac est plein : tu ne pourras plus récupérer de trésors.')
-    : CFG.energie.rechargeAuVillage ? tr('Attention, il te reste peu d\'énergie : remonte au village pour recharger.') : tr('Attention, il te reste peu d\'énergie.');
+    : CFG.energie.rechargeAuVillage ? tr('Attention, il te reste peu d\'énergie : remonte à la surface pour recharger.') : tr('Attention, il te reste peu d\'énergie.');
   const stat = (icon, txt) => `<div class="dw-stat">${img(icon)}<span>${txt}</span></div>`;
   $('descendStats').className = 'dw-stats' + (full && low ? ' two' : '');
   $('descendStats').innerHTML = (full ? stat('Assets/UI/Bag.png', `${bagUsed()} / ${bagCap()}`) : '') + (low ? stat('Assets/UI/Energy_Yellow.png', `${S.energy} / ${maxE()}`) : '');
@@ -8255,7 +8255,7 @@ function tryDescend() {
   $('descendUp').hidden = guide;
   // Options say what each choice does: up = empty the bag / recharge, down = which level and what it costs
   const recharge = low && CFG.energie.rechargeAuVillage;
-  $('descendUpTxt').textContent = tr('Remonter au village');
+  $('descendUpTxt').textContent = tr('Remonter à la surface');
   $('descendUpSub').textContent = full && recharge ? tr('Vider le sac et recharger l\'énergie') : full ? tr('Vendre et vider le sac') : recharge ? tr('Recharger l\'énergie') : '';
   $('descendYesTxt').textContent = guide ? tr('Continuer') : tr('Descendre au niveau {n}', { n: mineLv(S.level + 1) });
   $('descendYesSub').textContent = full ? tr('Les trésors resteront au sol') : tr('{n} énergie restante', { n: S.energy });

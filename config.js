@@ -70,7 +70,7 @@ window.CONFIG = {
 
     // Retour forcé au village : plus d'énergie, plus de bombe, plus de potion, et plus rien à creuser
     // gratuitement sur l'étage (terre, cases bonus, trésor à ramasser). Le butin du sac est gardé.
-    texteRetourForce: "Plus d'énergie ! Retour au village avec ton butin.",
+    texteRetourForce: "Plus d'énergie ! Retour à la surface avec ton butin.",
 
     // À 0 énergie dans la mine, une fenêtre propose : boire une potion du sac, regarder une pub (+pubEnergie),
     // une recharge complète contre des perles, ou remonter au village.
@@ -330,9 +330,9 @@ window.CONFIG = {
       toucher: "Touche la terre pour creuser",        // niveau 1 (une seule case)
       creuser: "Glisse pour creuser",                 // niveau 2 (première grille 2×2)
       tresor: "Touche le trésor pour le ramasser",    // le 1er trésor dégagé
-      sacPlein: "Sac plein ! Remonte au village",     // la 1re fois que le sac est plein
+      sacPlein: "Sac plein ! Remonte à la surface",     // la 1re fois que le sac est plein
       casserRefroidi: "Casse le magma refroidi",     // tutoriel du magma, après l'arrosoir
-      surface: "Rentre au village avec ton butin",    // la 1re fin d'expédition
+      surface: "Remonte à la surface avec ton butin",    // la 1re fin d'expédition
       descendre: "Descends dans la mine",             // tout premier lancement, au village
       batiments: {                                    // quand un bâtiment apparaît au village
         museum: "Entre dans ton Musée",
@@ -344,7 +344,7 @@ window.CONFIG = {
       galerie: "Ouvre ta nouvelle collection",        // 1re visite du Musée : le rideau de la collection
       ameliorerCollection: "Améliore ta collection",  // 1re visite du Musée : le bouton d'upgrade (1re étoile)
       prime: "Récupère ta récompense",                // 1re prime de collection au Musée (si le tutoriel du rideau est déjà passé)
-      museeRetour: "Retourne au village",             // fin de la 1re visite du Musée
+      museeRetour: "Retourne à l'accueil",             // fin de la 1re visite du Musée
       redescendre: "Redescends dans la mine",         // après la 1re visite du Musée
       checkpoints: "Les checkpoints t'évitent de tout refaire",  // 1re fois dans l'ascenseur, avant « Reprends au niveau »
       ascenseur: "Reprends au niveau {n}",            // 1re fois que l'ascenseur propose un checkpoint
@@ -364,8 +364,8 @@ window.CONFIG = {
       energie: "Chaque coup de pioche coûte 1 énergie", // niveau de la pioche (touche pour continuer)
       continuer: "Continue jusqu'au checkpoint !",    // 1er sac plein avant un retour prévu, sur « Descendre quand même »
       echanger: "Garde ta nouvelle découverte",       // 1re fenêtre « Nouvelle découverte » (sac plein)
-      remonter: "Remonte : du nouveau au village !",  // à chaque retour prévu (niveaux 11 et 16)
-      retourVillage: "Retourne au village",           // fin des tutoriels de la Boutique et de l'Atelier
+      remonter: "Remonte : du nouveau à la surface !",  // à chaque retour prévu (niveaux 11 et 16)
+      retourVillage: "Retourne à l'accueil",           // fin des tutoriels de la Boutique et de l'Atelier
       atelier: "Tape quand le curseur est dans la zone", // 1re géode à l'Atelier (elle ne peut pas rater)
       sacBoutique: "Ton niveau de mineur agrandit ton sac !",  // fin des premiers pas : l'encart du niveau du joueur
       sacAcheter: "Récupère ta case de sac en plus",           // puis la récompense dans Progression

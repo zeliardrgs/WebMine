@@ -159,7 +159,7 @@
       s.energy = M.maxE(); refresh(); msg('Niveau ' + n + ' : toutes les récompenses récupérées (énergie et sac au max)');
     },
     // Mountain altar
-    altarOpen() { S().buildings.altar = true; refresh(); msg('Autel ouvert au village'); },
+    altarOpen() { S().buildings.altar = true; refresh(); msg('Autel ouvert'); },
     altarRunes() {
       const s = S(); s.buildings.altar = true;
       for (const k of Object.keys(M.RUNES)) s.altar.runes[k] = M.CFG.autel.niveauMax || 10;
