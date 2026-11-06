@@ -321,7 +321,7 @@ window.CONFIG = {
        9. Redescente : cuivre au niveau 21
        10. Forge : elle apparaît au retour de la 1re expédition qui ramène du cuivre ; améliorer la pioche
        Les niveaux 1 à 5 sont écrits à la main (les mêmes pour tous les joueurs), seulement la 1re fois.
-       Grille : une ligne par rangée. "." = terre, "#" = pierre, une lettre = une case d'un trésor (en terre ;
+       Grille : une ligne par rangée. "." = terre, "#" = pierre de décor (incassable), "%" = pierre cassable, une lettre = une case d'un trésor (en terre ;
        en majuscule = sous la pierre). "tresors" : la lettre → l'artefact. Le coût en énergie de la pierre
        (3 coups par pierre avant le premier équipement) fait exactement 30 sur les niveaux 3 à 5. */
     ftue: {
@@ -337,9 +337,10 @@ window.CONFIG = {
         3: { grille: ['.#.', '#C#', '.#.'], tresors: { c: 'ammonite' } },
         // 4 « Le cœur » : un cœur de pierre, la dent en son centre (sous la pierre)
         4: { grille: ['#.#', '#D#', '.#.'], tresors: { d: 'dent' } },
-        // 5 « Le coffre plein » : toute la grille en pierre sauf un coin, trois trésors emboîtés (24 énergie : l'énergie
-        //   tombe pile à 0 en dégageant le dernier, ou avant s'il a cassé des pierres pour rien)
-        5: { grille: ['EEF', 'EEF', 'GG.'], tresors: { e: 'lion', f: 'lampe', g: 'pierreDeLave' } },
+        // 5 « Le coffre plein » : toute la grille en pierre sauf un coin. Trois fossiles déjà trouvés (des doublons : pas de
+        //   nouvelle collection pendant la FTUE) sous la pierre, et 5 pierres cassables ("%"). 8 pierres = 24 énergie : quel que
+        //   soit l'ordre, l'énergie tombe pile à 0 quand tout est cassé.
+        5: { grille: ['E%F', '%%%', '%G.'], tresors: { e: 'coquillage', f: 'feuille', g: 'ammonite' } },
       },
       // Quand les bâtiments apparaissent (au retour au village) :
       //   'premierRetour' = au 1er retour ; 'checkpoint10' = quand le checkpoint 10 est débloqué ;
