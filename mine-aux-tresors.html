@@ -3297,7 +3297,9 @@ function genLevelOnce(level, kindArg) {
   if (kind === 'king' && !S.kingOpened) { const mid = (ROWS >> 1) * COLS + (COLS >> 1); g[mid] = tileOf('king'); reserved.push(mid); }
   // Treasures: count from config.js > progression > grilles; artefacts of this level's series, geodes once unlocked
   const [tmin, tmax] = S.wide ? WIDE.tresors : ef ? ef.tresors : gridRow(level).tresors, count = randInt(tmin, tmax);
-  const geodes = geodesAt(level), arts = artsAt(level);
+  // FTUE (first steps, up to the level 10 return): only the tutorial collection (config.js > progression > ftue > collection)
+  const ftueArts = inGuide() && FTUE.collection ? artsAt(level).filter(([, o]) => o.set === FTUE.collection) : null;
+  const geodes = geodesAt(level), arts = ftueArts && ftueArts.length ? ftueArts : artsAt(level);
   const kinds = [];
   // One treasure: sometimes a geode; several: every other one is a geode
   if (count === 1) kinds.push(geodes.length && Math.random() < (CFG.geodes.chanceEtageUnTresor ?? 0) ? 'geode' : 'art');

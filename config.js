@@ -342,6 +342,9 @@ window.CONFIG = {
         //   soit l'ordre, l'énergie tombe pile à 0 quand tout est cassé.
         5: { grille: ['E%F', '%%%', '%G.'], tresors: { e: 'coquillage', f: 'feuille', g: 'ammonite' } },
       },
+      // Pendant les premiers pas (jusqu'au retour du niveau 10), tous les artefacts viennent de cette collection
+      // (les niveaux aléatoires de la redescente 1 → 10 aussi) : une seule collection découverte pendant la FTUE
+      collection: 'fossiles',
       // Quand les bâtiments apparaissent (au retour au village) :
       //   'premierRetour' = au 1er retour ; 'checkpoint10' = quand le checkpoint 10 est débloqué ;
       //   'geode' = au retour d'une expédition qui ramène une géode ; 'cuivre' = … qui ramène du cuivre ;
