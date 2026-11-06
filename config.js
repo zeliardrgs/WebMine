@@ -401,6 +401,9 @@ window.CONFIG = {
         equiper: "Équipe ta nouvelle pioche",          // bouton Équiper
         personnage: "Va voir ton équipement",          // onglet Personnage
         toucherObjet: "Touche ta pioche",              // la pioche sur le mineur
+        puissance: "Puissance : la pierre casse en 2 coups au lieu de 3 !",  // fiche de la pioche (touche pour continuer)
+        critique: "Coup critique : parfois un coup 2 fois plus fort !",      // fiche de la pioche (touche pour continuer)
+        fermer: "Ferme la fiche",                                            // fiche de la pioche
         ameliorer: "Améliore-la avec ton cuivre !",    // Forge (après la 1re expédition avec du cuivre) : bouton Améliorer
         fusionner: "Fusionne 3 objets identiques",     // 1re fusion possible (écran Personnage, puis la fiche de l'objet)
       },
