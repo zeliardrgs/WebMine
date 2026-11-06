@@ -1534,6 +1534,10 @@ window.CONFIG = {
      ÉVÉNEMENTS
      --------------------------------------------------------------- */
   evenements: {
+    // TICKETS des événements : un seul stock pour tous (Gros caillou, Quartz Rush, Labyrinthe).
+    // Chaque jour à minuit, le stock revient à "parJour" (pas de cumul). 1 Ticket = 1 partie, quel que soit l'événement.
+    tickets: { parJour: 5 },
+
     // « Wide Mine » : une seule très grande mine, à la profondeur du record du joueur.
     // Un bouton « Déplacer » (au-dessus des outils) écarte l'interface pour faire glisser la mine.
     mineLarge: {
@@ -1551,7 +1555,6 @@ window.CONFIG = {
     // L'énergie de la mine principale n'est pas touchée. Pas de bombe, de radar ni de potion dans le labyrinthe.
     labyrinthe: {
       nom: "Labyrinthe",
-      ticketsParJour: 3,       // Tickets gratuits par jour (pas de cumul : remis à ce nombre à minuit)
       energieTicket: 60,       // énergie d'une partie
       taille: [9, 11],         // colonnes × rangées de la 1re grille (nombres impairs)
       rangeesEnPlusTous: 3,    // la grille gagne 2 rangées toutes les N grilles…
@@ -1572,7 +1575,6 @@ window.CONFIG = {
     // Après la dernière récompense de la liste, la jauge repart à zéro et la liste recommence.
     quartzRush: {
       nom: "Quartz Rush",
-      ticketsParJour: 3,       // Tickets gratuits par jour (pas de cumul : remis à ce nombre à minuit)
       duree: 60,               // durée d'une partie, en secondes
       taille: [6, 6],          // colonnes × rangées d'une grille
       partPierre: 0.3,         // part des cases en pierre simple (ne donne rien)
@@ -1590,6 +1592,22 @@ window.CONFIG = {
         { cles: { argent: 1 } },
       ],
       texte: "Casse un maximum de quartz en une minute ! Le chrono part au premier coup.",
+    },
+
+    // « Gros caillou » : un énorme caillou avec beaucoup de vie. Les dégâts sont gardés d'une partie à l'autre.
+    // 1 Ticket = une barre d'énergie pleine, à part (1 coup de pioche = 1 énergie). Les dégâts d'un coup sont ceux
+    // de la pioche du joueur (équipement compris, coups critiques aussi). Quand il casse : la récompense, et
+    // l'événement est terminé.
+    grosCaillou: {
+      nom: "Gros caillou",
+      energieTicket: 60,       // énergie donnée par un Ticket
+      pv: 15000,               // points de vie du caillou (un coup de pioche de départ fait 10)
+      // Récompense quand il casse. pieces, gemmes (perles), cles: { bois / argent / or / etoile: nombre }
+      recompense: { pieces: 5000, gemmes: 50, cles: { or: 1 } },
+      // Point faible : à chaque coup, une chance qu'il apparaisse sur le caillou (un seul à la fois).
+      // Le frapper fait un coup critique (dégâts × 2). Il disparaît s'il n'est pas frappé à temps.
+      pointFaible: { chance: 0.2, duree: 2.5 },   // chance par coup ; secondes avant qu'il disparaisse
+      texte: "Un énorme caillou bloque la galerie. Chaque coup compte : ses dégâts sont gardés jusqu'à ce qu'il casse !",
     },
   },
 

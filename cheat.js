@@ -5,7 +5,8 @@
 (() => {
   const M = window.__mine;
   if (!M) return;
-  const KEY = 'mine-tresors-v3', BACKUP = 'mine-tresors-backup', INF = 'mine-cheat-energie';
+  const KEY = M.SAVE_KEY || 'mine-tresors-v4',   // same key as the game (it changes when old saves must start over)
+    BACKUP = 'mine-tresors-backup', INF = 'mine-cheat-energie';
   const PF = M.CFG.pets.fees, PC = M.CFG.pets.categories;
 
   /* ---------- Style ---------- */
@@ -64,6 +65,7 @@
       'prime', 'museeRetour', 'ascenseur', 'forge', 'atelier', 'eq-premier', 'sacBoutique', 'sacAcheter', 'objectifs', 'guideFin']) s.tutoSeen[k] = true;
     for (const r of guide.retours) s.tutoSeen['retour-' + r] = s.tutoSeen['redescendre-' + r] = true;
     for (let l = 1; l <= guide.fin; l++) s.tutoSeen[l] = s.guarDone[l] = true;
+    s.ftueDone = s.ftueDone || {}; for (const l of Object.keys((M.CFG.progression.ftue || {}).niveaux || {})) s.ftueDone[l] = true;   // the hand-written levels 1-5
     for (const k of ['museum', 'forge', 'atelier', 'shop']) s.buildings[k] = s.tutoSeen['bld-' + k] = true;
     s.bldNew = {}; s.newBuildings = [];
     s.introDone = true; s.bagSeen = true; s.guideBack = guide.fin;
@@ -259,10 +261,15 @@
       hwDone(`Jour ${d}, ${h} h`);
     },
     hwRealClock() { localStorage.removeItem(M.hw.CLOCK_KEY); hwDone('Vraie date et vraie heure'); },
-    qrTickets() { M.qr.refresh(); M.qr.state().free += 3; M.save(); msg('+3 Tickets Quartz Rush'); },
+    gcTickets() { M.evTk().free += 3; M.save(); M.gc.render(); msg('+3 Tickets (pour tous les événements)'); },
+    gcEnergy() { M.gc.state().energy = M.CFG.evenements.grosCaillou.energieTicket; M.save(); M.gc.render(); msg('Énergie du Gros caillou pleine'); },
+    gcHalf() { const r = M.gc.state(); if (r.done) return msg('Déjà cassé'); r.hp = Math.max(1, r.hp - Math.round(r.max * .25)); M.save(); M.gc.render(); msg('-25 % de vie'); },
+    gcAlmost() { const r = M.gc.state(); if (r.done) return msg('Déjà cassé'); r.hp = 1; M.save(); M.gc.render(); msg('Plus que 1 point de vie'); },
+    gcReset() { M.gc.reset(); M.save(); M.gc.render(); msg('Gros caillou remis à neuf'); },
+    qrTickets() { M.evTk().free += 3; M.save(); msg('+3 Tickets (pour tous les événements)'); },
     qrEnd() { close(); if (!M.qr.finish()) msg('Pas dans un Quartz Rush'); },
     qrAdd() { M.qr.state().total = (M.qr.state().total || 0) + 100; M.save(); msg('+100 quartz dans la jauge (sans les récompenses)'); },
-    labTickets() { M.lab.refresh(); M.lab.state().free += 3; M.save(); msg('+3 Tickets Labyrinthe'); },
+    labTickets() { M.evTk().free += 3; M.save(); msg('+3 Tickets (pour tous les événements)'); },
     labExit() { if (!M.lab.exit()) return msg('Pas dans le Labyrinthe (ou sortie sans couloir à côté)'); close(); },
     hwFree() { M.hw.refresh(); S().hallo.free += 3; hwDone('+3 Tickets gratuits (perdus à minuit)'); },
     hwPaid() { S().hallo.paid += 3; hwDone('+3 Tickets achetés (gardés jusqu\'à la fin)'); },
@@ -317,7 +324,7 @@
   const CATS = [
     ['niveaux', '⛏️', 'Niveaux et mine'], ['pionniers', '🍀', 'Mine des pionniers'], ['ressources', '💰', 'Ressources'],
     ['mineur', '⭐', 'Mineur et Autel'], ['profil', '🪪', 'Profil'], ['equipement', '🛡️', 'Équipement'], ['fees', '🧚', 'Fées'], ['geodes', '💎', 'Géodes'],
-    ['sac', '🎒', 'Sac et Musée'], ['marees', '🌊', 'Grotte des Marées'], ...(M.hw ? [['hantee', '🎃', 'Mine Hantée']] : []), ...(M.lab ? [['labyrinthe', '🌀', 'Labyrinthe']] : []), ...(M.qr ? [['quartz', '💜', 'Quartz Rush']] : []), ['partie', '💾', 'Partie'],
+    ['sac', '🎒', 'Sac et Musée'], ['marees', '🌊', 'Grotte des Marées'], ...(M.hw ? [['hantee', '🎃', 'Mine Hantée']] : []), ...(M.lab ? [['labyrinthe', '🌀', 'Labyrinthe']] : []), ...(M.qr ? [['quartz', '💜', 'Quartz Rush']] : []), ...(M.gc ? [['caillou', '🪨', 'Gros caillou']] : []), ['partie', '💾', 'Partie'],
   ];
   panel.innerHTML = `<div class="cp" role="dialog" aria-label="Menu cheat">
     <h2><button class="x" data-c="home" id="cheatBack" aria-label="Retour" hidden>‹</button><span id="cheatTitle">Menu cheat</span>
@@ -356,9 +363,19 @@
     <p class="note">Niveaux de la mine 2 dans « Aller à ce niveau » : ajoute 100 (niveau 15 de la mine 2 = 115).</p>
     </div>
 
+    ${M.gc ? `<div class="cat" data-cat="caillou" hidden>
+    <div class="row">
+      <button data-c="gcTickets">+3 Tickets</button>
+      <button data-c="gcEnergy">Énergie pleine</button>
+      <button data-c="gcHalf">-25 % de vie</button>
+      <button data-c="gcAlmost">Plus que 1 point de vie</button>
+      <button data-c="gcReset">Remettre le caillou à neuf</button>
+    </div>
+    </div>` : ''}
+
     ${M.qr ? `<div class="cat" data-cat="quartz" hidden>
     <div class="row">
-      <button data-c="qrTickets">+3 Tickets Quartz Rush</button>
+      <button data-c="qrTickets">+3 Tickets</button>
       <button data-c="qrEnd">Finir la partie maintenant</button>
       <button data-c="qrAdd">+100 quartz dans la jauge</button>
     </div>
@@ -366,7 +383,7 @@
 
     ${M.lab ? `<div class="cat" data-cat="labyrinthe" hidden>
     <div class="row">
-      <button data-c="labTickets">+3 Tickets Labyrinthe</button>
+      <button data-c="labTickets">+3 Tickets</button>
       <button data-c="labExit">Atteindre la sortie</button>
     </div>
     </div>` : ''}

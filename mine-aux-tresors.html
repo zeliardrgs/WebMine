@@ -2096,6 +2096,50 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 #depthChip.qr-hurry #depth{color:#ff6b6b; animation:qrPulse .5s ease-in-out infinite alternate}
 @keyframes qrPulse{to{transform:scale(1.12)}}
 .slot.qr-slot img{width:80%; height:80%; object-fit:contain}
+/* Gros caillou (config.js > evenements > grosCaillou): its own screen, one huge rock */
+#scr-rock{--u:calc(min(100vw, 480px) / 100); position:fixed; inset:0; max-width:none; height:auto; padding:0; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 45%, #6a5a7e, #2a2236 70%); display:flex; flex-direction:column; align-items:center}
+#scr-rock .pets-head{align-self:stretch}
+.wallet-bar .res.tk-res img{width:calc(var(--u) * 6.4); height:calc(var(--u) * 5.7); object-fit:contain}
+.gc-title{margin:calc(var(--u) * 2) 0 0; font-family:var(--font-display); font-size:calc(var(--u) * 9); color:#fff; -webkit-text-stroke:calc(var(--u) * 1.6) var(--outline); paint-order:stroke fill}
+.gc-hp{width:calc(var(--u) * 84); margin-top:calc(var(--u) * 3)}
+.gc-bar{position:relative; height:calc(var(--u) * 7); border:calc(var(--u) * .7) solid var(--outline); border-radius:calc(var(--u) * 4); background:#3a2e48; overflow:hidden}
+.gc-bar i{position:absolute; left:0; top:0; bottom:0; background:linear-gradient(#ff8a7a, #e0413a); box-shadow:inset 0 calc(var(--u) * -1) 0 rgba(0,0,0,.2); transition:width .25s}
+.gc-bar.en i{background:linear-gradient(#7fd6ff, #2f8fe0)}
+.gc-bar span{position:relative; display:block; text-align:center; line-height:calc(var(--u) * 5.6); font-family:var(--font-display); font-size:calc(var(--u) * 4); color:#fff; -webkit-text-stroke:calc(var(--u) * .9) var(--outline); paint-order:stroke fill; font-variant-numeric:tabular-nums}
+.gc-stage{position:relative; flex:1; width:100%; display:grid; place-items:center; min-height:0}
+.gc-rock{position:relative; width:calc(var(--u) * 78); aspect-ratio:134 / 152; padding:0; border:0; background:none; cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+  filter:drop-shadow(0 calc(var(--u) * 3) 0 rgba(0,0,0,.35))}
+.gc-rock img{width:100%; height:100%; pointer-events:none; user-select:none}
+.gc-rock.hit{animation:gcHit .22s ease-out}
+@keyframes gcHit{30%{transform:scale(.95) rotate(-1.5deg)} 60%{transform:scale(1.02) rotate(1deg)}}
+.gc-cracks{position:absolute; left:0; right:0; top:0; height:88%; pointer-events:none; background:no-repeat center / 90% 90%}
+.gc-rock[data-crack="1"] .gc-cracks{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M30 20 L42 38 L36 52' stroke='%232a2236' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")}
+.gc-rock[data-crack="2"] .gc-cracks{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M30 20 L42 38 L36 52 L48 64 M70 26 L60 44 L72 58' stroke='%232a2236' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")}
+.gc-rock[data-crack="3"] .gc-cracks{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M30 20 L42 38 L36 52 L48 64 L44 82 M70 26 L60 44 L72 58 L64 74 M48 64 L60 70 M20 56 L34 60' stroke='%232a2236' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")}
+.gc-weak{position:absolute; z-index:2; width:calc(var(--u) * 17); aspect-ratio:1; transform:translate(-50%,-50%); border-radius:50%;
+  background:radial-gradient(circle, #fff6c4 0 18%, #ffd23d 19% 34%, #ff8a1e 35% 46%, transparent 47%); filter:drop-shadow(0 0 calc(var(--u) * 2) #ffd23d)}
+.gc-weak.on{animation:gcWeakIn .25s cubic-bezier(.3,1.6,.5,1), gcWeakBeat .6s ease-in-out .25s infinite alternate}
+.gc-weak i{position:absolute; inset:0; border-radius:50%; border:calc(var(--u) * .9) solid #fff6c4; box-shadow:0 0 calc(var(--u) * 1.5) #ffd23d}
+.gc-weak.on i{animation:gcWeakRing var(--gc-weak, 2.5s) linear forwards}
+@keyframes gcWeakIn{from{transform:translate(-50%,-50%) scale(0)}}
+@keyframes gcWeakBeat{to{transform:translate(-50%,-50%) scale(1.12)}}
+@keyframes gcWeakRing{from{transform:scale(1.9); opacity:.9} to{transform:scale(.55); opacity:.2}}
+.gc-rubble{display:flex; align-items:flex-end; gap:calc(var(--u) * 2)}
+.gc-rubble img{width:calc(var(--u) * 22)} .gc-rubble img:nth-child(2){width:calc(var(--u) * 16)} .gc-rubble img:nth-child(3){width:calc(var(--u) * 19)}
+.gc-fx{position:absolute; inset:0; pointer-events:none; overflow:visible}
+.gc-chip{position:absolute; border-radius:30%; border:2px solid #2a2236}
+.gc-dmg{position:absolute; font-family:var(--font-display); font-size:calc(var(--u) * 7); color:#fff; -webkit-text-stroke:calc(var(--u) * 1.3) var(--outline); paint-order:stroke fill; white-space:nowrap}
+.gc-dmg.crit{color:#ffb13b; font-size:calc(var(--u) * 9)}
+.gc-energy{display:flex; align-items:center; gap:calc(var(--u) * 2); width:calc(var(--u) * 70)}
+.gc-energy img{width:calc(var(--u) * 10)} .gc-energy .gc-bar{flex:1}
+.gc-ticket{margin-top:calc(var(--u) * 3); width:calc(var(--u) * 70)}
+.gc-ticket[disabled]{filter:grayscale(1); opacity:.7}
+.gc-note{min-height:calc(var(--u) * 10); margin:calc(var(--u) * 2) calc(var(--u) * 8) calc(env(safe-area-inset-bottom, 0px) + var(--u) * 22); text-align:center; font-weight:800; font-size:calc(var(--u) * 3.6); color:#fff}
+.pm-hero.gc-ev{background:linear-gradient(135deg, #9aa6c8, #5b6488 55%, #2a2f48); box-shadow:0 5px 0 #1a1d30, 0 10px 22px rgba(0,0,0,.35)}
+.gc-mini{margin:6px 0 10px}
+.gc-mini .gc-bar{height:22px; border-width:3px; border-radius:12px}
+.gc-mini .gc-bar span{line-height:16px; font-size:12px; -webkit-text-stroke:3px var(--outline)}
 .pm-hero.qr-ev{background:linear-gradient(135deg, #e48cff, #8a3fc4 55%, #3a1660); box-shadow:0 5px 0 #24103e, 0 10px 22px rgba(0,0,0,.35)}
 .qr-gauge{position:relative; margin:10px 6px 30px}
 .qr-bar{height:16px; border-radius:10px; background:rgba(0,0,0,.28); box-shadow:inset 0 2px 0 rgba(0,0,0,.25); overflow:hidden}
@@ -2260,7 +2304,7 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 </div>
 
 <div class="screen menu" id="scr-events" hidden>
-  <header class="scr-head"><h1>Événements</h1><div class="wallet-bar" data-money></div></header>
+  <header class="scr-head"><h1>Événements</h1><div class="wallet-bar" data-money data-tk></div></header>
   <div id="eventsBody" class="pm-body"></div>
 </div>
 
@@ -2302,6 +2346,20 @@ body.nav-on #scr-lift{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
   <div class="al-runes" id="altarRunes"></div>
 </div>
 
+<div class="screen" id="scr-rock" hidden>
+  <header class="pets-head"><div class="wallet-bar" data-money data-tk></div></header>
+  <h1 class="gc-title" id="gcTitle">Gros caillou</h1>
+  <div class="gc-hp"><div class="gc-bar"><i id="gcHpFill"></i><span id="gcHpTxt"></span></div></div>
+  <div class="gc-stage">
+    <button class="gc-rock" id="gcRock" aria-label="Taper le caillou"><img id="gcImg" src="Assets/Ground/Ground_Stone_01.png" alt="" draggable="false"><span class="gc-cracks"></span><span class="gc-weak" id="gcWeak" hidden><i></i></span></button>
+    <div class="gc-rubble" id="gcRubble" hidden><img src="Assets/Ground/Ground_Stone_03.png" alt="" draggable="false"><img src="Assets/Ground/Ground_Stone_03.png" alt="" draggable="false"><img src="Assets/Ground/Ground_Stone_02.png" alt="" draggable="false"></div>
+    <div class="gc-fx" id="gcFx"></div>
+  </div>
+  <div class="gc-energy" id="gcEnergy"><img src="Assets/UI/Energy_Yellow.png" alt="" draggable="false"><div class="gc-bar en"><i id="gcEnFill"></i><span id="gcEnTxt"></span></div></div>
+  <button class="btn big gc-ticket" id="gcTicket" hidden>Utiliser un Ticket</button>
+  <p class="gc-note" id="gcNote"></p>
+  <button class="back back-red pets-back" data-go="events" aria-label="Retour"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16 L15 5 V11 H28 V21 H15 V27 Z" fill="#fff" stroke="#1d1a2b" stroke-width="2.6" stroke-linejoin="round"/></svg></button>
+</div>
 <div class="screen" id="scr-pets" hidden>
   <header class="pets-head"><div class="wallet-bar" data-money></div></header>
   <div class="pets-field" id="petsField"></div>
@@ -5574,10 +5632,10 @@ const keysWallet = () => gearOpen() ? CHESTS.filter(k => G().keys[k] > 0).map(k 
 // The [data-money] bars follow the coins and pearls as they change
 let lastMoney = '';
 function paintMoney() {
-  const k = S.coins + '|' + G().gems + '|' + moneyHold.coins + '|' + moneyHold.gems;
+  const k = S.coins + '|' + G().gems + '|' + moneyHold.coins + '|' + moneyHold.gems + '|' + (S.evTk ? S.evTk.free : '');
   if (k === lastMoney) return;
   lastMoney = k; const h = moneyHTML();
-  document.querySelectorAll('[data-money]').forEach(el => { el.innerHTML = h; });
+  document.querySelectorAll('[data-money]').forEach(el => { el.innerHTML = (el.hasAttribute('data-tk') ? TK_RES() : '') + h; });   // (event screens: the tickets first)
 }
 // Tutorial of the first chest: open it, equip the pickaxe, look at it on the miner, level it up
 function gearCoach() {
@@ -5595,7 +5653,7 @@ function gearCoach() {
 }
 
 /* ---------- Screens ---------- */
-const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets', 'missions', 'haunt', 'profile'];
+const SCREENS = ['village', 'mine', 'museum', 'shop', 'atelier', 'hero', 'premium', 'events', 'progress', 'altar', 'lift', 'pets', 'missions', 'haunt', 'profile', 'rock'];
 function go(name) {
   // One Shop page with sub-tabs: the bottom-bar tab opens it on the chests, the village building on the articles
   // (or on the chests while the tutorial's free chest waits)
@@ -5608,7 +5666,7 @@ function go(name) {
   if (name !== 'atelier') stopMini();
   if (name !== 'pets') stopPets();
   if (S.bldNew && S.bldNew[name]) delete S.bldNew[name];
-  ({ village: renderVillage, museum: () => { muView = 0; renderMuseum(); }, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals, haunt: renderHaunt, profile: renderProfile })[name]();
+  ({ village: renderVillage, museum: () => { muView = 0; renderMuseum(); }, shop: renderShopScreen, atelier: renderAtelier, mine: enterMine, hero: renderHero, premium: renderPremium, events: renderEvents, progress: renderProg, altar: renderAltar, lift: renderLift, pets: renderPets, missions: renderGoals, haunt: renderHaunt, profile: renderProfile, rock: renderRock })[name]();
   updateNav(name);
   const scr = $('scr-' + name); if (scr) scr.scrollTop = 0;
   save();
@@ -5693,6 +5751,15 @@ function renderPremium() {
     <h2 class="pm-h">${tr('Avantages')}</h2>
     <div class="pm-row"><div class="sic">${img('Assets/UI/Bag.png')}</div><div class="stxt"><b>${tr('Pass du mineur')}</b><span>${tr('Des récompenses en plus à chaque palier de niveaux.')}</span></div>${SOON_BTN('sm')}</div>`;
 }
+/* Event tickets (config.js > evenements > tickets): one stock for every event (Gros caillou, Quartz Rush, Labyrinthe),
+   given each day (no carry-over: back to "parJour" at midnight). Its counter sits next to the pearls. */
+const EVT = (CFG.evenements || {}).tickets || { parJour: 5 };
+function evTk() {
+  const T = S.evTk || (S.evTk = { free: 0, day: '' });
+  if (T.day !== today()) { T.day = today(); T.free = EVT.parJour; }
+  return T;
+}
+const TK_RES = () => `<span class="res tk-res" data-cur="tickets" title="${tr('Tickets')}"><img src="Assets/UI/Icon_Ticket.svg" alt="" draggable="false">${evTk().free}</span>`;
 function renderEvents() {
   const ev = (icon, title, text) => `<div class="pm-row"><div class="sic">${icon}</div><div class="stxt"><b>${title}</b><span>${text}</span></div>${SOON_BTN('sm')}</div>`;
   $('eventsBody').innerHTML = `<p class="pm-note">${tr('Des événements limités dans le temps, avec des récompenses spéciales.')}</p>
@@ -5700,15 +5767,20 @@ function renderEvents() {
       <span class="pm-tag">${tr('Halloween')} · ${tr('Fin dans {t}', { t: hwDur(hwEnd() - hwNow()) })}</span>
       <div class="pm-txt"><b>${tr(HW.nom)}</b><p>${tr(HW.textes.intro)}</p></div>
       <button class="btn big" data-go="haunt">${tr('Entrer')}</button></div>` : ''}
+    ${GC ? `<div class="pm-hero ev gc-ev"><span class="pm-art">${img(GC_IMG[0])}</span>
+      <span class="pm-tag">${gcState().done ? tr('Terminé') : tr('Tous les jours')}</span>
+      <div class="pm-txt"><b>${tr(GC.nom)}</b><p>${tr('Un énorme caillou plein de vie. Tes dégâts sont gardés : reviens chaque jour jusqu\'à le casser !')}</p></div>
+      <div class="gc-mini"><div class="gc-bar"><i style="width:${Math.max(0, gcState().hp) / gcState().max * 100}%"></i><span>${gcState().done ? tr('Cassé !') : `${nfmt(Math.max(0, gcState().hp))} / ${nfmt(gcState().max)}`}</span></div></div>
+      <button class="btn big" data-rock${gcState().done || (gcState().energy <= 0 && evTk().free <= 0) ? ' disabled' : ''}>${gcState().done ? tr('Terminé') : gcState().energy > 0 || evTk().free > 0 ? tr('Taper') : tr('Reviens demain')}</button></div>` : ''}
     ${QR ? `<div class="pm-hero ev qr-ev"><span class="pm-art">${img(QR_IMG)}</span>
-      <span class="pm-tag">${tr('Tous les jours')} · ${tr(plural(qrRefresh().free, '{n} Ticket', '{n} Tickets'), { n: qrRefresh().free })}</span>
+      <span class="pm-tag">${tr('Tous les jours')}</span>
       <div class="pm-txt"><b>${tr(QR.nom)}</b><p>${tr('Une minute pour casser un maximum de quartz ! Le quartz remplit une jauge pleine de récompenses.')}</p></div>
       <div class="qr-gauge mini" id="qrEvGauge"></div>
-      <button class="btn big" data-qrush${qrRefresh().free > 0 ? '' : ' disabled'}>${qrRefresh().free > 0 ? tr('Jouer') : tr('Reviens demain')}</button></div>` : ''}
+      <button class="btn big" data-qrush${evTk().free > 0 ? '' : ' disabled'}>${evTk().free > 0 ? tr('Jouer') : tr('Reviens demain')}</button></div>` : ''}
     ${LAB ? `<div class="pm-hero ev lab-ev"><span class="pm-art">${LAB_ICON}</span>
-      <span class="pm-tag">${tr('Tous les jours')} · ${tr(plural(labRefresh().free, '{n} Ticket', '{n} Tickets'), { n: labRefresh().free })}</span>
+      <span class="pm-tag">${tr('Tous les jours')}</span>
       <div class="pm-txt"><b>${tr(LAB.nom)}</b><p>${tr('Un labyrinthe dans le noir : casse les tuiles pour trouver ton chemin jusqu\'à la sortie, et ramasse les minerais en route.')}</p></div>
-      <button class="btn big" data-maze${labRefresh().free > 0 ? '' : ' disabled'}>${labRefresh().free > 0 ? tr('Jouer') : tr('Reviens demain')}</button></div>` : ''}
+      <button class="btn big" data-maze${evTk().free > 0 ? '' : ' disabled'}>${evTk().free > 0 ? tr('Jouer') : tr('Reviens demain')}</button></div>` : ''}
     <div class="pm-hero ev wide-ev"><span class="pm-art">${img('Assets/UI/Icon_Mine.png')}</span>
       <span class="pm-tag">${tr('En ce moment')}</span>
       <div class="pm-txt"><b>${tr(WIDE.nom)}</b><p>${tr('Une mine immense de {n} × {n} cases, pleine de trésors. Fais-la glisser avec le bouton Déplacer.', { n: WIDE.taille })}</p></div>
@@ -5824,7 +5896,6 @@ const LAB_KEEP = [...WIDE_KEEP, 'energy', 'nextRegen', 'bucketCharges', 'bucketR
 const labState = () => S.lab || (S.lab = { free: 0, day: '', best: 0 });
 function labRefresh() {
   const L = labState();
-  if (L.day !== today()) { L.day = today(); L.free = LAB.ticketsParJour; }
   return L;
 }
 const labResist = n => LAB.resistanceDepart + LAB.resistanceParPalier * Math.floor((n - 1) / (LAB.palier || 1e9));
@@ -5836,8 +5907,8 @@ function startMaze() {
   if (!LAB) return;
   if (S.maze) return go('mine');
   const L = labRefresh();
-  if (L.free <= 0) { sfx('deny'); return toast(tr('Plus de Tickets pour aujourd\'hui. Reviens demain !'), ''); }
-  L.free--;
+  if (evTk().free <= 0) { sfx('deny'); return toast(tr('Plus de Tickets pour aujourd\'hui. Reviens demain !'), ''); }
+  evTk().free--;
   S.mazeBack = Object.fromEntries(LAB_KEEP.map(k => [k, S[k]]));
   S.maze = true; S.level = 1; S.rewardMsg = null; bagQueue.length = 0;
   S.energy = maxE(); S.bucketReady = 0; S.bucketCharges = maxCharges(); updateEnergy(true);
@@ -5933,7 +6004,6 @@ const qrIcon = () => img(QR_IMG, tr('quartz'));
 const qrState = () => S.qr || (S.qr = { free: 0, day: '', total: 0, best: 0 });
 function qrRefresh() {
   const Q = qrState();
-  if (Q.day !== today()) { Q.day = today(); Q.free = QR.ticketsParJour; }
   return Q;
 }
 const qrCycle = () => QR.palier * QR.recompenses.length;
@@ -5943,8 +6013,8 @@ function startRush() {
   if (!QR) return;
   if (S.qrush) return go('mine');
   const Q = qrRefresh();
-  if (Q.free <= 0) { sfx('deny'); return toast(tr('Plus de Tickets pour aujourd\'hui. Reviens demain !'), ''); }
-  Q.free--;
+  if (evTk().free <= 0) { sfx('deny'); return toast(tr('Plus de Tickets pour aujourd\'hui. Reviens demain !'), ''); }
+  evTk().free--;
   S.qrBack = Object.fromEntries(LAB_KEEP.map(k => [k, S[k]]));
   delete S.tutoSeen['qr-intro'];   // the rules are shown at the start of every run
   S.qrush = true; S.level = 1; S.qrGot = 0; S.qrEnd = 0; S.rewardMsg = null; bagQueue.length = 0;
@@ -6030,6 +6100,112 @@ function qrGauge(el, from, to) {
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-qrush]')) return;
   unlockAudio(); sfx('pick'); startRush();
+});
+
+/* ---------- Event « Gros caillou » (config.js > evenements > grosCaillou) ----------
+   One huge rock with a lot of life, on its own screen. Its damage is saved after every hit, so it ends up broken.
+   1 ticket = a full bar of the event's own energy; 1 pickaxe hit = 1 energy, with the player's pickaxe damage.
+   Broken: its reward, and the event is over. */
+const GC = (CFG.evenements || {}).grosCaillou || null;
+const GC_IMG = ['Assets/Ground/Ground_Stone_01.png', 'Assets/Ground/Ground_Stone_02.png', 'Assets/Ground/Ground_Stone_03.png'];
+const gcState = () => S.rock || (S.rock = { hp: GC.pv, max: GC.pv, energy: 0, free: 0, day: '', done: false });
+function gcRefresh() {
+  const R = gcState();
+  return R;
+}
+function renderRock() {
+  if ($('scr-rock').hidden) gcWeakHide();
+  const R = gcRefresh(), f = Math.max(0, R.hp) / R.max;
+  $('gcTitle').textContent = tr(GC.nom);
+  $('gcHpFill').style.width = f * 100 + '%';
+  $('gcHpTxt').textContent = R.done ? tr('Cassé !') : `${nfmt(Math.max(0, R.hp))} / ${nfmt(R.max)}`;
+  $('gcEnFill').style.width = Math.min(100, R.energy / GC.energieTicket * 100) + '%';
+  $('gcEnTxt').textContent = `${R.energy} / ${GC.energieTicket}`;
+  $('gcImg').src = GC_IMG[f > 2 / 3 ? 0 : f > 1 / 3 ? 1 : 2];
+  $('gcRock').hidden = R.done; $('gcRubble').hidden = !R.done;
+  $('gcRock').dataset.crack = f > .75 ? 0 : f > .5 ? 1 : f > .25 ? 2 : 3;
+  const need = !R.done && R.energy <= 0;
+  $('gcTicket').hidden = !need; $('gcTicket').disabled = evTk().free <= 0;
+  $('gcTicket').textContent = evTk().free > 0 ? tr('Utiliser un Ticket ({n})', { n: evTk().free }) : tr('Plus de Tickets : reviens demain');
+  $('gcNote').textContent = R.done ? tr('Bravo, le Gros caillou est cassé ! L\'événement est terminé.') : need ? '' : tr(GC.texte);
+  $('gcEnergy').hidden = R.done;
+}
+const nfmt = n => Math.round(n).toLocaleString(LANG === 'en' ? 'en-US' : 'fr-FR');
+function gcFx(x, y, dmg, crit) {
+  const fxl = $('gcFx');
+  for (let k = 0; k < (crit ? 14 : 8); k++) {
+    const d = document.createElement('i'), a = Math.random() * Math.PI * 2, r = 40 + Math.random() * 70, sz = 6 + Math.random() * 10;
+    d.className = 'gc-chip'; Object.assign(d.style, { left: x + 'px', top: y + 'px', width: sz + 'px', height: sz + 'px', background: ['#8e9ac0', '#6b7699', '#4d5577', '#c9d0e6'][k % 4] });
+    fxl.append(d);
+    d.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * r}px), calc(-50% + ${Math.sin(a) * r + 40}px)) rotate(${a * 200}deg)`, opacity: 0 }], { duration: 650, easing: 'cubic-bezier(.2,.7,.4,1)' }).onfinish = () => d.remove();
+  }
+  const t = document.createElement('b'); t.className = 'gc-dmg' + (crit ? ' crit' : ''); t.textContent = '-' + nfmt(dmg);
+  Object.assign(t.style, { left: x + 'px', top: y + 'px' }); fxl.append(t);
+  t.animate([{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 0 }, { transform: 'translate(-50%,-120%) scale(1.1)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-220%) scale(1)', opacity: 0 }], { duration: 900, easing: 'ease-out' }).onfinish = () => t.remove();
+}
+$('gcRock').addEventListener('pointerdown', e => {
+  const R = gcState(); unlockAudio();
+  if (R.done) return;
+  if (R.energy <= 0) { sfx('deny'); return toast(evTk().free > 0 ? tr('Plus d\'énergie : utilise un Ticket.') : tr('Plus d\'énergie. Reviens demain avec de nouveaux Tickets !'), ''); }
+  R.energy--;
+  // A weak point hit: always a critical hit (× 2); otherwise the pickaxe's own critical chance
+  const weak = !$('gcWeak').hidden && !!e.target.closest('.gc-weak');
+  const T = gearTotals(); let dmg = pickPower(), crit = weak || Math.random() < (T.crit || 0);
+  if (crit) dmg *= 2;
+  if (weak) gcWeakHide(); else gcWeakRoll();
+  R.hp = Math.max(0, R.hp - dmg);
+  const st = $('gcFx').getBoundingClientRect();
+  gcFx(e.clientX - st.left, e.clientY - st.top, dmg, crit);
+  const rk = $('gcRock'); rk.classList.remove('hit'); void rk.offsetWidth; rk.classList.add('hit');
+  if (R.hp <= 0) return gcBreak();
+  sfx(crit ? 'break' : 'hit');
+  if (crit) toast(weak ? tr('Point faible ! Coup critique !') : tr('Coup critique !'), 'good');
+  renderRock(); save();
+});
+/* Weak point (config.js > evenements > grosCaillou > pointFaible): sometimes shows after a hit, somewhere on the
+   rock's face; hitting it is a critical hit. It goes away after a few seconds (its ring shrinks meanwhile). */
+const GC_WEAK = (GC && GC.pointFaible) || { chance: 0, duree: 2.5 };
+let gcWeakT = 0;
+function gcWeakRoll() {
+  if (!$('gcWeak').hidden || Math.random() >= GC_WEAK.chance) return;
+  const w = $('gcWeak');
+  Object.assign(w.style, { left: rand(22, 78) + '%', top: rand(18, 66) + '%' }); w.style.setProperty('--gc-weak', GC_WEAK.duree + 's');
+  w.hidden = false; w.classList.remove('on'); void w.offsetWidth; w.classList.add('on');
+  clearTimeout(gcWeakT); gcWeakT = setTimeout(gcWeakHide, GC_WEAK.duree * 1000);
+}
+function gcWeakHide() { clearTimeout(gcWeakT); $('gcWeak').hidden = true; }
+function gcBreak() {
+  const R = gcState(), r = GC.recompense;
+  R.done = true; R.energy = 0; gcWeakHide(); sfx('boom'); setTimeout(() => sfx('win'), 300);
+  const st = $('gcFx').getBoundingClientRect();
+  for (let k = 0; k < 4; k++) setTimeout(() => gcFx(st.width * (.3 + Math.random() * .4), st.height * (.3 + Math.random() * .4), 0, true), k * 90);
+  $('gcFx').querySelectorAll('.gc-dmg').forEach(t => t.remove());
+  S.coins += r.pieces || 0; G().gems += r.gemmes || 0;
+  for (const [c, n] of Object.entries(r.cles || {})) G().keys[c] = (G().keys[c] || 0) + n;
+  refreshGear(); renderRock(); save();
+  setTimeout(() => {
+    $('dayDoneTitle').textContent = tr('Gros caillou cassé !');
+    $('dayDoneArt').innerHTML = giftHTML(dayGift(r));
+    $('dayDoneRw').innerHTML = rwChips(r);
+    $('dayDoneModal').hidden = false;
+  }, 700);
+}
+// Entering: a ticket fills the energy (the only condition). With energy left from the last ticket, no new ticket is used.
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-rock]')) return;
+  const R = gcRefresh(); unlockAudio();
+  if (R.done) return;
+  if (R.energy <= 0) {
+    if (evTk().free <= 0) { sfx('deny'); return toast(tr('Plus de Tickets pour aujourd\'hui. Reviens demain !'), ''); }
+    evTk().free--; R.energy = GC.energieTicket; sfx('reward');
+  } else sfx('pick');
+  go('rock'); save();
+});
+$('gcTicket').addEventListener('click', () => {
+  const R = gcRefresh(); unlockAudio();
+  if (R.done || R.energy > 0 || evTk().free <= 0) return;
+  evTk().free--; R.energy = GC.energieTicket; sfx('reward');
+  renderRock(); save();
 });
 
 /* ---------- Event « La Mine Hantée » (config.js > mineHantee) ----------
@@ -8940,6 +9116,8 @@ function setCheats(on) {
 }
 function loadCheats() {
   window.__mine = {
+    SAVE_KEY: KEY,
+    evTk: () => evTk(),   // the event tickets (shared by every event)   // the save's localStorage key (the cheat menu writes the save under it)
     get S() { return S; }, CFG, GEODES, GEMS, ARTS, SETS, RUNES, SCREENS, CHECKPOINTS,
     genLevel, buildBoard, go, save, toast, paintTile, checkRewards, maxE, bagCap, gainXP, plInfo, renderVillage,
     updateBombs, updateQuick, updateBadge, updateEnergy,
@@ -8949,6 +9127,8 @@ function loadCheats() {
     etType: level => ET && etType(level), etInfo: level => ET && etInfo(level), etOn: level => ET && etOn(level),
     // Étage Lucky (cheat « Étage Lucky maintenant »): turns the current level into one
     makeLucky() { if (!ET || !etOn(S.level)) return false; S.luckyAt = S.level; S.lastLucky = S.level; genLevel(S.level); buildBoard(true); go('mine'); luckyArrive(); save(); return true; },
+    // Gros caillou (cheat menu): tickets, damage, back to a whole rock
+    gc: GC && { refresh: gcRefresh, state: gcState, render: () => { if (!$('scr-rock').hidden) renderRock(); }, reset() { S.rock = null; gcRefresh(); } },
     // Quartz Rush (cheat menu): tickets, end the run now, quartz in the gauge
     qr: QR && { refresh: qrRefresh, state: qrState, start: startRush, finish() { if (!S.qrush) return false; S.qrEnd = Date.now(); qrFinish(); return true; } },
     // Labyrinth (cheat menu): tickets, and the exit reached at once
