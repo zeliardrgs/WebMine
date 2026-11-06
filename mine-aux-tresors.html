@@ -3228,10 +3228,13 @@ function genFtue(level, F) {
   setDims(cols, rows); S.cols = cols; S.rows = rows;
   S.tuto = isTuto(level) ? level : 0; S.ftype = 'respiration'; LV_HP = hpAt(level);
   const stone = () => ({ t: 'stone', hp: LV_HP.stone, max: LV_HP.stone });
+  // "#" = a decorative rock: part of the pattern, it can't be broken and costs no energy (so the energy of the first
+  // steps is always spent on the treasures: exactly 30 over levels 3 to 5)
+  const deco = () => ({ ...stone(), deco: true });
   const g = [], spots = {};
   F.grille.forEach((line, r) => [...line].forEach((ch, c) => {
     const i = r * cols + c;
-    g[i] = ch === '#' || (ch !== '.' && ch === ch.toUpperCase()) ? stone() : { t: 'dirt', v: randInt(0, 2) };
+    g[i] = ch === '#' ? deco() : ch !== '.' && ch === ch.toUpperCase() ? stone() : { t: 'dirt', v: randInt(0, 2) };
     if (ch !== '.' && ch !== '#') { const k = ch.toLowerCase(), b = spots[k] = spots[k] || { r, c, r2: r, c2: c }; b.r = Math.min(b.r, r); b.c = Math.min(b.c, c); b.r2 = Math.max(b.r2, r); b.c2 = Math.max(b.c2, c); }
   }));
   S.grid = g;
@@ -4267,6 +4270,7 @@ function act(p, isTap) {
   if (S.tool === 'pickaxe') {
     swing();
     if (c.t === 'dirt') return deny(i, tr('La terre part à la pelle, et c\'est gratuit !'), '');
+    if (c.deco) return deny(i, tr('Cette pierre ne cache rien : garde ton énergie !'), '');
     if (freeTap(i)) { breakCell(i); return oilTick(); }
     if (c.t === 'magma') {
       burst(x, y, ['#ffb13b', '#ff5b2e'], 5, { spread: 18 }); return deny(i, tr('Trop chaud ! Arrose le magma pour le refroidir d\'abord.'));
@@ -4586,7 +4590,7 @@ function clearCell(i) {
 // (a treasure left in the mine, or the bottom of the mine, keeps the "next level" button instead)
 function checkAutoNext() {
   if (!S.rewards || !S.rewards.length || S.level >= 1000 || hwBottom()) return;
-  if (!S.rewards.every(r => r.taken === true) || !S.grid.every(c => c.t === 'empty')) return;
+  if (!S.rewards.every(r => r.taken === true) || !S.grid.every(c => c.t === 'empty' || c.deco)) return;
   // The first full bag is handled by pickUp (tutorial: down one level, then the "Sac plein" popup)
   if (bagFull() && !S.tutoSeen.sacPlein) return;
   const gen = boardGen;

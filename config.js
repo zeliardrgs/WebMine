@@ -325,9 +325,9 @@ window.CONFIG = {
        en majuscule = sous la pierre). "tresors" : la lettre → l'artefact. Le coût en énergie de la pierre
        (3 coups par pierre avant le premier équipement) fait exactement 30 sur les niveaux 3 à 5. */
     ftue: {
-      // Des motifs faciles à retenir, dessinés avec de la pierre ("#"). Avant la pioche (niveaux 1 et 2), ces pierres
-      // ne se cassent pas : on creuse autour. Aux niveaux 3 et 4, casser les pierres du motif coûte de l'énergie pour rien :
-      // même en les cassant toutes (24 énergie), le joueur ne tombe jamais à 0 avant la fin du niveau 4.
+      // Des motifs faciles à retenir, dessinés avec des pierres de décor ("#") : elles ne se cassent pas et ne coûtent
+      // pas d'énergie (« Cette pierre ne cache rien »). Seules les pierres sur les trésors (lettres en majuscule) se cassent :
+      // l'énergie des niveaux 3 à 5 fait toujours exactement 30.
       niveaux: {
         // 1 « Le dé » : un 5 de dé, le coquillage au milieu
         1: { grille: ['#.#', '.a.', '#.#'], tresors: { a: 'coquillage' } },

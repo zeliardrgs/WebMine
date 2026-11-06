@@ -627,6 +627,7 @@ window.TEXTES_EN = {
   "Améliore-la avec ton cuivre !": "Upgrade it with your copper!",
   "La Forge est ouverte : va voir ta pioche": "The Forge is open: check your pickaxe",
   "Remonte à la surface pour recharger ton énergie.": "Go back up to the surface to refill your energy.",
+  "Cette pierre ne cache rien : garde ton énergie !": "Nothing under this rock: save your energy!",
   "Clé": "Key",
   "Niveau gardien ! Un peu plus de roche dure… et une grosse récompense à la fin.": "Guardian floor! A bit more hard rock… and a big reward at the end.",
   "La salle du trésor du Roi Mineur ! Le grand coffre du centre s'ouvre avec les 5 Clés du Roi Mineur.": "The Miner King's treasure room! The big chest in the middle opens with the 5 Miner King's Keys.",
