@@ -68,6 +68,7 @@
     s.bldNew = {}; s.newBuildings = [];
     s.introDone = true; s.bagSeen = true; s.guideBack = guide.fin;
     s.reached = Math.max(s.reached, after);
+    s.cpBest = Math.max(s.cpBest || 0, M.CHECKPOINTS.filter(l => l < after).pop() || 0);
     if (s.level < after) { s.level = after; s.stayLevel = 0; M.genLevel(after); }
   }
 
@@ -95,7 +96,7 @@
       M.genLevel(n); M.buildBoard(true); M.go('mine'); close(); msg(`Niveau ${n}`);
     },
     unlock() {
-      const n = level(); S().reached = n; refresh(); msg(`Record : niveau ${n} (checkpoints débloqués)`);
+      const n = level(); S().reached = n; S().cpBest = M.CHECKPOINTS.filter(l => l <= n).pop() || 0; refresh(); msg(`Record : niveau ${n} (checkpoints débloqués)`);
     },
     // Skips the guided first steps (config.js > progression > guide, levels 1 to 16): every first-steps tutorial
     // is marked as seen, the buildings of the planned returns are open, and the player starts just after the guide.
@@ -113,6 +114,7 @@
       if ((s.guideBack || 0) < M.CFG.progression.guide.fin) ftueDone(s);
       s.reached = Math.max(s.reached, gate);
       (s.guardDone = s.guardDone || {})[gate] = true;
+      s.cpBest = Math.max(s.cpBest || 0, M.CHECKPOINTS.filter(l => l <= gate).pop() || 0);
       s.screen = 'village';
       localStorage.setItem(KEY, JSON.stringify(s)); location.reload();
     },

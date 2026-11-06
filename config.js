@@ -128,8 +128,8 @@ window.CONFIG = {
     niveauxParBiome: 100,
 
     // La mine suivante se débloque quand le joueur TERMINE ce niveau de la mine précédente
-    // (100 = battre l'étage gardien du niveau 100). On peut alors partir de son niveau 1.
-    niveauDeblocage: 100,
+    // (99 = battre l'étage gardien du niveau 99). On peut alors partir de son niveau 1.
+    niveauDeblocage: 99,
     // Message affiché quand une nouvelle mine se débloque ({x} = le nom de la mine)
     texteDeblocage: "Nouvelle mine débloquée : {x} !",
 
@@ -182,18 +182,21 @@ window.CONFIG = {
     // puis tous les 15 (81 à 216), puis au début et au milieu de chaque biome.
     // Toujours un niveau en …1 ou …6 : jamais sur un checkpoint, un niveau trésor ou un gardien.
     deblocages: {
-      pioche: 6,         // pioche, pierre et énergie (le sac est présenté la 1re fois qu'il est plein)
-      cuivre: 11,        // minerai de cuivre
-      forge: 11,         // la Forge apparaît au village (au retour suivant) : c'est aussi l'ouverture de l'équipement
-      boutique: 11,      // la Boutique apparaît en même temps, avec les coffres d'équipement
-      geodes: 16,        // géodes vertes (Communes)
-      atelier: 16,       // l'Atelier apparaît au village (au retour suivant)
+      // FTUE (refonte du 6 novembre 2026) : voir progression > ftue
+      pioche: 3,         // pioche, pierre et énergie
+      cuivre: 21,        // minerai de cuivre
+      geodes: 11,        // géodes vertes (Communes)
+      // Les bâtiments n'ont plus de niveau : ils apparaissent au retour au village (progression > ftue > batiments).
+      // Ces niveaux ne servent plus qu'aux vieux tests (menu cheat).
+      forge: 21,
+      boutique: 10,
+      atelier: 11,
       magma: 26,         // magma et arrosoir
       fer: 36,           // minerai de fer
       casque: 21,        // le Casque peut sortir des coffres
       bottes: 31,        // les Bottes peuvent sortir des coffres
       sac: 16,           // fin des premiers pas : un tutoriel montre la récompense « sac » du niveau du joueur
-      autel: 51,         // l'Autel de la montagne apparaît au village (au retour suivant)
+      autel: 51,         // (plus utilisé : l'Autel s'ouvre au niveau 20 du joueur, progressionJoueur > niveaux)
       bombes: 56,        // les bombes arrivent à la Boutique (tutoriel avec une bombe offerte)
       geodeRose: 66,     // géodes bleues (Rares)
       potions: 81,       // les potions d'énergie arrivent à la Boutique
@@ -301,15 +304,58 @@ window.CONFIG = {
     // Partout dans le jeu, un niveau tutoriel donne l'énergie qu'il faut pour le finir,
     // et son trésor (toujours une nouvelle découverte) ne prend pas de place dans le sac.
     guide: {
-      fin: 16,                 // dernier niveau guidé
-      retours: [5, 11, 16],    // fins d'expédition prévues
-      pierresMax: 3,           // pierres maximum sur un niveau guidé (hors niveaux tutoriels)
+      fin: 10,                 // dernier niveau guidé
+      retours: [5, 10],        // fins d'expédition prévues (5 : plus d'énergie ; 10 : la clé du checkpoint)
+      pierresMax: 3,           // pierres maximum sur un niveau guidé (hors niveaux tutoriels et niveaux écrits)
+    },
+
+    /* FTUE (refonte du 6 novembre 2026, tableau de l'équipe) :
+       1. Terre (1-2, 3×3) : creuser à la pelle, 1er artefact (collection tutoriel de 4 morceaux, un par niveau 1 à 4)
+       2. Pierre (3-5) : pioche, énergie (30). Au niveau 5 l'énergie tombe à 0 : fenêtre énergie, puis retour.
+       3. Surface : Musée, la collection se complète (XP + pièces)
+       4. Niveau du joueur 2 (le rocher à casser), énergie max 40
+       5. Redescente 1-10 : doublons, niveau 9 dur, niveau 10 la clé, retour
+       6. Boutique : la clé ouvre un coffre (toujours une Pioche Commune), page Personnage, équiper (2 coups par pierre)
+       7. Redescente 10-20 : géodes au niveau 11 ; la clé du niveau 20 ouvre un coffre (toujours une Pelle Commune)
+       8. Atelier : il apparaît au retour de la 1re expédition qui ramène une géode
+       9. Redescente : cuivre au niveau 21
+       10. Forge : elle apparaît au retour de la 1re expédition qui ramène du cuivre ; améliorer la pioche
+       Les niveaux 1 à 5 sont écrits à la main (les mêmes pour tous les joueurs), seulement la 1re fois.
+       Grille : une ligne par rangée. "." = terre, "#" = pierre, une lettre = une case d'un trésor (en terre ;
+       en majuscule = sous la pierre). "tresors" : la lettre → l'artefact. Le coût en énergie de la pierre
+       (3 coups par pierre avant le premier équipement) fait exactement 30 sur les niveaux 3 à 5. */
+    ftue: {
+      // Des motifs faciles à retenir, dessinés avec de la pierre ("#"). Avant la pioche (niveaux 1 et 2), ces pierres
+      // ne se cassent pas : on creuse autour. Aux niveaux 3 et 4, casser les pierres du motif coûte de l'énergie pour rien :
+      // même en les cassant toutes (21 énergie), le joueur arrive au niveau 5 avec un peu d'énergie et tombe à 0 au niveau 5.
+      niveaux: {
+        // 1 « Le dé » : un 5 de dé, le coquillage au milieu
+        1: { grille: ['#.#', '.a.', '#.#'], tresors: { a: 'coquillage' } },
+        // 2 « Le sourire » : deux yeux, la feuille en guise de nez, une bouche de pierre
+        2: { grille: ['#.#', '.b.', '###'], tresors: { b: 'feuille' } },
+        // 3 « La fleur » : l'ammonite au cœur, sous la pierre (1re pioche), quatre pétales de pierre
+        3: { grille: ['.#.', '#C#', '.#.'], tresors: { c: 'ammonite' } },
+        // 4 « La flèche » : une flèche de pierre qui pointe vers la dent, sous la pierre
+        4: { grille: ['#.#', '.#.', '.D.'], tresors: { d: 'dent' } },
+        // 5 « Le coffre plein » : toute la grille en pierre sauf un coin, trois trésors emboîtés (24 énergie : l'énergie
+        //   tombe pile à 0 en dégageant le dernier, ou avant s'il a cassé des pierres pour rien)
+        5: { grille: ['EEF', 'EEF', 'GG.'], tresors: { e: 'lion', f: 'lampe', g: 'pierreDeLave' } },
+      },
+      // Quand les bâtiments apparaissent (au retour au village) :
+      //   'premierRetour' = au 1er retour ; 'checkpoint10' = quand le checkpoint 10 est débloqué ;
+      //   'geode' = au retour d'une expédition qui ramène une géode ; 'cuivre' = … qui ramène du cuivre ;
+      //   'niveauJoueur' = au niveau du joueur qui débloque 'autel' (progressionJoueur > niveaux).
+      batiments: { museum: 'premierRetour', shop: 'checkpoint10', atelier: 'geode', forge: 'cuivre', altar: 'niveauJoueur' },
+      // Le 2e coffre ouvert donne toujours ce modèle, en Commun (le 1er donne toujours une Pioche Commune)
+      deuxiemeCoffre: 'pelleProspecteur',
+      // Le niveau du cuivre (tutoriel) : nombre de blocs de cuivre (de quoi payer la 1re amélioration à la Forge)
+      blocsCuivreTuto: 3,
     },
 
     tutoriels: [
-      { niveau: 6,   nouveaute: 'pierre',      outil: 'pickaxe', texte: "Touche la pierre pour la casser" },
-      { niveau: 11,  nouveaute: 'cuivre',      outil: 'pickaxe', texte: "Casse le minerai de cuivre" },
-      { niveau: 16,  nouveaute: 'geode',       outil: 'shovel',  texte: "Glisse pour dégager la géode" },
+      { niveau: 3,   nouveaute: 'pierre',      outil: 'pickaxe', texte: "Touche la pierre pour la casser" },
+      { niveau: 11,  nouveaute: 'geode',       outil: 'shovel',  texte: "Glisse pour dégager la géode" },
+      { niveau: 21,  nouveaute: 'cuivre',      outil: 'pickaxe', texte: "Casse le minerai de cuivre" },
       { niveau: 26,  nouveaute: 'magma',       outil: 'bucket',  texte: "Arrose le magma" },
       { niveau: 36,  nouveaute: 'fer',         outil: 'pickaxe', texte: "Casse le minerai de fer" },
       { niveau: 56,  nouveaute: 'bombe',       outil: 'bomb',    texte: "Touche une case pour exploser" },
@@ -336,7 +382,7 @@ window.CONFIG = {
       descendre: "Descends dans la mine",             // tout premier lancement, au village
       batiments: {                                    // quand un bâtiment apparaît au village
         museum: "Entre dans ton Musée",
-        forge: "Découvre ton équipement",
+        forge: "La Forge est ouverte : va voir ta pioche", // au retour de la 1re expédition avec du cuivre
         atelier: "Entre dans l'Atelier",
         shop: "Entre dans la Boutique",
         altar: "Entre dans l'Autel de la montagne",
@@ -355,7 +401,7 @@ window.CONFIG = {
         equiper: "Équipe ta nouvelle pioche",          // bouton Équiper
         personnage: "Va voir ton équipement",          // onglet Personnage
         toucherObjet: "Touche ta pioche",              // la pioche sur le mineur
-        ameliorer: "Améliore-la, c'est offert !",      // bouton Améliorer de la fiche
+        ameliorer: "Améliore-la avec ton cuivre !",    // Forge (après la 1re expédition avec du cuivre) : bouton Améliorer
         fusionner: "Fusionne 3 objets identiques",     // 1re fusion possible (écran Personnage, puis la fiche de l'objet)
       },
       // Premiers pas (niveaux 1 à 16)
@@ -364,7 +410,8 @@ window.CONFIG = {
       energie: "Chaque coup de pioche coûte 1 énergie", // niveau de la pioche (touche pour continuer)
       continuer: "Continue jusqu'au checkpoint !",    // 1er sac plein avant un retour prévu, sur « Descendre quand même »
       echanger: "Garde ta nouvelle découverte",       // 1re fenêtre « Nouvelle découverte » (sac plein)
-      remonter: "Remonte : du nouveau à la surface !",  // à chaque retour prévu (niveaux 11 et 16)
+      remonter: "Remonte : du nouveau à la surface !",  // à chaque retour prévu (niveaux 5 et 10)
+      plusEnergie: "Remonte à la surface pour recharger ton énergie.",  // niveau 5 de la FTUE
       retourVillage: "Retourne à l'accueil",           // fin des tutoriels de la Boutique et de l'Atelier
       atelier: "Tape quand le curseur est dans la zone", // 1re géode à l'Atelier (elle ne peut pas rater)
       sacBoutique: "Ton niveau de mineur agrandit ton sac !",  // fin des premiers pas : l'encart du niveau du joueur
@@ -386,8 +433,9 @@ window.CONFIG = {
   /* ---------------------------------------------------------------
      RYTHME EN DENTS DE SCIE
      Dans chaque tranche de 10 niveaux : les niveaux 1 à 8 sont faciles,
-     le 9e un peu plus dur, le 10e (le checkpoint) est un "niveau trésor".
-     Les niveaux 100, 200… 900 sont des "niveaux gardiens".
+     le 9e est le niveau dur, le 10e (le checkpoint) est le "niveau trésor" :
+     toute la grille est en terre, avec une clé de coffre cachée dessous (voir checkpoints > cle).
+     Les niveaux 99, 199… 999 sont des "niveaux gardiens" (juste avant le checkpoint de fin de biome).
      --------------------------------------------------------------- */
   rythme: {
     // Quantité de pierre et de magma : 1 = normal, plus petit = plus facile
@@ -396,20 +444,22 @@ window.CONFIG = {
       niveau9: 1.3,    // 9e niveau de la tranche : un peu plus dur
     },
 
-    // Niveau trésor (10, 20, 30…) : rempli de minerai et de tas de pièces
+    // Niveau trésor (10, 20, 30…, le checkpoint) : toute la grille en terre, une clé dessous (checkpoints > cle).
+    // Seul "tailleEnPlus" sert encore (mines 2 et suivantes) ; minerai et tas de pièces ne sont plus utilisés.
     niveauTresor: {
       tailleEnPlus: 1,             // la grille est plus grande d'un cran (7×7 maximum), la première fois
       chanceMinerai: 0.75,         // chance qu'une pierre contienne du minerai (au lieu de 0.26)
       tasDePieces: [3, 5],         // nombre de tas de pièces (un coup de pelle pour les ramasser)
       piecesParTas: [6, 12],       // pièces dans chaque tas
       bonusParBiome: 0.5,          // les tas valent +50 % à chaque biome plus profond
-      texte: "Niveau trésor ! Des tas de pièces et du minerai à ramasser.",
+      texte: "Niveau trésor ! Dégage la terre pour trouver la clé.",
+      texteRejoue: "Niveau trésor ! Un artefact est caché sous la terre.",   // rejoué depuis l'ascenseur
     },
 
-    // Niveau gardien (100, 200… 900) : un petit défi, une grosse récompense
+    // Niveau gardien (99, 199… 999, juste avant le checkpoint de fin de biome) : un petit défi, une grosse récompense
     niveauGardien: {
-      // Niveaux gardiens en plus de 100, 200… 900 (le premier gardien arrive au niveau 30)
-      niveauxEnPlus: [30],
+      // Niveaux gardiens en plus de 99, 199… 999 (mines 2 et suivantes)
+      niveauxEnPlus: [],
       pierreEnPlus: 1.6,           // quantité de pierre (1 = normal)
       partPierreDure: 0.6,         // part des pierres qui deviennent dures (dès que la pierre dure existe)
       casesDuBiomeEnPlus: 2,       // les cases spéciales du biome sont 2 fois plus nombreuses
@@ -447,6 +497,7 @@ window.CONFIG = {
 
     // true = les niveaux 2 à 8 de chaque cycle sont mélangés (toujours le même mélange pour un même joueur),
     // sans jamais mettre deux étages Défi d'affilée. Le 1er, le mini-boss (9) et l'étage trésor (10) ne bougent pas.
+    // L'étage trésor (le checkpoint) est tout en terre avec une clé dessous : voir checkpoints > cle.
     melanger: true,
 
     // true = un niveau où arrive une nouveauté (une case, un minerai, une géode, un tutoriel) est toujours
@@ -458,7 +509,7 @@ window.CONFIG = {
 
     // Niveaux qui gardent une grille à part : [colonnes, lignes]
     // (niveau 1 : une seule case pour apprendre à toucher ; niveau 2 : 2 × 2 pour apprendre à glisser)
-    grillesFixes: { 1: [1, 1], 2: [2, 2] },
+    grillesFixes: {},   // (les niveaux 1 à 5 de la FTUE sont écrits dans progression > ftue)
 
     // Composition du sol de chaque type : "pierre" et "magma" = part des cases (le reste est de la terre).
     // Avant le niveau du magma (progression > deblocages > magma), le magma est remplacé par de la pierre ;
@@ -473,11 +524,13 @@ window.CONFIG = {
       standard:    { nom: 'Standard',      pierre: 0.40, magma: 0.08, cout: 1 },
       fouille:     { nom: 'Fouille',       pierre: 0.20, magma: 0.03, cout: 0.9 },
       defi:        { nom: 'Défi',          pierre: 0.50, magma: 0.22, cout: 1.4, plafond: false },
+      // Mini-boss (9, 19, 29…) : LE niveau dur avant le checkpoint ; un trésor de plus qu'un étage Standard, pas plus
       miniboss:    { nom: 'Mini-boss',     pierre: 0.45, magma: 0.20, cout: 2,   plafond: false,
-        texte: "Mini-boss ! Plus de roche… et plus de trésors à trouver." },
-      // Étage trésor : pièces et minerai, réglés dans rythme > niveauTresor (comme avant)
-      tresor:      { nom: 'Étage trésor',  pierre: 0.30, magma: 0,    cout: 0.6 },
-      // Demi-gardien (niveau 50) : sa récompense = celle du gardien (rythme > niveauGardien) × "recompense"
+        texte: "Mini-boss ! Beaucoup de roche avant le checkpoint." },
+      // Étage trésor (le checkpoint) : toute la grille en terre, une clé dessous (checkpoints > cle) ;
+      // seule sa grille compte (etages > tranches > tresor)
+      tresor:      { nom: 'Étage trésor',  pierre: 0,    magma: 0,    cout: 0 },
+      // Demi-gardien (niveau 49) : sa récompense = celle du gardien (rythme > niveauGardien) × "recompense"
       demiGardien: { nom: 'Demi-gardien',  pierre: 0.45, magma: 0.20, cout: 2.2, recompense: 0.5,
         texte: "Demi-gardien ! Une grande mine pleine de trésors… et une récompense à la fin." },
       gardien:     { nom: 'Gardien',       pierre: 0.50, magma: 0.22, cout: 1.5 },
@@ -489,54 +542,35 @@ window.CONFIG = {
     // "depuis" = premier niveau de la tranche. defi: null = pas d'étage Défi dans la tranche (remplacé par Standard).
     // Un type peut aussi changer sa composition dans une tranche (ex. un mini-boss plus doux : pierre, magma).
     tranches: [
+      // Niveaux 1 à 50 : toutes les grilles en 3 × 3 (demande du 6 novembre 2026) ; à partir de 51 : 4 × 4.
+      // Les étages à part (demi-gardien 49, gardien 99 : etages > speciaux) gardent leur grande grille.
       { depuis: 1,
-        respiration: { grille: [2, 2], tresors: [1, 1] },
+        respiration: { grille: [3, 3], tresors: [1, 1] },
         standard:    { grille: [3, 3], tresors: [1, 1] },
-        fouille:     { grille: [4, 4], tresors: [2, 2] },
+        fouille:     { grille: [3, 3], tresors: [2, 2] },
         defi:        null,
-        miniboss:    { grille: [4, 4], tresors: [3, 3], pierre: 0.25, magma: 0 },   // doux
-        tresor:      { grille: [4, 4], tresors: [1, 1] } },
+        miniboss:    { grille: [3, 3], tresors: [2, 2], pierre: 0.35, magma: 0 },   // doux
+        tresor:      { grille: [3, 3], tresors: [1, 1] } },
       { depuis: 11,
         respiration: { grille: [3, 3], tresors: [1, 1] },
-        standard:    { grille: [4, 4], tresors: [2, 2] },
-        fouille:     { grille: [5, 5], tresors: [3, 3] },
-        defi:        { grille: [4, 4], tresors: [2, 2] },
-        miniboss:    { grille: [6, 5], tresors: [4, 4] },
-        tresor:      { grille: [5, 5], tresors: [1, 1] } },
-      { depuis: 21,
-        respiration: { grille: [3, 3], tresors: [1, 1] },
-        standard:    { grille: [4, 4], tresors: [2, 2] },
-        fouille:     { grille: [6, 5], tresors: [3, 3] },
-        defi:        { grille: [5, 5], tresors: [2, 3] },
-        miniboss:    { grille: [7, 6], tresors: [4, 4] },
-        tresor:      { grille: [5, 5], tresors: [2, 2] } },
-      { depuis: 31,
-        respiration: { grille: [4, 4], tresors: [1, 1] },
-        standard:    { grille: [5, 5], tresors: [2, 2] },
-        fouille:     { grille: [6, 6], tresors: [4, 4] },
-        defi:        { grille: [5, 5], tresors: [3, 3] },
-        miniboss:    { grille: [8, 6], tresors: [5, 5] },
-        tresor:      { grille: [6, 6], tresors: [2, 2] } },
+        standard:    { grille: [3, 3], tresors: [1, 1] },
+        fouille:     { grille: [3, 3], tresors: [2, 2] },
+        defi:        { grille: [3, 3], tresors: [1, 1] },
+        miniboss:    { grille: [3, 3], tresors: [2, 2] },
+        tresor:      { grille: [3, 3], tresors: [1, 1] } },
       { depuis: 51,
-        respiration: { grille: [4, 4], tresors: [1, 2] },
-        standard:    { grille: [5, 5], tresors: [2, 3] },
-        fouille:     { grille: [7, 6], tresors: [4, 4] },
-        defi:        { grille: [6, 6], tresors: [3, 3] },
-        miniboss:    { grille: [8, 7], tresors: [5, 5] },
-        tresor:      { grille: [6, 6], tresors: [2, 2] } },
-      { depuis: 71,
-        respiration: { grille: [4, 4], tresors: [2, 2] },
-        standard:    { grille: [6, 5], tresors: [3, 3] },
-        fouille:     { grille: [7, 7], tresors: [5, 5] },
-        defi:        { grille: [6, 6], tresors: [4, 4] },
-        miniboss:    { grille: [9, 7], tresors: [5, 5] },
-        tresor:      { grille: [7, 7], tresors: [2, 2] } },
+        respiration: { grille: [4, 4], tresors: [1, 1] },
+        standard:    { grille: [4, 4], tresors: [1, 2] },
+        fouille:     { grille: [4, 4], tresors: [2, 3] },
+        defi:        { grille: [4, 4], tresors: [2, 2] },
+        miniboss:    { grille: [4, 4], tresors: [2, 3] },
+        tresor:      { grille: [4, 4], tresors: [1, 1] } },
     ],
 
-    // Étages à part, qui remplacent l'étage prévu par le cycle
+    // Étages à part, qui remplacent l'étage prévu par le cycle (juste avant les checkpoints 50 et 100)
     speciaux: {
-      50:  { type: 'demiGardien', grille: [10, 8],  tresors: [5, 5] },
-      100: { type: 'gardien',     grille: [12, 10], tresors: [6, 6] },
+      49:  { type: 'demiGardien', grille: [10, 8],  tresors: [5, 5] },
+      99:  { type: 'gardien',     grille: [12, 10], tresors: [6, 6] },
     },
 
     // Ce qui monte avec la profondeur, par tranche de niveaux ("depuis" = premier niveau) :
@@ -552,8 +586,10 @@ window.CONFIG = {
     // finit la mine vers le jour 12 en dépensant 4 à 9 énergie par étage (puissance × 1,5 le 30 octobre 2026 : le jeu était trop dur).
     profondeur: [
       { depuis: 1,  resistance: 1,  energie: 3,   durete: 0.6 },
-      { depuis: 11, resistance: 2,  energie: 10,   durete: 0.8 },
-      { depuis: 21, resistance: 3,  energie: 21,  durete: 0.8 },
+      // FTUE : pierre normale jusqu'au niveau 20 (3 coups à la pioche de base, 2 avec la 1re pioche du coffre),
+      // puis plus dure à partir du 21 (plus on descend, plus c'est dur)
+      { depuis: 11, resistance: 1,  energie: 10,   durete: 0.8 },
+      { depuis: 21, resistance: 2,  energie: 21,  durete: 0.8 },
       { depuis: 31, resistance: 5,  energie: 35,  durete: 1 },
       { depuis: 51, resistance: 8,  energie: 94,  durete: 1.4 },
       { depuis: 61, resistance: 11, energie: 119,  durete: 1.6 },
@@ -601,7 +637,7 @@ window.CONFIG = {
 
     // ÉTAGE LUCKY : à chaque descente, petite chance que l'étage prévu soit remplacé par un étage chanceux.
     // Il compte comme un niveau normal. Pas de trésor à trouver : on peut descendre tout de suite.
-    // Jamais sur un mini-boss, un étage trésor, les gardiens (50 et 100), un étage tutoriel, un niveau à trésor garanti
+    // Jamais sur un mini-boss, un étage trésor, les gardiens (49 et 99), un étage tutoriel, un niveau à trésor garanti
     // ou pendant les premiers pas ; jamais deux d'affilée.
     lucky: {
       actif: true,
@@ -632,15 +668,24 @@ window.CONFIG = {
   /* ---------------------------------------------------------------
      CHECKPOINTS (ASCENSEUR)
      Niveaux où le joueur peut redescendre directement depuis le village.
-     Un checkpoint se débloque dès que le joueur atteint ce niveau.
+     Le niveau d'un checkpoint est le niveau trésor : toute la grille en terre, une clé de coffre dessous
+     (on en voit des morceaux en creusant, comme un artefact). Ramasser la clé débloque le checkpoint.
+     Rejoué depuis l'ascenseur : toujours en terre, mais un artefact déjà découvert à la place de la clé.
      Utiliser un checkpoint est gratuit.
      Les checkpoints placés à la fin d'un biome (100, 200…) sont des
      "camps de biome", mis en avant dans l'ascenseur.
      --------------------------------------------------------------- */
   checkpoints: {
     tousLesNiveaux: 10,   // un checkpoint tous les X niveaux (10, 20, 30…)
-    enPlus: [5],          // checkpoints en plus (le 5 évite de refaire le tout début après le premier retour)
+    enPlus: [],           // checkpoints en plus (plus de checkpoint au niveau 5 : les premiers pas sont en refonte)
     dernier: 990,         // dernier niveau qui a un checkpoint
+    // La clé cachée sous le niveau du checkpoint : "defaut" partout, sauf les paliers (niveau dans la mine, 1 à 100 :
+    // 50 = 50, 150, 250… ; 100 = 100, 200…). Clés : bois, argent, or, etoile.
+    cle: {
+      defaut: 'bois',
+      paliers: { 50: 'argent', 100: 'or' },
+      // (la clé prend toute la grille du niveau)
+    },
   },
 
   /* ---------------------------------------------------------------
@@ -825,10 +870,12 @@ window.CONFIG = {
     // Chaque morceau prend une case dans la grille et une case dans le sac. Un morceau déjà trouvé est un doublon.
     // "article" = le petit mot devant le nom dans le tutoriel (« reconstituer LA Longue-vue »).
     artefacts: {
+      // La collection tutoriel : un morceau par niveau 1 à 4 de la FTUE (progression > ftue), complète au 1er retour
       fossiles: { nom: 'Fossiles de surface', prime: 50, niveaux: [1, 30], sol: 'terre', objets: {
         coquillage: { nom: 'Coquillage fossile', rarete: 'common', taille: [1, 1] },
         feuille:    { nom: 'Feuille fossile',    rarete: 'common', taille: [1, 1] },
         ammonite:   { nom: 'Petite ammonite',    rarete: 'common', taille: [1, 1] },
+        dent:       { nom: 'Dent fossile',       rarete: 'common', taille: [1, 1] },   // dessin temporaire (pas d'image)
       } },
       // Une pièce par mine : le Sou de cuivre dans la Mine des pionniers, les autres dans les mines suivantes
       monnaies: { nom: 'Monnaies du royaume perdu', prime: 200, sol: 'tout', objets: {
@@ -1097,13 +1144,10 @@ window.CONFIG = {
       // par jour : × 4 ; mine 2 en 2 semaines ≈ 70 par jour : × 2). Ainsi le nombre de coffres par jour reste
       // le même dans toutes les mines (simulation du 2026-10-09 : ~3,8 par jour gratuit, ~8 à 10 engagé).
       facteurParMine: [4, 2, 1],
-      // Dans la mine : une clé en bois posée sur un niveau trésor tous les X niveaux (la première fois ; comme les
-      // centaines sont des niveaux gardiens, la clé va sur le niveau trésor juste après : 410, 810… en mine 1),
-      // et une chance d'en trouver une sur un niveau normal (0 = jamais)
-      niveauTresor: 'bois',
-      niveauTresorTousLes: 100,
+      // Les clés des niveaux trésor (checkpoints) sont dans checkpoints > cle.
+      // Une chance de trouver une clé en bois sur un niveau normal (0 = jamais)
       chanceEtage: 0,
-      // Niveau gardien vaincu : une clé en plus de sa récompense, tous les X niveaux
+      // Niveau gardien vaincu (99, 199…) : une clé en plus de sa récompense, tous les X niveaux
       gardien: 'argent',
       gardienTousLes: 100,
       // Nouveau record : une clé tous les X niveaux de la mine (plusieurs peuvent tomber en même temps)
@@ -1231,7 +1275,8 @@ window.CONFIG = {
     // (0 = seulement les récompenses ; réglé par simulation le 16 octobre 2026)
     energieParNiveau: 1,
     xpNiveau: 0,                      // niveaux terminés : plus d'XP
-    xpNouveauTresor: 15,              // par trésor jamais vu ramené au Musée
+    xpNouveauTresor: 8,               // par trésor jamais vu ramené au Musée (FTUE : 6 trésors = 48, sous les 60 du niveau 2 :
+                                      // c'est la collection complétée au Musée qui fait passer le niveau 2)
     xpEtoileCollection: 40,           // par collection complétée (chaque étoile), récupérée au Musée
     xpEquipement: { nouveau: 0, amelioration: 0, fusion: 0 },  // équipement : plus d'XP
     xpParPriere: 0,                   // Autel : plus d'XP
@@ -1254,15 +1299,15 @@ window.CONFIG = {
     // Repère (simulation du 30 octobre 2026) : niveau 8 à la fin du 1er jour, 12 vers le jour 7, 13 à la fin de la Mine des pionniers.
     // Après le dernier niveau de la liste, l'XP continue de grandir, sans récompense.
     niveaux: [
-      { recompense: { pieces: 100 } },                              // 2
-      { recompense: { sac: 5, fee: 'hasard' } },                    // 3  (montré à la fin des premiers pas) : la 1re fée
-      { recompense: { energie: 40 } },                              // 4
-      { recompense: { pieces: 300 }, deblocage: 'evenements' },     // 5
-      { recompense: { poche: 1, fee: 'hasard' } },                  // 6  : la 2e fée
+      { recompense: { energie: 40 } },                              // 2  (FTUE : après le 1er Musée)
+      { recompense: { pieces: 100 } },                              // 3
+      { recompense: { energie: 45 } },                              // 4
+      { recompense: { pieces: 200 }, deblocage: 'missions' },       // 5
+      { recompense: { gemmes: 10, cle: 'bois', cles: 1 } },         // 6
       { recompense: { energie: 50 } },                              // 7
-      { recompense: { gemmes: 10, cle: 'bois', cles: 1 } },         // 8
-      { recompense: { sac: 6 } },                                   // 9
-      { recompense: { energie: 60, gemmes: 50, cle: 'or', cles: 1 } }, // 10
+      { recompense: { pieces: 300 }, deblocage: 'evenements' },     // 8
+      { recompense: { cle: 'argent', cles: 1 } },                   // 9
+      { recompense: { energie: 60, gemmes: 50, fee: 'hasard' }, deblocage: 'fees' }, // 10 : la 1re fée
       { recompense: { pieces: 600 } },                              // 11
       { recompense: { energie: 70 } },                              // 12
       { recompense: { cle: 'argent', cles: 1 } },                   // 13
@@ -1272,7 +1317,7 @@ window.CONFIG = {
       { recompense: { poche: 2 } },                                 // 17
       { recompense: { pieces: 1000 } },                             // 18
       { recompense: { energie: 100 } },                             // 19
-      { recompense: { sac: 10, cle: 'or', cles: 1 } },              // 20
+      { recompense: { sac: 10, cle: 'or', cles: 1 }, deblocage: 'autel' }, // 20
       { recompense: { bombes: 3 } },                                // 21
       { recompense: { energie: 115 } },                             // 22
       { recompense: { gemmes: 30 } },                               // 23
@@ -1310,8 +1355,15 @@ window.CONFIG = {
 
     // Les fonctionnalités débloquées par le niveau du joueur : nom affiché dans le menu Progression
     fonctionnalites: {
+      missions: 'Missions',
       evenements: 'Événements',
+      fees: 'Fées',
+      autel: 'Autel de la montagne',
     },
+
+    // Jamais plus d'un niveau du joueur par retour au village : l'XP en trop est gardée en réserve
+    // et donnée au retour suivant (toujours au plus un niveau de plus).
+    unNiveauParRetour: true,
   },
 
   /* ---------------------------------------------------------------
